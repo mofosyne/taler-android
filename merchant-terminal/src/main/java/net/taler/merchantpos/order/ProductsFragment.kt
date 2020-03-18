@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlinx.android.synthetic.main.fragment_products.*
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.order.ProductAdapter.ProductViewHolder
 
 interface ProductSelectionListener {

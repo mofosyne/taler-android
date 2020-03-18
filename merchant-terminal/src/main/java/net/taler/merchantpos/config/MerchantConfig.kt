@@ -17,7 +17,13 @@
 package net.taler.merchantpos.config
 
 import android.net.Uri
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import net.taler.common.Amount
+import net.taler.common.ContractProduct
+import net.taler.common.Product
+import net.taler.common.TalerUtils
+import java.util.*
 
 data class Config(
     val configUrl: String,
@@ -44,4 +50,43 @@ data class MerchantConfig(
         }
         return uriBuilder.toString()
     }
+}
+
+data class Category(
+    val id: Int,
+    val name: String,
+    @JsonProperty("name_i18n")
+    val nameI18n: Map<String, String>?
+) {
+    var selected: Boolean = false
+    val localizedName: String get() = TalerUtils.getLocalizedString(nameI18n, name)
+}
+
+data class ConfigProduct(
+    @JsonIgnore
+    val id: String = UUID.randomUUID().toString(),
+    override val productId: String?,
+    override val description: String,
+    override val descriptionI18n: Map<String, String>?,
+    override val price: String,
+    override val location: String?,
+    override val image: String?,
+    val categories: List<Int>,
+    @JsonIgnore
+    val quantity: Int = 0
+) : Product() {
+    val priceAsDouble by lazy { Amount.fromString(price).amount.toDouble() }
+
+    fun toContractProduct() = ContractProduct(
+        productId = productId,
+        description = description,
+        descriptionI18n = descriptionI18n,
+        price = price,
+        location = location,
+        image = image,
+        quantity = quantity
+    )
+
+    override fun equals(other: Any?) = other is ConfigProduct && id == other.id
+    override fun hashCode() = id.hashCode()
 }

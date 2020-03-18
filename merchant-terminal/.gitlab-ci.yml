@@ -2,7 +2,7 @@ merchant_test:
   stage: test
   only:
     changes:
-      - "merchant-terminal"
+      - merchant-terminal/**/*
   script: ./gradlew :merchant-terminal:lint :merchant-terminal:assembleRelease
   artifacts:
     paths:
@@ -15,7 +15,7 @@ merchant_deploy_nightly:
     refs:
       - master
     changes:
-      - "merchant-terminal"
+      - merchant-terminal/**/*
   needs: ["merchant_test"]
   script:
     # Ensure that key exists

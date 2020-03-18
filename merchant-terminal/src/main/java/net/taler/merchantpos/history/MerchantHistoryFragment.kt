@@ -35,14 +35,14 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import kotlinx.android.synthetic.main.fragment_merchant_history.*
+import net.taler.common.exhaustive
+import net.taler.common.navigate
+import net.taler.common.toRelativeTime
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.exhaustive
 import net.taler.merchantpos.history.HistoryItemAdapter.HistoryItemViewHolder
 import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionGlobalMerchantSettings
 import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
-import net.taler.merchantpos.navigate
-import net.taler.merchantpos.toRelativeTime
 import java.util.*
 
 private interface RefundClickListener {

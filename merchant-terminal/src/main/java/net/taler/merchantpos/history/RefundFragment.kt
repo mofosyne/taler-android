@@ -28,15 +28,15 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_refund.*
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
+import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.fadeIn
-import net.taler.merchantpos.fadeOut
 import net.taler.merchantpos.history.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
 import net.taler.merchantpos.history.RefundResult.Error
 import net.taler.merchantpos.history.RefundResult.PastDeadline
 import net.taler.merchantpos.history.RefundResult.Success
-import net.taler.merchantpos.navigate
 
 class RefundFragment : Fragment() {
 

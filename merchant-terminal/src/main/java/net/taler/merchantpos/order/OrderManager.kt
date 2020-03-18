@@ -24,8 +24,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.taler.merchantpos.Amount.Companion.fromString
+import net.taler.common.Amount.Companion.fromString
 import net.taler.merchantpos.R
+import net.taler.merchantpos.config.Category
+import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.config.ConfigurationReceiver
 import net.taler.merchantpos.order.RestartState.ENABLED
 import org.json.JSONObject

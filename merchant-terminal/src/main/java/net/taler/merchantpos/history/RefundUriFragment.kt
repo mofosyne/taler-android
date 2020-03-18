@@ -25,9 +25,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_refund_uri.*
+import net.taler.common.NfcManager.Companion.hasNfc
+import net.taler.common.QrCodeManager.makeQrCode
 import net.taler.merchantpos.MainViewModel
-import net.taler.merchantpos.NfcManager.Companion.hasNfc
-import net.taler.merchantpos.QrCodeManager.makeQrCode
 import net.taler.merchantpos.R
 
 class RefundUriFragment : Fragment() {

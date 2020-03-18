@@ -20,7 +20,9 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import net.taler.merchantpos.CombinedLiveData
+import net.taler.common.CombinedLiveData
+import net.taler.merchantpos.config.Category
+import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.order.RestartState.DISABLED
 import net.taler.merchantpos.order.RestartState.ENABLED
 import net.taler.merchantpos.order.RestartState.UNDO

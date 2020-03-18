@@ -30,7 +30,6 @@ import com.android.volley.VolleyError
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
-import net.taler.merchantpos.order.ContractProduct
 import net.taler.merchantpos.order.Order
 import org.json.JSONArray
 import org.json.JSONObject
@@ -103,7 +102,7 @@ class PaymentManager(
     }
 
     private fun Order.getProductsJson(): JSONArray {
-        val contractProducts = products.map { ContractProduct(it) }
+        val contractProducts = products.map { it.toContractProduct() }
         val productsStr = mapper.writeValueAsString(contractProducts)
         return JSONArray(productsStr)
     }

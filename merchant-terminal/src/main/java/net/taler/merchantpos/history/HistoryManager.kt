@@ -24,21 +24,14 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.merchantpos.Amount
+import net.taler.common.Amount
+import net.taler.common.Timestamp
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
 import org.json.JSONObject
-
-@JsonInclude(NON_EMPTY)
-class Timestamp(
-    @JsonProperty("t_ms")
-    val ms: Long
-)
 
 data class HistoryItem(
     @JsonProperty("order_id")

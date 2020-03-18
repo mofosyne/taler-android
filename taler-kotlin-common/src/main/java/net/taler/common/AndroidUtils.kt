@@ -19,35 +19,65 @@ package net.taler.common
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
+import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.os.Build.VERSION.SDK_INT
+import android.text.format.DateUtils
+import android.text.format.DateUtils.DAY_IN_MILLIS
+import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
+import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
+import android.text.format.DateUtils.FORMAT_NO_YEAR
+import android.text.format.DateUtils.FORMAT_SHOW_DATE
+import android.text.format.DateUtils.FORMAT_SHOW_TIME
+import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
+import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
-    if (visibility == View.VISIBLE) return
+    if (visibility == VISIBLE) return
     alpha = 0f
-    visibility = View.VISIBLE
+    visibility = VISIBLE
     animate().alpha(1f).withEndAction {
-        endAction.invoke()
+        if (context != null) endAction.invoke()
     }.start()
 }
 
 fun View.fadeOut(endAction: () -> Unit = {}) {
-    if (visibility == View.INVISIBLE) return
+    if (visibility == INVISIBLE) return
     animate().alpha(0f).withEndAction {
-        visibility = View.INVISIBLE
+        if (context == null) return@withEndAction
+        visibility = INVISIBLE
         alpha = 1f
         endAction.invoke()
     }.start()
 }
 
+/**
+ * Use this with 'when' expressions when you need it to handle all possibilities/branches.
+ */
+val <T> T.exhaustive: T
+    get() = this
+
 fun Context.isOnline(): Boolean {
     val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    return if (Build.VERSION.SDK_INT < 29) {
+    return if (SDK_INT < 29) {
         @Suppress("DEPRECATION")
         cm.activeNetworkInfo?.isConnected == true
     } else {
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
-        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        capabilities.hasCapability(NET_CAPABILITY_INTERNET)
     }
+}
+
+fun Fragment.navigate(directions: NavDirections) = findNavController().navigate(directions)
+
+fun Long.toRelativeTime(context: Context): CharSequence {
+    val now = System.currentTimeMillis()
+    return if (now - this > DAY_IN_MILLIS * 2) {
+        val flags = FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
+        DateUtils.formatDateTime(context, this, flags)
+    } else DateUtils.getRelativeTimeSpanString(this, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
 }

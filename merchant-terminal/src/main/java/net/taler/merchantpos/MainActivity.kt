@@ -36,6 +36,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import net.taler.common.NfcManager
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 

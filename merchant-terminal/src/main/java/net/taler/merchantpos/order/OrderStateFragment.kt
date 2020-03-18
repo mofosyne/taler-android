@@ -37,10 +37,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlinx.android.synthetic.main.fragment_order_state.*
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.fadeIn
-import net.taler.merchantpos.fadeOut
+import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.order.OrderAdapter.OrderLineLookup
 import net.taler.merchantpos.order.OrderAdapter.OrderViewHolder
 

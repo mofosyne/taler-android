@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import kotlinx.android.synthetic.main.fragment_categories.*
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.order.CategoryAdapter.CategoryViewHolder
 
 interface CategorySelectionListener {

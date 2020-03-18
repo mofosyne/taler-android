@@ -27,13 +27,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import kotlinx.android.synthetic.main.fragment_process_payment.*
+import net.taler.common.NfcManager.Companion.hasNfc
+import net.taler.common.QrCodeManager.makeQrCode
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
+import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
-import net.taler.merchantpos.NfcManager.Companion.hasNfc
-import net.taler.merchantpos.QrCodeManager.makeQrCode
 import net.taler.merchantpos.R
-import net.taler.merchantpos.fadeIn
-import net.taler.merchantpos.fadeOut
-import net.taler.merchantpos.navigate
 import net.taler.merchantpos.payment.ProcessPaymentFragmentDirections.Companion.actionProcessPaymentToPaymentSuccess
 import net.taler.merchantpos.topSnackbar
 
@@ -69,7 +69,7 @@ class ProcessPaymentFragment : Fragment() {
         }
         if (payment.paid) {
             model.orderManager.onOrderPaid(payment.order.id)
-            actionProcessPaymentToPaymentSuccess().navigate(findNavController())
+            navigate(actionProcessPaymentToPaymentSuccess())
             return
         }
         payIntroView.fadeIn()
