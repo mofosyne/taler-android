@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".payment.ProcessPaymentFragment">
+
+    <ImageView
+            android:id="@+id/qrcodeView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="32dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@tools:sample/avatars"
+            tools:visibility="visible" />
+
+    <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/qrcodeView"
+            app:layout_constraintEnd_toEndOf="@+id/qrcodeView"
+            app:layout_constraintStart_toStartOf="@+id/qrcodeView"
+            app:layout_constraintTop_toTopOf="@+id/qrcodeView" />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.54" />
+
+    <TextView
+            android:id="@+id/payIntroView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/payment_intro_nfc"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/amountView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread"
+            tools:visibility="visible" />
+
+    <TextView
+            android:id="@+id/amountView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintBottom_toTopOf="@+id/orderRefView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/payIntroView"
+            tools:text="10.49 TESTKUDOS" />
+
+    <TextView
+            android:id="@+id/orderRefView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textAlignment="center"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/cancelPaymentButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/amountView"
+            tools:text="@string/payment_order_ref"
+            tools:visibility="visible" />
+
+    <Button
+            android:id="@+id/cancelPaymentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/red"
+            android:text="@string/payment_cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

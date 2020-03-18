@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BalanceFragment">
+
+    <TextView
+        android:id="@+id/lastTransactionView"
+        style="@style/Widget.MaterialComponents.Snackbar.FullWidth"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimaryDark"
+        android:drawableStart="@drawable/ic_check_circle"
+        android:drawablePadding="8dp"
+        android:drawableTint="?attr/colorOnPrimarySurface"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:textColor="?attr/colorOnPrimarySurface"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/transaction_last_success"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/balanceBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/background"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lastTransactionView" />
+
+    <TextView
+        android:id="@+id/balanceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin"
+        android:text="@string/balance_current_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lastTransactionView" />
+
+    <TextView
+        android:id="@+id/balanceView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_margin"
+        android:paddingTop="8dp"
+        android:gravity="center"
+        android:paddingEnd="@dimen/default_margin"
+        android:paddingBottom="@dimen/default_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanceLabel"
+        tools:text="100 KUDOS" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceView"
+        app:layout_constraintEnd_toEndOf="@+id/balanceView"
+        app:layout_constraintStart_toStartOf="@+id/balanceView"
+        app:layout_constraintTop_toTopOf="@+id/balanceView" />
+
+    <TextView
+        android:id="@+id/introView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:text="@string/withdraw_into"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/button5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanceBackground"
+        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/button5"
+        style="@style/AmountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/amountView"
+        app:layout_constraintEnd_toStartOf="@+id/button10"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/introView"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/button10"
+        style="@style/AmountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/button20"
+        app:layout_constraintStart_toEndOf="@+id/button5"
+        app:layout_constraintTop_toBottomOf="@+id/introView"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/button20"
+        style="@style/AmountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/button50"
+        app:layout_constraintStart_toEndOf="@+id/button10"
+        app:layout_constraintTop_toBottomOf="@+id/introView"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/button50"
+        style="@style/AmountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="50"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button20"
+        app:layout_constraintTop_toBottomOf="@+id/introView"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/amountView"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:hint="@string/withdraw_input_amount"
+        android:visibility="invisible"
+        app:endIconDrawable="@drawable/ic_clear"
+        app:endIconMode="clear_text"
+        app:endIconTint="?attr/colorControlNormal"
+        app:layout_constraintBottom_toTopOf="@+id/confirmWithdrawalButton"
+        app:layout_constraintEnd_toStartOf="@+id/currencyView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button5"
+        tools:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="6"
+            android:imeOptions="actionGo"
+            android:inputType="number"
+            android:maxLength="4" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/currencyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/amountView"
+        app:layout_constraintTop_toTopOf="@+id/amountView"
+        tools:text="TESTKUDOS"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/confirmWithdrawalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin"
+        android:backgroundTint="@color/green"
+        android:drawableLeft="@drawable/ic_withdraw"
+        android:drawableTint="?attr/colorOnPrimarySurface"
+        android:text="@string/withdraw_button_confirm"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/amountView"
+        tools:ignore="RtlHardcoded"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@+id/nav_order"
+        tools:ignore="UnusedNavigation">
+
+    <fragment
+            android:id="@+id/nav_order"
+            android:name="net.taler.merchantpos.order.OrderFragment"
+            android:label=""
+            tools:layout="@layout/fragment_order">
+        <action
+                android:id="@+id/action_order_to_merchantSettings"
+                app:destination="@+id/nav_settings"
+                app:launchSingleTop="true"
+                app:popUpTo="@+id/nav_graph"
+                app:popUpToInclusive="true" />
+        <action
+                android:id="@+id/action_order_self"
+                app:destination="@+id/nav_order"
+                app:popUpTo="@+id/nav_graph" />
+        <action
+                android:id="@+id/action_order_to_processPayment"
+                app:destination="@+id/processPayment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/processPayment"
+            android:name="net.taler.merchantpos.payment.ProcessPaymentFragment"
+            android:label="@string/payment_process_label"
+            tools:layout="@layout/fragment_process_payment">
+        <action
+                android:id="@+id/action_processPayment_to_paymentSuccess"
+                app:destination="@+id/paymentSuccess"
+                app:popUpTo="@id/nav_order" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/nav_history"
+            android:name="net.taler.merchantpos.history.MerchantHistoryFragment"
+            android:label="@string/history_label"
+            tools:layout="@layout/fragment_merchant_history">
+        <action
+                android:id="@+id/action_nav_history_to_refundFragment"
+                app:destination="@id/refundFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/refundFragment"
+            android:name="net.taler.merchantpos.history.RefundFragment"
+            android:label="@string/history_refund"
+            tools:layout="@layout/fragment_refund">
+        <action
+                android:id="@+id/action_refundFragment_to_refundUriFragment"
+                app:destination="@id/refundUriFragment" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/refundUriFragment"
+            android:name="net.taler.merchantpos.history.RefundUriFragment"
+            android:label="@string/history_refund"
+            tools:layout="@layout/fragment_refund_uri" />
+
+    <fragment
+            android:id="@+id/nav_settings"
+            android:name="net.taler.merchantpos.config.MerchantConfigFragment"
+            android:label="@string/config_label"
+            tools:layout="@layout/fragment_merchant_config">
+        <action
+                android:id="@+id/action_settings_to_order"
+                app:destination="@+id/nav_order"
+                app:launchSingleTop="true"
+                app:popUpTo="@+id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/configFetcher"
+            android:name="net.taler.merchantpos.config.ConfigFetcherFragment"
+            android:label="@string/config_fetching_label"
+            tools:layout="@layout/fragment_config_fetcher">
+        <action
+                android:id="@+id/action_configFetcher_to_merchantSettings"
+                app:destination="@+id/nav_settings"
+                app:launchSingleTop="true"
+                app:popUpTo="@+id/nav_graph"
+                app:popUpToInclusive="true" />
+        <action
+                android:id="@+id/action_configFetcher_to_order"
+                app:destination="@+id/nav_order"
+                app:launchSingleTop="true"
+                app:popUpTo="@+id/nav_graph"
+                app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+            android:id="@+id/paymentSuccess"
+            android:name="net.taler.merchantpos.payment.PaymentSuccessFragment"
+            android:label="@string/payment_received"
+            tools:layout="@layout/fragment_payment_success" />
+
+    <action
+            android:id="@+id/action_global_order"
+            app:destination="@+id/nav_order"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/nav_graph" />
+    <action
+            android:id="@+id/action_global_merchantHistory"
+            app:destination="@+id/nav_history"
+            app:launchSingleTop="true" />
+    <action
+            android:id="@+id/action_global_merchantSettings"
+            app:destination="@+id/nav_settings"
+            app:launchSingleTop="true" />
+    <action
+            android:id="@+id/action_global_configFetcher"
+            app:destination="@+id/configFetcher"
+            app:launchSingleTop="true" />
+
+</navigation>

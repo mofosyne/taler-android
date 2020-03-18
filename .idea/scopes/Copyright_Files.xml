@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Copyright Files" pattern="file[cashier]:src/main/java//*||file[cashier]:src/main/res/layout//*||file[cashier]:src/main/res/layout-w550dp//*||file[merchant-terminal]:src/main/java//*||file[merchant-terminal]:src/main/res/layout//*||file[wallet]:src/main/java//*||file[wallet]:src/main/res/layout//*||file[wallet]:src/main/res/layout-w550dp//*" />
+</component>

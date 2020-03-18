@@ -1,0 +1,42 @@
+.binary_deps:
+  only:
+    changes:
+      - "wallet"
+  before_script:
+    - wget "https://git.taler.net/wallet-android.git/plain/akono.aar?h=binary-deps" -O akono/akono.aar
+    - mkdir -p app/src/main/assets
+    - wget "https://git.taler.net/wallet-android.git/plain/taler-wallet-android.js?h=binary-deps" -O app/src/main/assets/taler-wallet-android.js
+
+wallet_test:
+  stage: test
+  extends: .binary_deps
+  script: ./gradlew :wallet:lint :wallet:assembleRelease
+
+wallet_deploy_nightly:
+  stage: deploy
+  extends: .binary_deps
+  only:
+    refs:
+      - master
+  script:
+    # Ensure that key exists
+    - test -z "$DEBUG_KEYSTORE" && exit 0
+    # Rename nightly app
+    - sed -i
+      's,<string name="app_name">.*</string>,<string name="app_name">Taler Wallet Nightly</string>,'
+      wallet/src/main/res/values*/strings.xml
+    # Set time-based version code
+    - export versionCode=$(date '+%s')
+    - sed -i "s,^\(\s*versionCode\) *[0-9].*,\1 $versionCode," wallet/build.gradle
+    # Add commit to version name
+    - export versionName=$(git rev-parse --short=7 HEAD)
+    - sed -i "s,^\(\s*versionName\ *\"[0-9].*\)\",\1 ($versionName)\"," wallet/build.gradle
+    # Set nightly application ID
+    - sed -i "s,^\(\s*applicationId\) \"*[a-z\.].*\",\1 \"net.taler.wallet.nightly\"," wallet/build.gradle
+    # Build the APK
+    - ./gradlew :wallet:assembleDebug
+    # START only needed while patch not accepted/released upstream
+    - apt update && apt install patch
+    - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
+    # END
+    - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v

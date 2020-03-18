@@ -1,0 +1,20 @@
+image: registry.gitlab.com/fdroid/ci-images-client:latest
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+stages:
+  - test
+  - deploy
+
+include:
+  - local: 'cashier/.gitlab-ci.yml'
+  - local: 'merchant-terminal/.gitlab-ci.yml'
+  - local: 'wallet/.gitlab-ci.yml'
+
+after_script:
+  # this file changes every time but should not be cached
+  - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
+  - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/

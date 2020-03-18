@@ -1,0 +1,35 @@
+image: registry.gitlab.com/fdroid/ci-images-client:latest
+
+cashier_test:
+  stage: test
+  only:
+    changes:
+      - "cashier"
+  script: ./gradlew :cashier:lint :cashier:assembleRelease
+
+cashier_deploy_nightly:
+  stage: deploy
+  only:
+    refs:
+      - master
+    changes:
+      - "cashier"
+  script:
+    # Ensure that key exists
+    - test -z "$DEBUG_KEYSTORE" && exit 0
+    # Rename nightly app
+    - sed -i
+        's,<string name="app_name">.*</string>,<string name="app_name">Cashier Nightly</string>,'
+        cashier/src/main/res/values*/strings.xml
+    # Set time-based version code
+    - export versionCode=$(date '+%s')
+    - sed -i "s,^\(\s*versionCode\) *[0-9].*,\1 $versionCode," cashier/build.gradle
+    # Set nightly application ID
+    - sed -i "s,^\(\s*applicationId\) \"*[a-z\.].*\",\1 \"net.taler.cashier.nightly\"," cashier/build.gradle
+    # Build the APK
+    - ./gradlew :cashier:assembleDebug
+    # START only needed while patch not accepted/released upstream
+    - apt update && apt install patch
+    - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
+    # END
+    - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v

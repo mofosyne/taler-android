@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/balanceFragment"
+    tools:ignore="UnusedNavigation">
+
+    <fragment
+        android:id="@+id/configFragment"
+        android:name="net.taler.cashier.ConfigFragment"
+        android:label="ConfigFragment"
+        tools:layout="@layout/fragment_config">
+        <action
+            android:id="@+id/action_configFragment_to_balanceFragment"
+            app:destination="@id/balanceFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/balanceFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/balanceFragment"
+        android:name="net.taler.cashier.BalanceFragment"
+        android:label="fragment_balance"
+        tools:layout="@layout/fragment_balance">
+        <action
+            android:id="@+id/action_balanceFragment_to_transactionFragment"
+            app:destination="@id/transactionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transactionFragment"
+        android:name="net.taler.cashier.withdraw.TransactionFragment"
+        android:label="fragment_transaction"
+        tools:layout="@layout/fragment_transaction">
+        <action
+            android:id="@+id/action_transactionFragment_to_errorFragment"
+            app:destination="@id/errorFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/balanceFragment" />
+        <action
+            android:id="@+id/action_transactionFragment_to_balanceFragment"
+            app:destination="@id/balanceFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/balanceFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/errorFragment"
+        android:name="net.taler.cashier.withdraw.ErrorFragment"
+        tools:layout="@layout/fragment_error" />
+
+    <action
+        android:id="@+id/action_global_configFragment"
+        app:destination="@id/configFragment"
+        app:launchSingleTop="true" />
+
+</navigation>

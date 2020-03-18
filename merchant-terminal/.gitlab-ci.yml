@@ -1,0 +1,36 @@
+merchant_test:
+  stage: test
+  only:
+    changes:
+      - "merchant-terminal"
+  script: ./gradlew :merchant-terminal:lint :merchant-terminal:assembleRelease
+
+merchant_deploy_nightly:
+  stage: deploy
+  only:
+    refs:
+      - master
+    changes:
+      - "merchant-terminal"
+  script:
+    # Ensure that key exists
+    - test -z "$DEBUG_KEYSTORE" && exit 0
+    # Rename nightly app
+    - sed -i
+      's,<string name="app_name">.*</string>,<string name="app_name">Merchant PoS Nightly</string>,'
+      merchant-terminal/src/main/res/values*/strings.xml
+    # Set time-based version code
+    - export versionCode=$(date '+%s')
+    - sed -i "s,^\(\s*versionCode\) *[0-9].*,\1 $versionCode," merchant-terminal/build.gradle
+    # Add commit to version name
+    - export versionName=$(git rev-parse --short=7 HEAD)
+    - sed -i "s,^\(\s*versionName\ *\"[0-9].*\)\",\1 ($versionName)\"," merchant-terminal/build.gradle
+    # Set nightly application ID
+    - sed -i "s,^\(\s*applicationId\) \"*[a-z\.].*\",\1 \"net.taler.merchantpos.nightly\"," merchant-terminal/build.gradle
+    # Build the APK
+    - ./gradlew :merchant-terminal:assembleDebug
+    # START only needed while patch not accepted/released upstream
+    - apt update && apt install patch
+    - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
+    # END
+    - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v

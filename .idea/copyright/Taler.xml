@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="keyword" value="(Copyright|Public License)" />
+    <option name="notice" value="This file is part of GNU Taler&#10;(C) &amp;#36;today.year Taler Systems S.A.&#10;&#10;GNU Taler is free software; you can redistribute it and/or modify it under the&#10;terms of the GNU General Public License as published by the Free Software&#10;Foundation; either version 3, or (at your option) any later version.&#10;&#10;GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY&#10;WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR&#10;A PARTICULAR PURPOSE.  See the GNU General Public License for more details.&#10;&#10;You should have received a copy of the GNU General Public License along with&#10;GNU Taler; see the file COPYING.  If not, see &lt;http://www.gnu.org/licenses/&gt;" />
+    <option name="myName" value="Taler" />
+  </copyright>
+</component>
