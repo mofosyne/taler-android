@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier.withdraw
+package net.taler.common
 
 import android.graphics.Bitmap
 import android.graphics.Bitmap.Config.RGB_565

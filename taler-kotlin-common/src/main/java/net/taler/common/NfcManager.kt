@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier.withdraw
+package net.taler.common
 
 import android.app.Activity
 import android.content.Context
@@ -25,7 +25,7 @@ import android.nfc.NfcAdapter.getDefaultAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
-import net.taler.cashier.Utils.hexStringToByteArray
+import net.taler.common.ByteArrayUtils.hexStringToByteArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.net.URL

@@ -34,6 +34,7 @@ import net.taler.cashier.HttpJsonResult.Error
 import net.taler.cashier.HttpJsonResult.Success
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
+import net.taler.common.QrCodeManager.makeQrCode
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -95,7 +96,7 @@ class WithdrawManager(
                     val withdrawResult = WithdrawResult.Success(
                         id = result.json.getString("withdrawal_id"),
                         talerUri = talerUri,
-                        qrCode = QrCodeManager.makeQrCode(talerUri)
+                        qrCode = makeQrCode(talerUri)
                     )
                     mWithdrawResult.postValue(withdrawResult)
                     timer.start()

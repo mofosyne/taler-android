@@ -14,66 +14,28 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier
+package net.taler.common
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
-import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
-import android.os.Build.VERSION.SDK_INT
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
-
-object Utils {
-
-    private const val HEX_CHARS = "0123456789ABCDEF"
-
-    fun hexStringToByteArray(data: String): ByteArray {
-        val result = ByteArray(data.length / 2)
-
-        for (i in data.indices step 2) {
-            val firstIndex = HEX_CHARS.indexOf(data[i])
-            val secondIndex = HEX_CHARS.indexOf(data[i + 1])
-
-            val octet = firstIndex.shl(4).or(secondIndex)
-            result[i.shr(1)] = octet.toByte()
-        }
-        return result
-    }
-
-
-    private val HEX_CHARS_ARRAY = HEX_CHARS.toCharArray()
-
-    @Suppress("unused")
-    fun toHex(byteArray: ByteArray): String {
-        val result = StringBuffer()
-
-        byteArray.forEach {
-            val octet = it.toInt()
-            val firstIndex = (octet and 0xF0).ushr(4)
-            val secondIndex = octet and 0x0F
-            result.append(HEX_CHARS_ARRAY[firstIndex])
-            result.append(HEX_CHARS_ARRAY[secondIndex])
-        }
-        return result.toString()
-    }
-
-}
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
-    if (visibility == VISIBLE) return
+    if (visibility == View.VISIBLE) return
     alpha = 0f
-    visibility = VISIBLE
+    visibility = View.VISIBLE
     animate().alpha(1f).withEndAction {
         endAction.invoke()
     }.start()
 }
 
 fun View.fadeOut(endAction: () -> Unit = {}) {
-    if (visibility == INVISIBLE) return
+    if (visibility == View.INVISIBLE) return
     animate().alpha(0f).withEndAction {
-        visibility = INVISIBLE
+        visibility = View.INVISIBLE
         alpha = 1f
         endAction.invoke()
     }.start()
@@ -81,11 +43,11 @@ fun View.fadeOut(endAction: () -> Unit = {}) {
 
 fun Context.isOnline(): Boolean {
     val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    return if (SDK_INT < 29) {
+    return if (Build.VERSION.SDK_INT < 29) {
         @Suppress("DEPRECATION")
         cm.activeNetworkInfo?.isConnected == true
     } else {
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
-        capabilities.hasCapability(NET_CAPABILITY_INTERNET)
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 }

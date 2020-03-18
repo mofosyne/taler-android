@@ -15,3 +15,4 @@
  */
 
 include ':akono', ':cashier', ':merchant-terminal', ':wallet'
+include ':taler-kotlin-common'

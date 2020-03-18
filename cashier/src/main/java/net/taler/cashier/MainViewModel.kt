@@ -32,9 +32,10 @@ import androidx.security.crypto.MasterKeys
 import androidx.security.crypto.MasterKeys.AES256_GCM_SPEC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.taler.cashier.Amount.Companion.fromStringSigned
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.withdraw.WithdrawManager
+import net.taler.common.Amount.Companion.fromStringSigned
+import net.taler.common.isOnline
 
 private val TAG = MainViewModel::class.java.simpleName
 

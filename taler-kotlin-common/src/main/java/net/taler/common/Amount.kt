@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier
+package net.taler.common
 
 data class Amount(val currency: String, val amount: String) {
 

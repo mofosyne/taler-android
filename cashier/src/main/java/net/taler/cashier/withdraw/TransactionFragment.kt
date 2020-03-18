@@ -30,13 +30,14 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_transaction.*
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
-import net.taler.cashier.fadeIn
-import net.taler.cashier.fadeOut
 import net.taler.cashier.withdraw.TransactionFragmentDirections.Companion.actionTransactionFragmentToBalanceFragment
 import net.taler.cashier.withdraw.TransactionFragmentDirections.Companion.actionTransactionFragmentToErrorFragment
 import net.taler.cashier.withdraw.WithdrawResult.Error
 import net.taler.cashier.withdraw.WithdrawResult.InsufficientBalance
 import net.taler.cashier.withdraw.WithdrawResult.Success
+import net.taler.common.NfcManager
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 
 class TransactionFragment : Fragment() {
 

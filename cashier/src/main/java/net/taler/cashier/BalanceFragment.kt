@@ -34,6 +34,9 @@ import kotlinx.android.synthetic.main.fragment_balance.*
 import net.taler.cashier.BalanceFragmentDirections.Companion.actionBalanceFragmentToTransactionFragment
 import net.taler.cashier.withdraw.LastTransaction
 import net.taler.cashier.withdraw.WithdrawStatus
+import net.taler.common.Amount
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 
 sealed class BalanceResult {
     object Error : BalanceResult()
