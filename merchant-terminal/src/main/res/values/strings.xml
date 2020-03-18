@@ -46,7 +46,6 @@
     <string name="payment_canceled">Payment Canceled</string>
 
     <string name="history_label">Payment History</string>
-    <string name="history_received_at">Received at</string>
     <string name="history_ref_no">Ref. No: %s</string>
     <string name="history_refund">Refund Order</string>
     <string name="refund_amount">Amount</string>

@@ -31,7 +31,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import kotlinx.android.synthetic.main.fragment_show_balance.*
 import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel

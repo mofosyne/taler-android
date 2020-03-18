@@ -6,6 +6,10 @@ cashier_test:
     changes:
       - "cashier"
   script: ./gradlew :cashier:lint :cashier:assembleRelease
+  artifacts:
+    paths:
+      - cashier/build/reports/lint-results.html
+    expire_in: 1 week
 
 cashier_deploy_nightly:
   stage: deploy
@@ -14,6 +18,7 @@ cashier_deploy_nightly:
       - master
     changes:
       - "cashier"
+  needs: ["cashier_test"]
   script:
     # Ensure that key exists
     - test -z "$DEBUG_KEYSTORE" && exit 0

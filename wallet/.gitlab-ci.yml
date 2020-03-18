@@ -11,6 +11,10 @@ wallet_test:
   stage: test
   extends: .binary_deps
   script: ./gradlew :wallet:lint :wallet:assembleRelease
+  artifacts:
+    paths:
+      - wallet/build/reports/lint-results.html
+    expire_in: 1 week
 
 wallet_deploy_nightly:
   stage: deploy
@@ -18,6 +22,7 @@ wallet_deploy_nightly:
   only:
     refs:
       - master
+  needs: ["wallet_test"]
   script:
     # Ensure that key exists
     - test -z "$DEBUG_KEYSTORE" && exit 0

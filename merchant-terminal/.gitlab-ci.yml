@@ -4,6 +4,10 @@ merchant_test:
     changes:
       - "merchant-terminal"
   script: ./gradlew :merchant-terminal:lint :merchant-terminal:assembleRelease
+  artifacts:
+    paths:
+      - merchant-terminal/build/reports/lint-results.html
+    expire_in: 1 week
 
 merchant_deploy_nightly:
   stage: deploy
@@ -12,6 +16,7 @@ merchant_deploy_nightly:
       - master
     changes:
       - "merchant-terminal"
+  needs: ["merchant_test"]
   script:
     # Ensure that key exists
     - test -z "$DEBUG_KEYSTORE" && exit 0

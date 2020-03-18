@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Taler Cashier</string>
 
     <string name="config_bank_url">Bank API address</string>
@@ -9,7 +9,7 @@
     <string name="config_username_error">Please enter your username</string>
     <string name="config_error">Error retrieving configuration</string>
     <string name="config_error_auth">Invalid username or password</string>
-    <string name="config_demo_hint">For testing, you can <![CDATA[<a href="%s">create a test account at the demo bank</a>]]>.</string>
+    <string name="config_demo_hint" tools:ignore="StringFormatInvalid">For testing, you can <![CDATA[<a href="%s">create a test account at the demo bank</a>]]>.</string>
 
     <string name="balance_current_label">Current balance</string>
     <string name="balance_error">ERROR</string>

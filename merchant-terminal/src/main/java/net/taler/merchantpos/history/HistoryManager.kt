@@ -16,12 +16,10 @@
 
 package net.taler.merchantpos.history
 
-import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request.Method.GET
-import com.android.volley.Request.Method.POST
 import com.android.volley.RequestQueue
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
