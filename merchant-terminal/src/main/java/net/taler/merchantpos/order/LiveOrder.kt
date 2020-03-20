@@ -20,6 +20,7 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import net.taler.common.Amount
 import net.taler.common.CombinedLiveData
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
@@ -31,7 +32,7 @@ internal enum class RestartState { ENABLED, DISABLED, UNDO }
 
 internal interface LiveOrder {
     val order: LiveData<Order>
-    val orderTotal: LiveData<Double>
+    val orderTotal: LiveData<Amount>
     val restartState: LiveData<RestartState>
     val modifyOrderAllowed: LiveData<Boolean>
     val lastAddedProduct: ConfigProduct?
@@ -44,12 +45,13 @@ internal interface LiveOrder {
 
 internal class MutableLiveOrder(
     val id: Int,
+    private val currency: String,
     private val productsByCategory: HashMap<Category, ArrayList<ConfigProduct>>
 ) : LiveOrder {
     private val availableCategories: Map<Int, Category>
         get() = productsByCategory.keys.map { it.id to it }.toMap()
-    override val order: MutableLiveData<Order> = MutableLiveData(Order(id, availableCategories))
-    override val orderTotal: LiveData<Double> = Transformations.map(order) { it.total }
+    override val order: MutableLiveData<Order> = MutableLiveData(Order(id, currency, availableCategories))
+    override val orderTotal: LiveData<Amount> = Transformations.map(order) { it.total }
     override val restartState = MutableLiveData(DISABLED)
     private val selectedOrderLine = MutableLiveData<ConfigProduct>()
     override val selectedProductKey: String?
@@ -86,7 +88,7 @@ internal class MutableLiveOrder(
             undoOrder = null
         } else {
             undoOrder = order.value
-            order.value = Order(id, availableCategories)
+            order.value = Order(id, currency, availableCategories)
             restartState.value = UNDO
         }
     }

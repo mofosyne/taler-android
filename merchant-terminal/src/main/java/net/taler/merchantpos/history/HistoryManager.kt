@@ -42,7 +42,7 @@ data class HistoryItem(
     val timestamp: Timestamp
 ) {
     @get:JsonIgnore
-    val amount: Amount by lazy { Amount.fromString(amountStr) }
+    val amount: Amount by lazy { Amount.fromJSONString(amountStr) }
 
     @get:JsonIgnore
     val time = timestamp.ms

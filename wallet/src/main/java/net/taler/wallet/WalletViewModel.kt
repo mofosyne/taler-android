@@ -26,6 +26,7 @@ import androidx.lifecycle.distinctUntilChanged
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import net.taler.common.Amount
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.HistoryManager
 import net.taler.wallet.payment.PaymentManager
@@ -90,10 +91,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
             for (currency in currencyList) {
                 val jsonAmount = byCurrency.getJSONObject(currency)
                     .getJSONObject("available")
-                val amount = Amount.fromJson(jsonAmount)
+                val amount = Amount.fromJsonObject(jsonAmount)
                 val jsonAmountIncoming = byCurrency.getJSONObject(currency)
                     .getJSONObject("pendingIncoming")
-                val amountIncoming = Amount.fromJson(jsonAmountIncoming)
+                val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
                 balanceList.add(BalanceItem(amount, amountIncoming))
             }
             mBalances.postValue(balanceList)

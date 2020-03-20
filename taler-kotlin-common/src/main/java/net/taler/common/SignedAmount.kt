@@ -14,20 +14,27 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.common
 
-import org.junit.Test
+import android.annotation.SuppressLint
 
-import org.junit.Assert.*
+data class SignedAmount(
+    val positive: Boolean,
+    val amount: Amount
+) {
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
-class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    companion object {
+        @Throws(AmountParserException::class)
+        @SuppressLint("CheckedExceptions")
+        fun fromJSONString(str: String): SignedAmount = when (str.substring(0, 1)) {
+            "-" -> SignedAmount(false, Amount.fromJSONString(str.substring(1)))
+            "+" -> SignedAmount(true, Amount.fromJSONString(str.substring(1)))
+            else -> SignedAmount(true, Amount.fromJSONString(str))
+        }
     }
+
+    override fun toString(): String {
+        return if (positive) "$amount" else "-$amount"
+    }
+
 }

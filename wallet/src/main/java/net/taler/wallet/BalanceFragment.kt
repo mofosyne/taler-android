@@ -177,7 +177,7 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
 
         fun bind(item: BalanceItem) {
             currencyView.text = item.available.currency
-            amountView.text = item.available.amount
+            amountView.text = item.available.amountStr
 
             val amountIncoming = item.pendingIncoming
             if (amountIncoming.isZero()) {
@@ -186,11 +186,8 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
             } else {
                 balanceInboundAmount.visibility = VISIBLE
                 balanceInboundLabel.visibility = VISIBLE
-                balanceInboundAmount.text = v.context.getString(
-                    R.string.balances_inbound_amount,
-                    amountIncoming.amount,
-                    amountIncoming.currency
-                )
+                balanceInboundAmount.text =
+                    v.context.getString(R.string.balances_inbound_amount, amountIncoming)
             }
         }
     }

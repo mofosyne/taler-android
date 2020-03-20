@@ -60,4 +60,9 @@ dependencies {
 
     // JSON parsing and serialization
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2"
+
+    lintChecks 'com.github.thirdegg:lint-rules:0.0.4-alpha'
+
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.json:json:20190722'
 }

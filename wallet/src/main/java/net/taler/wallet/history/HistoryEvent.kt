@@ -29,7 +29,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
-import net.taler.wallet.ParsedAmount.Companion.parseAmount
+import net.taler.common.Amount
+import net.taler.common.Timestamp
 import net.taler.wallet.R
 import org.json.JSONObject
 
@@ -69,13 +70,6 @@ enum class RefreshReason {
     @Suppress("unused")
     BACKUP_RESTORED
 }
-
-
-@JsonInclude(NON_EMPTY)
-class Timestamp(
-    @JsonProperty("t_ms")
-    val ms: Long
-)
 
 @JsonInclude(NON_EMPTY)
 class ReserveShortInfo(
@@ -181,12 +175,12 @@ class ReserveBalanceUpdatedEvent(
     /**
      * Amount currently left in the reserve.
      */
-    val amountReserveBalance: String,
+    val amountReserveBalance: Amount,
     /**
      * Amount we expected to be in the reserve at that time,
      * considering ongoing withdrawals from that reserve.
      */
-    val amountExpected: String
+    val amountExpected: Amount
 ) : HistoryEvent(timestamp) {
     override val title = R.string.history_event_reserve_balance_updated
 }
@@ -208,11 +202,11 @@ class HistoryWithdrawnEvent(
      * Amount that has been subtracted from the reserve's balance
      * for this withdrawal.
      */
-    val amountWithdrawnRaw: String,
+    val amountWithdrawnRaw: Amount,
     /**
      * Amount that actually was added to the wallet's balance.
      */
-    val amountWithdrawnEffective: String
+    val amountWithdrawnEffective: Amount
 ) : HistoryEvent(timestamp) {
     override val layout = R.layout.history_receive
     override val title = R.string.history_event_withdrawn
@@ -263,7 +257,7 @@ class HistoryPaymentSentEvent(
     /**
      * Amount that was paid, including deposit and wire fees.
      */
-    val amountPaidWithFees: String,
+    val amountPaidWithFees: Amount,
     /**
      * Session ID that the payment was (re-)submitted under.
      */
@@ -285,7 +279,7 @@ class HistoryPaymentAbortedEvent(
     /**
      * Amount that was lost due to refund and refreshing fees.
      */
-    val amountLost: String
+    val amountLost: Amount
 ) : HistoryEvent(timestamp) {
     override val layout = R.layout.history_payment
     override val title = R.string.history_event_payment_aborted
@@ -300,11 +294,11 @@ class HistoryRefreshedEvent(
      * Amount that is now available again because it has
      * been refreshed.
      */
-    val amountRefreshedEffective: String,
+    val amountRefreshedEffective: Amount,
     /**
      * Amount that we spent for refreshing.
      */
-    val amountRefreshedRaw: String,
+    val amountRefreshedRaw: Amount,
     /**
      * Why was the refreshing done?
      */
@@ -321,8 +315,7 @@ class HistoryRefreshedEvent(
     override val layout = R.layout.history_payment
     override val icon = R.drawable.history_refresh
     override val title = R.string.history_event_refreshed
-    override val showToUser =
-        !(parseAmount(amountRefreshedRaw) - parseAmount(amountRefreshedEffective)).isZero()
+    override val showToUser = !(amountRefreshedRaw - amountRefreshedEffective).isZero()
 }
 
 @JsonTypeName("order-redirected")
@@ -352,7 +345,7 @@ class HistoryTipAcceptedEvent(
     /**
      * Raw amount of the tip, without extra fees that apply.
      */
-    val tipRaw: String
+    val tipRaw: Amount
 ) : HistoryEvent(timestamp) {
     override val icon = R.drawable.history_tip_accepted
     override val title = R.string.history_event_tip_accepted
@@ -370,7 +363,7 @@ class HistoryTipDeclinedEvent(
     /**
      * Raw amount of the tip, without extra fees that apply.
      */
-    val tipAmount: String
+    val tipAmount: Amount
 ) : HistoryEvent(timestamp) {
     override val icon = R.drawable.history_tip_declined
     override val title = R.string.history_event_tip_declined
@@ -391,15 +384,15 @@ class HistoryRefundedEvent(
      * Part of the refund that couldn't be applied because
      * the refund permissions were expired.
      */
-    val amountRefundedInvalid: String,
+    val amountRefundedInvalid: Amount,
     /**
      * Amount that has been refunded by the merchant.
      */
-    val amountRefundedRaw: String,
+    val amountRefundedRaw: Amount,
     /**
      * Amount will be added to the wallet's balance after fees and refreshing.
      */
-    val amountRefundedEffective: String
+    val amountRefundedEffective: Amount
 ) : HistoryEvent(timestamp) {
     override val icon = R.drawable.history_refund
     override val title = R.string.history_event_refund
@@ -444,7 +437,7 @@ data class OrderShortInfo(
     /**
      * Amount that must be paid for the contract.
      */
-    val amount: String,
+    val amount: Amount,
     /**
      * Summary of the proposal, given by the merchant.
      */

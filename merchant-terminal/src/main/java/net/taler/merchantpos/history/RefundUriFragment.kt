@@ -16,7 +16,6 @@
 
 package net.taler.merchantpos.history
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -53,8 +52,7 @@ class RefundUriFragment : Fragment() {
             if (hasNfc(requireContext())) R.string.refund_intro_nfc else R.string.refund_intro
         refundIntroView.setText(introRes)
 
-        @SuppressLint("SetTextI18n")
-        refundAmountView.text = "${result.amount} ${result.item.amount.currency}"
+        refundAmountView.text = result.amount.toString()
 
         refundRefView.text =
             getString(R.string.refund_order_ref, result.item.orderId, result.reason)

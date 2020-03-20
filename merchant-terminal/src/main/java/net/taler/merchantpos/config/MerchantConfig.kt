@@ -68,14 +68,15 @@ data class ConfigProduct(
     override val productId: String?,
     override val description: String,
     override val descriptionI18n: Map<String, String>?,
-    override val price: String,
+    override val price: Amount,
     override val location: String?,
     override val image: String?,
     val categories: List<Int>,
     @JsonIgnore
     val quantity: Int = 0
 ) : Product() {
-    val priceAsDouble by lazy { Amount.fromString(price).amount.toDouble() }
+    @get:JsonIgnore
+    val totalPrice by lazy { price * quantity }
 
     fun toContractProduct() = ContractProduct(
         productId = productId,

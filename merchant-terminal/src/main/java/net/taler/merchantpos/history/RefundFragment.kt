@@ -52,7 +52,7 @@ class RefundFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val item = refundManager.toBeRefunded ?: throw IllegalStateException()
-        amountInputView.setText(item.amount.amount)
+        amountInputView.setText(item.amount.toString())
         currencyView.text = item.amount.currency
         abortButton.setOnClickListener { findNavController().navigateUp() }
         refundButton.setOnClickListener { onRefundButtonClicked(item) }
@@ -64,8 +64,8 @@ class RefundFragment : Fragment() {
 
     private fun onRefundButtonClicked(item: HistoryItem) {
         val inputAmount = amountInputView.text.toString().toDouble()
-        if (inputAmount > item.amount.amount.toDouble()) {
-            amountView.error = getString(R.string.refund_error_max_amount, item.amount.amount)
+        if (inputAmount > item.amountStr.toDouble()) {  // TODO real Amount comparision
+            amountView.error = getString(R.string.refund_error_max_amount, item.amountStr)
             return
         }
         if (inputAmount <= 0.0) {

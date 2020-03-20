@@ -18,7 +18,7 @@ package net.taler.wallet.withdraw
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import net.taler.wallet.Amount
+import net.taler.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
@@ -124,7 +124,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
             }
             val wi = result.getJSONObject("bankWithdrawDetails")
             val suggestedExchange = wi.getString("suggestedExchange")
-            val amount = Amount.fromJson(wi.getJSONObject("amount"))
+            val amount = Amount.fromJsonObject(wi.getJSONObject("amount"))
 
             val ei = result.getJSONObject("exchangeWithdrawDetails")
             val termsOfServiceAccepted = ei.getBoolean("termsOfServiceAccepted")

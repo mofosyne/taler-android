@@ -75,9 +75,7 @@ class WithdrawManager(
     fun hasSufficientBalance(amount: Int): Boolean {
         val balanceResult = viewModel.balance.value
         if (balanceResult !is BalanceResult.Success) return false
-        val balanceStr = balanceResult.amount.amount
-        val balanceDouble = balanceStr.toDouble()
-        return amount <= balanceDouble
+        return balanceResult.amount.positive && amount <= balanceResult.amount.amount.value
     }
 
     @UiThread

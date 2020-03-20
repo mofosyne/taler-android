@@ -26,10 +26,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_review_exchange_tos.*
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
-import net.taler.wallet.fadeIn
-import net.taler.wallet.fadeOut
 
 class ReviewExchangeTosFragment : Fragment() {
 

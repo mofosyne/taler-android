@@ -18,11 +18,19 @@ package net.taler.common
 
 import androidx.annotation.RequiresApi
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.taler.common.TalerUtils.getLocalizedString
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ContractTerms(
+    val summary: String,
+    val products: List<ContractProduct>,
+    val amount: Amount
+)
 
 @JsonInclude(NON_NULL)
 abstract class Product {
@@ -32,7 +40,7 @@ abstract class Product {
 
     @get:JsonProperty("description_i18n")
     abstract val descriptionI18n: Map<String, String>?
-    abstract val price: String
+    abstract val price: Amount
 
     @get:JsonProperty("delivery_location")
     abstract val location: String?
@@ -48,11 +56,16 @@ data class ContractProduct(
     override val productId: String?,
     override val description: String,
     override val descriptionI18n: Map<String, String>?,
-    override val price: String,
+    override val price: Amount,
     override val location: String?,
     override val image: String?,
     val quantity: Int
-) : Product()
+) : Product() {
+    @get:JsonIgnore
+    val totalPrice: Amount by lazy {
+        price * quantity
+    }
+}
 
 @JsonInclude(NON_EMPTY)
 class Timestamp(

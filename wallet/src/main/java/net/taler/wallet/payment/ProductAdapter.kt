@@ -28,6 +28,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.common.ContractProduct
 import net.taler.wallet.R
 import net.taler.wallet.payment.ProductAdapter.ProductViewHolder
 
@@ -76,7 +77,7 @@ internal class ProductAdapter(private val listener: ProductImageClickListener) :
             } else {
                 image.visibility = VISIBLE
                 // product.image was validated before, so non-null below
-                val match = REGEX_PRODUCT_IMAGE.matchEntire(product.image)!!
+                val match = REGEX_PRODUCT_IMAGE.matchEntire(product.image!!)!!
                 val decodedString = Base64.decode(match.groups[2]!!.value, Base64.DEFAULT)
                 val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
                 image.setImageBitmap(bitmap)

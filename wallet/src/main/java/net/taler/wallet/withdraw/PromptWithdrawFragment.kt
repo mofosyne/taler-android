@@ -16,7 +16,6 @@
 
 package net.taler.wallet.withdraw
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,10 +25,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_prompt_withdraw.*
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
-import net.taler.wallet.fadeIn
-import net.taler.wallet.fadeOut
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
 import net.taler.wallet.withdraw.WithdrawStatus.TermsOfServiceReviewRequired
 import net.taler.wallet.withdraw.WithdrawStatus.Withdrawing
@@ -73,8 +72,7 @@ class PromptWithdrawFragment : Fragment() {
             progressBar.fadeOut()
 
             introView.fadeIn()
-            @SuppressLint("SetTextI18n")
-            withdrawAmountView.text = "${status.amount.amount} ${status.amount.currency}"
+            withdrawAmountView.text = status.amount.toString()
             withdrawAmountView.fadeIn()
             feeView.fadeIn()
 

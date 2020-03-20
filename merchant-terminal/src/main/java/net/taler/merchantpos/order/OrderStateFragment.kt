@@ -95,12 +95,11 @@ class OrderStateFragment : Fragment() {
             onOrderChanged(order, tracker)
         })
         liveOrder.orderTotal.observe(viewLifecycleOwner, Observer { orderTotal ->
-            if (orderTotal == 0.0) {
+            if (orderTotal.isZero()) {
                 totalView.fadeOut()
                 totalView.text = null
             } else {
-                val currency = viewModel.configManager.merchantConfig?.currency
-                totalView.text = getString(R.string.order_total, orderTotal, currency)
+                totalView.text = getString(R.string.order_total, orderTotal)
                 totalView.fadeIn()
             }
         })
@@ -184,7 +183,7 @@ private class OrderAdapter : Adapter<OrderViewHolder>() {
             v.isActivated = selected
             quantity.text = product.quantity.toString()
             name.text = product.localizedDescription
-            price.text = String.format("%.2f", product.priceAsDouble * product.quantity)
+            price.text = product.totalPrice.amountStr
         }
     }
 

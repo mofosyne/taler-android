@@ -38,9 +38,8 @@ import androidx.annotation.CallSuper
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.common.Amount
 import net.taler.wallet.BuildConfig
-import net.taler.wallet.ParsedAmount
-import net.taler.wallet.ParsedAmount.Companion.parseAmount
 import net.taler.wallet.R
 
 
@@ -119,7 +118,7 @@ internal class WalletHistoryAdapter(
             info.text = when (event) {
                 is ExchangeAddedEvent -> event.exchangeBaseUrl
                 is ExchangeUpdatedEvent -> event.exchangeBaseUrl
-                is ReserveBalanceUpdatedEvent -> parseAmount(event.amountReserveBalance).toString()
+                is ReserveBalanceUpdatedEvent -> event.amountReserveBalance.toString()
                 is HistoryPaymentSentEvent -> event.orderShortInfo.summary
                 is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
                 is HistoryOrderRefusedEvent -> event.orderShortInfo.summary
@@ -151,36 +150,30 @@ internal class WalletHistoryAdapter(
             title.text = getHostname(event.exchangeBaseUrl)
             summary.setText(event.title)
 
-            val parsedEffective = parseAmount(event.amountWithdrawnEffective)
-            val parsedRaw = parseAmount(event.amountWithdrawnRaw)
-            showAmounts(parsedEffective, parsedRaw)
+            showAmounts(event.amountWithdrawnEffective, event.amountWithdrawnRaw)
         }
 
         private fun bind(event: HistoryRefundedEvent) {
             title.text = event.orderShortInfo.summary
             summary.setText(event.title)
 
-            val parsedEffective = parseAmount(event.amountRefundedEffective)
-            val parsedRaw = parseAmount(event.amountRefundedRaw)
-            showAmounts(parsedEffective, parsedRaw)
+            showAmounts(event.amountRefundedEffective, event.amountRefundedRaw)
         }
 
         private fun bind(event: HistoryTipAcceptedEvent) {
             title.setText(event.title)
             summary.text = null
-            val amount = parseAmount(event.tipRaw)
-            showAmounts(amount, amount)
+            showAmounts(event.tipRaw, event.tipRaw)
         }
 
         private fun bind(event: HistoryTipDeclinedEvent) {
             title.setText(event.title)
             summary.text = null
-            val amount = parseAmount(event.tipAmount)
-            showAmounts(amount, amount)
+            showAmounts(event.tipAmount, event.tipAmount)
             amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
         }
 
-        private fun showAmounts(effective: ParsedAmount, raw: ParsedAmount) {
+        private fun showAmounts(effective: Amount, raw: Amount) {
             @SuppressLint("SetTextI18n")
             amountWithdrawn.text = "+$raw"
             val calculatedFee = raw - effective
@@ -220,19 +213,18 @@ internal class WalletHistoryAdapter(
         private fun bind(event: HistoryPaymentSentEvent) {
             title.text = event.orderShortInfo.summary
             @SuppressLint("SetTextI18n")
-            amountPaidWithFees.text = "-${parseAmount(event.amountPaidWithFees)}"
+            amountPaidWithFees.text = "-${event.amountPaidWithFees}"
         }
 
         private fun bind(event: HistoryPaymentAbortedEvent) {
             title.text = event.orderShortInfo.summary
             @SuppressLint("SetTextI18n")
-            amountPaidWithFees.text = "-${parseAmount(event.amountLost)}"
+            amountPaidWithFees.text = "-${event.amountLost}"
         }
 
         private fun bind(event: HistoryRefreshedEvent) {
             title.text = ""
-            val fee =
-                parseAmount(event.amountRefreshedRaw) - parseAmount(event.amountRefreshedEffective)
+            val fee = event.amountRefreshedRaw - event.amountRefreshedEffective
             @SuppressLint("SetTextI18n")
             if (fee.isZero()) amountPaidWithFees.text = null
             else amountPaidWithFees.text = "-$fee"

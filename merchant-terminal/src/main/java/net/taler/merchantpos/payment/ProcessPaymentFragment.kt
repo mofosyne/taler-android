@@ -16,7 +16,6 @@
 
 package net.taler.merchantpos.payment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -73,8 +72,7 @@ class ProcessPaymentFragment : Fragment() {
             return
         }
         payIntroView.fadeIn()
-        @SuppressLint("SetTextI18n")
-        amountView.text = "${payment.order.totalAsString} ${payment.currency}"
+        amountView.text = payment.order.total.toString()
         payment.orderId?.let {
             orderRefView.text = getString(R.string.payment_order_ref, it)
             orderRefView.fadeIn()

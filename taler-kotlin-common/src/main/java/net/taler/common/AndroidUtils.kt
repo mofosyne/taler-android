@@ -21,7 +21,6 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
-import android.text.format.DateUtils
 import android.text.format.DateUtils.DAY_IN_MILLIS
 import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
 import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
@@ -29,6 +28,8 @@ import android.text.format.DateUtils.FORMAT_NO_YEAR
 import android.text.format.DateUtils.FORMAT_SHOW_DATE
 import android.text.format.DateUtils.FORMAT_SHOW_TIME
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
+import android.text.format.DateUtils.formatDateTime
+import android.text.format.DateUtils.getRelativeTimeSpanString
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -78,6 +79,6 @@ fun Long.toRelativeTime(context: Context): CharSequence {
     val now = System.currentTimeMillis()
     return if (now - this > DAY_IN_MILLIS * 2) {
         val flags = FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
-        DateUtils.formatDateTime(context, this, flags)
-    } else DateUtils.getRelativeTimeSpanString(this, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+        formatDateTime(context, this, flags)
+    } else getRelativeTimeSpanString(this, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
 }

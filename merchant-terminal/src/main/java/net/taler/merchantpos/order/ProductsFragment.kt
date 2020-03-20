@@ -104,7 +104,7 @@ private class ProductAdapter(
 
         fun bind(product: ConfigProduct) {
             name.text = product.localizedDescription
-            price.text = product.priceAsDouble.toString()
+            price.text = product.price.amountStr
             v.setOnClickListener { listener.onProductSelected(product) }
         }
     }

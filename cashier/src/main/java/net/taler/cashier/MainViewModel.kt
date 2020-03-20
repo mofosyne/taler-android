@@ -34,7 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.withdraw.WithdrawManager
-import net.taler.common.Amount.Companion.fromStringSigned
+import net.taler.common.AmountParserException
+import net.taler.common.SignedAmount
 import net.taler.common.isOnline
 
 private val TAG = MainViewModel::class.java.simpleName
@@ -90,12 +91,16 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             val result = when (val response = makeJsonGetRequest(url, config)) {
                 is HttpJsonResult.Success -> {
                     val balance = response.json.getString("balance")
-                    val amount = fromStringSigned(balance)!!
-                    mCurrency.postValue(amount.currency)
-                    prefs.edit().putString(PREF_KEY_CURRENCY, amount.currency).apply()
-                    // save config
-                    saveConfig(config)
-                    ConfigResult(true)
+                    try {
+                        val amount = SignedAmount.fromJSONString(balance)
+                        mCurrency.postValue(amount.amount.currency)
+                        prefs.edit().putString(PREF_KEY_CURRENCY, amount.amount.currency).apply()
+                        // save config
+                        saveConfig(config)
+                        ConfigResult(true)
+                    } catch (e: AmountParserException) {
+                        ConfigResult(false)
+                    }
                 }
                 is HttpJsonResult.Error -> {
                     val authError = response.statusCode == 401
@@ -124,7 +129,11 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         val result = when (val response = makeJsonGetRequest(url, config)) {
             is HttpJsonResult.Success -> {
                 val balance = response.json.getString("balance")
-                fromStringSigned(balance)?.let { BalanceResult.Success(it) } ?: BalanceResult.Error
+                try {
+                    BalanceResult.Success(SignedAmount.fromJSONString(balance))
+                } catch (e: AmountParserException) {
+                    BalanceResult.Error
+                }
             }
             is HttpJsonResult.Error -> {
                 if (app.isOnline()) BalanceResult.Error

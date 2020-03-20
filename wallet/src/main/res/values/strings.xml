@@ -40,7 +40,7 @@
     <string name="aiddescription">my aid</string>
 
     <string name="balances_title">Balances</string>
-    <string name="balances_inbound_amount">+%1s %2s</string>
+    <string name="balances_inbound_amount">+%s</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 

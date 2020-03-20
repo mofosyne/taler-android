@@ -71,7 +71,7 @@ class PaymentManager(
         val merchantConfig = configManager.merchantConfig!!
 
         val currency = merchantConfig.currency!!
-        val amount = "$currency:${order.totalAsString}"
+        val amount = order.total.toJSONString()
         val summary = order.summary
         val summaryI18n = order.summaryI18n
 

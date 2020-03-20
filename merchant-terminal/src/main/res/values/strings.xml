@@ -9,7 +9,7 @@
 
     <string name="order_label_title">Order #%s</string>
     <!-- The first placeholder is the amount and the second the currency -->
-    <string name="order_total">Total: %1$.2f %2$s</string>
+    <string name="order_total">Total: %s</string>
     <string name="order_restart">Restart</string>
     <string name="order_undo">Undo</string>
     <string name="order_previous">Prev</string>

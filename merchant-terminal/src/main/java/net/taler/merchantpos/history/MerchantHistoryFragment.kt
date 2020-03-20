@@ -16,7 +16,6 @@
 
 package net.taler.merchantpos.history
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -148,8 +147,7 @@ private class HistoryItemAdapter(private val listener: RefundClickListener) :
         fun bind(item: HistoryItem) {
             orderSummaryView.text = item.summary
             val amount = item.amount
-            @SuppressLint("SetTextI18n")
-            orderAmountView.text = "${amount.amount} ${amount.currency}"
+            orderAmountView.text = amount.toString()
             orderIdView.text = v.context.getString(R.string.history_ref_no, item.orderId)
             orderTimeView.text = item.time.toRelativeTime(v.context)
             refundButton.setOnClickListener { listener.onRefundClicked(item) }

@@ -16,7 +16,6 @@
 
 package net.taler.cashier
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -34,14 +33,14 @@ import kotlinx.android.synthetic.main.fragment_balance.*
 import net.taler.cashier.BalanceFragmentDirections.Companion.actionBalanceFragmentToTransactionFragment
 import net.taler.cashier.withdraw.LastTransaction
 import net.taler.cashier.withdraw.WithdrawStatus
-import net.taler.common.Amount
+import net.taler.common.SignedAmount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 
 sealed class BalanceResult {
     object Error : BalanceResult()
     object Offline : BalanceResult()
-    class Success(val amount: Amount) : BalanceResult()
+    class Success(val amount: SignedAmount) : BalanceResult()
 }
 
 class BalanceFragment : Fragment() {
@@ -121,7 +120,7 @@ class BalanceFragment : Fragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun onBalanceUpdated(amount: Amount?, isOffline: Boolean = false) {
+    private fun onBalanceUpdated(amount: SignedAmount?, isOffline: Boolean = false) {
         val uiList = listOf(
             introView,
             button5, button10, button20, button50,
@@ -132,8 +131,7 @@ class BalanceFragment : Fragment() {
                 getString(if (isOffline) R.string.balance_offline else R.string.balance_error)
             uiList.forEach { it.fadeOut() }
         } else {
-            @SuppressLint("SetTextI18n")
-            balanceView.text = "${amount.amount} ${amount.currency}"
+            balanceView.text = amount.toString()
             uiList.forEach { it.fadeIn() }
         }
         progressBar.fadeOut()

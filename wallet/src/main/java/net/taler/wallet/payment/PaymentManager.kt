@@ -22,7 +22,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.wallet.Amount
+import net.taler.common.Amount
+import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
@@ -79,7 +80,7 @@ class PaymentManager(
         "payment-possible" -> PayStatus.Prepared(
             contractTerms = getContractTerms(json),
             proposalId = json.getString("proposalId"),
-            totalFees = Amount.fromJson(json.getJSONObject("totalFees"))
+            totalFees = Amount.fromJsonObject(json.getJSONObject("totalFees"))
         )
         "paid" -> PayStatus.AlreadyPaid(getContractTerms(json))
         "insufficient-balance" -> PayStatus.InsufficientBalance(getContractTerms(json))

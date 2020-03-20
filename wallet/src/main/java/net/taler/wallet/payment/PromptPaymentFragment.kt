@@ -16,7 +16,6 @@
 
 package net.taler.wallet.payment
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,11 +32,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager.beginDelayedTransition
 import kotlinx.android.synthetic.main.payment_bottom_bar.*
 import kotlinx.android.synthetic.main.payment_details.*
-import net.taler.wallet.Amount
+import net.taler.common.Amount
+import net.taler.common.ContractTerms
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
-import net.taler.wallet.fadeIn
-import net.taler.wallet.fadeOut
 
 /**
  * Show a payment and ask the user to accept/decline.
@@ -144,11 +144,9 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         adapter.setItems(contractTerms.products)
         if (contractTerms.products.size == 1) paymentManager.toggleDetailsShown()
         val amount = contractTerms.amount
-        @SuppressLint("SetTextI18n")
-        totalView.text = "${amount.amount} ${amount.currency}"
+        totalView.text = amount.toString()
         if (totalFees != null && !totalFees.isZero()) {
-            val fee = "${totalFees.amount} ${totalFees.currency}"
-            feeView.text = getString(R.string.payment_fee, fee)
+            feeView.text = getString(R.string.payment_fee, totalFees)
             feeView.fadeIn()
         } else {
             feeView.visibility = GONE
