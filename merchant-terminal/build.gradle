@@ -42,6 +42,9 @@ android {
     lintOptions {
         abortOnError true
         ignoreWarnings false
+        // TODO remove once com.google.android.material fixed this
+        //      https://github.com/material-components/material-components-android/issues/504
+        ignore "WrongConstant"
     }
 }
 
