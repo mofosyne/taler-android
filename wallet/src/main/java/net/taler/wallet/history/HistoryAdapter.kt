@@ -41,12 +41,13 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.Amount
 import net.taler.wallet.BuildConfig
 import net.taler.wallet.R
+import net.taler.wallet.history.HistoryAdapter.HistoryEventViewHolder
 
 
-internal class WalletHistoryAdapter(
+internal class HistoryAdapter(
     private val listener: OnEventClickListener,
     private var history: History = History()
-) : Adapter<WalletHistoryAdapter.HistoryEventViewHolder>() {
+) : Adapter<HistoryEventViewHolder>() {
 
     init {
         setHasStableIds(false)

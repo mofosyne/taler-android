@@ -37,7 +37,7 @@ import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentIntegrator.QR_CODE_TYPES
+import com.google.zxing.integration.android.IntentIntegrator.QR_CODE
 import kotlinx.android.synthetic.main.fragment_show_balance.*
 import net.taler.wallet.BalanceAdapter.BalanceViewHolder
 
@@ -92,7 +92,7 @@ class BalanceFragment : Fragment() {
                 setPrompt("")
                 setBeepEnabled(true)
                 setOrientationLocked(false)
-            }.initiateScan(QR_CODE_TYPES)
+            }.initiateScan(listOf(QR_CODE))
         }
     }
 

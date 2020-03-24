@@ -39,13 +39,13 @@ interface OnEventClickListener {
     fun onEventClicked(event: HistoryEvent)
 }
 
-class WalletHistoryFragment : Fragment(), OnEventClickListener {
+class HistoryFragment : Fragment(), OnEventClickListener {
 
     private val model: WalletViewModel by activityViewModels()
     private val historyManager by lazy { model.historyManager }
     private lateinit var showAllItem: MenuItem
     private var reloadHistoryItem: MenuItem? = null
-    private val historyAdapter = WalletHistoryAdapter(this)
+    private val historyAdapter = HistoryAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
