@@ -57,11 +57,11 @@ object HttpHelper {
     private val MEDIA_TYPE_JSON = MediaType.parse("$MIME_TYPE_JSON; charset=utf-8")
 
     @WorkerThread
-    fun makeJsonPostRequest(url: String, body: String, config: Config): HttpJsonResult {
+    fun makeJsonPostRequest(url: String, body: JSONObject, config: Config): HttpJsonResult {
         val request = Request.Builder()
             .addHeader("Accept", MIME_TYPE_JSON)
             .url(url)
-            .post(RequestBody.create(MEDIA_TYPE_JSON, body))
+            .post(RequestBody.create(MEDIA_TYPE_JSON, body.toString()))
             .build()
         val response = try {
             getHttpClient(config.username, config.password)

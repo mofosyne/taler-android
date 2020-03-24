@@ -54,7 +54,7 @@ class TransactionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         withdrawManager.withdrawAmount.observe(viewLifecycleOwner, Observer { amount ->
-            amountView.text = amount
+            amountView.text = amount?.toString()
         })
         withdrawManager.withdrawResult.observe(viewLifecycleOwner, Observer { result ->
             onWithdrawResultReceived(result)

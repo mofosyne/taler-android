@@ -64,7 +64,7 @@ data class Amount(
      * of 50_000_000 would correspond to 50 cents.
      */
     val fraction: Int
-) {
+) : Comparable<Amount> {
 
     companion object {
 
@@ -88,10 +88,14 @@ data class Amount(
         fun fromJSONString(str: String): Amount {
             val split = str.split(":")
             if (split.size != 2) throw AmountParserException("Invalid Amount Format")
-            // currency
-            val currency = checkCurrency(split[0])
+            return fromString(split[0], split[1])
+        }
+
+        @Throws(AmountParserException::class)
+        @SuppressLint("CheckedExceptions")
+        fun fromString(currency: String, str: String): Amount {
             // value
-            val valueSplit = split[1].split(".")
+            val valueSplit = str.split(".")
             val value = checkValue(valueSplit[0].toLongOrNull())
             // fraction
             val fraction: Int = if (valueSplit.size > 1) {
@@ -103,7 +107,7 @@ data class Amount(
                     ?.roundToInt()
                 checkFraction(fraction)
             } else 0
-            return Amount(currency, value, fraction)
+            return Amount(checkCurrency(currency), value, fraction)
         }
 
         @Throws(AmountParserException::class)
@@ -195,6 +199,19 @@ data class Amount(
 
     override fun toString(): String {
         return "$amountStr $currency"
+    }
+
+    override fun compareTo(other: Amount): Int {
+        check(currency == other.currency) { "Can only compare amounts with the same currency" }
+        when {
+            value == other.value -> {
+                if (fraction < other.fraction) return -1
+                if (fraction > other.fraction) return 1
+                return 0
+            }
+            value < other.value -> return -1
+            else -> return 1
+        }
     }
 
 }

@@ -275,6 +275,27 @@ class AmountTest {
         assertFalse(Amount.fromJSONString("EUR:0001.0").isZero())
     }
 
+    @Test
+    fun `test comparision`() {
+        assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0"))
+        assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:0") < Amount.fromJSONString("EUR:0.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:0") < Amount.fromJSONString("EUR:1"))
+        assertTrue(Amount.fromJSONString("EUR:0") == Amount.fromJSONString("EUR:0"))
+        assertTrue(Amount.fromJSONString("EUR:42") == Amount.fromJSONString("EUR:42"))
+        assertTrue(Amount.fromJSONString("EUR:42.00000001") == Amount.fromJSONString("EUR:42.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:42.00000001") >= Amount.fromJSONString("EUR:42.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:42.00000002") >= Amount.fromJSONString("EUR:42.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:42.00000002") > Amount.fromJSONString("EUR:42.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:0.00000002") > Amount.fromJSONString("EUR:0.00000001"))
+        assertTrue(Amount.fromJSONString("EUR:0.00000001") > Amount.fromJSONString("EUR:0"))
+        assertTrue(Amount.fromJSONString("EUR:2") > Amount.fromJSONString("EUR:1"))
+
+        assertThrows<IllegalStateException>("could compare amounts with different currencies") {
+            Amount.fromJSONString("EUR:0.5") < Amount.fromJSONString("USD:0.50000001")
+        }
+    }
+
     private inline fun <reified T : Throwable> assertThrows(
         msg: String? = null,
         function: () -> Any

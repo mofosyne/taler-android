@@ -34,6 +34,7 @@ import net.taler.cashier.HttpJsonResult.Error
 import net.taler.cashier.HttpJsonResult.Success
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
+import net.taler.common.Amount
 import net.taler.common.QrCodeManager.makeQrCode
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit.MINUTES
@@ -59,8 +60,8 @@ class WithdrawManager(
 
     private var withdrawStatusCheck: Job? = null
 
-    private val mWithdrawAmount = MutableLiveData<String>()
-    val withdrawAmount: LiveData<String> = mWithdrawAmount
+    private val mWithdrawAmount = MutableLiveData<Amount>()
+    val withdrawAmount: LiveData<Amount> = mWithdrawAmount
 
     private val mWithdrawResult = MutableLiveData<WithdrawResult>()
     val withdrawResult: LiveData<WithdrawResult> = mWithdrawResult
@@ -72,22 +73,23 @@ class WithdrawManager(
     val lastTransaction: LiveData<LastTransaction> = mLastTransaction
 
     @UiThread
-    fun hasSufficientBalance(amount: Int): Boolean {
+    fun hasSufficientBalance(amount: Amount): Boolean {
         val balanceResult = viewModel.balance.value
         if (balanceResult !is BalanceResult.Success) return false
-        return balanceResult.amount.positive && amount <= balanceResult.amount.amount.value
+        return balanceResult.amount.positive && amount <= balanceResult.amount.amount
     }
 
     @UiThread
-    fun withdraw(amount: Int) {
-        check(amount > 0) { "Withdraw amount was <= 0" }
+    fun withdraw(amount: Amount) {
+        check(!amount.isZero()) { "Withdraw amount was 0" }
         check(currency != null) { "Currency is null" }
         mWithdrawResult.value = null
-        mWithdrawAmount.value = "$amount $currency"
+        mWithdrawAmount.value = amount
         scope.launch(Dispatchers.IO) {
             val url = "${config.bankUrl}/accounts/${config.username}/withdrawals"
             Log.d(TAG, "Starting withdrawal at $url")
-            val body = JSONObject(mapOf("amount" to "${currency}:${amount}")).toString()
+            val map = mapOf("amount" to amount.toJSONString())
+            val body = JSONObject(map)
             when (val result = makeJsonPostRequest(url, body, config)) {
                 is Success -> {
                     val talerUri = result.json.getString("taler_withdraw_uri")
@@ -178,7 +180,7 @@ class WithdrawManager(
     private fun abort(withdrawalId: String) = scope.launch(Dispatchers.IO) {
         val url = "${config.bankUrl}/accounts/${config.username}/withdrawals/${withdrawalId}/abort"
         Log.d(TAG, "Aborting withdrawal at $url")
-        makeJsonPostRequest(url, "", config)
+        makeJsonPostRequest(url, JSONObject(), config)
     }
 
     @UiThread
@@ -188,7 +190,7 @@ class WithdrawManager(
             val url =
                 "${config.bankUrl}/accounts/${config.username}/withdrawals/${withdrawalId}/confirm"
             Log.d(TAG, "Confirming withdrawal at $url")
-            when (val result = makeJsonPostRequest(url, "", config)) {
+            when (val result = makeJsonPostRequest(url, JSONObject(), config)) {
                 is Success -> {
                     // no-op still waiting for [timer] to confirm our confirmation
                 }
@@ -226,6 +228,6 @@ sealed class WithdrawStatus {
 }
 
 data class LastTransaction(
-    val withdrawAmount: String,
+    val withdrawAmount: Amount,
     val withdrawStatus: WithdrawStatus
 )

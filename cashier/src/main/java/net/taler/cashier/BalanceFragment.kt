@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_balance.*
 import net.taler.cashier.BalanceFragmentDirections.Companion.actionBalanceFragmentToTransactionFragment
 import net.taler.cashier.withdraw.LastTransaction
 import net.taler.cashier.withdraw.WithdrawStatus
+import net.taler.common.Amount
 import net.taler.common.SignedAmount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
@@ -142,14 +143,15 @@ class BalanceFragment : Fragment() {
         amountView.error = null
     }
 
-    private fun getAmountFromView(): Int {
+    private fun getAmountFromView(): Amount {
         val str = amountView.editText!!.text.toString()
-        if (str.isBlank()) return 0
-        return Integer.parseInt(str)
+        val currency = viewModel.currency.value!!
+        if (str.isBlank()) return Amount.zero(currency)
+        return Amount.fromString(currency, str)
     }
 
-    private fun onAmountConfirmed(amount: Int) {
-        if (amount <= 0) {
+    private fun onAmountConfirmed(amount: Amount) {
+        if (amount.isZero()) {
             amountView.error = getString(R.string.withdraw_error_zero)
         } else if (!withdrawManager.hasSufficientBalance(amount)) {
             amountView.error = getString(R.string.withdraw_error_insufficient_balance)

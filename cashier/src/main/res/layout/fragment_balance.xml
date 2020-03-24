@@ -185,7 +185,7 @@
             android:layout_height="wrap_content"
             android:ems="6"
             android:imeOptions="actionGo"
-            android:inputType="number"
+            android:inputType="number|numberDecimal"
             android:maxLength="4" />
 
     </com.google.android.material.textfield.TextInputLayout>
