@@ -24,6 +24,7 @@ import com.android.volley.Request.Method.POST
 import com.android.volley.RequestQueue
 import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
+import net.taler.common.Amount
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
 import org.json.JSONObject
@@ -34,7 +35,7 @@ sealed class RefundResult {
     class Success(
         val refundUri: String,
         val item: HistoryItem,
-        val amount: Double,
+        val amount: Amount,
         val reason: String
     ) : RefundResult()
 }
@@ -43,6 +44,10 @@ class RefundManager(
     private val configManager: ConfigManager,
     private val queue: RequestQueue
 ) {
+
+    companion object {
+        val TAG = RefundManager::class.java.simpleName
+    }
 
     var toBeRefunded: HistoryItem? = null
         private set
@@ -57,14 +62,15 @@ class RefundManager(
     }
 
     @UiThread
-    internal fun refund(item: HistoryItem, amount: Double, reason: String) {
+    internal fun refund(item: HistoryItem, amount: Amount, reason: String) {
         val merchantConfig = configManager.merchantConfig!!
         val refundRequest = mapOf(
             "order_id" to item.orderId,
-            "refund" to "${item.amount.currency}:$amount",
+            "refund" to amount.toJSONString(),
             "reason" to reason
         )
         val body = JSONObject(refundRequest)
+        Log.d(TAG, body.toString(4))
         val req = MerchantRequest(POST, merchantConfig, "refund", null, body,
             Listener { onRefundResponse(it, item, amount, reason) },
             ErrorListener { onRefundError() }
@@ -76,7 +82,7 @@ class RefundManager(
     private fun onRefundResponse(
         json: JSONObject,
         item: HistoryItem,
-        amount: Double,
+        amount: Amount,
         reason: String
     ) {
         if (!json.has("contract_terms")) {

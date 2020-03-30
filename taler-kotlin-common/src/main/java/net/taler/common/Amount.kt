@@ -17,30 +17,24 @@
 package net.taler.common
 
 import android.annotation.SuppressLint
+import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.json.JSONObject
 import java.lang.Math.floorDiv
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class AmountDeserializer : StdDeserializer<Amount>(Amount::class.java) {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Amount {
-        val node = p.codec.readValue(p, String::class.java)
-        try {
-            return Amount.fromJSONString(node)
-        } catch (e: AmountParserException) {
-            throw JsonMappingException(p, "Error parsing Amount", e)
-        }
-    }
-}
-
 class AmountParserException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 class AmountOverflowException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 
+@JsonSerialize(using = AmountSerializer::class)
 @JsonDeserialize(using = AmountDeserializer::class)
 data class Amount(
     /**
@@ -214,4 +208,21 @@ data class Amount(
         }
     }
 
+}
+
+class AmountSerializer : StdSerializer<Amount>(Amount::class.java) {
+    override fun serialize(value: Amount, gen: JsonGenerator, provider: SerializerProvider) {
+        gen.writeString(value.toJSONString())
+    }
+}
+
+class AmountDeserializer : StdDeserializer<Amount>(Amount::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Amount {
+        val node = p.codec.readValue(p, String::class.java)
+        try {
+            return Amount.fromJSONString(node)
+        } catch (e: AmountParserException) {
+            throw JsonMappingException(p, "Error parsing Amount", e)
+        }
+    }
 }

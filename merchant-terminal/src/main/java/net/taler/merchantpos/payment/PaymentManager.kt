@@ -71,9 +71,9 @@ class PaymentManager(
         val merchantConfig = configManager.merchantConfig!!
 
         val currency = merchantConfig.currency!!
-        val amount = order.total.toJSONString()
         val summary = order.summary
         val summaryI18n = order.summaryI18n
+//        val refundDeadline = Timestamp(System.currentTimeMillis() + HOURS.toMillis(2))
 
         mPayment.value = Payment(order, summary, currency)
 
@@ -82,12 +82,13 @@ class PaymentManager(
             "${FULFILLMENT_PREFIX}${URLEncoder.encode(summary, "UTF-8")}#$fulfillmentId"
         val body = JSONObject().apply {
             put("order", JSONObject().apply {
-                put("amount", amount)
+                put("amount", order.total.toJSONString())
                 put("summary", summary)
                 if (summaryI18n != null) put("summary_i18n", order.summaryI18n)
                 // fulfillment_url needs to be unique per order
                 put("fulfillment_url", fulfillmentUrl)
                 put("instance", "default")
+//                put("refund_deadline", JSONObject(mapper.writeValueAsString(refundDeadline)))
                 put("products", order.getProductsJson())
             })
         }

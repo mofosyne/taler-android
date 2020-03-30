@@ -28,6 +28,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_refund.*
+import net.taler.common.Amount
+import net.taler.common.AmountParserException
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
@@ -52,7 +54,7 @@ class RefundFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val item = refundManager.toBeRefunded ?: throw IllegalStateException()
-        amountInputView.setText(item.amount.toString())
+        amountInputView.setText(item.amount.amountStr)
         currencyView.text = item.amount.currency
         abortButton.setOnClickListener { findNavController().navigateUp() }
         refundButton.setOnClickListener { onRefundButtonClicked(item) }
@@ -63,12 +65,17 @@ class RefundFragment : Fragment() {
     }
 
     private fun onRefundButtonClicked(item: HistoryItem) {
-        val inputAmount = amountInputView.text.toString().toDouble()
-        if (inputAmount > item.amountStr.toDouble()) {  // TODO real Amount comparision
+        val inputAmount = try {
+            Amount.fromString(item.amount.currency, amountInputView.text.toString())
+        } catch (e: AmountParserException) {
+            amountView.error = getString(R.string.refund_error_invalid_amount)
+            return
+        }
+        if (inputAmount > item.amount) {
             amountView.error = getString(R.string.refund_error_max_amount, item.amountStr)
             return
         }
-        if (inputAmount <= 0.0) {
+        if (inputAmount.isZero()) {
             amountView.error = getString(R.string.refund_error_zero)
             return
         }

@@ -53,6 +53,7 @@
     <string name="refund_abort">Abort</string>
     <string name="refund_confirm">Give Refund</string>
     <string name="refund_error_max_amount">Greater than order amount of %s</string>
+    <string name="refund_error_invalid_amount">Invalid amount</string>
     <string name="refund_error_zero">Needs to be positive amount</string>
     <string name="refund_error_backend">Error processing refund</string>
     <string name="refund_error_deadline">Refund deadline has passed</string>
