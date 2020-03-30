@@ -38,8 +38,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
 import kotlinx.android.synthetic.main.activity_main.*
@@ -50,6 +51,7 @@ import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_CONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
+import net.taler.wallet.refund.RefundStatus
 import java.util.Locale.ROOT
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
@@ -150,8 +152,15 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 model.withdrawManager.getWithdrawalInfo(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://refund/") -> {
-                // TODO implement refunds
-                Snackbar.make(nav_view, "Refunds are not yet implemented", LENGTH_SHORT).show()
+                model.showProgressBar.value = true
+                model.refundManager.refund(url).observe(this, Observer { status ->
+                    model.showProgressBar.value = false
+                    val res = when (status) {
+                        is RefundStatus.Error -> R.string.refund_error
+                        is RefundStatus.Success -> R.string.refund_success
+                    }
+                    Snackbar.make(nav_view, res, LENGTH_LONG).show()
+                })
             }
             else -> {
                 Snackbar.make(

@@ -41,7 +41,7 @@ class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
         walletBackendApi.sendRequest("getPendingOperations", null) { isError, result ->
             activeGetPending--
             if (isError) {
-                Log.i(TAG, "got getPending error result")
+                Log.i(TAG, "got getPending error result: $result")
                 return@sendRequest
             }
             Log.i(TAG, "got getPending result")

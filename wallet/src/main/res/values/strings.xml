@@ -102,4 +102,7 @@
     <string name="settings_developer">Developer Settings (use with caution!)</string>
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
 
+    <string name="refund_error">Error processing refund</string>
+    <string name="refund_success">Refund received</string>
+
 </resources>

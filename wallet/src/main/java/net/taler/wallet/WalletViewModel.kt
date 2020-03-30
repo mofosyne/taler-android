@@ -31,6 +31,7 @@ import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.HistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
+import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
@@ -67,6 +68,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
     val historyManager = HistoryManager(walletBackendApi, mapper)
+    val refundManager = RefundManager(walletBackendApi)
 
     override fun onCleared() {
         walletBackendApi.destroy()
