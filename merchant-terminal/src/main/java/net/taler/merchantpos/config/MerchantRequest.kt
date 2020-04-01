@@ -32,7 +32,13 @@ class MerchantRequest(
     listener: Response.Listener<JSONObject>,
     errorListener: LogErrorListener
 ) :
-    JsonObjectRequest(method, merchantConfig.urlFor(endpoint, params), jsonRequest, listener, errorListener) {
+    JsonObjectRequest(
+        method,
+        merchantConfig.urlFor(endpoint, params),
+        jsonRequest,
+        listener,
+        errorListener
+    ) {
 
     override fun getHeaders(): MutableMap<String, String> {
         val headerMap = ArrayMap<String, String>()

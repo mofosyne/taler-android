@@ -50,7 +50,8 @@ internal class MutableLiveOrder(
 ) : LiveOrder {
     private val availableCategories: Map<Int, Category>
         get() = productsByCategory.keys.map { it.id to it }.toMap()
-    override val order: MutableLiveData<Order> = MutableLiveData(Order(id, currency, availableCategories))
+    override val order: MutableLiveData<Order> =
+        MutableLiveData(Order(id, currency, availableCategories))
     override val orderTotal: LiveData<Amount> = Transformations.map(order) { it.total }
     override val restartState = MutableLiveData(DISABLED)
     private val selectedOrderLine = MutableLiveData<ConfigProduct>()
