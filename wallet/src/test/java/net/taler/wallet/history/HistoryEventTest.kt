@@ -320,7 +320,10 @@ class HistoryEventTest {
           }""".trimIndent()
         val event: HistoryTipAcceptedEvent = mapper.readValue(json)
 
-        assertEquals("tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.tipId)
+        assertEquals(
+            "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            event.tipId
+        )
         assertEquals("KUDOS:4", event.tipRaw)
         assertEquals(timestamp, event.timestamp.ms)
     }
@@ -338,7 +341,10 @@ class HistoryEventTest {
           }""".trimIndent()
         val event: HistoryTipDeclinedEvent = mapper.readValue(json)
 
-        assertEquals("tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.tipId)
+        assertEquals(
+            "tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            event.tipId
+        )
         assertEquals("KUDOS:4", event.tipAmount)
         assertEquals(timestamp, event.timestamp.ms)
     }
@@ -426,14 +432,29 @@ class HistoryEventTest {
           }""".trimIndent()
         val event: HistoryOrderRedirectedEvent = mapper.readValue(json)
 
-        assertEquals("898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0", event.alreadyPaidOrderShortInfo.proposalId)
-        assertEquals("https://backend.demo.taler.net/public/instances/FSF/", event.alreadyPaidOrderShortInfo.merchantBaseUrl)
+        assertEquals(
+            "898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
+            event.alreadyPaidOrderShortInfo.proposalId
+        )
+        assertEquals(
+            "https://backend.demo.taler.net/public/instances/FSF/",
+            event.alreadyPaidOrderShortInfo.merchantBaseUrl
+        )
         assertEquals("2019.354-01P25CD66P8NG", event.alreadyPaidOrderShortInfo.orderId)
         assertEquals("KUDOS:0.5", event.alreadyPaidOrderShortInfo.amount)
-        assertEquals("Essay: 1. The Free Software Definition", event.alreadyPaidOrderShortInfo.summary)
+        assertEquals(
+            "Essay: 1. The Free Software Definition",
+            event.alreadyPaidOrderShortInfo.summary
+        )
 
-        assertEquals("621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G", event.newOrderShortInfo.proposalId)
-        assertEquals("https://backend.demo.taler.net/public/instances/FSF/", event.newOrderShortInfo.merchantBaseUrl)
+        assertEquals(
+            "621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G",
+            event.newOrderShortInfo.proposalId
+        )
+        assertEquals(
+            "https://backend.demo.taler.net/public/instances/FSF/",
+            event.newOrderShortInfo.merchantBaseUrl
+        )
         assertEquals("2019.364-01M4QH6KPMJY4", event.newOrderShortInfo.orderId)
         assertEquals("KUDOS:0.5", event.newOrderShortInfo.amount)
         assertEquals("Essay: 1. The Free Software Definition", event.newOrderShortInfo.summary)

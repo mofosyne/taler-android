@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -16,33 +15,33 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/pending_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="3dp"
-        android:padding="3dp"
-        android:background="@drawable/pending_border"
-        android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pending_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:background="@drawable/pending_border"
+    android:orientation="vertical"
+    android:padding="3dp">
 
     <TextView
-            android:id="@+id/pending_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            tools:text="My Pending Operation" />
+        android:id="@+id/pending_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        tools:text="My Pending Operation" />
 
     <Button
-            android:id="@+id/button_pending_action_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Cancel Operation" />
+        android:id="@+id/button_pending_action_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Cancel Operation" />
 
     <TextView
-            android:id="@+id/pending_subtext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            tools:text="My further details" />
+        android:id="@+id/pending_subtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        tools:text="My further details" />
 
 </LinearLayout>

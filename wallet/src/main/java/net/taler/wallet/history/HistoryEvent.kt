@@ -40,6 +40,7 @@ enum class ReserveType {
      */
     @JsonProperty("manual")
     MANUAL,
+
     /**
      * Withdrawn from a bank that has "tight" Taler integration
      */
@@ -55,17 +56,22 @@ enum class RefreshReason {
     @JsonProperty("manual")
     @Suppress("unused")
     MANUAL,
+
     @JsonProperty("pay")
     PAY,
+
     @JsonProperty("refund")
     @Suppress("unused")
     REFUND,
+
     @JsonProperty("abort-pay")
     @Suppress("unused")
     ABORT_PAY,
+
     @JsonProperty("recoup")
     @Suppress("unused")
     RECOUP,
+
     @JsonProperty("backup-restored")
     @Suppress("unused")
     BACKUP_RESTORED

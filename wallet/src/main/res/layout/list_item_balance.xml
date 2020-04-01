@@ -15,63 +15,63 @@
   -->
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/balance_amount"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_marginEnd="8dp"
+        android:textSize="40sp"
+        app:layout_constraintEnd_toStartOf="@+id/balance_currency"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="100.50" />
 
     <TextView
-            android:id="@+id/balance_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textSize="40sp"
-            app:layout_constraintEnd_toStartOf="@+id/balance_currency"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="100.50" />
+        android:id="@+id/balance_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balance_amount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/balance_amount"
+        app:layout_constraintTop_toTopOf="@+id/balance_amount"
+        tools:text="TESTKUDOS" />
 
     <TextView
-            android:id="@+id/balance_currency"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/balance_amount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/balance_amount"
-            app:layout_constraintTop_toTopOf="@+id/balance_amount"
-            tools:text="TESTKUDOS" />
+        android:id="@+id/balanceInboundAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/green"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/balanceInboundLabel"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balance_amount"
+        tools:text="+10 TESTKUDOS"
+        tools:visibility="visible" />
 
     <TextView
-            android:id="@+id/balanceInboundAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/green"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/balanceInboundLabel"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/balance_amount"
-            tools:text="+10 TESTKUDOS"
-            tools:visibility="visible" />
-
-    <TextView
-            android:id="@+id/balanceInboundLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/balances_inbound_label"
-            android:textColor="@color/green"
-            app:layout_constraintBottom_toBottomOf="@+id/balanceInboundAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/balanceInboundAmount"
-            app:layout_constraintTop_toTopOf="@+id/balanceInboundAmount"
-            tools:visibility="visible" />
+        android:id="@+id/balanceInboundLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/balances_inbound_label"
+        android:textColor="@color/green"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceInboundAmount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/balanceInboundAmount"
+        app:layout_constraintTop_toTopOf="@+id/balanceInboundAmount"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

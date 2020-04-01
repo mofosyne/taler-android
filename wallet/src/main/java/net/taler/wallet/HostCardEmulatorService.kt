@@ -60,7 +60,7 @@ fun readApduBodySize(stream: ByteArrayInputStream): Int {
 }
 
 
-class HostCardEmulatorService: HostApduService() {
+class HostCardEmulatorService : HostApduService() {
 
     val queuedRequests: ConcurrentLinkedDeque<String> = ConcurrentLinkedDeque()
     private lateinit var receiver: BroadcastReceiver
@@ -90,8 +90,10 @@ class HostCardEmulatorService: HostApduService() {
         }
     }
 
-    override fun processCommandApdu(commandApdu: ByteArray?,
-                                    extras: Bundle?): ByteArray {
+    override fun processCommandApdu(
+        commandApdu: ByteArray?,
+        extras: Bundle?
+    ): ByteArray {
 
         Log.d(TAG, "Processing command APDU")
 
@@ -123,7 +125,7 @@ class HostCardEmulatorService: HostApduService() {
         if (instruction == GET_INS) {
             val req = queuedRequests.poll()
             return if (req != null) {
-                Log.v(TAG,"sending tunnel request")
+                Log.v(TAG, "sending tunnel request")
                 makeApduSuccessResponse(req.toByteArray(Charsets.UTF_8))
             } else {
                 makeApduSuccessResponse(ByteArray(0))

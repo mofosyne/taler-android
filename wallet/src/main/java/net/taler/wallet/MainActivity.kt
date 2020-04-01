@@ -76,7 +76,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         setSupportActionBar(toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory, R.id.nav_pending_operations), drawer_layout
+            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory, R.id.nav_pending_operations),
+            drawer_layout
         )
         toolbar.setupWithNavController(nav, appBarConfiguration)
 

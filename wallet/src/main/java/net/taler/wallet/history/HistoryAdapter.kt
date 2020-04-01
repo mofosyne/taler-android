@@ -18,15 +18,6 @@ package net.taler.wallet.history
 
 import android.annotation.SuppressLint
 import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
-import android.text.format.DateUtils.DAY_IN_MILLIS
-import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
-import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
-import android.text.format.DateUtils.FORMAT_NO_YEAR
-import android.text.format.DateUtils.FORMAT_SHOW_DATE
-import android.text.format.DateUtils.FORMAT_SHOW_TIME
-import android.text.format.DateUtils.MINUTE_IN_MILLIS
-import android.text.format.DateUtils.formatDateTime
-import android.text.format.DateUtils.getRelativeTimeSpanString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -39,6 +30,7 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.Amount
+import net.taler.common.toRelativeTime
 import net.taler.wallet.BuildConfig
 import net.taler.wallet.R
 import net.taler.wallet.history.HistoryAdapter.HistoryEventViewHolder
@@ -92,20 +84,7 @@ internal class HistoryAdapter(
             icon.setImageResource(event.icon)
             if (event.title == 0) title.text = event::class.java.simpleName
             else title.setText(event.title)
-            time.text = getRelativeTime(event.timestamp.ms)
-        }
-
-        private fun getRelativeTime(timestamp: Long): CharSequence {
-            val now = System.currentTimeMillis()
-            return if (now - timestamp > DAY_IN_MILLIS * 2) {
-                formatDateTime(
-                    v.context,
-                    timestamp,
-                    FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
-                )
-            } else {
-                getRelativeTimeSpanString(timestamp, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
-            }
+            time.text = event.timestamp.ms.toRelativeTime(v.context)
         }
 
     }

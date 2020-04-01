@@ -71,8 +71,10 @@ class ResetDialogFragment : DialogFragment() {
             listener = context as ResetDialogEventListener
         } catch (e: ClassCastException) {
             // The activity doesn't implement the interface, throw exception
-            throw ClassCastException((context.toString() +
-                    " must implement ResetDialogEventListener"))
+            throw ClassCastException(
+                (context.toString() +
+                        " must implement ResetDialogEventListener")
+            )
         }
     }
 }

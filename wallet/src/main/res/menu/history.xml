@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -16,16 +15,16 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/show_all_history"
-            android:checkable="true"
-            android:checked="false"
-            android:title="@string/history_show_all"
-            app:showAsAction="never" />
+        android:id="@+id/show_all_history"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/history_show_all"
+        app:showAsAction="never" />
     <item
-            android:id="@+id/reload_history"
-            android:orderInCategory="100"
-            android:title="@string/history_reload"
-            app:showAsAction="never" />
+        android:id="@+id/reload_history"
+        android:orderInCategory="100"
+        android:title="@string/history_reload"
+        app:showAsAction="never" />
 </menu>
