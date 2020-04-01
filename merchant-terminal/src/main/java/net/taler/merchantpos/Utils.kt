@@ -16,11 +16,15 @@
 
 package net.taler.merchantpos
 
+import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
+import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_FADE
 import com.google.android.material.snackbar.BaseTransientBottomBar.Duration
 import com.google.android.material.snackbar.Snackbar.make
+import net.taler.merchantpos.MainActivity.Companion.TAG
 
 fun topSnackbar(view: View, text: CharSequence, @Duration duration: Int) {
     make(view, text, duration)
@@ -31,4 +35,15 @@ fun topSnackbar(view: View, text: CharSequence, @Duration duration: Int) {
 
 fun topSnackbar(view: View, @StringRes resId: Int, @Duration duration: Int) {
     topSnackbar(view, view.resources.getText(resId), duration)
+}
+
+class LogErrorListener(private val onError: (error: VolleyError) -> Any) :
+    Response.ErrorListener {
+
+    override fun onErrorResponse(error: VolleyError) {
+        val body = error.networkResponse.data?.let { String(it) }
+        Log.e(TAG, "$error $body")
+        onError.invoke(error)
+    }
+
 }

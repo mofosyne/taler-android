@@ -24,10 +24,11 @@ import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request.Method.GET
 import com.android.volley.Request.Method.POST
 import com.android.volley.RequestQueue
-import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
-import com.android.volley.VolleyError
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.taler.common.Timestamp
+import net.taler.common.now
+import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
 import net.taler.merchantpos.order.Order
@@ -73,11 +74,12 @@ class PaymentManager(
         val currency = merchantConfig.currency!!
         val summary = order.summary
         val summaryI18n = order.summaryI18n
-//        val refundDeadline = Timestamp(System.currentTimeMillis() + HOURS.toMillis(2))
+        val now = now()
+        val deadline = Timestamp(now + MINUTES.toMillis(120))
 
         mPayment.value = Payment(order, summary, currency)
 
-        val fulfillmentId = "${System.currentTimeMillis()}-${order.hashCode()}"
+        val fulfillmentId = "${now}-${order.hashCode()}"
         val fulfillmentUrl =
             "${FULFILLMENT_PREFIX}${URLEncoder.encode(summary, "UTF-8")}#$fulfillmentId"
         val body = JSONObject().apply {
@@ -88,7 +90,8 @@ class PaymentManager(
                 // fulfillment_url needs to be unique per order
                 put("fulfillment_url", fulfillmentUrl)
                 put("instance", "default")
-//                put("refund_deadline", JSONObject(mapper.writeValueAsString(refundDeadline)))
+                put("wire_transfer_deadline", JSONObject(mapper.writeValueAsString(deadline)))
+                put("refund_deadline", JSONObject(mapper.writeValueAsString(deadline)))
                 put("products", order.getProductsJson())
             })
         }
@@ -97,7 +100,7 @@ class PaymentManager(
 
         val req = MerchantRequest(POST, merchantConfig, "order", null, body,
             Listener { onOrderCreated(it) },
-            ErrorListener { onNetworkError(it) }
+            LogErrorListener { onNetworkError() }
         )
         queue.add(req)
     }
@@ -123,7 +126,7 @@ class PaymentManager(
 
         val req = MerchantRequest(GET, merchantConfig, "check-payment", params, null,
             Listener { onPaymentChecked(it) },
-            ErrorListener { onNetworkError(it) })
+            LogErrorListener { onNetworkError() })
         queue.add(req)
     }
 
@@ -141,8 +144,7 @@ class PaymentManager(
         }
     }
 
-    private fun onNetworkError(volleyError: VolleyError) {
-        Log.e(PaymentManager::class.java.simpleName, volleyError.toString())
+    private fun onNetworkError() {
         cancelPayment()
     }
 

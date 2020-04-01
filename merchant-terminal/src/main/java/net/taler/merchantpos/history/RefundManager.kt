@@ -22,9 +22,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request.Method.POST
 import com.android.volley.RequestQueue
-import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
+import com.android.volley.VolleyError
 import net.taler.common.Amount
+import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
 import org.json.JSONObject
@@ -32,6 +33,7 @@ import org.json.JSONObject
 sealed class RefundResult {
     object Error : RefundResult()
     object PastDeadline : RefundResult()
+    object AlreadyRefunded : RefundResult()
     class Success(
         val refundUri: String,
         val item: HistoryItem,
@@ -62,6 +64,12 @@ class RefundManager(
     }
 
     @UiThread
+    internal fun abortRefund() {
+        toBeRefunded = null
+        mRefundResult.value = null
+    }
+
+    @UiThread
     internal fun refund(item: HistoryItem, amount: Amount, reason: String) {
         val merchantConfig = configManager.merchantConfig!!
         val refundRequest = mapOf(
@@ -73,7 +81,7 @@ class RefundManager(
         Log.d(TAG, body.toString(4))
         val req = MerchantRequest(POST, merchantConfig, "refund", null, body,
             Listener { onRefundResponse(it, item, amount, reason) },
-            ErrorListener { onRefundError() }
+            LogErrorListener { onRefundError(it) }
         )
         queue.add(req)
     }
@@ -86,7 +94,7 @@ class RefundManager(
         reason: String
     ) {
         if (!json.has("contract_terms")) {
-            Log.e("TEST", "json: $json")
+            Log.e(TAG, "Contract terms missing: $json")
             onRefundError()
             return
         }
@@ -110,7 +118,15 @@ class RefundManager(
     }
 
     @UiThread
-    private fun onRefundError() {
+    private fun onRefundError(error: VolleyError? = null) {
+        val data = error?.networkResponse?.data
+        if (data != null) {
+            val json = JSONObject(String(data))
+            if (json.has("code") && json.getInt("code") == 2602) {
+                mRefundResult.value = RefundResult.AlreadyRefunded
+                return
+            }
+        }
         mRefundResult.value = RefundResult.Error
     }
 

@@ -26,7 +26,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request.Method.GET
 import com.android.volley.RequestQueue
-import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
@@ -35,6 +34,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.R
 import org.json.JSONObject
 
@@ -91,7 +91,7 @@ class ConfigManager(
 
         val stringRequest = object : JsonObjectRequest(GET, config.configUrl, null,
             Listener { onConfigReceived(it, configToSave) },
-            ErrorListener { onNetworkError(it) }
+            LogErrorListener { onNetworkError(it) }
         ) {
             // send basic auth header
             override fun getHeaders(): MutableMap<String, String> {
@@ -117,7 +117,7 @@ class ConfigManager(
         val params = mapOf("instance" to merchantConfig.instance)
         val req = MerchantRequest(GET, merchantConfig, "config", params, null,
             Listener { onMerchantConfigReceived(config, json, merchantConfig, it) },
-            ErrorListener { onNetworkError(it) }
+            LogErrorListener { onNetworkError(it) }
         )
         queue.add(req)
     }

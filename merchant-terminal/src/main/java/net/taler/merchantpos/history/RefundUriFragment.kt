@@ -58,6 +58,12 @@ class RefundUriFragment : Fragment() {
             getString(R.string.refund_order_ref, result.item.orderId, result.reason)
 
         cancelRefundButton.setOnClickListener { findNavController().navigateUp() }
+        completeButton.setOnClickListener { findNavController().navigateUp() }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        refundManager.abortRefund()
     }
 
 }

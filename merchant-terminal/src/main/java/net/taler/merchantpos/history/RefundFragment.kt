@@ -36,6 +36,7 @@ import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.history.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
+import net.taler.merchantpos.history.RefundResult.AlreadyRefunded
 import net.taler.merchantpos.history.RefundResult.Error
 import net.taler.merchantpos.history.RefundResult.PastDeadline
 import net.taler.merchantpos.history.RefundResult.Success
@@ -72,7 +73,7 @@ class RefundFragment : Fragment() {
             return
         }
         if (inputAmount > item.amount) {
-            amountView.error = getString(R.string.refund_error_max_amount, item.amountStr)
+            amountView.error = getString(R.string.refund_error_max_amount, item.amount.amountStr)
             return
         }
         if (inputAmount.isZero()) {
@@ -88,6 +89,7 @@ class RefundFragment : Fragment() {
     private fun onRefundResultChanged(result: RefundResult?): Any = when (result) {
         Error -> onError(R.string.refund_error_backend)
         PastDeadline -> onError(R.string.refund_error_deadline)
+        AlreadyRefunded -> onError(R.string.refund_error_already_refunded)
         is Success -> {
             progressBar.fadeOut()
             refundButton.fadeIn()

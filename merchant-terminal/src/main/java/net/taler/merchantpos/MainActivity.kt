@@ -47,6 +47,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     private var reallyExit = false
 
+    companion object {
+        val TAG = "taler-pos"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -36,8 +36,8 @@
     <string name="config_fetching_label">Fetching Configuration</string>
     <string name="config_docs">Please refer to <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">the documentation</a> for the configuration format.</string>
 
-    <string name="payment_intro_nfc">Please scan QR Code or use NFC to pay</string>
-    <string name="payment_intro">Please scan QR Code to pay</string>
+    <string name="payment_intro_nfc">Please let customer scan QR Code or use NFC to pay</string>
+    <string name="payment_intro">Please let customer scan QR Code to pay</string>
     <string name="payment_cancel">Cancel Payment</string>
     <string name="payment_received">Payment received</string>
     <string name="payment_back_button">Continue</string>
@@ -51,14 +51,16 @@
     <string name="refund_amount">Amount</string>
     <string name="refund_reason">Refund reason</string>
     <string name="refund_abort">Abort</string>
+    <string name="refund_complete">Received</string>
     <string name="refund_confirm">Give Refund</string>
     <string name="refund_error_max_amount">Greater than order amount of %s</string>
     <string name="refund_error_invalid_amount">Invalid amount</string>
     <string name="refund_error_zero">Needs to be positive amount</string>
     <string name="refund_error_backend">Error processing refund</string>
     <string name="refund_error_deadline">Refund deadline has passed</string>
-    <string name="refund_intro_nfc">Please scan QR Code or use NFC to give refund</string>
-    <string name="refund_intro">Please scan QR Code to give refund</string>
+    <string name="refund_error_already_refunded">Already refunded</string>
+    <string name="refund_intro_nfc">Please let customer scan QR Code or use NFC to give refund</string>
+    <string name="refund_intro">Please let customer scan QR Code to give refund</string>
     <string name="refund_order_ref">Order Reference: %1$s\n\n%2$s</string>
 
     <string name="error_network">Network Error</string>

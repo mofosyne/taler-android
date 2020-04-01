@@ -49,3 +49,10 @@ object TalerUtils {
     }
 
 }
+
+/**
+ * Returns the current time in milliseconds epoch rounded to nearest seconds.
+ */
+fun now(): Long {
+    return ((System.currentTimeMillis() + 500) / 1000) * 1000
+}

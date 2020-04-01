@@ -20,6 +20,7 @@ package net.taler.merchantpos.config
 import android.util.ArrayMap
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import net.taler.merchantpos.LogErrorListener
 import org.json.JSONObject
 
 class MerchantRequest(
@@ -29,7 +30,7 @@ class MerchantRequest(
     params: Map<String, String>?,
     jsonRequest: JSONObject?,
     listener: Response.Listener<JSONObject>,
-    errorListener: Response.ErrorListener
+    errorListener: LogErrorListener
 ) :
     JsonObjectRequest(method, merchantConfig.urlFor(endpoint, params), jsonRequest, listener, errorListener) {
 

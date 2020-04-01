@@ -21,7 +21,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request.Method.GET
 import com.android.volley.RequestQueue
-import com.android.volley.Response.ErrorListener
 import com.android.volley.Response.Listener
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -29,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.common.Amount
 import net.taler.common.Timestamp
+import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
 import org.json.JSONObject
@@ -36,14 +36,10 @@ import org.json.JSONObject
 data class HistoryItem(
     @JsonProperty("order_id")
     val orderId: String,
-    @JsonProperty("amount")
-    val amountStr: String,
+    val amount: Amount,
     val summary: String,
     val timestamp: Timestamp
 ) {
-    @get:JsonIgnore
-    val amount: Amount by lazy { Amount.fromJSONString(amountStr) }
-
     @get:JsonIgnore
     val time = timestamp.ms
 }
@@ -72,7 +68,7 @@ class HistoryManager(
         val params = mapOf("instance" to merchantConfig.instance)
         val req = MerchantRequest(GET, merchantConfig, "history", params, null,
             Listener { onHistoryResponse(it) },
-            ErrorListener { onHistoryError() })
+            LogErrorListener { onHistoryError() })
         queue.add(req)
     }
 
