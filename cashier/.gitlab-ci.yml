@@ -24,8 +24,8 @@ cashier_deploy_nightly:
     - test -z "$DEBUG_KEYSTORE" && exit 0
     # Rename nightly app
     - sed -i
-        's,<string name="app_name">.*</string>,<string name="app_name">Cashier Nightly</string>,'
-        cashier/src/main/res/values*/strings.xml
+      's,<string name="app_name">.*</string>,<string name="app_name">Cashier Nightly</string>,'
+      cashier/src/main/res/values*/strings.xml
     # Set time-based version code
     - export versionCode=$(date '+%s')
     - sed -i "s,^\(\s*versionCode\) *[0-9].*,\1 $versionCode," cashier/build.gradle

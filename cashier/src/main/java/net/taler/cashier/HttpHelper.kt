@@ -39,8 +39,8 @@ object HttpHelper {
             .build()
         val response = try {
             getHttpClient(config.username, config.password)
-            .newCall(request)
-            .execute()
+                .newCall(request)
+                .execute()
         } catch (e: Exception) {
             Log.e(TAG, "Error retrieving $url", e)
             return HttpJsonResult.Error(500)

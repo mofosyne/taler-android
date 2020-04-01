@@ -17,7 +17,9 @@
 package net.taler.cashier
 
 import android.content.Intent
-import android.content.Intent.*
+import android.content.Intent.ACTION_MAIN
+import android.content.Intent.CATEGORY_HOME
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity

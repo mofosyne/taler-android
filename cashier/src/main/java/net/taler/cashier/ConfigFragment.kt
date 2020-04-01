@@ -94,7 +94,8 @@ class ConfigFragment : Fragment() {
         // focus on password if it is the only missing value (like after locking)
         if (urlView.editText!!.text.isNotBlank()
             && usernameView.editText!!.text.isNotBlank()
-            && passwordView.editText!!.text.isBlank()) {
+            && passwordView.editText!!.text.isBlank()
+        ) {
             passwordView.editText!!.requestFocus()
         }
     }
