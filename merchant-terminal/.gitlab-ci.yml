@@ -3,6 +3,8 @@ merchant_test:
   only:
     changes:
       - merchant-terminal/**/*
+      - taler-kotlin-common/**/*
+      - build.gradle
   script: ./gradlew :merchant-terminal:lint :merchant-terminal:assembleRelease
   artifacts:
     paths:
@@ -11,6 +13,7 @@ merchant_test:
 
 merchant_deploy_nightly:
   stage: deploy
+  resource_group: deploy_nightly
   only:
     refs:
       - master

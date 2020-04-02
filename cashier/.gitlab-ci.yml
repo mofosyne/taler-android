@@ -5,6 +5,8 @@ cashier_test:
   only:
     changes:
       - cashier/**/*
+      - taler-kotlin-common/**/*
+      - build.gradle
   script: ./gradlew :cashier:lint :cashier:assembleRelease
   artifacts:
     paths:
@@ -13,6 +15,7 @@ cashier_test:
 
 cashier_deploy_nightly:
   stage: deploy
+  resource_group: deploy_nightly
   only:
     refs:
       - master

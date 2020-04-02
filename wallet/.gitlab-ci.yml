@@ -1,7 +1,4 @@
 .binary_deps:
-  only:
-    changes:
-      - wallet/**/*
   before_script:
     - wget "https://git.taler.net/wallet-android.git/plain/akono.aar?h=binary-deps" -O akono/akono.aar
     - mkdir -p app/src/main/assets
@@ -10,6 +7,11 @@
 wallet_test:
   stage: test
   extends: .binary_deps
+  only:
+    changes:
+      - wallet/**/*
+      - taler-kotlin-common/**/*
+      - build.gradle
   script: ./gradlew :wallet:lint :wallet:assembleRelease
   artifacts:
     paths:
@@ -18,8 +20,11 @@ wallet_test:
 
 wallet_deploy_nightly:
   stage: deploy
+  resource_group: deploy_nightly
   extends: .binary_deps
   only:
+    changes:
+      - wallet/**/*
     refs:
       - master
   needs: ["wallet_test"]
