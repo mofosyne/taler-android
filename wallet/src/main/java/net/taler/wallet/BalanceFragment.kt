@@ -187,7 +187,7 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
                 balanceInboundAmount.visibility = VISIBLE
                 balanceInboundLabel.visibility = VISIBLE
                 balanceInboundAmount.text =
-                    v.context.getString(R.string.balances_inbound_amount, amountIncoming)
+                    v.context.getString(R.string.amount_positive, amountIncoming)
             }
         }
     }

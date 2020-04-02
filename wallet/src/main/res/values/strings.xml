@@ -39,7 +39,8 @@
     <string name="aiddescription">my aid</string>
 
     <string name="balances_title">Balances</string>
-    <string name="balances_inbound_amount">+%s</string>
+    <string name="amount_positive">+%s</string>
+    <string name="amount_negative">-%s</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 
@@ -80,7 +81,7 @@
     <string name="withdraw_accepted">Withdrawal accepted</string>
     <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>
     <string name="withdraw_total">Withdraw</string>
-    <string name="withdraw_fees">(minus exchange fees)</string>
+    <string name="withdraw_fees">Fee</string>
     <string name="withdraw_exchange">Exchange</string>
     <string name="withdraw_button_testkudos">Withdraw TESTKUDOS</string>
     <string name="withdraw_button_confirm">Confirm Withdraw</string>

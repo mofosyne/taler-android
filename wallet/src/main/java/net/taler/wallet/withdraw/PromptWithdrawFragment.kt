@@ -56,13 +56,16 @@ class PromptWithdrawFragment : Fragment() {
 
     private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
         is WithdrawStatus.ReceivedDetails -> {
-            showContent(status.amount, status.suggestedExchange)
+            showContent(status.amount, status.fee, status.suggestedExchange)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_confirm)
                 setOnClickListener {
                     it.fadeOut()
                     confirmProgressBar.fadeIn()
-                    withdrawManager.acceptWithdrawal(status.talerWithdrawUri, status.suggestedExchange)
+                    withdrawManager.acceptWithdrawal(
+                        status.talerWithdrawUri,
+                        status.suggestedExchange
+                    )
                 }
                 isEnabled = true
             }
@@ -79,7 +82,7 @@ class PromptWithdrawFragment : Fragment() {
             model.showProgressBar.value = true
         }
         is TermsOfServiceReviewRequired -> {
-            showContent(status.amount, status.suggestedExchange)
+            showContent(status.amount, status.fee, status.suggestedExchange)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_tos)
                 setOnClickListener {
@@ -95,13 +98,20 @@ class PromptWithdrawFragment : Fragment() {
         null -> model.showProgressBar.value = false
     }
 
-    private fun showContent(amount: Amount, exchange: String) {
+    private fun showContent(amount: Amount, fee: Amount, exchange: String) {
         model.showProgressBar.value = false
         progressBar.fadeOut()
 
         introView.fadeIn()
-        withdrawAmountView.text = amount.toString()
-        withdrawAmountView.fadeIn()
+        effectiveAmountView.text = (amount - fee).toString()
+        effectiveAmountView.fadeIn()
+
+        chosenAmountLabel.fadeIn()
+        chosenAmountView.text = amount.toString()
+        chosenAmountView.fadeIn()
+
+        feeLabel.fadeIn()
+        feeView.text = getString(R.string.amount_negative, fee.toString())
         feeView.fadeIn()
 
         exchangeIntroView.fadeIn()

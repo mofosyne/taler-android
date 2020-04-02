@@ -32,12 +32,14 @@ sealed class WithdrawStatus {
         val tosText: String,
         val tosEtag: String,
         val amount: Amount,
+        val fee: Amount,
         val suggestedExchange: String
     ) : WithdrawStatus()
 
     data class ReceivedDetails(
         val talerWithdrawUri: String,
         val amount: Amount,
+        val fee: Amount,
         val suggestedExchange: String
     ) : WithdrawStatus()
 
@@ -131,6 +133,10 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
             val ei = result.getJSONObject("exchangeWithdrawDetails")
             val termsOfServiceAccepted = ei.getBoolean("termsOfServiceAccepted")
 
+            val withdrawFee = Amount.fromJsonObject(ei.getJSONObject("withdrawFee"))
+            val overhead = Amount.fromJsonObject(ei.getJSONObject("overhead"))
+            val fee = withdrawFee + overhead
+
             if (!termsOfServiceAccepted) {
                 val exchange = ei.getJSONObject("exchangeInfo")
                 val tosText = exchange.getString("termsOfServiceText")
@@ -138,10 +144,8 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                 withdrawStatus.postValue(
                     WithdrawStatus.TermsOfServiceReviewRequired(
                         status.talerWithdrawUri,
-                        selectedExchange,
-                        tosText,
-                        tosEtag,
-                        amount,
+                        selectedExchange, tosText, tosEtag,
+                        amount, fee,
                         suggestedExchange
                     )
                 )
@@ -149,7 +153,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                 withdrawStatus.postValue(
                     ReceivedDetails(
                         status.talerWithdrawUri,
-                        amount,
+                        amount, fee,
                         suggestedExchange
                     )
                 )
@@ -195,7 +199,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                 Log.e(TAG, "Error acceptExchangeTermsOfService ${result.toString(4)}")
                 return@sendRequest
             }
-            val status = ReceivedDetails(s.talerWithdrawUri, s.amount, s.suggestedExchange)
+            val status = ReceivedDetails(s.talerWithdrawUri, s.amount, s.fee, s.suggestedExchange)
             withdrawStatus.postValue(status)
         }
     }

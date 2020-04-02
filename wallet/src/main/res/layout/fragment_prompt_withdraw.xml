@@ -31,7 +31,7 @@
         android:gravity="center"
         android:text="@string/withdraw_total"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/withdrawAmountView"
+        app:layout_constraintBottom_toTopOf="@+id/effectiveAmountView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,19 +40,70 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/withdrawAmountView"
+        android:id="@+id/effectiveAmountView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/green"
+        android:textSize="24sp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/feeView"
+        app:layout_constraintBottom_toTopOf="@+id/chosenAmountLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/introView"
-        tools:text="10.00 TESTKUDOS"
+        tools:text="9.8 TESTKUDOS"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/chosenAmountLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="Chosen Amount"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/chosenAmountView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/effectiveAmountView"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/chosenAmountView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/feeLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chosenAmountLabel"
+        tools:text="10 TESTKUDOS"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/feeLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="@string/withdraw_fees"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/feeView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chosenAmountView"
         tools:visibility="visible" />
 
     <TextView
@@ -63,13 +114,14 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:text="@string/withdraw_fees"
+        android:textColor="@color/red"
+        android:textSize="20sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/exchangeIntroView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/withdrawAmountView"
+        app:layout_constraintTop_toBottomOf="@+id/feeLabel"
+        tools:text="-0.2 TESTKUDOS"
         tools:visibility="visible" />
 
     <TextView
@@ -111,7 +163,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/withdrawCard"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
