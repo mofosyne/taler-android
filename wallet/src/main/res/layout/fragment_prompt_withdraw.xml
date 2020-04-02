@@ -131,18 +131,7 @@
             android:padding="8dp">
 
             <Button
-                android:id="@+id/button_cancel_withdraw"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/red"
-                android:text="@string/button_cancel"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/button_confirm_withdraw"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Button
-                android:id="@+id/button_confirm_withdraw"
+                android:id="@+id/confirmWithdrawButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/green"
@@ -150,7 +139,8 @@
                 android:text="@string/withdraw_button_confirm"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button_cancel_withdraw" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ProgressBar
                 android:id="@+id/confirmProgressBar"
@@ -158,10 +148,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/button_confirm_withdraw"
-                app:layout_constraintEnd_toEndOf="@+id/button_confirm_withdraw"
-                app:layout_constraintStart_toStartOf="@+id/button_confirm_withdraw"
-                app:layout_constraintTop_toTopOf="@+id/button_confirm_withdraw"
+                app:layout_constraintBottom_toBottomOf="@+id/confirmWithdrawButton"
+                app:layout_constraintEnd_toEndOf="@+id/confirmWithdrawButton"
+                app:layout_constraintStart_toStartOf="@+id/confirmWithdrawButton"
+                app:layout_constraintTop_toTopOf="@+id/confirmWithdrawButton"
                 tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

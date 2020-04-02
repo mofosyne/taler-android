@@ -71,11 +71,6 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             adapter = this@PromptPaymentFragment.adapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-
-        abortButton.setOnClickListener {
-            paymentManager.abortPay()
-            findNavController().navigateUp()
-        }
     }
 
     override fun onDestroy() {

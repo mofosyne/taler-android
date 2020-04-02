@@ -50,10 +50,10 @@ class ReviewExchangeTosFragment : Fragment() {
         acceptTosCheckBox.setOnCheckedChangeListener { _, isChecked ->
             acceptTosButton.isEnabled = isChecked
         }
-        abortTosButton.setOnClickListener {
-            withdrawManager.cancelCurrentWithdraw()
-            findNavController().navigateUp()
-        }
+//        abortTosButton.setOnClickListener {
+//            withdrawManager.cancelCurrentWithdraw()
+//            findNavController().navigateUp()
+//        }
         acceptTosButton.setOnClickListener {
             withdrawManager.acceptCurrentTermsOfService()
         }

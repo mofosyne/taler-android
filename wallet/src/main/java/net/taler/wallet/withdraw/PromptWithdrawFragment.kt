@@ -48,12 +48,7 @@ class PromptWithdrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        button_cancel_withdraw.setOnClickListener {
-            withdrawManager.cancelCurrentWithdraw()
-            findNavController().navigateUp()
-        }
-
-        button_confirm_withdraw.setOnClickListener {
+        confirmWithdrawButton.setOnClickListener {
             val status = withdrawManager.withdrawStatus.value
             if (status !is WithdrawStatus.ReceivedDetails) throw AssertionError()
             it.fadeOut()
@@ -80,7 +75,7 @@ class PromptWithdrawFragment : Fragment() {
             withdrawExchangeUrl.text = status.suggestedExchange
             withdrawExchangeUrl.fadeIn()
 
-            button_confirm_withdraw.isEnabled = true
+            confirmWithdrawButton.isEnabled = true
         }
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false

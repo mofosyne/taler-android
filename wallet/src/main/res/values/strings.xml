@@ -26,7 +26,6 @@
     <string name="nav_error">Error</string>
 
     <string name="button_back">Go Back</string>
-    <string name="button_cancel">Cancel</string>
     <string name="button_continue">Continue</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
 
@@ -68,7 +67,6 @@
 
     <string name="payment_fee">+%s payment fee</string>
     <string name="payment_button_confirm">Confirm Payment</string>
-    <string name="payment_button_abort">Abort</string>
     <string name="payment_label_amount_total">Total Amount:</string>
     <string name="payment_label_order_summary">Order</string>
     <string name="payment_error">Error: %s</string>

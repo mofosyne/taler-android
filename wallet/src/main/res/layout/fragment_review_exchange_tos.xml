@@ -77,17 +77,6 @@
                 tools:visibility="visible" />
 
             <Button
-                android:id="@+id/abortTosButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/red"
-                android:text="@string/button_cancel"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/acceptTosButton"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Button
                 android:id="@+id/acceptTosButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +85,8 @@
                 android:text="@string/exchange_tos_button_continue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/abortTosButton" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
