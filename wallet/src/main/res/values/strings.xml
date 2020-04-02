@@ -79,11 +79,12 @@
 
     <string name="withdraw_accepted">Withdrawal accepted</string>
     <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>
-    <string name="withdraw_do_you_want">Do you want to withdraw</string>
-    <string name="withdraw_fees">(minus exchange fees not shown in this prototype)</string>
-    <string name="withdraw_exchange">Using the exchange provider</string>
+    <string name="withdraw_total">Withdraw</string>
+    <string name="withdraw_fees">(minus exchange fees)</string>
+    <string name="withdraw_exchange">Exchange</string>
     <string name="withdraw_button_testkudos">Withdraw TESTKUDOS</string>
     <string name="withdraw_button_confirm">Confirm Withdraw</string>
+    <string name="withdraw_button_tos">Review Terms</string>
     <string name="withdraw_error_title">Withdrawal Error</string>
     <string name="withdraw_error_message">Withdrawing is currently not possible. Please try again later!</string>
 

@@ -74,12 +74,11 @@
         android:label="@string/nav_prompt_withdraw"
         tools:layout="@layout/fragment_prompt_withdraw">
         <action
+            android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
+            app:destination="@id/reviewExchangeTOS" />
+        <action
             android:id="@+id/action_promptWithdraw_to_withdrawSuccessful"
             app:destination="@id/withdrawSuccessful"
-            app:popUpTo="@id/showBalance" />
-        <action
-            android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
-            app:destination="@id/reviewExchangeTOS"
             app:popUpTo="@id/showBalance" />
         <action
             android:id="@+id/action_promptWithdraw_to_errorFragment"

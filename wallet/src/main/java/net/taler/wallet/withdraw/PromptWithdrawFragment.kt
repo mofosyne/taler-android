@@ -25,6 +25,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_prompt_withdraw.*
+import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
@@ -48,34 +49,23 @@ class PromptWithdrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        confirmWithdrawButton.setOnClickListener {
-            val status = withdrawManager.withdrawStatus.value
-            if (status !is WithdrawStatus.ReceivedDetails) throw AssertionError()
-            it.fadeOut()
-            confirmProgressBar.fadeIn()
-            withdrawManager.acceptWithdrawal(status.talerWithdrawUri, status.suggestedExchange)
-        }
-
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
             showWithdrawStatus(it)
         })
     }
 
-    private fun showWithdrawStatus(status: WithdrawStatus?) = when (status) {
+    private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
         is WithdrawStatus.ReceivedDetails -> {
-            model.showProgressBar.value = false
-            progressBar.fadeOut()
-
-            introView.fadeIn()
-            withdrawAmountView.text = status.amount.toString()
-            withdrawAmountView.fadeIn()
-            feeView.fadeIn()
-
-            exchangeIntroView.fadeIn()
-            withdrawExchangeUrl.text = status.suggestedExchange
-            withdrawExchangeUrl.fadeIn()
-
-            confirmWithdrawButton.isEnabled = true
+            showContent(status.amount, status.suggestedExchange)
+            confirmWithdrawButton.apply {
+                text = getString(R.string.withdraw_button_confirm)
+                setOnClickListener {
+                    it.fadeOut()
+                    confirmProgressBar.fadeIn()
+                    withdrawManager.acceptWithdrawal(status.talerWithdrawUri, status.suggestedExchange)
+                }
+                isEnabled = true
+            }
         }
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
@@ -89,14 +79,38 @@ class PromptWithdrawFragment : Fragment() {
             model.showProgressBar.value = true
         }
         is TermsOfServiceReviewRequired -> {
-            model.showProgressBar.value = false
-            findNavController().navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
+            showContent(status.amount, status.suggestedExchange)
+            confirmWithdrawButton.apply {
+                text = getString(R.string.withdraw_button_tos)
+                setOnClickListener {
+                    findNavController().navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
+                }
+                isEnabled = true
+            }
         }
         is WithdrawStatus.Error -> {
             model.showProgressBar.value = false
             findNavController().navigate(R.id.action_promptWithdraw_to_errorFragment)
         }
         null -> model.showProgressBar.value = false
+    }
+
+    private fun showContent(amount: Amount, exchange: String) {
+        model.showProgressBar.value = false
+        progressBar.fadeOut()
+
+        introView.fadeIn()
+        withdrawAmountView.text = amount.toString()
+        withdrawAmountView.fadeIn()
+        feeView.fadeIn()
+
+        exchangeIntroView.fadeIn()
+        withdrawExchangeUrl.text = exchange.let {
+            if (it.startsWith("https://")) it.substring(8) else it
+        }.trimEnd('/')
+        withdrawExchangeUrl.fadeIn()
+
+        withdrawCard.fadeIn()
     }
 
 }

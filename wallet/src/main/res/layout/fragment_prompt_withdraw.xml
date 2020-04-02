@@ -29,7 +29,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:text="@string/withdraw_do_you_want"
+        android:text="@string/withdraw_total"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/withdrawAmountView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -97,13 +97,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:textSize="25sp"
+        android:textSize="24sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/withdrawCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/exchangeIntroView"
-        tools:text="(exchange base url)"
+        tools:text="long.exchange.demo.taler.net"
         tools:visibility="visible" />
 
     <ProgressBar
@@ -121,9 +121,11 @@
         style="@style/BottomCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -140,7 +142,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:enabled="true"
+                tools:text="@string/withdraw_button_tos" />
 
             <ProgressBar
                 android:id="@+id/confirmProgressBar"

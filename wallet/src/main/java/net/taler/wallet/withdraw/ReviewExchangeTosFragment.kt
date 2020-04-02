@@ -47,14 +47,7 @@ class ReviewExchangeTosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         acceptTosCheckBox.isChecked = false
-        acceptTosCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            acceptTosButton.isEnabled = isChecked
-        }
-//        abortTosButton.setOnClickListener {
-//            withdrawManager.cancelCurrentWithdraw()
-//            findNavController().navigateUp()
-//        }
-        acceptTosButton.setOnClickListener {
+        acceptTosCheckBox.setOnCheckedChangeListener { _, _ ->
             withdrawManager.acceptCurrentTermsOfService()
         }
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
@@ -70,8 +63,6 @@ class ReviewExchangeTosFragment : Fragment() {
                 }
                 is WithdrawStatus.ReceivedDetails -> {
                     findNavController().navigate(R.id.action_reviewExchangeTOS_to_promptWithdraw)
-                }
-                else -> {
                 }
             }
         })
