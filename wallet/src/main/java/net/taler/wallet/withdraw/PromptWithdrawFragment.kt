@@ -30,6 +30,7 @@ import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
+import net.taler.wallet.cleanExchange
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
 import net.taler.wallet.withdraw.WithdrawStatus.TermsOfServiceReviewRequired
 import net.taler.wallet.withdraw.WithdrawStatus.Withdrawing
@@ -115,9 +116,7 @@ class PromptWithdrawFragment : Fragment() {
         feeView.fadeIn()
 
         exchangeIntroView.fadeIn()
-        withdrawExchangeUrl.text = exchange.let {
-            if (it.startsWith("https://")) it.substring(8) else it
-        }.trimEnd('/')
+        withdrawExchangeUrl.text = cleanExchange(exchange)
         withdrawExchangeUrl.fadeIn()
 
         withdrawCard.fadeIn()

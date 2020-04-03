@@ -16,23 +16,19 @@
 
 package net.taler.wallet.history
 
-import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.CallSuper
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import net.taler.common.Amount
 import net.taler.common.toRelativeTime
-import net.taler.wallet.BuildConfig
 import net.taler.wallet.R
+import net.taler.wallet.cleanExchange
 import net.taler.wallet.history.HistoryAdapter.HistoryEventViewHolder
 
 
@@ -68,23 +64,20 @@ internal class HistoryAdapter(
         this.notifyDataSetChanged()
     }
 
-    internal abstract inner class HistoryEventViewHolder(protected val v: View) : ViewHolder(v) {
+    internal abstract inner class HistoryEventViewHolder(private val v: View) : ViewHolder(v) {
 
+        protected val context: Context = v.context
         private val icon: ImageView = v.findViewById(R.id.icon)
         protected val title: TextView = v.findViewById(R.id.title)
         private val time: TextView = v.findViewById(R.id.time)
 
         @CallSuper
         open fun bind(event: HistoryEvent) {
-            if (BuildConfig.DEBUG) {  // doesn't produce recycling issues, no need to cover all cases
-                v.setOnClickListener { listener.onEventClicked(event) }
-            } else {
-                v.background = null
-            }
+            v.setOnClickListener { listener.onEventClicked(event) }
             icon.setImageResource(event.icon)
             if (event.title == 0) title.text = event::class.java.simpleName
             else title.setText(event.title)
-            time.text = event.timestamp.ms.toRelativeTime(v.context)
+            time.text = event.timestamp.ms.toRelativeTime(context)
         }
 
     }
@@ -96,8 +89,8 @@ internal class HistoryAdapter(
         override fun bind(event: HistoryEvent) {
             super.bind(event)
             info.text = when (event) {
-                is ExchangeAddedEvent -> event.exchangeBaseUrl
-                is ExchangeUpdatedEvent -> event.exchangeBaseUrl
+                is ExchangeAddedEvent -> cleanExchange(event.exchangeBaseUrl)
+                is ExchangeUpdatedEvent -> cleanExchange(event.exchangeBaseUrl)
                 is ReserveBalanceUpdatedEvent -> event.amountReserveBalance.toString()
                 is HistoryPaymentSentEvent -> event.orderShortInfo.summary
                 is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
@@ -113,8 +106,7 @@ internal class HistoryAdapter(
 
         private val summary: TextView = v.findViewById(R.id.summary)
         private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
-        private val feeLabel: TextView = v.findViewById(R.id.feeLabel)
-        private val fee: TextView = v.findViewById(R.id.fee)
+        private val paintFlags = amountWithdrawn.paintFlags
 
         override fun bind(event: HistoryEvent) {
             super.bind(event)
@@ -127,50 +119,29 @@ internal class HistoryAdapter(
         }
 
         private fun bind(event: HistoryWithdrawnEvent) {
-            title.text = getHostname(event.exchangeBaseUrl)
-            summary.setText(event.title)
-
-            showAmounts(event.amountWithdrawnEffective, event.amountWithdrawnRaw)
+            summary.text = cleanExchange(event.exchangeBaseUrl)
+            amountWithdrawn.text =
+                context.getString(R.string.amount_positive, event.amountWithdrawnEffective)
+            amountWithdrawn.paintFlags = paintFlags
         }
 
         private fun bind(event: HistoryRefundedEvent) {
-            title.text = event.orderShortInfo.summary
-            summary.setText(event.title)
-
-            showAmounts(event.amountRefundedEffective, event.amountRefundedRaw)
+            summary.text = event.orderShortInfo.summary
+            amountWithdrawn.text =
+                context.getString(R.string.amount_positive, event.amountRefundedEffective)
+            amountWithdrawn.paintFlags = paintFlags
         }
 
         private fun bind(event: HistoryTipAcceptedEvent) {
-            title.setText(event.title)
             summary.text = null
-            showAmounts(event.tipRaw, event.tipRaw)
+            amountWithdrawn.text = context.getString(R.string.amount_positive, event.tipRaw)
+            amountWithdrawn.paintFlags = paintFlags
         }
 
         private fun bind(event: HistoryTipDeclinedEvent) {
-            title.setText(event.title)
             summary.text = null
-            showAmounts(event.tipAmount, event.tipAmount)
+            amountWithdrawn.text = context.getString(R.string.amount_positive, event.tipAmount)
             amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
-        }
-
-        private fun showAmounts(effective: Amount, raw: Amount) {
-            @SuppressLint("SetTextI18n")
-            amountWithdrawn.text = "+$raw"
-            val calculatedFee = raw - effective
-            if (calculatedFee.isZero()) {
-                fee.visibility = GONE
-                feeLabel.visibility = GONE
-            } else {
-                @SuppressLint("SetTextI18n")
-                fee.text = "-$calculatedFee"
-                fee.visibility = VISIBLE
-                feeLabel.visibility = VISIBLE
-            }
-            amountWithdrawn.paintFlags = fee.paintFlags
-        }
-
-        private fun getHostname(url: String): String {
-            return url.toUri().host!!
         }
 
     }
@@ -182,7 +153,6 @@ internal class HistoryAdapter(
 
         override fun bind(event: HistoryEvent) {
             super.bind(event)
-            summary.setText(event.title)
             when (event) {
                 is HistoryPaymentSentEvent -> bind(event)
                 is HistoryPaymentAbortedEvent -> bind(event)
@@ -191,23 +161,29 @@ internal class HistoryAdapter(
         }
 
         private fun bind(event: HistoryPaymentSentEvent) {
-            title.text = event.orderShortInfo.summary
-            @SuppressLint("SetTextI18n")
-            amountPaidWithFees.text = "-${event.amountPaidWithFees}"
+            summary.text = event.orderShortInfo.summary
+            amountPaidWithFees.text =
+                context.getString(R.string.amount_negative, event.amountPaidWithFees)
         }
 
         private fun bind(event: HistoryPaymentAbortedEvent) {
-            title.text = event.orderShortInfo.summary
-            @SuppressLint("SetTextI18n")
-            amountPaidWithFees.text = "-${event.amountLost}"
+            summary.text = event.orderShortInfo.summary
+            amountPaidWithFees.text = context.getString(R.string.amount_negative, event.amountLost)
         }
 
         private fun bind(event: HistoryRefreshedEvent) {
-            title.text = ""
+            val res = when (event.refreshReason) {
+                RefreshReason.MANUAL -> R.string.history_event_refresh_reason_manual
+                RefreshReason.PAY -> R.string.history_event_refresh_reason_pay
+                RefreshReason.REFUND -> R.string.history_event_refresh_reason_refund
+                RefreshReason.ABORT_PAY -> R.string.history_event_refresh_reason_abort_pay
+                RefreshReason.RECOUP -> R.string.history_event_refresh_reason_recoup
+                RefreshReason.BACKUP_RESTORED -> R.string.history_event_refresh_reason_backup_restored
+            }
+            summary.text = context.getString(res)
             val fee = event.amountRefreshedRaw - event.amountRefreshedEffective
-            @SuppressLint("SetTextI18n")
             if (fee.isZero()) amountPaidWithFees.text = null
-            else amountPaidWithFees.text = "-$fee"
+            else amountPaidWithFees.text = context.getString(R.string.amount_negative, fee)
         }
 
     }

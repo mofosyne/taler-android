@@ -57,11 +57,23 @@
         android:name="net.taler.wallet.Settings"
         android:label="Settings"
         tools:layout="@layout/fragment_settings" />
+
     <fragment
         android:id="@+id/walletHistory"
         android:name="net.taler.wallet.history.HistoryFragment"
         android:label="@string/history_title"
-        tools:layout="@layout/fragment_show_history" />
+        tools:layout="@layout/fragment_show_history">
+        <action
+            android:id="@+id/action_walletHistory_to_historyEventFragment"
+            app:destination="@id/historyEventFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historyEventFragment"
+        android:name="net.taler.wallet.history.HistoryEventFragment"
+        android:label="@string/history_detail_title"
+        tools:layout="@layout/fragment_history_event" />
+
     <fragment
         android:id="@+id/alreadyPaid"
         android:name="net.taler.wallet.payment.AlreadyPaidFragment"

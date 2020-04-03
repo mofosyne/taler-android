@@ -27,6 +27,7 @@ import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
 import android.text.format.DateUtils.FORMAT_NO_YEAR
 import android.text.format.DateUtils.FORMAT_SHOW_DATE
 import android.text.format.DateUtils.FORMAT_SHOW_TIME
+import android.text.format.DateUtils.FORMAT_SHOW_YEAR
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.formatDateTime
 import android.text.format.DateUtils.getRelativeTimeSpanString
@@ -81,4 +82,9 @@ fun Long.toRelativeTime(context: Context): CharSequence {
         val flags = FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_ABBREV_MONTH or FORMAT_NO_YEAR
         formatDateTime(context, this, flags)
     } else getRelativeTimeSpanString(this, now, MINUTE_IN_MILLIS, FORMAT_ABBREV_RELATIVE)
+}
+
+fun Long.toAbsoluteTime(context: Context): CharSequence {
+    val flags = FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_SHOW_YEAR
+    return formatDateTime(context, this, flags)
 }

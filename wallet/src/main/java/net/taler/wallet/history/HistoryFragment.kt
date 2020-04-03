@@ -28,10 +28,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_show_history.*
+import net.taler.common.exhaustive
+import net.taler.common.fadeIn
+import net.taler.common.fadeOut
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
 
@@ -73,8 +77,7 @@ class HistoryFragment : Fragment(), OnEventClickListener {
             historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
         historyManager.history.observe(viewLifecycleOwner, Observer { history ->
-            historyEmptyState.visibility = if (history.isEmpty()) VISIBLE else INVISIBLE
-            historyAdapter.update(history)
+            onHistoryResult(history)
         })
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
@@ -106,9 +109,29 @@ class HistoryFragment : Fragment(), OnEventClickListener {
     }
 
     override fun onEventClicked(event: HistoryEvent) {
-        if (model.devMode.value != true) return
-        JsonDialogFragment.new(event.json.toString(4))
-            .show(parentFragmentManager, null)
+        when (event) {
+            is HistoryWithdrawnEvent -> {
+                historyManager.selectedEvent = event
+                findNavController().navigate(R.id.action_walletHistory_to_historyEventFragment)
+            }
+            else -> {
+                if (model.devMode.value != true) return
+                JsonDialogFragment.new(event.json.toString(2))
+                    .show(parentFragmentManager, null)
+            }
+        }.exhaustive
+    }
+
+    private fun onHistoryResult(result: HistoryResult) = when (result) {
+        HistoryResult.Error -> {
+            historyList.fadeOut()
+            historyEmptyState.text = getString(R.string.history_error)
+            historyEmptyState.fadeIn()
+        }
+        is HistoryResult.Success -> {
+            historyEmptyState.visibility = if (result.history.isEmpty()) VISIBLE else INVISIBLE
+            historyAdapter.update(result.history)
+        }
     }
 
 }

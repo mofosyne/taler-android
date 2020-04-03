@@ -29,6 +29,11 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import net.taler.wallet.backend.WalletBackendApi
 
+sealed class HistoryResult {
+    object Error : HistoryResult()
+    class Success(val history: History) : HistoryResult()
+}
+
 @Suppress("EXPERIMENTAL_API_USAGE")
 class HistoryManager(
     private val walletBackendApi: WalletBackendApi,
@@ -40,7 +45,9 @@ class HistoryManager(
 
     val showAll = MutableLiveData<Boolean>()
 
-    val history: LiveData<History> = showAll.switchMap { showAll ->
+    var selectedEvent: HistoryEvent? = null
+
+    val history: LiveData<HistoryResult> = showAll.switchMap { showAll ->
         loadHistory(showAll)
             .onStart { mProgress.postValue(true) }
             .onCompletion { mProgress.postValue(false) }
@@ -50,7 +57,7 @@ class HistoryManager(
     private fun loadHistory(showAll: Boolean) = callbackFlow {
         walletBackendApi.sendRequest("getHistory", null) { isError, result ->
             if (isError) {
-                // TODO show error message in [WalletHistory] fragment
+                offer(HistoryResult.Error)
                 close()
                 return@sendRequest
             }
@@ -62,7 +69,8 @@ class HistoryManager(
                 history.add(event)
             }
             history.reverse()  // show latest first
-            offer(if (showAll) history else history.filter { it.showToUser } as History)
+            val filtered = if (showAll) history else history.filter { it.showToUser } as History
+            offer(HistoryResult.Success(filtered))
             close()
         }
         awaitClose()

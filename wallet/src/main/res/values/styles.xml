@@ -34,7 +34,7 @@
     <style name="AppTheme.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
 
     <style name="HistoryTitle">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 

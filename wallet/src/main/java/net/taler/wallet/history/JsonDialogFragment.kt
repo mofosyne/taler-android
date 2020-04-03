@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.fragment_json.*
 import net.taler.wallet.R
@@ -45,6 +47,11 @@ class JsonDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val json = arguments!!.getString("json")
         jsonView.text = json
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(MATCH_PARENT, WRAP_CONTENT)
     }
 
 }

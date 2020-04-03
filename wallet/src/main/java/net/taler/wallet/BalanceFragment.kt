@@ -31,6 +31,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
@@ -41,13 +42,17 @@ import com.google.zxing.integration.android.IntentIntegrator.QR_CODE
 import kotlinx.android.synthetic.main.fragment_show_balance.*
 import net.taler.wallet.BalanceAdapter.BalanceViewHolder
 
-class BalanceFragment : Fragment() {
+interface BalanceClickListener {
+    fun onBalanceClick()
+}
+
+class BalanceFragment : Fragment(), BalanceClickListener {
 
     private val model: WalletViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
     private var reloadBalanceMenuItem: MenuItem? = null
-    private val balancesAdapter = BalanceAdapter()
+    private val balancesAdapter = BalanceAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -141,9 +146,13 @@ class BalanceFragment : Fragment() {
         beginDelayedTransition(view as ViewGroup)
     }
 
+    override fun onBalanceClick() {
+        findNavController().navigate(R.id.walletHistory)
+    }
+
 }
 
-class BalanceAdapter : Adapter<BalanceViewHolder>() {
+class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 
     private var items = emptyList<BalanceItem>()
 
@@ -169,13 +178,14 @@ class BalanceAdapter : Adapter<BalanceViewHolder>() {
         this.notifyDataSetChanged()
     }
 
-    class BalanceViewHolder(private val v: View) : ViewHolder(v) {
+    inner class BalanceViewHolder(private val v: View) : ViewHolder(v) {
         private val currencyView: TextView = v.findViewById(R.id.balance_currency)
         private val amountView: TextView = v.findViewById(R.id.balance_amount)
         private val balanceInboundAmount: TextView = v.findViewById(R.id.balanceInboundAmount)
         private val balanceInboundLabel: TextView = v.findViewById(R.id.balanceInboundLabel)
 
         fun bind(item: BalanceItem) {
+            v.setOnClickListener { listener.onBalanceClick() }
             currencyView.text = item.available.currency
             amountView.text = item.available.amountStr
 

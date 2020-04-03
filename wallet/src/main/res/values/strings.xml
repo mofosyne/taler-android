@@ -41,6 +41,7 @@
     <string name="balances_title">Balances</string>
     <string name="amount_positive">+%s</string>
     <string name="amount_negative">-%s</string>
+    <string name="amount_chosen">Chosen Amount</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 
@@ -49,6 +50,9 @@
     <string name="history_show_all">Show All</string>
     <string name="history_reload">Reload History</string>
     <string name="history_empty">The wallet history is empty</string>
+    <string name="history_error">Could not load history</string>
+    <string name="history_detail_title">Transaction</string>
+    <string name="history_detail_json">Show JSON</string>
 
     <!-- HistoryEvents -->
     <string name="history_event_exchange_added">Exchange Added</string>
@@ -64,6 +68,12 @@
     <string name="history_event_order_redirected">Purchase Redirected</string>
     <string name="history_event_refund">Refund</string>
     <string name="history_event_refreshed">Obtained change</string>
+    <string name="history_event_refresh_reason_manual">because of manual request</string>
+    <string name="history_event_refresh_reason_pay">for payment</string>
+    <string name="history_event_refresh_reason_refund">for refund</string>
+    <string name="history_event_refresh_reason_abort_pay">to abort payment</string>
+    <string name="history_event_refresh_reason_recoup">to recoup funds</string>
+    <string name="history_event_refresh_reason_backup_restored">because of restoring from backup</string>
     <string name="history_event_unknown">Unknown Event</string>
 
     <string name="payment_fee">+%s payment fee</string>

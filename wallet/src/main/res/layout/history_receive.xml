@@ -19,11 +19,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
-    android:background="?attr/selectableItemBackground">
+    android:background="?attr/selectableItemBackground"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -41,7 +41,7 @@
         style="@style/HistoryTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         android:text="@string/history_event_withdrawn"
         app:layout_constraintEnd_toStartOf="@+id/amountWithdrawn"
@@ -52,34 +52,18 @@
         android:id="@+id/summary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/feeLabel"
+        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="http://taler.quite-long-exchange.url" />
-
-    <TextView
-        android:id="@+id/feeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:text="@string/history_fee_label"
-        app:layout_constraintEnd_toStartOf="@+id/fee"
-        app:layout_constraintTop_toTopOf="@+id/fee" />
-
-    <TextView
-        android:id="@+id/fee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amountWithdrawn"
-        tools:text="0.2 TESTKUDOS" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="exchange.taler.quite-long-domain-name.org" />
 
     <TextView
         android:id="@+id/amountWithdrawn"
@@ -96,10 +80,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fee"
+        app:layout_constraintStart_toEndOf="@+id/summary"
+        app:layout_constraintTop_toBottomOf="@+id/amountWithdrawn"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="23 min. ago" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
