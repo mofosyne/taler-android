@@ -23,9 +23,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_history_event.*
+import kotlinx.android.synthetic.main.fragment_event_paid.*
+import kotlinx.android.synthetic.main.fragment_event_withdraw.*
+import kotlinx.android.synthetic.main.fragment_event_withdraw.feeView
+import kotlinx.android.synthetic.main.fragment_event_withdraw.timeView
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.WalletViewModel
@@ -39,28 +44,29 @@ class HistoryEventFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (model.devMode.value == true) setHasOptionsMenu(true)
+        setHasOptionsMenu(model.devMode.value == true)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_history_event, container, false)
+        return inflater.inflate(event.detailPageLayout, container, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        requireActivity().title =
+            getString(if (event.title != 0) event.title else R.string.history_detail_title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val event = event as HistoryWithdrawnEvent
-
         timeView.text = event.timestamp.ms.toAbsoluteTime(requireContext())
-        effectiveAmountLabel.text = getString(R.string.withdraw_total)
-        effectiveAmountView.text = event.amountWithdrawnEffective.toString()
-        chosenAmountLabel.text = getString(R.string.amount_chosen)
-        chosenAmountView.text =
-            getString(R.string.amount_positive, event.amountWithdrawnRaw.toString())
-        val fee = event.amountWithdrawnRaw - event.amountWithdrawnEffective
-        feeView.text = getString(R.string.amount_negative, fee.toString())
-        exchangeView.text = cleanExchange(event.exchangeBaseUrl)
+        when (val e = event) {
+            is HistoryWithdrawnEvent -> bind(e)
+            is HistoryPaymentSentEvent -> bind(e)
+            else -> Toast.makeText(requireContext(), "event not implement", LENGTH_LONG).show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -75,6 +81,27 @@ class HistoryEventFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun bind(event: HistoryWithdrawnEvent) {
+        effectiveAmountLabel.text = getString(R.string.withdraw_total)
+        effectiveAmountView.text = event.amountWithdrawnEffective.toString()
+        chosenAmountLabel.text = getString(R.string.amount_chosen)
+        chosenAmountView.text =
+            getString(R.string.amount_positive, event.amountWithdrawnRaw.toString())
+        val fee = event.amountWithdrawnRaw - event.amountWithdrawnEffective
+        feeView.text = getString(R.string.amount_negative, fee.toString())
+        exchangeView.text = cleanExchange(event.exchangeBaseUrl)
+    }
+
+    private fun bind(event: HistoryPaymentSentEvent) {
+        amountPaidWithFeesView.text = event.amountPaidWithFees.toString()
+        orderAmountView.text = event.orderShortInfo.amount.toString()
+        val fee = event.amountPaidWithFees - event.orderShortInfo.amount
+        feeView.text = getString(R.string.amount_negative, fee.toString())
+        orderSummaryView.text = event.orderShortInfo.summary
+        orderIdView.text =
+            getString(R.string.history_event_payment_sent_order_id, event.orderShortInfo.orderId)
     }
 
 }

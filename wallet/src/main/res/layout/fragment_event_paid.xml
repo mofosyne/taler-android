@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".history.HistoryEventFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/timeView"
+            style="@style/HistoryEventLabel.Time"
+            app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="23 March 2020 23:42pm" />
+
+        <TextView
+            android:id="@+id/amountPaidWithFeesLabel"
+            style="@style/HistoryEventLabel"
+            android:text="@string/history_event_payment_sent_paid"
+            app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timeView" />
+
+        <TextView
+            android:id="@+id/amountPaidWithFeesView"
+            style="@style/HistoryEventContent"
+            android:textColor="@color/red"
+            app:layout_constraintBottom_toTopOf="@+id/orderAmountLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountPaidWithFeesLabel"
+            tools:text="-23.42 TESTKUDOS" />
+
+        <TextView
+            android:id="@+id/orderAmountLabel"
+            style="@style/HistoryEventLabel"
+            android:text="@string/history_event_payment_sent_amount"
+            app:layout_constraintBottom_toTopOf="@+id/orderAmountView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountPaidWithFeesView" />
+
+        <TextView
+            android:id="@+id/orderAmountView"
+            style="@style/HistoryEventContent"
+            app:layout_constraintBottom_toTopOf="@+id/feeLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderAmountLabel"
+            tools:text="23 TESTKUDOS" />
+
+        <TextView
+            android:id="@+id/feeLabel"
+            style="@style/HistoryEventLabel"
+            android:text="@string/withdraw_fees"
+            app:layout_constraintBottom_toTopOf="@+id/feeView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderAmountView" />
+
+        <TextView
+            android:id="@+id/feeView"
+            style="@style/HistoryEventContent"
+            android:textColor="@color/red"
+            app:layout_constraintBottom_toTopOf="@+id/orderSummaryLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feeLabel"
+            tools:text="-0.42 TESTKUDOS" />
+
+        <TextView
+            android:id="@+id/orderSummaryLabel"
+            style="@style/HistoryEventLabel"
+            android:text="@string/history_event_payment_sent_order"
+            app:layout_constraintBottom_toTopOf="@+id/orderSummaryView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/feeView" />
+
+        <TextView
+            android:id="@+id/orderSummaryView"
+            style="@style/HistoryEventContent"
+            app:layout_constraintBottom_toTopOf="@+id/orderIdView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderSummaryLabel"
+            tools:text="Some Product that was bought and can have quite a long label" />
+
+        <TextView
+            android:id="@+id/orderIdView"
+            style="@style/HistoryEventLabel"
+            android:text="@string/history_event_payment_sent_order_id"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderSummaryView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

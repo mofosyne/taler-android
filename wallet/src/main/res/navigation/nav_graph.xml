@@ -72,7 +72,7 @@
         android:id="@+id/historyEventFragment"
         android:name="net.taler.wallet.history.HistoryEventFragment"
         android:label="@string/history_detail_title"
-        tools:layout="@layout/fragment_history_event" />
+        tools:layout="@layout/fragment_event_withdraw" />
 
     <fragment
         android:id="@+id/alreadyPaid"

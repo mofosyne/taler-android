@@ -33,7 +33,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_show_history.*
-import net.taler.common.exhaustive
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
@@ -49,7 +48,7 @@ class HistoryFragment : Fragment(), OnEventClickListener {
     private val historyManager by lazy { model.historyManager }
     private lateinit var showAllItem: MenuItem
     private var reloadHistoryItem: MenuItem? = null
-    private val historyAdapter = HistoryAdapter(this)
+    private val historyAdapter by lazy { HistoryAdapter(model.devMode.value == true, this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,17 +108,13 @@ class HistoryFragment : Fragment(), OnEventClickListener {
     }
 
     override fun onEventClicked(event: HistoryEvent) {
-        when (event) {
-            is HistoryWithdrawnEvent -> {
-                historyManager.selectedEvent = event
-                findNavController().navigate(R.id.action_walletHistory_to_historyEventFragment)
-            }
-            else -> {
-                if (model.devMode.value != true) return
-                JsonDialogFragment.new(event.json.toString(2))
-                    .show(parentFragmentManager, null)
-            }
-        }.exhaustive
+        if (event.detailPageLayout != 0) {
+            historyManager.selectedEvent = event
+            findNavController().navigate(R.id.action_walletHistory_to_historyEventFragment)
+        } else if (model.devMode.value == true) {
+            JsonDialogFragment.new(event.json.toString(2))
+                .show(parentFragmentManager, null)
+        }
     }
 
     private fun onHistoryResult(result: HistoryResult) = when (result) {

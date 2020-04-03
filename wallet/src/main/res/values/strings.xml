@@ -59,6 +59,10 @@
     <string name="history_event_exchange_updated">Exchange Updated</string>
     <string name="history_event_reserve_balance_updated">Reserve Balance Updated</string>
     <string name="history_event_payment_sent">Payment</string>
+    <string name="history_event_payment_sent_paid">Paid</string>
+    <string name="history_event_payment_sent_amount">Order Total</string>
+    <string name="history_event_payment_sent_order">Order</string>
+    <string name="history_event_payment_sent_order_id">Order Reference: %1$s</string>
     <string name="history_event_payment_aborted">Payment Aborted</string>
     <string name="history_event_withdrawn">Withdraw</string>
     <string name="history_event_order_accepted">Purchase Confirmed</string>

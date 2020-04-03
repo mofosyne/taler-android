@@ -38,6 +38,31 @@
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
+    <style name="HistoryEventLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="HistoryEventLabel.Time">
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="HistoryEventContent">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="BottomCard">
         <item name="cardCornerRadius">0dp</item>
         <item name="cardElevation">8dp</item>

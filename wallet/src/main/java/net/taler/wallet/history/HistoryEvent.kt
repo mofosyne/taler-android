@@ -138,6 +138,8 @@ abstract class HistoryEvent(
     val timestamp: Timestamp,
     @get:LayoutRes
     open val layout: Int = R.layout.history_row,
+    @get:LayoutRes
+    open val detailPageLayout: Int = 0,
     @get:StringRes
     open val title: Int = 0,
     @get:DrawableRes
@@ -215,6 +217,7 @@ class HistoryWithdrawnEvent(
     val amountWithdrawnEffective: Amount
 ) : HistoryEvent(timestamp) {
     override val layout = R.layout.history_receive
+    override val detailPageLayout = R.layout.fragment_event_withdraw
     override val title = R.string.history_event_withdrawn
     override val icon = R.drawable.history_withdrawn
     override val showToUser = true
@@ -270,6 +273,7 @@ class HistoryPaymentSentEvent(
     val sessionId: String?
 ) : HistoryEvent(timestamp) {
     override val layout = R.layout.history_payment
+    override val detailPageLayout = R.layout.fragment_event_paid
     override val title = R.string.history_event_payment_sent
     override val icon = R.drawable.ic_cash_usd_outline
     override val showToUser = true

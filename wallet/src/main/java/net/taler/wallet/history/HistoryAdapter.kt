@@ -33,6 +33,7 @@ import net.taler.wallet.history.HistoryAdapter.HistoryEventViewHolder
 
 
 internal class HistoryAdapter(
+    private val devMode: Boolean,
     private val listener: OnEventClickListener,
     private var history: History = History()
 ) : Adapter<HistoryEventViewHolder>() {
@@ -73,7 +74,11 @@ internal class HistoryAdapter(
 
         @CallSuper
         open fun bind(event: HistoryEvent) {
-            v.setOnClickListener { listener.onEventClicked(event) }
+            if (devMode || event.detailPageLayout != 0) {
+                v.setOnClickListener { listener.onEventClicked(event) }
+            } else {
+                v.background = null
+            }
             icon.setImageResource(event.icon)
             if (event.title == 0) title.text = event::class.java.simpleName
             else title.setText(event.title)
