@@ -35,7 +35,7 @@ import java.util.*
 class WalletBackendApi(
     private val app: Application,
     private val onConnected: (() -> Unit),
-    private val notificationHandler: (() -> Unit)
+    private val notificationHandler: ((payload: JSONObject) -> Unit)
 ) {
 
     private var walletBackendMessenger: Messenger? = null
@@ -85,7 +85,13 @@ class WalletBackendApi(
                     h(isError, json)
                 }
                 WalletBackendService.MSG_NOTIFY -> {
-                    api.notificationHandler.invoke()
+                    val payloadStr = msg.data.getString("payload")
+                    if (payloadStr == null) {
+                        Log.e(TAG, "Notification had no payload: $msg")
+                    } else {
+                        val payload = JSONObject(payloadStr)
+                        api.notificationHandler.invoke(payload)
+                    }
                 }
             }
         }

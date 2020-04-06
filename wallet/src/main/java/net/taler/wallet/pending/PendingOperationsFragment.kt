@@ -84,6 +84,11 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        pendingOperationsManager.getPending()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.retry_pending -> {

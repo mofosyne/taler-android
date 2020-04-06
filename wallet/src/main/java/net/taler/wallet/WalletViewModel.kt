@@ -47,16 +47,13 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
 
-    private var activeGetBalance = 0
-
     private val walletBackendApi = WalletBackendApi(app, {
-        activeGetBalance = 0
         loadBalances()
-        pendingOperationsManager.getPending()
-    }) {
-        Log.i(TAG, "Received notification from wallet-core")
-        loadBalances()
-        pendingOperationsManager.getPending()
+    }) { payload ->
+        if (payload.getString("type") != "waiting-for-retry") {
+            Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
+            loadBalances()
+        }
     }
 
     private val mapper = ObjectMapper()
@@ -65,8 +62,7 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
-    val pendingOperationsManager: PendingOperationsManager =
-        PendingOperationsManager(walletBackendApi)
+    val pendingOperationsManager = PendingOperationsManager(walletBackendApi)
     val historyManager = HistoryManager(walletBackendApi, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
@@ -77,14 +73,10 @@ class WalletViewModel(val app: Application) : AndroidViewModel(app) {
 
     @UiThread
     fun loadBalances() {
-        if (activeGetBalance > 0) {
-            return
-        }
-        activeGetBalance++
         showProgressBar.value = true
         walletBackendApi.sendRequest("getBalances", null) { isError, result ->
-            activeGetBalance--
             if (isError) {
+                Log.e(TAG, "Error retrieving balances: ${result.toString(2)}")
                 return@sendRequest
             }
             val balanceList = mutableListOf<BalanceItem>()

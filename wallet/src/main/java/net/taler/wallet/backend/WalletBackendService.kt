@@ -158,10 +158,12 @@ class WalletBackendService : Service() {
         return messenger.binder
     }
 
-    private fun sendNotify() {
+    private fun sendNotify(payload: String) {
         var rm: LinkedList<Messenger>? = null
         for (s in subscribers) {
             val m = Message.obtain(null, MSG_NOTIFY)
+            val b = m.data
+            b.putString("payload", payload)
             try {
                 s.send(m)
             } catch (e: RemoteException) {
@@ -184,7 +186,7 @@ class WalletBackendService : Service() {
         val message = JSONObject(messageStr)
         when (message.getString("type")) {
             "notification" -> {
-                sendNotify()
+                sendNotify(message.getString("payload"))
             }
             "tunnelHttp" -> {
                 Log.v(TAG, "got http tunnel request!")
@@ -197,8 +199,8 @@ class WalletBackendService : Service() {
             "response" -> {
                 when (val operation = message.getString("operation")) {
                     "init" -> {
-                        Log.v(TAG, "got response for init operation")
-                        sendNotify()
+                        Log.v(TAG, "got response for init operation: ${message.toString(2)}")
+                        sendNotify(message.toString(2))
                     }
                     "reset" -> {
                         exitProcess(1)

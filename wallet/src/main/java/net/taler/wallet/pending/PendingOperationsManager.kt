@@ -29,17 +29,10 @@ open class PendingOperationInfo(
 
 class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
 
-    private var activeGetPending = 0
-
     val pendingOperations = MutableLiveData<List<PendingOperationInfo>>()
 
     internal fun getPending() {
-        if (activeGetPending > 0) {
-            return
-        }
-        activeGetPending++
         walletBackendApi.sendRequest("getPendingOperations", null) { isError, result ->
-            activeGetPending--
             if (isError) {
                 Log.i(TAG, "got getPending error result: $result")
                 return@sendRequest
