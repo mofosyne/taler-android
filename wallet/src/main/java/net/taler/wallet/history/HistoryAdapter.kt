@@ -71,13 +71,16 @@ internal class HistoryAdapter(
         private val icon: ImageView = v.findViewById(R.id.icon)
         protected val title: TextView = v.findViewById(R.id.title)
         private val time: TextView = v.findViewById(R.id.time)
+        private val selectableBackground = v.background
 
         @CallSuper
         open fun bind(event: HistoryEvent) {
             if (devMode || event.detailPageLayout != 0) {
+                v.background = selectableBackground
                 v.setOnClickListener { listener.onEventClicked(event) }
             } else {
                 v.background = null
+                v.setOnClickListener(null)
             }
             icon.setImageResource(event.icon)
             if (event.title == 0) title.text = event::class.java.simpleName

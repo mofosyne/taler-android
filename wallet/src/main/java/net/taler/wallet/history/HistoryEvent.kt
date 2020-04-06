@@ -407,6 +407,7 @@ class HistoryRefundedEvent(
     override val icon = R.drawable.history_refund
     override val title = R.string.history_event_refund
     override val layout = R.layout.history_receive
+    override val detailPageLayout = R.layout.fragment_event_paid
     override val showToUser = true
 }
 
