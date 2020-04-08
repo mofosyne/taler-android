@@ -96,6 +96,9 @@
             android:id="@+id/action_promptWithdraw_to_errorFragment"
             app:destination="@id/errorFragment"
             app:popUpTo="@id/showBalance" />
+        <action
+            android:id="@+id/action_promptWithdraw_to_selectExchangeFragment"
+            app:destination="@id/selectExchangeFragment" />
     </fragment>
 
     <fragment
@@ -113,6 +116,11 @@
             app:destination="@id/promptWithdraw"
             app:popUpTo="@id/showBalance" />
     </fragment>
+    <fragment
+        android:id="@+id/selectExchangeFragment"
+        android:name="net.taler.wallet.withdraw.SelectExchangeFragment"
+        android:label="@string/nav_exchange_fees"
+        tools:layout="@layout/fragment_select_exchange" />
 
     <fragment
         android:id="@+id/nav_pending_operations"

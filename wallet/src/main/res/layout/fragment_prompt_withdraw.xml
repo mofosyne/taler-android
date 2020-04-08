@@ -64,7 +64,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:text="Chosen Amount"
+        android:text="@string/amount_chosen"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/chosenAmountView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -144,18 +144,36 @@
 
     <TextView
         android:id="@+id/withdrawExchangeUrl"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center"
         android:textSize="24sp"
         android:visibility="invisible"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/withdrawCard"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/selectExchangeButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/exchangeIntroView"
-        tools:text="long.exchange.demo.taler.net"
+        tools:text="demo.taler.net"
+        tools:visibility="visible" />
+
+    <ImageButton
+        android:id="@+id/selectExchangeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/nav_exchange_fees"
+        android:src="@drawable/ic_cash_usd_outline"
+        android:tint="?attr/colorOnPrimary"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/withdrawExchangeUrl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/withdrawExchangeUrl"
+        app:layout_constraintTop_toTopOf="@+id/withdrawExchangeUrl"
         tools:visibility="visible" />
 
     <ProgressBar

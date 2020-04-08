@@ -23,6 +23,7 @@
 
     <string name="nav_prompt_withdraw">Withdraw Digital Cash</string>
     <string name="nav_exchange_tos">Exchange\'s Terms of Service</string>
+    <string name="nav_exchange_fees">Exchange Fees</string>
     <string name="nav_error">Error</string>
 
     <string name="button_back">Go Back</string>
@@ -102,6 +103,23 @@
     <string name="withdraw_button_tos">Review Terms</string>
     <string name="withdraw_error_title">Withdrawal Error</string>
     <string name="withdraw_error_message">Withdrawing is currently not possible. Please try again later!</string>
+
+    <string name="exchange_fee_withdrawal_fee_label">Withdrawal Fee:</string>
+    <string name="exchange_fee_overhead_label">Rounding Loss:</string>
+    <string name="exchange_fee_coin_expiration_label">Earliest Coin Expiry:</string>
+    <string name="exchange_fee_coin_fees_label">Coin Fees</string>
+    <string name="exchange_fee_wire_fees_label">Wire Fees</string>
+    <plurals name="exchange_fee_coin">
+        <item quantity="one">Coin: %s (used %d time)</item>
+        <item quantity="other">Coin: %s (used %d times)</item>
+    </plurals>
+    <string name="exchange_fee_withdraw_fee">Withdraw Fee: %s</string>
+    <string name="exchange_fee_deposit_fee">Deposit Fee: %s</string>
+    <string name="exchange_fee_refresh_fee">Change Fee: %s</string>
+    <string name="exchange_fee_refund_fee">Refund Fee: %s</string>
+    <string name="exchange_fee_wire_fee_timespan">Timespan: %1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_wire_fee">Wire Fee: %s</string>
+    <string name="exchange_fee_wire_fee_closing_fee">Closing Fee: %s</string>
 
     <string name="pending_operations_title">Pending Operations</string>
     <string name="pending_operations_refuse">Refuse Proposal</string>

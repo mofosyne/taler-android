@@ -22,6 +22,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
 import android.text.format.DateUtils.DAY_IN_MILLIS
+import android.text.format.DateUtils.FORMAT_ABBREV_ALL
 import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
 import android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
 import android.text.format.DateUtils.FORMAT_NO_YEAR
@@ -86,5 +87,10 @@ fun Long.toRelativeTime(context: Context): CharSequence {
 
 fun Long.toAbsoluteTime(context: Context): CharSequence {
     val flags = FORMAT_SHOW_TIME or FORMAT_SHOW_DATE or FORMAT_SHOW_YEAR
+    return formatDateTime(context, this, flags)
+}
+
+fun Long.toShortDate(context: Context): CharSequence {
+    val flags = FORMAT_SHOW_DATE or FORMAT_SHOW_YEAR or FORMAT_ABBREV_ALL
     return formatDateTime(context, this, flags)
 }

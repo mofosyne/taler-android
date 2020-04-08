@@ -57,16 +57,13 @@ class PromptWithdrawFragment : Fragment() {
 
     private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
         is WithdrawStatus.ReceivedDetails -> {
-            showContent(status.amount, status.fee, status.suggestedExchange)
+            showContent(status.amount, status.fee, status.exchange)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_confirm)
                 setOnClickListener {
                     it.fadeOut()
                     confirmProgressBar.fadeIn()
-                    withdrawManager.acceptWithdrawal(
-                        status.talerWithdrawUri,
-                        status.suggestedExchange
-                    )
+                    withdrawManager.acceptWithdrawal(status.talerWithdrawUri, status.exchange)
                 }
                 isEnabled = true
             }
@@ -83,7 +80,7 @@ class PromptWithdrawFragment : Fragment() {
             model.showProgressBar.value = true
         }
         is TermsOfServiceReviewRequired -> {
-            showContent(status.amount, status.fee, status.suggestedExchange)
+            showContent(status.amount, status.fee, status.exchange)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_tos)
                 setOnClickListener {
@@ -118,6 +115,10 @@ class PromptWithdrawFragment : Fragment() {
         exchangeIntroView.fadeIn()
         withdrawExchangeUrl.text = cleanExchange(exchange)
         withdrawExchangeUrl.fadeIn()
+        selectExchangeButton.fadeIn()
+        selectExchangeButton.setOnClickListener {
+            findNavController().navigate(R.id.action_promptWithdraw_to_selectExchangeFragment)
+        }
 
         withdrawCard.fadeIn()
     }
