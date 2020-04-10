@@ -1,11 +1,5 @@
-.binary_deps:
-  before_script:
-    - mkdir -p app/src/main/assets
-    - wget "https://git.taler.net/wallet-android.git/plain/taler-wallet-android.js?h=binary-deps" -O app/src/main/assets/taler-wallet-android.js
-
 wallet_test:
   stage: test
-  extends: .binary_deps
   only:
     changes:
       - wallet/**/*
@@ -20,7 +14,6 @@ wallet_test:
 wallet_deploy_nightly:
   stage: deploy
   resource_group: deploy_nightly
-  extends: .binary_deps
   only:
     changes:
       - wallet/**/*

@@ -14,9 +14,14 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+import com.android.build.gradle.tasks.MergeResources
+
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-android-extensions"
+    id "de.undercouch.download"
+}
 
 android {
     compileSdkVersion 29
@@ -83,4 +88,19 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+
+def walletLibraryDir = 'src/main/assets'
+def walletLibraryFile = walletLibraryDir + '/taler-wallet-android.js'
+task downloadWalletLibrary(type: Download) {
+    src "https://git.taler.net/wallet-android.git/plain/taler-wallet-android.js?h=binary-deps"
+    dest walletLibraryFile
+    onlyIfModified true
+    doFirst {
+        new File(walletLibraryDir).mkdirs()
+    }
+}
+tasks.withType(MergeResources) {
+    inputs.dir walletLibraryDir
+    dependsOn downloadWalletLibrary
 }
