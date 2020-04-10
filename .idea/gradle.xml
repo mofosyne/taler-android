@@ -10,7 +10,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/akono" />
             <option value="$PROJECT_DIR$/cashier" />
             <option value="$PROJECT_DIR$/merchant-terminal" />
             <option value="$PROJECT_DIR$/taler-kotlin-common" />

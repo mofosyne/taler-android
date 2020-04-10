@@ -1,6 +1,5 @@
 .binary_deps:
   before_script:
-    - wget "https://git.taler.net/wallet-android.git/plain/akono.aar?h=binary-deps" -O akono/akono.aar
     - mkdir -p app/src/main/assets
     - wget "https://git.taler.net/wallet-android.git/plain/taler-wallet-android.js?h=binary-deps" -O app/src/main/assets/taler-wallet-android.js
 
