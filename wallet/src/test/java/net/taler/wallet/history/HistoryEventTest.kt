@@ -114,9 +114,9 @@ class HistoryEventTest {
         val event: ReserveBalanceUpdatedEvent = mapper.readValue(json)
 
         assertEquals(timestamp, event.timestamp.ms)
-        assertEquals("TESTKUDOS:23", event.reserveAwaitedAmount)
-        assertEquals("TESTKUDOS:10", event.reserveBalance)
-        assertEquals("TESTKUDOS:0.01", event.reserveUnclaimedAmount)
+        assertEquals("TESTKUDOS:23", event.reserveAwaitedAmount.toJSONString())
+        assertEquals("TESTKUDOS:10", event.reserveBalance.toJSONString())
+        assertEquals("TESTKUDOS:0.01", event.reserveUnclaimedAmount.toJSONString())
         assertEquals(exchangeBaseUrl, event.reserveShortInfo.exchangeBaseUrl)
     }
 
@@ -143,8 +143,8 @@ class HistoryEventTest {
             "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
             event.withdrawalGroupId
         )
-        assertEquals("TESTKUDOS:9.8", event.amountWithdrawnEffective)
-        assertEquals("TESTKUDOS:10", event.amountWithdrawnRaw)
+        assertEquals("TESTKUDOS:9.8", event.amountWithdrawnEffective.toJSONString())
+        assertEquals("TESTKUDOS:10", event.amountWithdrawnRaw.toJSONString())
         assertTrue(event.withdrawalSource is WithdrawalSourceReserve)
         assertEquals(
             "BRT2P0YMQSD5F48V9XHVNH73ZTS6EZC0KCQCPGPZQWTSQB77615G",
@@ -165,7 +165,7 @@ class HistoryEventTest {
         }""".trimIndent()
         val info: OrderShortInfo = mapper.readValue(json)
 
-        assertEquals("KUDOS:0.5", info.amount)
+        assertEquals("KUDOS:0.5", info.amount.toJSONString())
         assertEquals("2019.364-01RAQ68DQ7AWR", info.orderId)
         assertEquals("Essay: Foreword", info.summary)
     }
@@ -176,7 +176,7 @@ class HistoryEventTest {
             "type": "order-accepted",
             "eventId": "order-accepted;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -198,7 +198,7 @@ class HistoryEventTest {
             "type": "order-refused",
             "eventId": "order-refused;9RJGAYXKWX0Y3V37H66606SXSA7V2CV255EBFS4G1JSH6W1EG7F0",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -220,7 +220,7 @@ class HistoryEventTest {
             "type": "payment-sent",
             "eventId": "payment-sent;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -239,7 +239,7 @@ class HistoryEventTest {
         assertEquals(orderShortInfo, event.orderShortInfo)
         assertEquals(false, event.replay)
         assertEquals(6, event.numCoins)
-        assertEquals("KUDOS:0.6", event.amountPaidWithFees)
+        assertEquals("KUDOS:0.6", event.amountPaidWithFees.toJSONString())
         assertEquals("e4f436c4-3c5c-4aee-81d2-26e425c09520", event.sessionId)
         assertEquals(timestamp, event.timestamp.ms)
     }
@@ -250,7 +250,7 @@ class HistoryEventTest {
             "type": "payment-sent",
             "eventId": "payment-sent;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -268,7 +268,7 @@ class HistoryEventTest {
         assertEquals(orderShortInfo, event.orderShortInfo)
         assertEquals(true, event.replay)
         assertEquals(6, event.numCoins)
-        assertEquals("KUDOS:0.6", event.amountPaidWithFees)
+        assertEquals("KUDOS:0.6", event.amountPaidWithFees.toJSONString())
         assertEquals(null, event.sessionId)
         assertEquals(timestamp, event.timestamp.ms)
     }
@@ -279,7 +279,7 @@ class HistoryEventTest {
             "type": "payment-aborted",
             "eventId": "payment-sent;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -293,7 +293,7 @@ class HistoryEventTest {
         val event: HistoryPaymentAbortedEvent = mapper.readValue(json)
 
         assertEquals(orderShortInfo, event.orderShortInfo)
-        assertEquals("KUDOS:0.1", event.amountLost)
+        assertEquals("KUDOS:0.1", event.amountLost.toJSONString())
         assertEquals(timestamp, event.timestamp.ms)
     }
 
@@ -314,7 +314,7 @@ class HistoryEventTest {
             "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             event.tipId
         )
-        assertEquals("KUDOS:4", event.tipRaw)
+        assertEquals("KUDOS:4", event.tipRaw.toJSONString())
         assertEquals(timestamp, event.timestamp.ms)
     }
 
@@ -335,7 +335,7 @@ class HistoryEventTest {
             "tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             event.tipId
         )
-        assertEquals("KUDOS:4", event.tipAmount)
+        assertEquals("KUDOS:4", event.tipAmount.toJSONString())
         assertEquals(timestamp, event.timestamp.ms)
     }
 
@@ -346,7 +346,7 @@ class HistoryEventTest {
             "eventId": "refund;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             "refundGroupId": "refund;998724",
             "orderShortInfo": {
-                "amount": "${orderShortInfo.amount}",
+                "amount": "${orderShortInfo.amount.toJSONString()}",
                 "orderId": "${orderShortInfo.orderId}",
                 "merchantBaseUrl": "${orderShortInfo.merchantBaseUrl}",
                 "proposalId": "${orderShortInfo.proposalId}",
@@ -355,16 +355,16 @@ class HistoryEventTest {
             "timestamp": {
               "t_ms": $timestamp
             },
-            "amountRefundedRaw": "KUDOS:1.0",
+            "amountRefundedRaw": "KUDOS:1",
             "amountRefundedInvalid": "KUDOS:0.5",
             "amountRefundedEffective": "KUDOS:0.4"
           }""".trimIndent()
         val event: HistoryRefundedEvent = mapper.readValue(json)
 
         assertEquals("refund;998724", event.refundGroupId)
-        assertEquals("KUDOS:1.0", event.amountRefundedRaw)
-        assertEquals("KUDOS:0.5", event.amountRefundedInvalid)
-        assertEquals("KUDOS:0.4", event.amountRefundedEffective)
+        assertEquals("KUDOS:1", event.amountRefundedRaw.toJSONString())
+        assertEquals("KUDOS:0.5", event.amountRefundedInvalid.toJSONString())
+        assertEquals("KUDOS:0.4", event.amountRefundedEffective.toJSONString())
         assertEquals(orderShortInfo, event.orderShortInfo)
         assertEquals(timestamp, event.timestamp.ms)
     }
@@ -387,8 +387,8 @@ class HistoryEventTest {
         }""".trimIndent()
         val event: HistoryRefreshedEvent = mapper.readValue(json)
 
-        assertEquals("KUDOS:0", event.amountRefreshedEffective)
-        assertEquals("KUDOS:1", event.amountRefreshedRaw)
+        assertEquals("KUDOS:0", event.amountRefreshedEffective.toJSONString())
+        assertEquals("KUDOS:1", event.amountRefreshedRaw.toJSONString())
         assertEquals(6, event.numInputCoins)
         assertEquals(0, event.numOutputCoins)
         assertEquals(1, event.numRefreshedInputCoins)
@@ -431,7 +431,7 @@ class HistoryEventTest {
             event.alreadyPaidOrderShortInfo.merchantBaseUrl
         )
         assertEquals("2019.354-01P25CD66P8NG", event.alreadyPaidOrderShortInfo.orderId)
-        assertEquals("KUDOS:0.5", event.alreadyPaidOrderShortInfo.amount)
+        assertEquals("KUDOS:0.5", event.alreadyPaidOrderShortInfo.amount.toJSONString())
         assertEquals(
             "Essay: 1. The Free Software Definition",
             event.alreadyPaidOrderShortInfo.summary
@@ -446,7 +446,7 @@ class HistoryEventTest {
             event.newOrderShortInfo.merchantBaseUrl
         )
         assertEquals("2019.364-01M4QH6KPMJY4", event.newOrderShortInfo.orderId)
-        assertEquals("KUDOS:0.5", event.newOrderShortInfo.amount)
+        assertEquals("KUDOS:0.5", event.newOrderShortInfo.amount.toJSONString())
         assertEquals("Essay: 1. The Free Software Definition", event.newOrderShortInfo.summary)
 
         assertEquals(timestamp, event.timestamp.ms)

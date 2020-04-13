@@ -47,7 +47,6 @@
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 
     <string name="history_title">History</string>
-    <string name="history_fee_label">Fee:</string>
     <string name="history_show_all">Show All</string>
     <string name="history_reload">Reload History</string>
     <string name="history_empty">The wallet history is empty</string>
@@ -127,7 +126,6 @@
 
     <string name="settings_version">Version Information</string>
     <string name="exchange_tos_accept">Accept Terms of Service</string>
-    <string name="exchange_tos_button_continue">Continue</string>
     <string name="settings_backups">Backups</string>
     <string name="settings_export_to_file">Export wallet to file</string>
     <string name="settings_import_from_file">Import from file</string>
