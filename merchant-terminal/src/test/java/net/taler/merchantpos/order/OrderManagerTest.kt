@@ -29,7 +29,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
+@Config(sdk = [28]) // API 29 needs at least Java 9
 @RunWith(AndroidJUnit4::class)
 class OrderManagerTest {
 
@@ -65,7 +67,7 @@ class OrderManagerTest {
                 {
                     "product_id": "631361561",
                     "description": "Chips",
-                    "price": "WRONGCURRENCY:1.00",
+                    "price": "WRONGCUR:1.00",
                     "categories": [ 1 ],
                     "delivery_location": "cafeteria"
                 }
@@ -74,7 +76,7 @@ class OrderManagerTest {
         )
         val result = orderManager.onConfigurationReceived(json, "KUDOS")
         val expectedStr = app.getString(
-            R.string.config_error_currency, "Chips", "WRONGCURRENCY", "KUDOS"
+            R.string.config_error_currency, "Chips", "WRONGCUR", "KUDOS"
         )
         assertEquals(expectedStr, result)
     }
