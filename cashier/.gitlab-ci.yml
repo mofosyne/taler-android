@@ -7,7 +7,7 @@ cashier_test:
       - cashier/**/*
       - taler-kotlin-common/**/*
       - build.gradle
-  script: ./gradlew :cashier:lint :cashier:assembleRelease
+  script: ./gradlew :cashier:check :cashier:assembleRelease
   artifacts:
     paths:
       - cashier/build/reports/lint-results.html

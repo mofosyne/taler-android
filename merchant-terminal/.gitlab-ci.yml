@@ -5,7 +5,7 @@ merchant_test:
       - merchant-terminal/**/*
       - taler-kotlin-common/**/*
       - build.gradle
-  script: ./gradlew :merchant-terminal:lint :merchant-terminal:assembleRelease
+  script: ./gradlew :merchant-terminal:check :merchant-terminal:assembleRelease
   artifacts:
     paths:
       - merchant-terminal/build/reports/lint-results.html

@@ -12,6 +12,7 @@ stages:
 include:
   - local: 'cashier/.gitlab-ci.yml'
   - local: 'merchant-terminal/.gitlab-ci.yml'
+  - local: 'taler-kotlin-common/.gitlab-ci.yml'
   - local: 'wallet/.gitlab-ci.yml'
 
 after_script:

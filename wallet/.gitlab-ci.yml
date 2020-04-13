@@ -5,7 +5,7 @@ wallet_test:
       - wallet/**/*
       - taler-kotlin-common/**/*
       - build.gradle
-  script: ./gradlew :wallet:lint :wallet:check :wallet:assembleRelease
+  script: ./gradlew :wallet:check :wallet:assembleRelease
   artifacts:
     paths:
       - wallet/build/reports/lint-results.html
