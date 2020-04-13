@@ -23,6 +23,8 @@ plugins {
     id "de.undercouch.download"
 }
 
+def walletCoreVersion = "taler-wallet-android.js"
+
 android {
     compileSdkVersion 29
     //noinspection GradleDependency
@@ -90,11 +92,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
-def walletLibraryDir = 'src/main/assets'
-def walletLibraryFile = walletLibraryDir + '/taler-wallet-android.js'
+def walletLibraryDir = "src/main/assets"
 task downloadWalletLibrary(type: Download) {
-    src "https://git.taler.net/wallet-android.git/plain/taler-wallet-android.js?h=binary-deps"
-    dest walletLibraryFile
+    src "https://git.taler.net/wallet-android.git/plain/${walletCoreVersion}?h=binary-deps"
+    dest "${walletLibraryDir}/taler-wallet-android.js"
     onlyIfModified true
     doFirst {
         new File(walletLibraryDir).mkdirs()
