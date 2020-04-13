@@ -19,6 +19,7 @@ package net.taler.wallet.withdraw
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getColor
@@ -49,8 +50,14 @@ class SelectExchangeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val fees = withdrawManager.exchangeFees ?: throw IllegalStateException()
-        withdrawFeeView.setAmount(fees.withdrawFee)
-        overheadView.setAmount(fees.overhead)
+        if (fees.withdrawFee.isZero()) {
+            withdrawFeeLabel.visibility = GONE
+            withdrawFeeView.visibility = GONE
+        } else withdrawFeeView.setAmount(fees.withdrawFee)
+        if (fees.overhead.isZero()) {
+            overheadLabel.visibility = GONE
+            overheadView.visibility = GONE
+        } else overheadView.setAmount(fees.overhead)
         expirationView.text = fees.earliestDepositExpiration.ms.toRelativeTime(requireContext())
         coinFeesList.adapter = CoinFeeAdapter(fees.coinFees)
         wireFeesList.adapter = WireFeeAdapter(fees.wireFees)
