@@ -19,6 +19,7 @@ package net.taler.wallet.history
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.taler.common.Amount
 import net.taler.wallet.history.RefreshReason.PAY
 import net.taler.wallet.history.ReserveType.MANUAL
 import org.junit.Assert.assertEquals
@@ -36,7 +37,7 @@ class HistoryEventTest {
         proposalId = "EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
         orderId = "2019.364-01RAQ68DQ7AWR",
         merchantBaseUrl = "https://backend.demo.taler.net/public/instances/FSF/",
-        amount = "KUDOS:0.5",
+        amount = Amount.fromJSONString("KUDOS:0.5"),
         summary = "Essay: Foreword"
     )
 
@@ -96,22 +97,12 @@ class HistoryEventTest {
         val json = """{
             "type": "reserve-balance-updated",
             "eventId": "reserve-balance-updated;K0H10Q6HB9WH0CKHQQMNH5C6GA7A9AR1E2XSS9G1KG3ZXMBVT26G",
-            "amountExpected": "TESTKUDOS:23",
-            "amountReserveBalance": "TESTKUDOS:10",
+            "reserveAwaitedAmount": "TESTKUDOS:23",
+            "reserveUnclaimedAmount": "TESTKUDOS:0.01",
+            "reserveBalance": "TESTKUDOS:10",
             "timestamp": {
                 "t_ms": $timestamp
             },
-            "newHistoryTransactions": [
-                {
-                    "amount": "TESTKUDOS:10",
-                    "sender_account_url": "payto:\/\/x-taler-bank\/bank.test.taler.net\/894",
-                    "timestamp": {
-                        "t_ms": $timestamp
-                    },
-                    "wire_reference": "00000000004TR",
-                    "type": "DEPOSIT"
-                }
-            ],
             "reserveShortInfo": {
                 "exchangeBaseUrl": "https:\/\/exchange.test.taler.net\/",
                 "reserveCreationDetail": {
@@ -123,10 +114,9 @@ class HistoryEventTest {
         val event: ReserveBalanceUpdatedEvent = mapper.readValue(json)
 
         assertEquals(timestamp, event.timestamp.ms)
-        assertEquals("TESTKUDOS:23", event.amountExpected)
-        assertEquals("TESTKUDOS:10", event.amountReserveBalance)
-        assertEquals(1, event.newHistoryTransactions.size)
-        assertTrue(event.newHistoryTransactions[0] is ReserveDepositTransaction)
+        assertEquals("TESTKUDOS:23", event.reserveAwaitedAmount)
+        assertEquals("TESTKUDOS:10", event.reserveBalance)
+        assertEquals("TESTKUDOS:0.01", event.reserveUnclaimedAmount)
         assertEquals(exchangeBaseUrl, event.reserveShortInfo.exchangeBaseUrl)
     }
 
@@ -134,7 +124,7 @@ class HistoryEventTest {
     fun `test HistoryWithdrawnEvent`() {
         val json = """{
             "type": "withdrawn",
-            "withdrawSessionId": "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
+            "withdrawalGroupId": "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
             "eventId": "withdrawn;974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
             "amountWithdrawnEffective": "TESTKUDOS:9.8",
             "amountWithdrawnRaw": "TESTKUDOS:10",
@@ -151,7 +141,7 @@ class HistoryEventTest {
 
         assertEquals(
             "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
-            event.withdrawSessionId
+            event.withdrawalGroupId
         )
         assertEquals("TESTKUDOS:9.8", event.amountWithdrawnEffective)
         assertEquals("TESTKUDOS:10", event.amountWithdrawnRaw)

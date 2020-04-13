@@ -99,7 +99,7 @@ internal class HistoryAdapter(
             info.text = when (event) {
                 is ExchangeAddedEvent -> cleanExchange(event.exchangeBaseUrl)
                 is ExchangeUpdatedEvent -> cleanExchange(event.exchangeBaseUrl)
-                is ReserveBalanceUpdatedEvent -> event.amountReserveBalance.toString()
+                is ReserveBalanceUpdatedEvent -> event.reserveBalance.toString()
                 is HistoryPaymentSentEvent -> event.orderShortInfo.summary
                 is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
                 is HistoryOrderRefusedEvent -> event.orderShortInfo.summary

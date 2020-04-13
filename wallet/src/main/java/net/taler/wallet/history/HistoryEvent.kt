@@ -175,7 +175,6 @@ class ExchangeUpdatedEvent(
 @JsonTypeName("reserve-balance-updated")
 class ReserveBalanceUpdatedEvent(
     timestamp: Timestamp,
-    val newHistoryTransactions: List<ReserveTransaction>,
     /**
      * Condensed information about the reserve.
      */
@@ -183,12 +182,16 @@ class ReserveBalanceUpdatedEvent(
     /**
      * Amount currently left in the reserve.
      */
-    val amountReserveBalance: Amount,
+    val reserveBalance: Amount,
     /**
      * Amount we expected to be in the reserve at that time,
      * considering ongoing withdrawals from that reserve.
      */
-    val amountExpected: Amount
+    val reserveAwaitedAmount: Amount,
+    /**
+     * Amount that hasn't been withdrawn yet.
+     */
+    val reserveUnclaimedAmount: Amount
 ) : HistoryEvent(timestamp) {
     override val title = R.string.history_event_reserve_balance_updated
 }
@@ -204,7 +207,7 @@ class HistoryWithdrawnEvent(
      * Unique identifier for the withdrawal session, can be used to
      * query more detailed information from the wallet.
      */
-    val withdrawSessionId: String,
+    val withdrawalGroupId: String,
     val withdrawalSource: WithdrawalSource,
     /**
      * Amount that has been subtracted from the reserve's balance
