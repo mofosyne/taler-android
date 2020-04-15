@@ -38,15 +38,13 @@ import com.google.zxing.integration.android.IntentIntegrator.QR_CODE
 import kotlinx.android.synthetic.main.fragment_show_balance.*
 
 interface BalanceClickListener {
-    fun onBalanceClick()
+    fun onBalanceClick(currency: String)
 }
 
 class MainFragment : Fragment(), BalanceClickListener {
 
     private val model: MainViewModel by activityViewModels()
-    private val withdrawManager by lazy { model.withdrawManager }
 
-    private var reloadBalanceMenuItem: MenuItem? = null
     private val balancesAdapter = BalanceAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,20 +71,6 @@ class MainFragment : Fragment(), BalanceClickListener {
             onBalancesChanged(it)
         })
 
-//        model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
-//            delayedTransition()
-//            testWithdrawButton.visibility = if (enabled) VISIBLE else GONE
-//            reloadBalanceMenuItem?.isVisible = enabled
-//        })
-//        testWithdrawButton.setOnClickListener {
-//            withdrawManager.withdrawTestkudos()
-//        }
-//        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
-//            Log.v("taler-wallet", "observing balance loading $loading in show balance")
-//            testWithdrawButton.isEnabled = !loading
-//            model.showProgressBar.value = loading
-//        })
-
         mainFab.setOnClickListener {
             onScanButtonClicked()
         }
@@ -99,25 +83,12 @@ class MainFragment : Fragment(), BalanceClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.reload_balance -> {
-                model.loadBalances()
-                true
-            }
-            R.id.developer_mode -> {
-                item.isChecked = !item.isChecked
-                model.devMode.value = item.isChecked
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.balance, menu)
-        menu.findItem(R.id.developer_mode).isChecked = model.devMode.value!!
-        reloadBalanceMenuItem = menu.findItem(R.id.reload_balance).apply {
-            isVisible = model.devMode.value!!
-        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -145,7 +116,7 @@ class MainFragment : Fragment(), BalanceClickListener {
         beginDelayedTransition(view as ViewGroup)
     }
 
-    override fun onBalanceClick() {
+    override fun onBalanceClick(currency: String) {
         findNavController().navigate(R.id.walletHistory)
     }
 

@@ -59,7 +59,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
         private val balanceInboundLabel: TextView = v.findViewById(R.id.balanceInboundLabel)
 
         fun bind(item: BalanceItem) {
-            v.setOnClickListener { listener.onBalanceClick() }
+            v.setOnClickListener { listener.onBalanceClick(item.available.currency) }
             currencyView.text = item.available.currency
             amountView.text = item.available.amountStr
 

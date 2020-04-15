@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <SwitchPreferenceCompat
+        app:icon="@drawable/ic_developer_mode"
+        app:key="pref_dev_mode"
+        app:summary="@string/settings_dev_mode_summary"
+        app:title="@string/menu_developer_mode" />
+
+    <Preference
+        app:icon="@drawable/ic_cash_usd_outline"
+        app:isPreferenceVisible="false"
+        app:key="pref_testkudos"
+        app:summary="@string/settings_withdraw_testkudos_summary"
+        app:title="@string/settings_withdraw_testkudos"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:isPreferenceVisible="false"
+        app:key="pref_reset"
+        app:summary="@string/settings_reset_summary"
+        app:title="@string/settings_reset"
+        tools:isPreferenceVisible="true" />
+
+</PreferenceScreen>

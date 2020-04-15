@@ -16,13 +16,4 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/reload_balance"
-        android:title="@string/menu_balance_reload"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/developer_mode"
-        android:checkable="true"
-        android:title="@string/menu_developer_mode"
-        app:showAsAction="never" />
 </menu>

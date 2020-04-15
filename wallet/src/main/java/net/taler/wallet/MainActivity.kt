@@ -54,8 +54,7 @@ import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import net.taler.wallet.refund.RefundStatus
 import java.util.Locale.ROOT
 
-class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
-    ResetDialogEventListener {
+class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     private val model: MainViewModel by viewModels()
 
@@ -203,15 +202,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 model.tunnelResponse(it)
             }
         }
-    }
-
-    override fun onResetConfirmed() {
-        model.dangerouslyReset()
-        Snackbar.make(nav_view, "Wallet has been reset", LENGTH_SHORT).show()
-    }
-
-    override fun onResetCancelled() {
-        Snackbar.make(nav_view, "Reset cancelled", LENGTH_SHORT).show()
     }
 
 }

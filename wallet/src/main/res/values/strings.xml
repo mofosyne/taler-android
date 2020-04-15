@@ -97,7 +97,6 @@
     <string name="withdraw_total">Withdraw</string>
     <string name="withdraw_fees">Fee</string>
     <string name="withdraw_exchange">Exchange</string>
-    <string name="withdraw_button_testkudos">Withdraw TESTKUDOS</string>
     <string name="withdraw_button_confirm">Confirm Withdraw</string>
     <string name="withdraw_button_tos">Review Terms</string>
     <string name="withdraw_error_title">Withdrawal Error</string>
@@ -129,8 +128,11 @@
     <string name="settings_backups">Backups</string>
     <string name="settings_export_to_file">Export wallet to file</string>
     <string name="settings_import_from_file">Import from file</string>
-    <string name="settings_developer">Developer Settings (use with caution!)</string>
+    <string name="settings_withdraw_testkudos">Withdraw TESTKUDOS</string>
+    <string name="settings_withdraw_testkudos_summary">Get money for testing</string>
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
+    <string name="settings_reset_summary">Throws away your money</string>
+    <string name="settings_dev_mode_summary">Shows more information intended for debugging</string>
 
     <string name="refund_error">Error processing refund</string>
     <string name="refund_success">Refund received</string>

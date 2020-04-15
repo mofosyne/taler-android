@@ -16,127 +16,73 @@
 
 package net.taler.wallet
 
-import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.content.Intent.ACTION_CREATE_DOCUMENT
-import android.content.Intent.ACTION_OPEN_DOCUMENT
-import android.content.Intent.CATEGORY_OPENABLE
-import android.content.Intent.EXTRA_TITLE
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.fragment_settings.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
+import com.google.android.material.snackbar.Snackbar
 
 
-interface ResetDialogEventListener {
-    fun onResetConfirmed()
-    fun onResetCancelled()
-}
-
-
-class ResetDialogFragment : DialogFragment() {
-    private lateinit var listener: ResetDialogEventListener
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return activity?.let {
-            // Use the Builder class for convenient dialog construction
-            val builder = AlertDialog.Builder(it)
-            builder.setMessage("Do you really want to reset the wallet and lose all coins and purchases?  Consider making a backup first.")
-                .setPositiveButton("Reset") { _, _ ->
-                    listener.onResetConfirmed()
-                }
-                .setNegativeButton("Cancel") { _, _ ->
-                    listener.onResetCancelled()
-                }
-            // Create the AlertDialog object and return it
-            builder.create()
-        } ?: throw IllegalStateException("Activity cannot be null")
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        // Verify that the host activity implements the callback interface
-        try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
-            listener = context as ResetDialogEventListener
-        } catch (e: ClassCastException) {
-            // The activity doesn't implement the interface, throw exception
-            throw ClassCastException(
-                (context.toString() +
-                        " must implement ResetDialogEventListener")
-            )
-        }
-    }
-}
-
-class SettingsFragment : Fragment() {
-
-    companion object {
-        private const val TAG = "taler-wallet"
-        private const val CREATE_FILE = 1
-        private const val PICK_FILE = 2
-    }
+class SettingsFragment : PreferenceFragmentCompat() {
 
     private val model: MainViewModel by activityViewModels()
+    private val withdrawManager by lazy { model.withdrawManager }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    private lateinit var prefDevMode: SwitchPreferenceCompat
+    private lateinit var prefWithdrawTest: Preference
+    private lateinit var prefReset: Preference
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.settings_main, rootKey)
+        prefDevMode = findPreference("pref_dev_mode")!!
+        prefWithdrawTest = findPreference("pref_testkudos")!!
+        prefReset = findPreference("pref_reset")!!
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
-            val visibility = if (enabled) VISIBLE else GONE
-            devSettingsTitle.visibility = visibility
-            button_reset_wallet_dangerously.visibility = visibility
+            prefDevMode.isChecked = enabled
+            prefWithdrawTest.isVisible = enabled
+            prefReset.isVisible = enabled
         })
-
-        textView4.text = BuildConfig.VERSION_NAME
-        button_reset_wallet_dangerously.setOnClickListener {
-            val d = ResetDialogFragment()
-            d.show(parentFragmentManager, "walletResetDialog")
+        prefDevMode.setOnPreferenceChangeListener { _, newValue ->
+            model.devMode.value = newValue as Boolean
+            true
         }
-        button_backup_export.setOnClickListener {
-            val intent = Intent(ACTION_CREATE_DOCUMENT).apply {
-                addCategory(CATEGORY_OPENABLE)
-                type = "application/json"
-                putExtra(EXTRA_TITLE, "taler-wallet-backup.json")
 
-                // Optionally, specify a URI for the directory that should be opened in
-                // the system file picker before your app creates the document.
-                //putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-            }
-            startActivityForResult(intent, CREATE_FILE)
+        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
+            prefWithdrawTest.isEnabled = !loading
+            model.showProgressBar.value = loading
+        })
+        prefWithdrawTest.setOnPreferenceClickListener {
+            withdrawManager.withdrawTestkudos()
+            true
         }
-        button_backup_import.setOnClickListener {
-            val intent = Intent(ACTION_OPEN_DOCUMENT).apply {
-                addCategory(CATEGORY_OPENABLE)
-                type = "application/json"
 
-                //putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-            }
-            startActivityForResult(intent, PICK_FILE)
+        prefReset.setOnPreferenceClickListener {
+            showResetDialog()
+            true
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (data == null) return
-        when (requestCode) {
-            CREATE_FILE -> Log.i(TAG, "got createFile result with URL ${data.data}")
-            PICK_FILE -> Log.i(TAG, "got pickFile result with URL ${data.data}")
-        }
+    private fun showResetDialog() {
+        AlertDialog.Builder(requireContext())
+            .setMessage("Do you really want to reset the wallet and lose all coins and purchases?")
+            .setPositiveButton("Reset") { _, _ ->
+                model.dangerouslyReset()
+                Snackbar.make(view!!, "Wallet has been reset", LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                Snackbar.make(view!!, "Reset cancelled", LENGTH_SHORT).show()
+            }
+            .show()
     }
 
 }
