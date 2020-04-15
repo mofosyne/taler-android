@@ -17,18 +17,19 @@
 package net.taler.wallet.transactions
 
 import android.content.Context
-import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
-import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
 
@@ -42,15 +43,10 @@ internal class TransactionAdapter(
         setHasStableIds(false)
     }
 
-    override fun getItemViewType(position: Int): Int = transactions[position].layout
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
-        return when (viewType) {
-            R.layout.transaction_in -> TransactionInViewHolder(view)
-            R.layout.transaction_out -> TransactionOutViewHolder(view)
-            else -> GenericTransactionViewHolder(view)
-        }
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.list_item_transaction, parent, false)
+        return TransactionViewHolder(view)
     }
 
     override fun getItemCount(): Int = transactions.size
@@ -65,122 +61,73 @@ internal class TransactionAdapter(
         this.notifyDataSetChanged()
     }
 
-    internal abstract inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
+    internal open inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
 
         protected val context: Context = v.context
+
         private val icon: ImageView = v.findViewById(R.id.icon)
         protected val title: TextView = v.findViewById(R.id.title)
         private val time: TextView = v.findViewById(R.id.time)
+        private val amount: TextView = v.findViewById(R.id.amount)
+
         private val selectableBackground = v.background
+        private val amountColor = amount.currentTextColor
 
         @CallSuper
-        open fun bind(event: Transaction) {
-            if (devMode || event.detailPageLayout != 0) {
+        open fun bind(transaction: Transaction) {
+            if (devMode || transaction.detailPageLayout != 0) {
                 v.background = selectableBackground
-                v.setOnClickListener { listener.onEventClicked(event) }
+                v.setOnClickListener { listener.onEventClicked(transaction) }
             } else {
                 v.background = null
                 v.setOnClickListener(null)
             }
-            icon.setImageResource(event.icon)
-            if (event.title == 0) title.text = event::class.java.simpleName
-            else title.setText(event.title)
-            time.text = event.timestamp.ms.toRelativeTime(context)
+            icon.setImageResource(transaction.icon)
+
+            title.text = if (transaction.title == null) {
+                when (transaction) {
+                    is RefreshTransaction -> getRefreshTitle(transaction)
+                    is OrderAcceptedTransaction -> context.getString(R.string.transaction_order_accepted)
+                    is OrderRefusedTransaction -> context.getString(R.string.transaction_order_refused)
+                    is TipAcceptedTransaction -> context.getString(R.string.transaction_tip_accepted)
+                    is TipDeclinedTransaction -> context.getString(R.string.transaction_tip_declined)
+                    is ReserveBalanceUpdatedTransaction -> context.getString(R.string.transaction_reserve_balance_updated)
+                    else -> transaction::class.java.simpleName
+                }
+            } else transaction.title
+
+            time.text = transaction.timestamp.ms.toRelativeTime(context)
+            bindAmount(transaction.displayAmount)
         }
 
-    }
-
-    internal inner class GenericTransactionViewHolder(v: View) : TransactionViewHolder(v) {
-
-        private val info: TextView = v.findViewById(R.id.info)
-
-        override fun bind(transaction: Transaction) {
-            super.bind(transaction)
-            info.text = when (transaction) {
-                is ExchangeAddedEvent -> cleanExchange(transaction.exchangeBaseUrl)
-                is ExchangeUpdatedEvent -> cleanExchange(transaction.exchangeBaseUrl)
-                is ReserveBalanceUpdatedTransaction -> transaction.reserveBalance.toString()
-                is PaymentTransaction -> transaction.orderShortInfo.summary
-                is OrderAcceptedTransaction -> transaction.orderShortInfo.summary
-                is OrderRefusedTransaction -> transaction.orderShortInfo.summary
-                is OrderRedirectedTransaction -> transaction.newOrderShortInfo.summary
-                else -> ""
+        private fun bindAmount(displayAmount: DisplayAmount?) {
+            if (displayAmount == null) {
+                amount.visibility = GONE
+            } else {
+                amount.visibility = VISIBLE
+                when (displayAmount.type) {
+                    AmountType.Positive -> {
+                        amount.text = context.getString(
+                            R.string.amount_positive, displayAmount.amount.amountStr
+                        )
+                        amount.setTextColor(context.getColor(R.color.green))
+                    }
+                    AmountType.Negative -> {
+                        amount.text = context.getString(
+                            R.string.amount_negative, displayAmount.amount.amountStr
+                        )
+                        amount.setTextColor(context.getColor(R.color.red))
+                    }
+                    AmountType.Neutral -> {
+                        amount.text = displayAmount.amount.amountStr
+                        amount.setTextColor(amountColor)
+                    }
+                }.exhaustive
             }
         }
 
-    }
-
-    internal inner class TransactionInViewHolder(v: View) : TransactionViewHolder(v) {
-
-        private val summary: TextView = v.findViewById(R.id.summary)
-        private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
-        private val paintFlags = amountWithdrawn.paintFlags
-
-        override fun bind(event: Transaction) {
-            super.bind(event)
-            when (event) {
-                is WithdrawTransaction -> bind(event)
-                is RefundTransaction -> bind(event)
-                is TipAcceptedTransaction -> bind(event)
-                is TipDeclinedTransaction -> bind(event)
-            }
-        }
-
-        private fun bind(event: WithdrawTransaction) {
-            summary.text = cleanExchange(event.exchangeBaseUrl)
-            amountWithdrawn.text =
-                context.getString(R.string.amount_positive, event.amountWithdrawnEffective)
-            amountWithdrawn.paintFlags = paintFlags
-        }
-
-        private fun bind(event: RefundTransaction) {
-            summary.text = event.orderShortInfo.summary
-            amountWithdrawn.text =
-                context.getString(R.string.amount_positive, event.amountRefundedEffective)
-            amountWithdrawn.paintFlags = paintFlags
-        }
-
-        private fun bind(transaction: TipAcceptedTransaction) {
-            summary.text = null
-            amountWithdrawn.text = context.getString(R.string.amount_positive, transaction.tipRaw)
-            amountWithdrawn.paintFlags = paintFlags
-        }
-
-        private fun bind(transaction: TipDeclinedTransaction) {
-            summary.text = null
-            amountWithdrawn.text = context.getString(R.string.amount_positive, transaction.tipAmount)
-            amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
-        }
-
-    }
-
-    internal inner class TransactionOutViewHolder(v: View) : TransactionViewHolder(v) {
-
-        private val summary: TextView = v.findViewById(R.id.summary)
-        private val amountPaidWithFees: TextView = v.findViewById(R.id.amountPaidWithFees)
-
-        override fun bind(event: Transaction) {
-            super.bind(event)
-            when (event) {
-                is PaymentTransaction -> bind(event)
-                is PaymentAbortedTransaction -> bind(event)
-                is RefreshTransaction -> bind(event)
-            }
-        }
-
-        private fun bind(event: PaymentTransaction) {
-            summary.text = event.orderShortInfo.summary
-            amountPaidWithFees.text =
-                context.getString(R.string.amount_negative, event.amountPaidWithFees)
-        }
-
-        private fun bind(transaction: PaymentAbortedTransaction) {
-            summary.text = transaction.orderShortInfo.summary
-            amountPaidWithFees.text = context.getString(R.string.amount_negative, transaction.amountLost)
-        }
-
-        private fun bind(event: RefreshTransaction) {
-            val res = when (event.refreshReason) {
+        private fun getRefreshTitle(transaction: RefreshTransaction): String {
+            val res = when (transaction.refreshReason) {
                 RefreshReason.MANUAL -> R.string.transaction_refresh_reason_manual
                 RefreshReason.PAY -> R.string.transaction_refresh_reason_pay
                 RefreshReason.REFUND -> R.string.transaction_refresh_reason_refund
@@ -188,10 +135,7 @@ internal class TransactionAdapter(
                 RefreshReason.RECOUP -> R.string.transaction_refresh_reason_recoup
                 RefreshReason.BACKUP_RESTORED -> R.string.transaction_refresh_reason_backup_restored
             }
-            summary.text = context.getString(res)
-            val fee = event.amountRefreshedRaw - event.amountRefreshedEffective
-            if (fee.isZero()) amountPaidWithFees.text = null
-            else amountPaidWithFees.text = context.getString(R.string.amount_negative, fee)
+            return context.getString(R.string.transaction_refresh) + " " + context.getString(res)
         }
 
     }

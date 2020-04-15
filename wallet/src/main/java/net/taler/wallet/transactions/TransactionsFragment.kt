@@ -47,6 +47,7 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
     private val transactionAdapter by lazy { TransactionAdapter(model.devMode.value == true, this) }
+    private val currency by lazy { transactionManager.selectedCurrency!! }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +77,16 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
         if (savedInstanceState == null) transactionManager.showAll.value = model.devMode.value
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        model.balances.observe(viewLifecycleOwner, Observer { balances ->
+            balances[currency]?.available?.let { amount ->
+                requireActivity().title =
+                    getString(R.string.transactions_detail_title_balance, amount)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

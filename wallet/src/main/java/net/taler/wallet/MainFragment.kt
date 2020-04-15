@@ -35,7 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.QR_CODE
-import kotlinx.android.synthetic.main.fragment_show_balance.*
+import kotlinx.android.synthetic.main.fragment_main.*
 
 interface BalanceClickListener {
     fun onBalanceClick(currency: String)
@@ -57,7 +57,7 @@ class MainFragment : Fragment(), BalanceClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_show_balance, container, false)
+        return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,7 +68,7 @@ class MainFragment : Fragment(), BalanceClickListener {
         }
 
         model.balances.observe(viewLifecycleOwner, Observer {
-            onBalancesChanged(it)
+            onBalancesChanged(it.values.toList())
         })
 
         mainFab.setOnClickListener {
@@ -117,6 +117,7 @@ class MainFragment : Fragment(), BalanceClickListener {
     }
 
     override fun onBalanceClick(currency: String) {
+        model.transactionManager.selectedCurrency = currency
         findNavController().navigate(R.id.nav_transactions)
     }
 

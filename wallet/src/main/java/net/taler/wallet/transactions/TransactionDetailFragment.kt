@@ -59,7 +59,7 @@ class TransactionDetailFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().title =
-            getString(if (event.title != 0) event.title else R.string.transactions_detail_title)
+            if (event.title != null) event.title else getString(R.string.transactions_detail_title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

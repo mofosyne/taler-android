@@ -46,6 +46,7 @@ class TransactionManager(
 
     val showAll = MutableLiveData<Boolean>()
 
+    var selectedCurrency: String? = null
     var selectedEvent: Transaction? = null
 
     val transactions: LiveData<TransactionsResult> = showAll.switchMap { showAll ->
@@ -65,10 +66,13 @@ class TransactionManager(
                 }
                 val transactions = Transactions()
                 val json = result.getJSONArray("history")
+                val currency = selectedCurrency
                 for (i in 0 until json.length()) {
                     val event: Transaction = mapper.readValue(json.getString(i))
                     event.json = json.getJSONObject(i)
-                    transactions.add(event)
+                    if (currency == null || event.isCurrency(currency)) {
+                        transactions.add(event)
+                    }
                 }
                 transactions.reverse()  // show latest first
                 val filtered =

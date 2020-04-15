@@ -18,7 +18,6 @@ package net.taler.wallet.transactions
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.R
+import net.taler.wallet.cleanExchange
 import org.json.JSONObject
 
 enum class ReserveType {
@@ -93,6 +93,17 @@ class ReserveShortInfo(
     val reserveCreationDetail: ReserveCreationDetail
 )
 
+sealed class AmountType {
+    object Positive : AmountType()
+    object Negative : AmountType()
+    object Neutral : AmountType()
+}
+
+class DisplayAmount(
+    val amount: Amount,
+    val type: AmountType
+)
+
 typealias Transactions = ArrayList<Transaction>
 
 @JsonTypeInfo(
@@ -137,21 +148,20 @@ ReserveCreated = "reserve-created",
 abstract class Transaction(
     val timestamp: Timestamp,
     @get:LayoutRes
-    open val layout: Int = R.layout.transaction_row,
-    @get:LayoutRes
     open val detailPageLayout: Int = 0,
-    @get:StringRes
-    open val title: Int = 0,
     @get:DrawableRes
     open val icon: Int = R.drawable.ic_account_balance,
     open val showToUser: Boolean = false
 ) {
+    abstract val title: String?
     open lateinit var json: JSONObject
+    open val displayAmount: DisplayAmount? = null
+    open fun isCurrency(currency: String): Boolean = true
 }
 
 
 class UnknownTransaction(timestamp: Timestamp) : Transaction(timestamp) {
-    override val title = R.string.transaction_unknown
+    override val title: String? = null
 }
 
 @JsonTypeName("exchange-added")
@@ -160,7 +170,7 @@ class ExchangeAddedEvent(
     val exchangeBaseUrl: String,
     val builtIn: Boolean
 ) : Transaction(timestamp) {
-    override val title = R.string.history_event_exchange_added
+    override val title = cleanExchange(exchangeBaseUrl)
 }
 
 @JsonTypeName("exchange-updated")
@@ -168,7 +178,7 @@ class ExchangeUpdatedEvent(
     timestamp: Timestamp,
     val exchangeBaseUrl: String
 ) : Transaction(timestamp) {
-    override val title = R.string.history_event_exchange_updated
+    override val title = cleanExchange(exchangeBaseUrl)
 }
 
 
@@ -193,7 +203,9 @@ class ReserveBalanceUpdatedTransaction(
      */
     val reserveUnclaimedAmount: Amount
 ) : Transaction(timestamp) {
-    override val title = R.string.transaction_reserve_balance_updated
+    override val title: String? = null
+    override val displayAmount = DisplayAmount(reserveBalance, AmountType.Neutral)
+    override fun isCurrency(currency: String) = reserveBalance.currency == currency
 }
 
 @JsonTypeName("withdrawn")
@@ -219,11 +231,12 @@ class WithdrawTransaction(
      */
     val amountWithdrawnEffective: Amount
 ) : Transaction(timestamp) {
-    override val layout = R.layout.transaction_in
     override val detailPageLayout = R.layout.fragment_event_withdraw
-    override val title = R.string.transaction_withdrawal
+    override val title = cleanExchange(exchangeBaseUrl)
     override val icon = R.drawable.transaction_withdrawal
     override val showToUser = true
+    override val displayAmount = DisplayAmount(amountWithdrawnEffective, AmountType.Positive)
+    override fun isCurrency(currency: String) = amountWithdrawnRaw.currency == currency
 }
 
 @JsonTypeName("order-accepted")
@@ -235,7 +248,8 @@ class OrderAcceptedTransaction(
     val orderShortInfo: OrderShortInfo
 ) : Transaction(timestamp) {
     override val icon = R.drawable.ic_add_circle
-    override val title = R.string.transaction_order_accepted
+    override val title: String? = null
+    override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
 }
 
 @JsonTypeName("order-refused")
@@ -247,7 +261,8 @@ class OrderRefusedTransaction(
     val orderShortInfo: OrderShortInfo
 ) : Transaction(timestamp) {
     override val icon = R.drawable.ic_cancel
-    override val title = R.string.transaction_order_refused
+    override val title: String? = null
+    override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
 }
 
 @JsonTypeName("payment-sent")
@@ -275,11 +290,12 @@ class PaymentTransaction(
      */
     val sessionId: String?
 ) : Transaction(timestamp) {
-    override val layout = R.layout.transaction_out
     override val detailPageLayout = R.layout.fragment_event_paid
-    override val title = R.string.transaction_payment
+    override val title = orderShortInfo.summary
     override val icon = R.drawable.ic_cash_usd_outline
     override val showToUser = true
+    override val displayAmount = DisplayAmount(amountPaidWithFees, AmountType.Negative)
+    override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
 }
 
 @JsonTypeName("payment-aborted")
@@ -294,10 +310,11 @@ class PaymentAbortedTransaction(
      */
     val amountLost: Amount
 ) : Transaction(timestamp) {
-    override val layout = R.layout.transaction_out
-    override val title = R.string.transaction_payment_aborted
+    override val title = orderShortInfo.summary
     override val icon = R.drawable.transaction_payment_aborted
     override val showToUser = true
+    override val displayAmount = DisplayAmount(amountLost, AmountType.Negative)
+    override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
 }
 
 @JsonTypeName("refreshed")
@@ -325,10 +342,19 @@ class RefreshTransaction(
      */
     val refreshGroupId: String
 ) : Transaction(timestamp) {
-    override val layout = R.layout.transaction_out
     override val icon = R.drawable.transaction_refresh
-    override val title = R.string.transaction_refresh
+    override val title: String? = null
     override val showToUser = !(amountRefreshedRaw - amountRefreshedEffective).isZero()
+    override val displayAmount: DisplayAmount?
+        get() {
+            return if (showToUser) DisplayAmount(
+                amountRefreshedRaw - amountRefreshedEffective,
+                AmountType.Negative
+            )
+            else null
+        }
+
+    override fun isCurrency(currency: String) = amountRefreshedRaw.currency == currency
 }
 
 @JsonTypeName("order-redirected")
@@ -345,7 +371,8 @@ class OrderRedirectedTransaction(
     val alreadyPaidOrderShortInfo: OrderShortInfo
 ) : Transaction(timestamp) {
     override val icon = R.drawable.ic_directions
-    override val title = R.string.transaction_order_redirected
+    override val title = newOrderShortInfo.summary
+    override fun isCurrency(currency: String) = newOrderShortInfo.amount.currency == currency
 }
 
 @JsonTypeName("tip-accepted")
@@ -361,9 +388,10 @@ class TipAcceptedTransaction(
     val tipRaw: Amount
 ) : Transaction(timestamp) {
     override val icon = R.drawable.transaction_tip_accepted
-    override val title = R.string.transaction_tip_accepted
-    override val layout = R.layout.transaction_in
+    override val title: String? = null
     override val showToUser = true
+    override val displayAmount = DisplayAmount(tipRaw, AmountType.Positive)
+    override fun isCurrency(currency: String) = tipRaw.currency == currency
 }
 
 @JsonTypeName("tip-declined")
@@ -379,9 +407,10 @@ class TipDeclinedTransaction(
     val tipAmount: Amount
 ) : Transaction(timestamp) {
     override val icon = R.drawable.transaction_tip_declined
-    override val title = R.string.transaction_tip_declined
-    override val layout = R.layout.transaction_in
+    override val title: String? = null
     override val showToUser = true
+    override val displayAmount = DisplayAmount(tipAmount, AmountType.Neutral)
+    override fun isCurrency(currency: String) = tipAmount.currency == currency
 }
 
 @JsonTypeName("refund")
@@ -408,10 +437,11 @@ class RefundTransaction(
     val amountRefundedEffective: Amount
 ) : Transaction(timestamp) {
     override val icon = R.drawable.transaction_refund
-    override val title = R.string.transaction_refund
-    override val layout = R.layout.transaction_in
+    override val title = orderShortInfo.summary
     override val detailPageLayout = R.layout.fragment_event_paid
     override val showToUser = true
+    override val displayAmount = DisplayAmount(amountRefundedEffective, AmountType.Positive)
+    override fun isCurrency(currency: String) = amountRefundedRaw.currency == currency
 }
 
 @JsonTypeInfo(

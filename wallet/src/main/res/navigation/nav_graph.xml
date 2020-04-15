@@ -25,7 +25,7 @@
         android:id="@+id/showBalance"
         android:name="net.taler.wallet.MainFragment"
         android:label="@string/balances_title"
-        tools:layout="@layout/fragment_show_balance">
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_showBalance_to_promptPayment"
             app:destination="@id/promptPayment" />

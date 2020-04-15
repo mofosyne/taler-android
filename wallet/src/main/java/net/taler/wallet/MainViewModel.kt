@@ -28,10 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.common.Amount
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
+import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
@@ -41,8 +41,8 @@ data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
-    private val mBalances = MutableLiveData<List<BalanceItem>>()
-    val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
+    private val mBalances = MutableLiveData<Map<String, BalanceItem>>()
+    val balances: LiveData<Map<String, BalanceItem>> = mBalances.distinctUntilChanged()
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
@@ -82,7 +82,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                 Log.e(TAG, "Error retrieving balances: ${result.toString(2)}")
                 return@sendRequest
             }
-            val balanceList = mutableListOf<BalanceItem>()
+            val balanceMap = HashMap<String, BalanceItem>()
             val byCurrency = result.getJSONObject("byCurrency")
             val currencyList = byCurrency.keys().asSequence().toList().sorted()
             for (currency in currencyList) {
@@ -92,9 +92,9 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                 val jsonAmountIncoming = byCurrency.getJSONObject(currency)
                     .getJSONObject("pendingIncoming")
                 val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
-                balanceList.add(BalanceItem(amount, amountIncoming))
+                balanceMap[currency] = BalanceItem(amount, amountIncoming)
             }
-            mBalances.postValue(balanceList)
+            mBalances.postValue(balanceMap)
             showProgressBar.postValue(false)
         }
     }
@@ -103,7 +103,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     fun dangerouslyReset() {
         walletBackendApi.sendRequest("reset", null)
         withdrawManager.testWithdrawalInProgress.value = false
-        mBalances.value = emptyList()
+        mBalances.value = emptyMap()
     }
 
     fun startTunnel() {

@@ -139,7 +139,7 @@ class PendingOperationsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val rowView =
-            LayoutInflater.from(parent.context).inflate(R.layout.pending_row, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.list_item_pending_operation, parent, false)
         return MyViewHolder(rowView)
     }
 
