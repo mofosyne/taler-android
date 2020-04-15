@@ -27,11 +27,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_error.*
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 
 class ErrorFragment : Fragment() {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
     override fun onCreateView(

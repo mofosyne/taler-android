@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.fragment_show_history.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 
 interface OnEventClickListener {
     fun onEventClicked(event: HistoryEvent)
@@ -44,7 +44,7 @@ interface OnEventClickListener {
 
 class HistoryFragment : Fragment(), OnEventClickListener {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val historyManager by lazy { model.historyManager }
     private lateinit var showAllItem: MenuItem
     private var reloadHistoryItem: MenuItem? = null

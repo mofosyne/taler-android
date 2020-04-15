@@ -57,7 +57,7 @@ import java.util.Locale.ROOT
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     ResetDialogEventListener {
 
-    private val model: WalletViewModel by viewModels()
+    private val model: MainViewModel by viewModels()
 
     private lateinit var nav: NavController
 
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         setSupportActionBar(toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.showBalance, R.id.settings, R.id.walletHistory, R.id.nav_pending_operations),
+            setOf(R.id.showBalance, R.id.settings, R.id.nav_pending_operations),
             drawer_layout
         )
         toolbar.setupWithNavController(nav, appBarConfiguration)
@@ -116,7 +116,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         when (item.itemId) {
             R.id.nav_home -> nav.navigate(R.id.showBalance)
             R.id.nav_settings -> nav.navigate(R.id.settings)
-            R.id.nav_history -> nav.navigate(R.id.walletHistory)
             R.id.nav_pending_operations -> nav.navigate(R.id.nav_pending_operations)
         }
         drawer_layout.closeDrawer(START)

@@ -29,11 +29,11 @@ import kotlinx.android.synthetic.main.fragment_review_exchange_tos.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 
 class ReviewExchangeTosFragment : Fragment() {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
     override fun onCreateView(

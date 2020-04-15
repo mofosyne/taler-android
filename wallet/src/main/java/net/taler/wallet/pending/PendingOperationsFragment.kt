@@ -39,7 +39,7 @@ import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import kotlinx.android.synthetic.main.fragment_pending_operations.*
 import net.taler.wallet.R
 import net.taler.wallet.TAG
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 import org.json.JSONObject
 
 interface PendingOperationClickListener {
@@ -49,7 +49,7 @@ interface PendingOperationClickListener {
 
 class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val pendingOperationsManager by lazy { model.pendingOperationsManager }
 
     private val pendingAdapter = PendingOperationsAdapter(emptyList(), this)

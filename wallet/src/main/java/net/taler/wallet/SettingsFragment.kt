@@ -79,7 +79,7 @@ class ResetDialogFragment : DialogFragment() {
     }
 }
 
-class Settings : Fragment() {
+class SettingsFragment : Fragment() {
 
     companion object {
         private const val TAG = "taler-wallet"
@@ -87,7 +87,7 @@ class Settings : Fragment() {
         private const val PICK_FILE = 2
     }
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

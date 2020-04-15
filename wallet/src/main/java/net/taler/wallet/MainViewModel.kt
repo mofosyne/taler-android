@@ -39,7 +39,7 @@ const val TAG = "taler-wallet"
 
 data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
-class WalletViewModel(val app: Application) : AndroidViewModel(app) {
+class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val mBalances = MutableLiveData<List<BalanceItem>>()
     val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()

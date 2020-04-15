@@ -37,14 +37,14 @@ import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 
 /**
  * Show a payment and ask the user to accept/decline.
  */
 class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
     private val adapter = ProductAdapter(this)
 

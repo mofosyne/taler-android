@@ -13,79 +13,43 @@
   ~ You should have received a copy of the GNU General Public License along with
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/balancesList"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/mainList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/scanButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:layout_height="200dp"
         tools:listitem="@layout/list_item_balance"
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/balancesEmptyState"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/mainEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:autoLink="web"
         android:gravity="center"
         android:padding="16dp"
         android:text="@string/balances_empty_state"
         android:textSize="18sp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/scanButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:barrierAllowsGoneWidgets="false"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="balancesList, balancesEmptyState" />
-
-    <Button
-        android:id="@+id/scanButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:drawableLeft="@drawable/ic_scan_qr"
-        android:padding="16dp"
-        android:text="@string/button_scan_qr_code"
-        app:layout_constraintBottom_toTopOf="@+id/testWithdrawButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrier"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:ignore="RtlHardcoded" />
-
-    <Button
-        android:id="@+id/testWithdrawButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:padding="16dp"
-        android:text="@string/withdraw_button_testkudos"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanButton"
         tools:visibility="visible" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mainFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_scan_qr"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        app:layout_dodgeInsetEdges="bottom"
+        app:tint="?attr/colorOnPrimary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

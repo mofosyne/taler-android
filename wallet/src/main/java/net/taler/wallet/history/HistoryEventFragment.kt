@@ -35,12 +35,12 @@ import kotlinx.android.synthetic.main.fragment_event_withdraw.timeView
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 import net.taler.wallet.cleanExchange
 
 class HistoryEventFragment : Fragment() {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val historyManager by lazy { model.historyManager }
     private val event by lazy { requireNotNull(historyManager.selectedEvent) }
 

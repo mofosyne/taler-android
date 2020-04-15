@@ -32,13 +32,13 @@ import net.taler.common.Amount
 import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
 import net.taler.wallet.R
-import net.taler.wallet.WalletViewModel
+import net.taler.wallet.MainViewModel
 import net.taler.wallet.withdraw.CoinFeeAdapter.CoinFeeViewHolder
 import net.taler.wallet.withdraw.WireFeeAdapter.WireFeeViewHolder
 
 class SelectExchangeFragment : Fragment() {
 
-    private val model: WalletViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
     override fun onCreateView(
