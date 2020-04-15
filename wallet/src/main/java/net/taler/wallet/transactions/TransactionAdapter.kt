@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.history
+package net.taler.wallet.transactions
 
 import android.content.Context
 import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
@@ -29,43 +29,43 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.history.HistoryAdapter.HistoryEventViewHolder
+import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
 
-internal class HistoryAdapter(
+internal class TransactionAdapter(
     private val devMode: Boolean,
     private val listener: OnEventClickListener,
-    private var history: History = History()
-) : Adapter<HistoryEventViewHolder>() {
+    private var transactions: Transactions = Transactions()
+) : Adapter<TransactionViewHolder>() {
 
     init {
         setHasStableIds(false)
     }
 
-    override fun getItemViewType(position: Int): Int = history[position].layout
+    override fun getItemViewType(position: Int): Int = transactions[position].layout
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryEventViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
         return when (viewType) {
-            R.layout.history_receive -> HistoryReceiveViewHolder(view)
-            R.layout.history_payment -> HistoryPaymentViewHolder(view)
-            else -> GenericHistoryEventViewHolder(view)
+            R.layout.transaction_in -> TransactionInViewHolder(view)
+            R.layout.transaction_out -> TransactionOutViewHolder(view)
+            else -> GenericTransactionViewHolder(view)
         }
     }
 
-    override fun getItemCount(): Int = history.size
+    override fun getItemCount(): Int = transactions.size
 
-    override fun onBindViewHolder(holder: HistoryEventViewHolder, position: Int) {
-        val event = history[position]
+    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
+        val event = transactions[position]
         holder.bind(event)
     }
 
-    fun update(updatedHistory: History) {
-        this.history = updatedHistory
+    fun update(updatedTransactions: Transactions) {
+        this.transactions = updatedTransactions
         this.notifyDataSetChanged()
     }
 
-    internal abstract inner class HistoryEventViewHolder(private val v: View) : ViewHolder(v) {
+    internal abstract inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
 
         protected val context: Context = v.context
         private val icon: ImageView = v.findViewById(R.id.icon)
@@ -74,7 +74,7 @@ internal class HistoryAdapter(
         private val selectableBackground = v.background
 
         @CallSuper
-        open fun bind(event: HistoryEvent) {
+        open fun bind(event: Transaction) {
             if (devMode || event.detailPageLayout != 0) {
                 v.background = selectableBackground
                 v.setOnClickListener { listener.onEventClicked(event) }
@@ -90,103 +90,103 @@ internal class HistoryAdapter(
 
     }
 
-    internal inner class GenericHistoryEventViewHolder(v: View) : HistoryEventViewHolder(v) {
+    internal inner class GenericTransactionViewHolder(v: View) : TransactionViewHolder(v) {
 
         private val info: TextView = v.findViewById(R.id.info)
 
-        override fun bind(event: HistoryEvent) {
-            super.bind(event)
-            info.text = when (event) {
-                is ExchangeAddedEvent -> cleanExchange(event.exchangeBaseUrl)
-                is ExchangeUpdatedEvent -> cleanExchange(event.exchangeBaseUrl)
-                is ReserveBalanceUpdatedEvent -> event.reserveBalance.toString()
-                is HistoryPaymentSentEvent -> event.orderShortInfo.summary
-                is HistoryOrderAcceptedEvent -> event.orderShortInfo.summary
-                is HistoryOrderRefusedEvent -> event.orderShortInfo.summary
-                is HistoryOrderRedirectedEvent -> event.newOrderShortInfo.summary
+        override fun bind(transaction: Transaction) {
+            super.bind(transaction)
+            info.text = when (transaction) {
+                is ExchangeAddedEvent -> cleanExchange(transaction.exchangeBaseUrl)
+                is ExchangeUpdatedEvent -> cleanExchange(transaction.exchangeBaseUrl)
+                is ReserveBalanceUpdatedTransaction -> transaction.reserveBalance.toString()
+                is PaymentTransaction -> transaction.orderShortInfo.summary
+                is OrderAcceptedTransaction -> transaction.orderShortInfo.summary
+                is OrderRefusedTransaction -> transaction.orderShortInfo.summary
+                is OrderRedirectedTransaction -> transaction.newOrderShortInfo.summary
                 else -> ""
             }
         }
 
     }
 
-    internal inner class HistoryReceiveViewHolder(v: View) : HistoryEventViewHolder(v) {
+    internal inner class TransactionInViewHolder(v: View) : TransactionViewHolder(v) {
 
         private val summary: TextView = v.findViewById(R.id.summary)
         private val amountWithdrawn: TextView = v.findViewById(R.id.amountWithdrawn)
         private val paintFlags = amountWithdrawn.paintFlags
 
-        override fun bind(event: HistoryEvent) {
+        override fun bind(event: Transaction) {
             super.bind(event)
             when (event) {
-                is HistoryWithdrawnEvent -> bind(event)
-                is HistoryRefundedEvent -> bind(event)
-                is HistoryTipAcceptedEvent -> bind(event)
-                is HistoryTipDeclinedEvent -> bind(event)
+                is WithdrawTransaction -> bind(event)
+                is RefundTransaction -> bind(event)
+                is TipAcceptedTransaction -> bind(event)
+                is TipDeclinedTransaction -> bind(event)
             }
         }
 
-        private fun bind(event: HistoryWithdrawnEvent) {
+        private fun bind(event: WithdrawTransaction) {
             summary.text = cleanExchange(event.exchangeBaseUrl)
             amountWithdrawn.text =
                 context.getString(R.string.amount_positive, event.amountWithdrawnEffective)
             amountWithdrawn.paintFlags = paintFlags
         }
 
-        private fun bind(event: HistoryRefundedEvent) {
+        private fun bind(event: RefundTransaction) {
             summary.text = event.orderShortInfo.summary
             amountWithdrawn.text =
                 context.getString(R.string.amount_positive, event.amountRefundedEffective)
             amountWithdrawn.paintFlags = paintFlags
         }
 
-        private fun bind(event: HistoryTipAcceptedEvent) {
+        private fun bind(transaction: TipAcceptedTransaction) {
             summary.text = null
-            amountWithdrawn.text = context.getString(R.string.amount_positive, event.tipRaw)
+            amountWithdrawn.text = context.getString(R.string.amount_positive, transaction.tipRaw)
             amountWithdrawn.paintFlags = paintFlags
         }
 
-        private fun bind(event: HistoryTipDeclinedEvent) {
+        private fun bind(transaction: TipDeclinedTransaction) {
             summary.text = null
-            amountWithdrawn.text = context.getString(R.string.amount_positive, event.tipAmount)
+            amountWithdrawn.text = context.getString(R.string.amount_positive, transaction.tipAmount)
             amountWithdrawn.paintFlags = amountWithdrawn.paintFlags or STRIKE_THRU_TEXT_FLAG
         }
 
     }
 
-    internal inner class HistoryPaymentViewHolder(v: View) : HistoryEventViewHolder(v) {
+    internal inner class TransactionOutViewHolder(v: View) : TransactionViewHolder(v) {
 
         private val summary: TextView = v.findViewById(R.id.summary)
         private val amountPaidWithFees: TextView = v.findViewById(R.id.amountPaidWithFees)
 
-        override fun bind(event: HistoryEvent) {
+        override fun bind(event: Transaction) {
             super.bind(event)
             when (event) {
-                is HistoryPaymentSentEvent -> bind(event)
-                is HistoryPaymentAbortedEvent -> bind(event)
-                is HistoryRefreshedEvent -> bind(event)
+                is PaymentTransaction -> bind(event)
+                is PaymentAbortedTransaction -> bind(event)
+                is RefreshTransaction -> bind(event)
             }
         }
 
-        private fun bind(event: HistoryPaymentSentEvent) {
+        private fun bind(event: PaymentTransaction) {
             summary.text = event.orderShortInfo.summary
             amountPaidWithFees.text =
                 context.getString(R.string.amount_negative, event.amountPaidWithFees)
         }
 
-        private fun bind(event: HistoryPaymentAbortedEvent) {
-            summary.text = event.orderShortInfo.summary
-            amountPaidWithFees.text = context.getString(R.string.amount_negative, event.amountLost)
+        private fun bind(transaction: PaymentAbortedTransaction) {
+            summary.text = transaction.orderShortInfo.summary
+            amountPaidWithFees.text = context.getString(R.string.amount_negative, transaction.amountLost)
         }
 
-        private fun bind(event: HistoryRefreshedEvent) {
+        private fun bind(event: RefreshTransaction) {
             val res = when (event.refreshReason) {
-                RefreshReason.MANUAL -> R.string.history_event_refresh_reason_manual
-                RefreshReason.PAY -> R.string.history_event_refresh_reason_pay
-                RefreshReason.REFUND -> R.string.history_event_refresh_reason_refund
-                RefreshReason.ABORT_PAY -> R.string.history_event_refresh_reason_abort_pay
-                RefreshReason.RECOUP -> R.string.history_event_refresh_reason_recoup
-                RefreshReason.BACKUP_RESTORED -> R.string.history_event_refresh_reason_backup_restored
+                RefreshReason.MANUAL -> R.string.transaction_refresh_reason_manual
+                RefreshReason.PAY -> R.string.transaction_refresh_reason_pay
+                RefreshReason.REFUND -> R.string.transaction_refresh_reason_refund
+                RefreshReason.ABORT_PAY -> R.string.transaction_refresh_reason_abort_pay
+                RefreshReason.RECOUP -> R.string.transaction_refresh_reason_recoup
+                RefreshReason.BACKUP_RESTORED -> R.string.transaction_refresh_reason_backup_restored
             }
             summary.text = context.getString(res)
             val fee = event.amountRefreshedRaw - event.amountRefreshedEffective

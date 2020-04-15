@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".history.HistoryEventFragment">
+    tools:context=".transactions.TransactionDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/timeView"
-            style="@style/HistoryEventLabel.Time"
+            style="@style/TransactionLabel.Time"
             app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,8 +38,8 @@
 
         <TextView
             android:id="@+id/amountPaidWithFeesLabel"
-            style="@style/HistoryEventLabel"
-            android:text="@string/history_event_payment_sent_paid"
+            style="@style/TransactionLabel"
+            android:text="@string/transaction_paid"
             app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,7 @@
 
         <TextView
             android:id="@+id/amountPaidWithFeesView"
-            style="@style/HistoryEventContent"
+            style="@style/TransactionContent"
             android:textColor="@color/red"
             app:layout_constraintBottom_toTopOf="@+id/orderAmountLabel"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,8 +57,8 @@
 
         <TextView
             android:id="@+id/orderAmountLabel"
-            style="@style/HistoryEventLabel"
-            android:text="@string/history_event_payment_sent_amount"
+            style="@style/TransactionLabel"
+            android:text="@string/transaction_order_total"
             app:layout_constraintBottom_toTopOf="@+id/orderAmountView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +66,7 @@
 
         <TextView
             android:id="@+id/orderAmountView"
-            style="@style/HistoryEventContent"
+            style="@style/TransactionContent"
             app:layout_constraintBottom_toTopOf="@+id/feeLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,7 +75,7 @@
 
         <TextView
             android:id="@+id/feeLabel"
-            style="@style/HistoryEventLabel"
+            style="@style/TransactionLabel"
             android:text="@string/withdraw_fees"
             app:layout_constraintBottom_toTopOf="@+id/feeView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,7 @@
 
         <TextView
             android:id="@+id/feeView"
-            style="@style/HistoryEventContent"
+            style="@style/TransactionContent"
             android:textColor="@color/red"
             app:layout_constraintBottom_toTopOf="@+id/orderSummaryLabel"
             app:layout_constraintEnd_toEndOf="parent"
@@ -94,8 +94,8 @@
 
         <TextView
             android:id="@+id/orderSummaryLabel"
-            style="@style/HistoryEventLabel"
-            android:text="@string/history_event_payment_sent_order"
+            style="@style/TransactionLabel"
+            android:text="@string/transaction_order"
             app:layout_constraintBottom_toTopOf="@+id/orderSummaryView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +103,7 @@
 
         <TextView
             android:id="@+id/orderSummaryView"
-            style="@style/HistoryEventContent"
+            style="@style/TransactionContent"
             app:layout_constraintBottom_toTopOf="@+id/orderIdView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -112,8 +112,8 @@
 
         <TextView
             android:id="@+id/orderIdView"
-            style="@style/HistoryEventLabel"
-            android:text="@string/history_event_payment_sent_order_id"
+            style="@style/TransactionLabel"
+            android:text="@string/transaction_order_id"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

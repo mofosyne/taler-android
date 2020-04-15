@@ -32,18 +32,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/history_withdrawn"
+        app:srcCompat="@drawable/transaction_withdrawal"
         app:tint="?android:colorControlNormal"
         tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/HistoryTitle"
+        style="@style/TransactionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/history_event_withdrawn"
+        android:text="@string/transaction_withdrawal"
         app:layout_constraintEnd_toStartOf="@+id/amountWithdrawn"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent" />

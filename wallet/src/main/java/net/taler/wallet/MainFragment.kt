@@ -88,7 +88,7 @@ class MainFragment : Fragment(), BalanceClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.balance, menu)
+        inflater.inflate(R.menu.fragment_main, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -117,7 +117,7 @@ class MainFragment : Fragment(), BalanceClickListener {
     }
 
     override fun onBalanceClick(currency: String) {
-        findNavController().navigate(R.id.walletHistory)
+        findNavController().navigate(R.id.nav_transactions)
     }
 
 }

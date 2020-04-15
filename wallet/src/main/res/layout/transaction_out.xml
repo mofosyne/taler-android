@@ -38,7 +38,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/HistoryTitle"
+        style="@style/TransactionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -46,7 +46,7 @@
         app:layout_constraintEnd_toStartOf="@+id/amountPaidWithFees"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/history_event_payment_sent" />
+        tools:text="@string/transaction_payment" />
 
     <TextView
         android:id="@+id/summary"

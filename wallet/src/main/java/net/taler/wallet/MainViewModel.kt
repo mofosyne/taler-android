@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.common.Amount
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.history.HistoryManager
+import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
@@ -66,7 +66,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager = PendingOperationsManager(walletBackendApi)
-    val historyManager = HistoryManager(walletBackendApi, mapper)
+    val transactionManager = TransactionManager(walletBackendApi, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
     override fun onCleared() {

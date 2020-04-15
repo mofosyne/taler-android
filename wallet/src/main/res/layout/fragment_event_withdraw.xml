@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".history.HistoryEventFragment">
+    tools:context=".transactions.TransactionDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/timeView"
-            style="@style/HistoryEventLabel.Time"
+            style="@style/TransactionLabel.Time"
             app:layout_constraintBottom_toTopOf="@+id/effectiveAmountLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
 
         <TextView
             android:id="@+id/effectiveAmountLabel"
-            style="@style/HistoryEventLabel"
+            style="@style/TransactionLabel"
             app:layout_constraintBottom_toTopOf="@+id/effectiveAmountView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +64,7 @@
 
         <TextView
             android:id="@+id/chosenAmountLabel"
-            style="@style/HistoryEventLabel"
+            style="@style/TransactionLabel"
             app:layout_constraintBottom_toTopOf="@+id/chosenAmountView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +89,7 @@
 
         <TextView
             android:id="@+id/feeLabel"
-            style="@style/HistoryEventLabel"
+            style="@style/TransactionLabel"
             android:text="@string/withdraw_fees"
             app:layout_constraintBottom_toTopOf="@+id/feeView"
             app:layout_constraintEnd_toEndOf="parent"
@@ -115,7 +115,7 @@
 
         <TextView
             android:id="@+id/exchangeLabel"
-            style="@style/HistoryEventLabel"
+            style="@style/TransactionLabel"
             android:text="@string/withdraw_exchange"
             app:layout_constraintBottom_toTopOf="@+id/exchangeView"
             app:layout_constraintEnd_toEndOf="parent"

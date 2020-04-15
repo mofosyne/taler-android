@@ -14,20 +14,20 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.history
+package net.taler.wallet.transactions
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.common.Amount
-import net.taler.wallet.history.RefreshReason.PAY
-import net.taler.wallet.history.ReserveType.MANUAL
+import net.taler.wallet.transactions.RefreshReason.PAY
+import net.taler.wallet.transactions.ReserveType.MANUAL
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import kotlin.random.Random
 
-class HistoryEventTest {
+class TransactionTest {
 
     private val mapper = ObjectMapper().registerModule(KotlinModule())
 
@@ -93,7 +93,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test ReserveBalanceUpdatedEvent`() {
+    fun `test ReserveBalanceUpdatedTransaction`() {
         val json = """{
             "type": "reserve-balance-updated",
             "eventId": "reserve-balance-updated;K0H10Q6HB9WH0CKHQQMNH5C6GA7A9AR1E2XSS9G1KG3ZXMBVT26G",
@@ -111,17 +111,17 @@ class HistoryEventTest {
                 "reservePub": "BRT2P0YMQSD5F48V9XHVNH73ZTS6EZC0KCQCPGPZQWTSQB77615G"
             }
         }""".trimIndent()
-        val event: ReserveBalanceUpdatedEvent = mapper.readValue(json)
+        val transaction: ReserveBalanceUpdatedTransaction = mapper.readValue(json)
 
-        assertEquals(timestamp, event.timestamp.ms)
-        assertEquals("TESTKUDOS:23", event.reserveAwaitedAmount.toJSONString())
-        assertEquals("TESTKUDOS:10", event.reserveBalance.toJSONString())
-        assertEquals("TESTKUDOS:0.01", event.reserveUnclaimedAmount.toJSONString())
-        assertEquals(exchangeBaseUrl, event.reserveShortInfo.exchangeBaseUrl)
+        assertEquals(timestamp, transaction.timestamp.ms)
+        assertEquals("TESTKUDOS:23", transaction.reserveAwaitedAmount.toJSONString())
+        assertEquals("TESTKUDOS:10", transaction.reserveBalance.toJSONString())
+        assertEquals("TESTKUDOS:0.01", transaction.reserveUnclaimedAmount.toJSONString())
+        assertEquals(exchangeBaseUrl, transaction.reserveShortInfo.exchangeBaseUrl)
     }
 
     @Test
-    fun `test HistoryWithdrawnEvent`() {
+    fun `test WithdrawTransaction`() {
         val json = """{
             "type": "withdrawn",
             "withdrawalGroupId": "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
@@ -137,7 +137,7 @@ class HistoryEventTest {
                 "reservePub": "BRT2P0YMQSD5F48V9XHVNH73ZTS6EZC0KCQCPGPZQWTSQB77615G"
             }
         }""".trimIndent()
-        val event: HistoryWithdrawnEvent = mapper.readValue(json)
+        val event: WithdrawTransaction = mapper.readValue(json)
 
         assertEquals(
             "974FT7JDNR20EQKNR21G1HV9PB6T5AZHYHX9NHR51Q30ZK3T10S0",
@@ -171,7 +171,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test HistoryOrderAcceptedEvent`() {
+    fun `test OrderAcceptedTransaction`() {
         val json = """{
             "type": "order-accepted",
             "eventId": "order-accepted;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
@@ -186,14 +186,14 @@ class HistoryEventTest {
                 "t_ms": $timestamp
             }
         }""".trimIndent()
-        val event: HistoryOrderAcceptedEvent = mapper.readValue(json)
+        val transaction: OrderAcceptedTransaction = mapper.readValue(json)
 
-        assertEquals(orderShortInfo, event.orderShortInfo)
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals(orderShortInfo, transaction.orderShortInfo)
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryOrderRefusedEvent`() {
+    fun `test OrderRefusedTransaction`() {
         val json = """{
             "type": "order-refused",
             "eventId": "order-refused;9RJGAYXKWX0Y3V37H66606SXSA7V2CV255EBFS4G1JSH6W1EG7F0",
@@ -208,14 +208,14 @@ class HistoryEventTest {
                 "t_ms": $timestamp
             }
         }""".trimIndent()
-        val event: HistoryOrderRefusedEvent = mapper.readValue(json)
+        val transaction: OrderRefusedTransaction = mapper.readValue(json)
 
-        assertEquals(orderShortInfo, event.orderShortInfo)
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals(orderShortInfo, transaction.orderShortInfo)
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryPaymentSentEvent`() {
+    fun `test PaymentTransaction`() {
         val json = """{
             "type": "payment-sent",
             "eventId": "payment-sent;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
@@ -234,7 +234,7 @@ class HistoryEventTest {
             "numCoins": 6,
             "amountPaidWithFees": "KUDOS:0.6"
         }""".trimIndent()
-        val event: HistoryPaymentSentEvent = mapper.readValue(json)
+        val event: PaymentTransaction = mapper.readValue(json)
 
         assertEquals(orderShortInfo, event.orderShortInfo)
         assertEquals(false, event.replay)
@@ -245,7 +245,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test HistoryPaymentSentEvent without sessionId`() {
+    fun `test PaymentTransaction without sessionId`() {
         val json = """{
             "type": "payment-sent",
             "eventId": "payment-sent;EP5MH4R5C9RMNA06YS1QGEJ3EY682PY8R1SGRFRP74EV735N3ATG",
@@ -263,7 +263,7 @@ class HistoryEventTest {
             "numCoins": 6,
             "amountPaidWithFees": "KUDOS:0.6"
         }""".trimIndent()
-        val event: HistoryPaymentSentEvent = mapper.readValue(json)
+        val event: PaymentTransaction = mapper.readValue(json)
 
         assertEquals(orderShortInfo, event.orderShortInfo)
         assertEquals(true, event.replay)
@@ -274,7 +274,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test HistoryPaymentAbortedEvent`() {
+    fun `test PaymentAbortedTransaction`() {
         val json = """{
             "type": "payment-aborted",
             "eventId": "payment-sent;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
@@ -290,15 +290,15 @@ class HistoryEventTest {
             },
             "amountLost": "KUDOS:0.1"
           }""".trimIndent()
-        val event: HistoryPaymentAbortedEvent = mapper.readValue(json)
+        val transaction: PaymentAbortedTransaction = mapper.readValue(json)
 
-        assertEquals(orderShortInfo, event.orderShortInfo)
-        assertEquals("KUDOS:0.1", event.amountLost.toJSONString())
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals(orderShortInfo, transaction.orderShortInfo)
+        assertEquals("KUDOS:0.1", transaction.amountLost.toJSONString())
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryTipAcceptedEvent`() {
+    fun `test TipAcceptedTransaction`() {
         val json = """{
             "type": "tip-accepted",
             "timestamp": {
@@ -308,18 +308,18 @@ class HistoryEventTest {
             "tipId": "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             "tipRaw": "KUDOS:4"
           }""".trimIndent()
-        val event: HistoryTipAcceptedEvent = mapper.readValue(json)
+        val transaction: TipAcceptedTransaction = mapper.readValue(json)
 
         assertEquals(
             "tip-accepted;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
-            event.tipId
+            transaction.tipId
         )
-        assertEquals("KUDOS:4", event.tipRaw.toJSONString())
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals("KUDOS:4", transaction.tipRaw.toJSONString())
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryTipDeclinedEvent`() {
+    fun `test TipDeclinedTransaction`() {
         val json = """{
             "type": "tip-declined",
             "timestamp": {
@@ -329,18 +329,18 @@ class HistoryEventTest {
             "tipId": "tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
             "tipAmount": "KUDOS:4"
           }""".trimIndent()
-        val event: HistoryTipDeclinedEvent = mapper.readValue(json)
+        val transaction: TipDeclinedTransaction = mapper.readValue(json)
 
         assertEquals(
             "tip-accepted;998724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
-            event.tipId
+            transaction.tipId
         )
-        assertEquals("KUDOS:4", event.tipAmount.toJSONString())
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals("KUDOS:4", transaction.tipAmount.toJSONString())
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryRefundedEvent`() {
+    fun `test RefundTransaction`() {
         val json = """{
             "type": "refund",
             "eventId": "refund;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
@@ -359,7 +359,7 @@ class HistoryEventTest {
             "amountRefundedInvalid": "KUDOS:0.5",
             "amountRefundedEffective": "KUDOS:0.4"
           }""".trimIndent()
-        val event: HistoryRefundedEvent = mapper.readValue(json)
+        val event: RefundTransaction = mapper.readValue(json)
 
         assertEquals("refund;998724", event.refundGroupId)
         assertEquals("KUDOS:1", event.amountRefundedRaw.toJSONString())
@@ -370,7 +370,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test HistoryRefreshedEvent`() {
+    fun `test RefreshTransaction`() {
         val json = """{
             "type": "refreshed",
             "refreshGroupId": "8AVHKJFAN4QV4C11P56NEY83AJMGFF2KF412AN3Y0QBP09RSN640",
@@ -385,7 +385,7 @@ class HistoryEventTest {
             "numOutputCoins": 0,
             "numRefreshedInputCoins": 1
         }""".trimIndent()
-        val event: HistoryRefreshedEvent = mapper.readValue(json)
+        val event: RefreshTransaction = mapper.readValue(json)
 
         assertEquals("KUDOS:0", event.amountRefreshedEffective.toJSONString())
         assertEquals("KUDOS:1", event.amountRefreshedRaw.toJSONString())
@@ -398,7 +398,7 @@ class HistoryEventTest {
     }
 
     @Test
-    fun `test HistoryOrderRedirectedEvent`() {
+    fun `test OrderRedirectedTransaction`() {
         val json = """{
             "type": "order-redirected",
             "eventId": "order-redirected;621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G",
@@ -420,40 +420,40 @@ class HistoryEventTest {
               "t_ms": $timestamp
             }
           }""".trimIndent()
-        val event: HistoryOrderRedirectedEvent = mapper.readValue(json)
+        val transaction: OrderRedirectedTransaction = mapper.readValue(json)
 
         assertEquals(
             "898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0",
-            event.alreadyPaidOrderShortInfo.proposalId
+            transaction.alreadyPaidOrderShortInfo.proposalId
         )
         assertEquals(
             "https://backend.demo.taler.net/public/instances/FSF/",
-            event.alreadyPaidOrderShortInfo.merchantBaseUrl
+            transaction.alreadyPaidOrderShortInfo.merchantBaseUrl
         )
-        assertEquals("2019.354-01P25CD66P8NG", event.alreadyPaidOrderShortInfo.orderId)
-        assertEquals("KUDOS:0.5", event.alreadyPaidOrderShortInfo.amount.toJSONString())
+        assertEquals("2019.354-01P25CD66P8NG", transaction.alreadyPaidOrderShortInfo.orderId)
+        assertEquals("KUDOS:0.5", transaction.alreadyPaidOrderShortInfo.amount.toJSONString())
         assertEquals(
             "Essay: 1. The Free Software Definition",
-            event.alreadyPaidOrderShortInfo.summary
+            transaction.alreadyPaidOrderShortInfo.summary
         )
 
         assertEquals(
             "621J6D5SXG7M17TYA26945DYKNQZPW4600MZ1W8MADA1RRR49F8G",
-            event.newOrderShortInfo.proposalId
+            transaction.newOrderShortInfo.proposalId
         )
         assertEquals(
             "https://backend.demo.taler.net/public/instances/FSF/",
-            event.newOrderShortInfo.merchantBaseUrl
+            transaction.newOrderShortInfo.merchantBaseUrl
         )
-        assertEquals("2019.364-01M4QH6KPMJY4", event.newOrderShortInfo.orderId)
-        assertEquals("KUDOS:0.5", event.newOrderShortInfo.amount.toJSONString())
-        assertEquals("Essay: 1. The Free Software Definition", event.newOrderShortInfo.summary)
+        assertEquals("2019.364-01M4QH6KPMJY4", transaction.newOrderShortInfo.orderId)
+        assertEquals("KUDOS:0.5", transaction.newOrderShortInfo.amount.toJSONString())
+        assertEquals("Essay: 1. The Free Software Definition", transaction.newOrderShortInfo.summary)
 
-        assertEquals(timestamp, event.timestamp.ms)
+        assertEquals(timestamp, transaction.timestamp.ms)
     }
 
     @Test
-    fun `test HistoryUnknownEvent`() {
+    fun `test UnknownTransaction`() {
         val json = """{
             "type": "does not exist",
             "timestamp": {
@@ -461,9 +461,9 @@ class HistoryEventTest {
             },
             "eventId": "does-not-exist;898724XGQ1GGMZB4WY3KND582NSP74FZ60BX0Y87FF81H0FJ8XD0"
           }""".trimIndent()
-        val event: HistoryEvent = mapper.readValue(json)
+        val event: Transaction = mapper.readValue(json)
 
-        assertEquals(HistoryUnknownEvent::class.java, event.javaClass)
+        assertEquals(UnknownTransaction::class.java, event.javaClass)
         assertEquals(timestamp, event.timestamp.ms)
     }
 

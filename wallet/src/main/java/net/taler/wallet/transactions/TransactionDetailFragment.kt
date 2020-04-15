@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.history
+package net.taler.wallet.transactions
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,15 +34,15 @@ import kotlinx.android.synthetic.main.fragment_event_withdraw.feeView
 import kotlinx.android.synthetic.main.fragment_event_withdraw.timeView
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 
-class HistoryEventFragment : Fragment() {
+class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-    private val historyManager by lazy { model.historyManager }
-    private val event by lazy { requireNotNull(historyManager.selectedEvent) }
+    private val transactionManager by lazy { model.transactionManager }
+    private val event by lazy { requireNotNull(transactionManager.selectedEvent) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,15 +59,15 @@ class HistoryEventFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().title =
-            getString(if (event.title != 0) event.title else R.string.history_detail_title)
+            getString(if (event.title != 0) event.title else R.string.transactions_detail_title)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         timeView.text = event.timestamp.ms.toAbsoluteTime(requireContext())
         when (val e = event) {
-            is HistoryWithdrawnEvent -> bind(e)
-            is HistoryPaymentSentEvent -> bind(e)
-            is HistoryRefundedEvent -> bind(e)
+            is WithdrawTransaction -> bind(e)
+            is PaymentTransaction -> bind(e)
+            is RefundTransaction -> bind(e)
             else -> Toast.makeText(
                 requireContext(),
                 "event ${e.javaClass} not implement",
@@ -77,7 +77,7 @@ class HistoryEventFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.history_event, menu)
+        inflater.inflate(R.menu.transactions_detail, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -90,7 +90,7 @@ class HistoryEventFragment : Fragment() {
         }
     }
 
-    private fun bind(event: HistoryWithdrawnEvent) {
+    private fun bind(event: WithdrawTransaction) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
         effectiveAmountView.text = event.amountWithdrawnEffective.toString()
         chosenAmountLabel.text = getString(R.string.amount_chosen)
@@ -101,14 +101,14 @@ class HistoryEventFragment : Fragment() {
         exchangeView.text = cleanExchange(event.exchangeBaseUrl)
     }
 
-    private fun bind(event: HistoryPaymentSentEvent) {
+    private fun bind(event: PaymentTransaction) {
         amountPaidWithFeesView.text = event.amountPaidWithFees.toString()
         val fee = event.amountPaidWithFees - event.orderShortInfo.amount
         bindOrderAndFee(event.orderShortInfo, fee)
     }
 
-    private fun bind(event: HistoryRefundedEvent) {
-        amountPaidWithFeesLabel.text = getString(R.string.history_event_refund)
+    private fun bind(event: RefundTransaction) {
+        amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
         amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
         amountPaidWithFeesView.text =
             getString(R.string.amount_positive, event.amountRefundedEffective.toString())
@@ -121,7 +121,7 @@ class HistoryEventFragment : Fragment() {
         feeView.text = getString(R.string.amount_negative, fee.toString())
         orderSummaryView.text = orderShortInfo.summary
         orderIdView.text =
-            getString(R.string.history_event_payment_sent_order_id, orderShortInfo.orderId)
+            getString(R.string.transaction_order_id, orderShortInfo.orderId)
     }
 
 }

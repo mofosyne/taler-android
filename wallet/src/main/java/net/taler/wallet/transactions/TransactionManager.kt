@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.history
+package net.taler.wallet.transactions
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,15 +27,16 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
 
-sealed class HistoryResult {
-    object Error : HistoryResult()
-    class Success(val history: History) : HistoryResult()
+sealed class TransactionsResult {
+    object Error : TransactionsResult()
+    class Success(val transactions: Transactions) : TransactionsResult()
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-class HistoryManager(
+class TransactionManager(
     private val walletBackendApi: WalletBackendApi,
     private val mapper: ObjectMapper
 ) {
@@ -45,33 +46,36 @@ class HistoryManager(
 
     val showAll = MutableLiveData<Boolean>()
 
-    var selectedEvent: HistoryEvent? = null
+    var selectedEvent: Transaction? = null
 
-    val history: LiveData<HistoryResult> = showAll.switchMap { showAll ->
-        loadHistory(showAll)
+    val transactions: LiveData<TransactionsResult> = showAll.switchMap { showAll ->
+        loadTransactions(showAll)
             .onStart { mProgress.postValue(true) }
             .onCompletion { mProgress.postValue(false) }
             .asLiveData(Dispatchers.IO)
     }
 
-    private fun loadHistory(showAll: Boolean) = callbackFlow {
+    private fun loadTransactions(showAll: Boolean) = callbackFlow {
         walletBackendApi.sendRequest("getHistory", null) { isError, result ->
-            if (isError) {
-                offer(HistoryResult.Error)
+            launch(Dispatchers.Default) {
+                if (isError) {
+                    offer(TransactionsResult.Error)
+                    close()
+                    return@launch
+                }
+                val transactions = Transactions()
+                val json = result.getJSONArray("history")
+                for (i in 0 until json.length()) {
+                    val event: Transaction = mapper.readValue(json.getString(i))
+                    event.json = json.getJSONObject(i)
+                    transactions.add(event)
+                }
+                transactions.reverse()  // show latest first
+                val filtered =
+                    if (showAll) transactions else transactions.filter { it.showToUser } as Transactions
+                offer(TransactionsResult.Success(filtered))
                 close()
-                return@sendRequest
             }
-            val history = History()
-            val json = result.getJSONArray("history")
-            for (i in 0 until json.length()) {
-                val event: HistoryEvent = mapper.readValue(json.getString(i))
-                event.json = json.getJSONObject(i)
-                history.add(event)
-            }
-            history.reverse()  // show latest first
-            val filtered = if (showAll) history else history.filter { it.showToUser } as History
-            offer(HistoryResult.Success(filtered))
-            close()
         }
         awaitClose()
     }

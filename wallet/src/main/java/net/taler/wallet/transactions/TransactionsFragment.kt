@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.history
+package net.taler.wallet.transactions
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,23 +32,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import kotlinx.android.synthetic.main.fragment_show_history.*
+import kotlinx.android.synthetic.main.fragment_transactions.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 
 interface OnEventClickListener {
-    fun onEventClicked(event: HistoryEvent)
+    fun onEventClicked(event: Transaction)
 }
 
-class HistoryFragment : Fragment(), OnEventClickListener {
+class TransactionsFragment : Fragment(), OnEventClickListener {
 
     private val model: MainViewModel by activityViewModels()
-    private val historyManager by lazy { model.historyManager }
-    private lateinit var showAllItem: MenuItem
-    private var reloadHistoryItem: MenuItem? = null
-    private val historyAdapter by lazy { HistoryAdapter(model.devMode.value == true, this) }
+    private val transactionManager by lazy { model.transactionManager }
+    private val transactionAdapter by lazy { TransactionAdapter(model.devMode.value == true, this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,73 +57,56 @@ class HistoryFragment : Fragment(), OnEventClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_show_history, container, false)
+        return inflater.inflate(R.layout.fragment_transactions, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        historyList.apply {
+        list.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = historyAdapter
+            adapter = transactionAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
-            reloadHistoryItem?.isVisible = enabled
+        transactionManager.progress.observe(viewLifecycleOwner, Observer { show ->
+            progressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
-        historyManager.progress.observe(viewLifecycleOwner, Observer { show ->
-            historyProgressBar.visibility = if (show) VISIBLE else INVISIBLE
-        })
-        historyManager.history.observe(viewLifecycleOwner, Observer { history ->
-            onHistoryResult(history)
+        transactionManager.transactions.observe(viewLifecycleOwner, Observer { result ->
+            onTransactionsResult(result)
         })
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
-        if (savedInstanceState == null) historyManager.showAll.value = model.devMode.value
+        if (savedInstanceState == null) transactionManager.showAll.value = model.devMode.value
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.history, menu)
-        showAllItem = menu.findItem(R.id.show_all_history)
-        showAllItem.isChecked = historyManager.showAll.value == true
-        reloadHistoryItem = menu.findItem(R.id.reload_history).apply {
-            isVisible = model.devMode.value!!
-        }
+        inflater.inflate(R.menu.transactions, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.show_all_history -> {
-                item.isChecked = !item.isChecked
-                historyManager.showAll.value = item.isChecked
-                true
-            }
-            R.id.reload_history -> {
-                historyManager.showAll.value = showAllItem.isChecked
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    override fun onEventClicked(event: HistoryEvent) {
+    override fun onEventClicked(event: Transaction) {
         if (event.detailPageLayout != 0) {
-            historyManager.selectedEvent = event
-            findNavController().navigate(R.id.action_walletHistory_to_historyEventFragment)
+            transactionManager.selectedEvent = event
+            findNavController().navigate(R.id.action_nav_transactions_to_nav_transaction_detail)
         } else if (model.devMode.value == true) {
             JsonDialogFragment.new(event.json.toString(2))
                 .show(parentFragmentManager, null)
         }
     }
 
-    private fun onHistoryResult(result: HistoryResult) = when (result) {
-        HistoryResult.Error -> {
-            historyList.fadeOut()
-            historyEmptyState.text = getString(R.string.history_error)
-            historyEmptyState.fadeIn()
+    private fun onTransactionsResult(result: TransactionsResult) = when (result) {
+        TransactionsResult.Error -> {
+            list.fadeOut()
+            emptyState.text = getString(R.string.transactions_error)
+            emptyState.fadeIn()
         }
-        is HistoryResult.Success -> {
-            historyEmptyState.visibility = if (result.history.isEmpty()) VISIBLE else INVISIBLE
-            historyAdapter.update(result.history)
+        is TransactionsResult.Success -> {
+            emptyState.visibility = if (result.transactions.isEmpty()) VISIBLE else INVISIBLE
+            transactionAdapter.update(result.transactions)
         }
     }
 

@@ -18,6 +18,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/show_json"
-        android:title="@string/history_detail_json"
+        android:title="@string/transactions_detail_json"
         app:showAsAction="never" />
 </menu>

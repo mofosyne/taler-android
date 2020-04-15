@@ -33,12 +33,12 @@
 
     <style name="AppTheme.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
 
-    <style name="HistoryTitle">
+    <style name="TransactionTitle">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="HistoryEventLabel">
+    <style name="TransactionLabel">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">16dp</item>
@@ -47,12 +47,12 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="HistoryEventLabel.Time">
+    <style name="TransactionLabel.Time">
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     </style>
 
-    <style name="HistoryEventContent">
+    <style name="TransactionContent">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">16dp</item>

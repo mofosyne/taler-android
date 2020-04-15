@@ -30,55 +30,50 @@
     <string name="button_continue">Continue</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
 
-    <string name="menu_history">History</string>
     <string name="menu_settings">Settings</string>
-    <string name="menu_balance_reload">Reload balances</string>
-    <string name="menu_developer_mode">Developer Mode</string>
     <string name="menu_retry_pending_operations">Retry Pending Operations</string>
 
     <string name="servicedesc">my service</string>
     <string name="aiddescription">my aid</string>
 
     <string name="balances_title">Balances</string>
-    <string name="amount_positive">+%s</string>
-    <string name="amount_negative">-%s</string>
+    <string name="amount_positive">+ %s</string>
+    <string name="amount_negative">- %s</string>
     <string name="amount_chosen">Chosen Amount</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
 
-    <string name="history_title">History</string>
-    <string name="history_show_all">Show All</string>
-    <string name="history_reload">Reload History</string>
-    <string name="history_empty">The wallet history is empty</string>
-    <string name="history_error">Could not load history</string>
-    <string name="history_detail_title">Transaction</string>
-    <string name="history_detail_json">Show JSON</string>
+    <string name="transactions_title">Transactions</string>
+    <string name="transactions_empty">You don\'t have any transactions</string>
+    <string name="transactions_error">Could not load transactions</string>
+    <string name="transactions_detail_title">Transaction</string>
+    <string name="transactions_detail_json">Show JSON</string>
 
-    <!-- HistoryEvents -->
+    <!-- Transactions -->
     <string name="history_event_exchange_added">Exchange Added</string>
     <string name="history_event_exchange_updated">Exchange Updated</string>
-    <string name="history_event_reserve_balance_updated">Reserve Balance Updated</string>
-    <string name="history_event_payment_sent">Payment</string>
-    <string name="history_event_payment_sent_paid">Paid</string>
-    <string name="history_event_payment_sent_amount">Order Total</string>
-    <string name="history_event_payment_sent_order">Order</string>
-    <string name="history_event_payment_sent_order_id">Order Reference: %1$s</string>
-    <string name="history_event_payment_aborted">Payment Aborted</string>
-    <string name="history_event_withdrawn">Withdraw</string>
-    <string name="history_event_order_accepted">Purchase Confirmed</string>
-    <string name="history_event_order_refused">Purchase Cancelled</string>
-    <string name="history_event_tip_accepted">Tip Accepted</string>
-    <string name="history_event_tip_declined">Tip Declined</string>
-    <string name="history_event_order_redirected">Purchase Redirected</string>
-    <string name="history_event_refund">Refund</string>
-    <string name="history_event_refreshed">Obtained change</string>
-    <string name="history_event_refresh_reason_manual">because of manual request</string>
-    <string name="history_event_refresh_reason_pay">for payment</string>
-    <string name="history_event_refresh_reason_refund">for refund</string>
-    <string name="history_event_refresh_reason_abort_pay">to abort payment</string>
-    <string name="history_event_refresh_reason_recoup">to recoup funds</string>
-    <string name="history_event_refresh_reason_backup_restored">because of restoring from backup</string>
-    <string name="history_event_unknown">Unknown Event</string>
+    <string name="transaction_reserve_balance_updated">Reserve Balance Updated</string>
+    <string name="transaction_payment">Payment</string>
+    <string name="transaction_paid">Paid</string>
+    <string name="transaction_order_total">Order Total</string>
+    <string name="transaction_order">Order</string>
+    <string name="transaction_order_id">Order Reference: %1$s</string>
+    <string name="transaction_payment_aborted">Payment Aborted</string>
+    <string name="transaction_withdrawal">Withdraw</string>
+    <string name="transaction_order_accepted">Purchase Confirmed</string>
+    <string name="transaction_order_refused">Purchase Cancelled</string>
+    <string name="transaction_tip_accepted">Tip Accepted</string>
+    <string name="transaction_tip_declined">Tip Declined</string>
+    <string name="transaction_order_redirected">Purchase Redirected</string>
+    <string name="transaction_refund">Refund</string>
+    <string name="transaction_refresh">Obtained change</string>
+    <string name="transaction_refresh_reason_manual">because of manual request</string>
+    <string name="transaction_refresh_reason_pay">for payment</string>
+    <string name="transaction_refresh_reason_refund">for refund</string>
+    <string name="transaction_refresh_reason_abort_pay">to abort payment</string>
+    <string name="transaction_refresh_reason_recoup">to recoup funds</string>
+    <string name="transaction_refresh_reason_backup_restored">because of restoring from backup</string>
+    <string name="transaction_unknown">Unknown Transaction</string>
 
     <string name="payment_fee">+%s payment fee</string>
     <string name="payment_button_confirm">Confirm Payment</string>
@@ -118,21 +113,18 @@
     <string name="exchange_fee_wire_fee_timespan">Timespan: %1$s - %2$s</string>
     <string name="exchange_fee_wire_fee_wire_fee">Wire Fee: %s</string>
     <string name="exchange_fee_wire_fee_closing_fee">Closing Fee: %s</string>
+    <string name="exchange_tos_accept">Accept Terms of Service</string>
 
     <string name="pending_operations_title">Pending Operations</string>
     <string name="pending_operations_refuse">Refuse Proposal</string>
     <string name="pending_operations_no_action">(no action)</string>
 
-    <string name="settings_version">Version Information</string>
-    <string name="exchange_tos_accept">Accept Terms of Service</string>
-    <string name="settings_backups">Backups</string>
-    <string name="settings_export_to_file">Export wallet to file</string>
-    <string name="settings_import_from_file">Import from file</string>
+    <string name="settings_dev_mode">Developer Mode</string>
+    <string name="settings_dev_mode_summary">Shows more information intended for debugging</string>
     <string name="settings_withdraw_testkudos">Withdraw TESTKUDOS</string>
     <string name="settings_withdraw_testkudos_summary">Get money for testing</string>
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
     <string name="settings_reset_summary">Throws away your money</string>
-    <string name="settings_dev_mode_summary">Shows more information intended for debugging</string>
 
     <string name="refund_error">Error processing refund</string>
     <string name="refund_success">Refund received</string>

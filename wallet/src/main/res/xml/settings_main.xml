@@ -21,7 +21,7 @@
         app:icon="@drawable/ic_developer_mode"
         app:key="pref_dev_mode"
         app:summary="@string/settings_dev_mode_summary"
-        app:title="@string/menu_developer_mode" />
+        app:title="@string/settings_dev_mode" />
 
     <Preference
         app:icon="@drawable/ic_cash_usd_outline"
