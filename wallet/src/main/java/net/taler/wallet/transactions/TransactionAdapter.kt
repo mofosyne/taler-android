@@ -18,13 +18,17 @@ package net.taler.wallet.transactions
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.CallSuper
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.ItemKeyProvider
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.exhaustive
@@ -39,6 +43,9 @@ internal class TransactionAdapter(
     private var transactions: Transactions = Transactions()
 ) : Adapter<TransactionViewHolder>() {
 
+    lateinit var tracker: SelectionTracker<String>
+    val keyProvider = TransactionKeyProvider()
+
     init {
         setHasStableIds(false)
     }
@@ -52,13 +59,17 @@ internal class TransactionAdapter(
     override fun getItemCount(): Int = transactions.size
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val event = transactions[position]
-        holder.bind(event)
+        val transaction = transactions[position]
+        holder.bind(transaction, tracker.isSelected(transaction.eventId))
     }
 
     fun update(updatedTransactions: Transactions) {
         this.transactions = updatedTransactions
         this.notifyDataSetChanged()
+    }
+
+    fun selectAll() = transactions.forEach {
+        tracker.select(it.eventId)
     }
 
     internal open inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
@@ -73,15 +84,15 @@ internal class TransactionAdapter(
         private val selectableBackground = v.background
         private val amountColor = amount.currentTextColor
 
-        @CallSuper
-        open fun bind(transaction: Transaction) {
+        open fun bind(transaction: Transaction, selected: Boolean) {
             if (devMode || transaction.detailPageLayout != 0) {
                 v.background = selectableBackground
-                v.setOnClickListener { listener.onEventClicked(transaction) }
+                v.setOnClickListener { listener.onTransactionClicked(transaction) }
             } else {
                 v.background = null
                 v.setOnClickListener(null)
             }
+            v.isActivated = selected
             icon.setImageResource(transaction.icon)
 
             title.text = if (transaction.title == null) {
@@ -140,4 +151,28 @@ internal class TransactionAdapter(
 
     }
 
+    internal inner class TransactionKeyProvider : ItemKeyProvider<String>(SCOPE_MAPPED) {
+        override fun getKey(position: Int) = transactions[position].eventId
+        override fun getPosition(key: String): Int {
+            return transactions.indexOfFirst { it.eventId == key }
+        }
+    }
+
+}
+
+internal class TransactionLookup(
+    private val list: RecyclerView,
+    private val adapter: TransactionAdapter
+) : ItemDetailsLookup<String>() {
+    override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
+        list.findChildViewUnder(e.x, e.y)?.let { view ->
+            val holder = list.getChildViewHolder(view)
+            val position = holder.adapterPosition
+            return object : ItemDetails<String>() {
+                override fun getPosition(): Int = position
+                override fun getSelectionKey(): String = adapter.keyProvider.getKey(position)
+            }
+        }
+        return null
+    }
 }

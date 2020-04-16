@@ -17,6 +17,7 @@
 package net.taler.wallet.transactions
 
 import android.os.Bundle
+import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -25,10 +26,15 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.selection.SelectionPredicates
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_transactions.*
@@ -38,16 +44,18 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 
 interface OnEventClickListener {
-    fun onEventClicked(event: Transaction)
+    fun onTransactionClicked(transaction: Transaction)
 }
 
-class TransactionsFragment : Fragment(), OnEventClickListener {
+class TransactionsFragment : Fragment(), OnEventClickListener, ActionMode.Callback {
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
 
     private val transactionAdapter by lazy { TransactionAdapter(model.devMode.value == true, this) }
     private val currency by lazy { transactionManager.selectedCurrency!! }
+    private var tracker: SelectionTracker<String>? = null
+    private var actionMode: ActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +74,32 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
             adapter = transactionAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
+        val tracker = SelectionTracker.Builder(
+            "transaction-selection-id",
+            list,
+            transactionAdapter.keyProvider,
+            TransactionLookup(list, transactionAdapter),
+            StorageStrategy.createStringStorage()
+        ).withSelectionPredicate(
+            SelectionPredicates.createSelectAnything()
+        ).build()
+        savedInstanceState?.let { tracker.onRestoreInstanceState(it) }
+        transactionAdapter.tracker = tracker
+        this.tracker = tracker
+        tracker.addObserver(object : SelectionTracker.SelectionObserver<String>() {
+            override fun onItemStateChanged(key: String, selected: Boolean) {
+                if (selected && actionMode == null) {
+                    actionMode = requireActivity().startActionMode(this@TransactionsFragment)
+                    updateActionModeTitle()
+                } else if (actionMode != null) {
+                    if (selected || tracker.hasSelection()) {
+                        updateActionModeTitle()
+                    } else {
+                        actionMode!!.finish()
+                    }
+                }
+            }
+        })
 
         transactionManager.progress.observe(viewLifecycleOwner, Observer { show ->
             progressBar.visibility = if (show) VISIBLE else INVISIBLE
@@ -88,6 +122,11 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
         })
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        tracker?.onSaveInstanceState(outState)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.transactions, menu)
     }
@@ -98,12 +137,13 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
         }
     }
 
-    override fun onEventClicked(event: Transaction) {
-        if (event.detailPageLayout != 0) {
-            transactionManager.selectedEvent = event
+    override fun onTransactionClicked(transaction: Transaction) {
+        if (actionMode != null) return // don't react on clicks while in action mode
+        if (transaction.detailPageLayout != 0) {
+            transactionManager.selectedEvent = transaction
             findNavController().navigate(R.id.action_nav_transaction_detail)
         } else if (model.devMode.value == true) {
-            JsonDialogFragment.new(event.json.toString(2))
+            JsonDialogFragment.new(transaction.json.toString(2))
                 .show(parentFragmentManager, null)
         }
     }
@@ -118,6 +158,39 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
             emptyState.visibility = if (result.transactions.isEmpty()) VISIBLE else INVISIBLE
             transactionAdapter.update(result.transactions)
             list.fadeIn()
+        }
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        val inflater = mode.menuInflater
+        inflater.inflate(R.menu.transactions_action_mode, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+        return false // no update needed
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.transaction_delete -> {
+                val s = "Not yet implemented. Pester Florian! ;)"
+                Toast.makeText(requireContext(), s, LENGTH_LONG).show()
+                mode.finish()
+            }
+            R.id.transaction_select_all -> transactionAdapter.selectAll()
+        }
+        return true
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        tracker?.clearSelection()
+        actionMode = null
+    }
+
+    private fun updateActionModeTitle() {
+        tracker?.selection?.size()?.toString()?.let { num ->
+            actionMode?.title = num
         }
     }
 

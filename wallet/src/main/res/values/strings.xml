@@ -49,6 +49,8 @@
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Balance: %s</string>
     <string name="transactions_detail_json">Show JSON</string>
+    <string name="transactions_delete">Delete</string>
+    <string name="transactions_select_all">Select All</string>
 
     <!-- Transactions -->
     <string name="transaction_reserve_balance_updated">Reserve Balance Updated</string>

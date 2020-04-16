@@ -14,8 +14,13 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<resources>
-    <color name="colorPrimary">#283593</color>
-    <color name="colorPrimaryDark">#1A237E</color>
-    <color name="colorAccent">#AE1010</color>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/transaction_select_all"
+        android:icon="@drawable/ic_select_all"
+        android:title="@string/transactions_select_all" />
+    <item
+        android:id="@+id/transaction_delete"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/transactions_delete" />
+</menu>
