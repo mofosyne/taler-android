@@ -18,21 +18,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/showBalance"
-    tools:ignore="UnusedNavigation">
+    app:startDestination="@id/nav_main">
 
     <fragment
-        android:id="@+id/showBalance"
+        android:id="@+id/nav_main"
         android:name="net.taler.wallet.MainFragment"
         android:label="@string/balances_title"
-        tools:layout="@layout/fragment_main">
+        tools:layout="@layout/fragment_balances">
         <action
-            android:id="@+id/action_showBalance_to_promptPayment"
+            android:id="@+id/action_nav_main_to_promptPayment"
             app:destination="@id/promptPayment" />
         <action
-            android:id="@+id/action_showBalance_to_promptWithdraw"
+            android:id="@+id/action_nav_main_to_promptWithdraw"
             app:destination="@id/promptWithdraw" />
+        <action
+            android:id="@+id/action_nav_main_to_nav_transactions"
+            app:destination="@id/nav_transactions" />
     </fragment>
+
     <fragment
         android:id="@+id/promptPayment"
         android:name="net.taler.wallet.payment.PromptPaymentFragment"
@@ -41,31 +44,28 @@
         <action
             android:id="@+id/action_promptPayment_to_paymentSuccessful"
             app:destination="@id/paymentSuccessful"
-            app:popUpTo="@id/showBalance" />
+            app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptPayment_to_alreadyPaid"
             app:destination="@id/alreadyPaid"
-            app:popUpTo="@id/showBalance" />
+            app:popUpTo="@id/nav_main" />
     </fragment>
     <fragment
         android:id="@+id/paymentSuccessful"
         android:name="net.taler.wallet.payment.PaymentSuccessfulFragment"
         android:label="Payment Successful"
         tools:layout="@layout/fragment_payment_successful" />
+
     <fragment
-        android:id="@+id/settings"
+        android:id="@+id/nav_settings"
         android:name="net.taler.wallet.SettingsFragment"
-        android:label="Settings" />
+        android:label="@string/menu_settings" />
 
     <fragment
         android:id="@+id/nav_transactions"
         android:name="net.taler.wallet.transactions.TransactionsFragment"
         android:label="@string/transactions_title"
-        tools:layout="@layout/fragment_transactions">
-        <action
-            android:id="@+id/action_nav_transactions_to_nav_transaction_detail"
-            app:destination="@id/nav_transactions_detail" />
-    </fragment>
+        tools:layout="@layout/fragment_transactions" />
 
     <fragment
         android:id="@+id/nav_transactions_detail"
@@ -76,7 +76,7 @@
     <fragment
         android:id="@+id/alreadyPaid"
         android:name="net.taler.wallet.payment.AlreadyPaidFragment"
-        android:label="Already Paid"
+        android:label="@string/payment_already_paid_title"
         tools:layout="@layout/fragment_already_paid" />
 
     <fragment
@@ -90,11 +90,11 @@
         <action
             android:id="@+id/action_promptWithdraw_to_withdrawSuccessful"
             app:destination="@id/withdrawSuccessful"
-            app:popUpTo="@id/showBalance" />
+            app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptWithdraw_to_errorFragment"
             app:destination="@id/errorFragment"
-            app:popUpTo="@id/showBalance" />
+            app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptWithdraw_to_selectExchangeFragment"
             app:destination="@id/selectExchangeFragment" />
@@ -103,8 +103,9 @@
     <fragment
         android:id="@+id/withdrawSuccessful"
         android:name="net.taler.wallet.withdraw.WithdrawSuccessfulFragment"
-        android:label="Withdrawal Confirmed"
+        android:label="@string/withdraw_accepted"
         tools:layout="@layout/fragment_withdraw_successful" />
+
     <fragment
         android:id="@+id/reviewExchangeTOS"
         android:name="net.taler.wallet.withdraw.ReviewExchangeTosFragment"
@@ -113,7 +114,7 @@
         <action
             android:id="@+id/action_reviewExchangeTOS_to_promptWithdraw"
             app:destination="@id/promptWithdraw"
-            app:popUpTo="@id/showBalance" />
+            app:popUpTo="@id/nav_main" />
     </fragment>
     <fragment
         android:id="@+id/selectExchangeFragment"
@@ -124,8 +125,9 @@
     <fragment
         android:id="@+id/nav_pending_operations"
         android:name="net.taler.wallet.pending.PendingOperationsFragment"
-        android:label="Pending Operations"
+        android:label="@string/pending_operations_title"
         tools:layout="@layout/fragment_pending_operations" />
+
     <fragment
         android:id="@+id/errorFragment"
         android:name="net.taler.wallet.withdraw.ErrorFragment"
@@ -139,5 +141,9 @@
     <action
         android:id="@+id/action_global_pending_operations"
         app:destination="@id/nav_pending_operations" />
+
+    <action
+        android:id="@+id/action_nav_transaction_detail"
+        app:destination="@id/nav_transactions_detail" />
 
 </navigation>

@@ -30,7 +30,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_transactions.*
 import net.taler.common.fadeIn
@@ -46,6 +45,7 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
+
     private val transactionAdapter by lazy { TransactionAdapter(model.devMode.value == true, this) }
     private val currency by lazy { transactionManager.selectedCurrency!! }
 
@@ -63,7 +63,6 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         list.apply {
-            layoutManager = LinearLayoutManager(context)
             adapter = transactionAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
@@ -102,7 +101,7 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
     override fun onEventClicked(event: Transaction) {
         if (event.detailPageLayout != 0) {
             transactionManager.selectedEvent = event
-            findNavController().navigate(R.id.action_nav_transactions_to_nav_transaction_detail)
+            findNavController().navigate(R.id.action_nav_transaction_detail)
         } else if (model.devMode.value == true) {
             JsonDialogFragment.new(event.json.toString(2))
                 .show(parentFragmentManager, null)
@@ -118,6 +117,7 @@ class TransactionsFragment : Fragment(), OnEventClickListener {
         is TransactionsResult.Success -> {
             emptyState.visibility = if (result.transactions.isEmpty()) VISIBLE else INVISIBLE
             transactionAdapter.update(result.transactions)
+            list.fadeIn()
         }
     }
 

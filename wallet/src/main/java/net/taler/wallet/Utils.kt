@@ -16,6 +16,17 @@
 
 package net.taler.wallet
 
+import android.app.Activity
+import com.google.zxing.integration.android.IntentIntegrator
+
+fun scanQrCode(activity: Activity) {
+    IntentIntegrator(activity).apply {
+        setPrompt("")
+        setBeepEnabled(true)
+        setOrientationLocked(false)
+    }.initiateScan(listOf(IntentIntegrator.QR_CODE))
+}
+
 fun cleanExchange(exchange: String) = exchange.let {
     if (it.startsWith("https://")) it.substring(8) else it
 }.trimEnd('/')

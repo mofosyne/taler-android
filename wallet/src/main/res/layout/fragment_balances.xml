@@ -13,7 +13,6 @@
   ~ You should have received a copy of the GNU General Public License along with
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -21,30 +20,23 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
+        android:id="@+id/mainList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
         android:visibility="invisible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/list_item_transaction"
+        tools:listitem="@layout/list_item_balance"
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/emptyState"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/transactions_empty"
-        android:visibility="invisible"
-        tools:visibility="visible" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:id="@+id/mainEmptyState"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:autoLink="web"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/balances_empty_state"
+        android:textSize="18sp"
         android:visibility="invisible"
         tools:visibility="visible" />
 

@@ -80,6 +80,7 @@
     <string name="payment_hide_details">Hide Details</string>
     <string name="payment_successful">Payment was successful</string>
     <string name="payment_back_button">OK</string>
+    <string name="payment_already_paid_title">Already paid</string>
     <string name="payment_already_paid">You\'ve already paid for this order.</string>
 
     <string name="withdraw_accepted">Withdrawal accepted</string>

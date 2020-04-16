@@ -17,40 +17,19 @@
 package net.taler.wallet
 
 import android.os.Bundle
-import android.transition.TransitionManager.beginDelayedTransition
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentIntegrator.QR_CODE
 import kotlinx.android.synthetic.main.fragment_main.*
+import net.taler.wallet.balances.BalancesFragment
+import net.taler.wallet.transactions.TransactionsFragment
 
-interface BalanceClickListener {
-    fun onBalanceClick(currency: String)
-}
-
-class MainFragment : Fragment(), BalanceClickListener {
+class MainFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-
-    private val balancesAdapter = BalanceAdapter(this)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,18 +40,12 @@ class MainFragment : Fragment(), BalanceClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mainList.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = balancesAdapter
-            addItemDecoration(DividerItemDecoration(context, VERTICAL))
-        }
-
         model.balances.observe(viewLifecycleOwner, Observer {
             onBalancesChanged(it.values.toList())
         })
 
         mainFab.setOnClickListener {
-            onScanButtonClicked()
+            scanQrCode(requireActivity())
         }
     }
 
@@ -81,44 +54,18 @@ class MainFragment : Fragment(), BalanceClickListener {
         model.loadBalances()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.fragment_main, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    private fun onScanButtonClicked() {
-        IntentIntegrator(activity).apply {
-            setPrompt("")
-            setBeepEnabled(true)
-            setOrientationLocked(false)
-        }.initiateScan(listOf(QR_CODE))
-    }
-
     private fun onBalancesChanged(balances: List<BalanceItem>) {
-        delayedTransition()
-        if (balances.isEmpty()) {
-            mainEmptyState.visibility = VISIBLE
-            mainList.visibility = GONE
-        } else {
-            balancesAdapter.setItems(balances)
-            mainEmptyState.visibility = GONE
-            mainList.visibility = VISIBLE
+        if (childFragmentManager.fragments.isEmpty()) {
+            val f = if (balances.size == 1) {
+                model.transactionManager.selectedCurrency = balances[0].available.currency
+                TransactionsFragment()
+            } else {
+                BalancesFragment()
+            }
+            childFragmentManager.beginTransaction()
+                .add(R.id.mainFragmentContainer, f)
+                .commitNow()
         }
-    }
-
-    private fun delayedTransition() {
-        beginDelayedTransition(view as ViewGroup)
-    }
-
-    override fun onBalanceClick(currency: String) {
-        model.transactionManager.selectedCurrency = currency
-        findNavController().navigate(R.id.nav_transactions)
     }
 
 }

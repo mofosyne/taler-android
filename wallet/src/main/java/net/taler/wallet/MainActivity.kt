@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
         setSupportActionBar(toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.showBalance, R.id.settings, R.id.nav_pending_operations),
+            setOf(R.id.nav_main, R.id.nav_settings, R.id.nav_pending_operations),
             drawer_layout
         )
         toolbar.setupWithNavController(nav, appBarConfiguration)
@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_home -> nav.navigate(R.id.showBalance)
-            R.id.nav_settings -> nav.navigate(R.id.settings)
+            R.id.nav_home -> nav.navigate(R.id.nav_main)
+            R.id.nav_settings -> nav.navigate(R.id.nav_settings)
             R.id.nav_pending_operations -> nav.navigate(R.id.nav_pending_operations)
         }
         drawer_layout.closeDrawer(START)
@@ -142,12 +142,12 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
         when {
             url.toLowerCase(ROOT).startsWith("taler://pay/") -> {
                 Log.v(TAG, "navigating!")
-                nav.navigate(R.id.action_showBalance_to_promptPayment)
+                nav.navigate(R.id.action_nav_main_to_promptPayment)
                 model.paymentManager.preparePay(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://withdraw/") -> {
                 Log.v(TAG, "navigating!")
-                nav.navigate(R.id.action_showBalance_to_promptWithdraw)
+                nav.navigate(R.id.action_nav_main_to_promptWithdraw)
                 model.withdrawManager.getWithdrawalInfo(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://refund/") -> {

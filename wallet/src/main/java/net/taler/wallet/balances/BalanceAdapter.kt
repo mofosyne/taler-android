@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.balances
 
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +24,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import net.taler.wallet.BalanceAdapter.BalanceViewHolder
+import net.taler.wallet.BalanceItem
+import net.taler.wallet.R
+import net.taler.wallet.balances.BalanceAdapter.BalanceViewHolder
 
 class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 

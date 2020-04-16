@@ -15,29 +15,13 @@
   -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mainList"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mainFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:listitem="@layout/list_item_balance"
-        tools:visibility="visible" />
-
-    <TextView
-        android:id="@+id/mainEmptyState"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:autoLink="web"
-        android:gravity="center"
-        android:padding="16dp"
-        android:text="@string/balances_empty_state"
-        android:textSize="18sp"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/mainFab"
