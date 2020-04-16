@@ -18,7 +18,6 @@ package net.taler.wallet.transactions
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -140,13 +139,9 @@ ReserveCreated = "reserve-created",
     Type(value = RefundTransaction::class, name = "refund"),
     Type(value = RefreshTransaction::class, name = "refreshed")
 )
-@JsonIgnoreProperties(
-    value = [
-        "eventId"
-    ]
-)
 abstract class Transaction(
     val timestamp: Timestamp,
+    val eventId: String,
     @get:LayoutRes
     open val detailPageLayout: Int = 0,
     @get:DrawableRes
@@ -160,24 +155,26 @@ abstract class Transaction(
 }
 
 
-class UnknownTransaction(timestamp: Timestamp) : Transaction(timestamp) {
+class UnknownTransaction(timestamp: Timestamp, eventId: String) : Transaction(timestamp, eventId) {
     override val title: String? = null
 }
 
 @JsonTypeName("exchange-added")
 class ExchangeAddedEvent(
     timestamp: Timestamp,
+    eventId: String,
     val exchangeBaseUrl: String,
     val builtIn: Boolean
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val title = cleanExchange(exchangeBaseUrl)
 }
 
 @JsonTypeName("exchange-updated")
 class ExchangeUpdatedEvent(
     timestamp: Timestamp,
+    eventId: String,
     val exchangeBaseUrl: String
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val title = cleanExchange(exchangeBaseUrl)
 }
 
@@ -185,6 +182,7 @@ class ExchangeUpdatedEvent(
 @JsonTypeName("reserve-balance-updated")
 class ReserveBalanceUpdatedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed information about the reserve.
      */
@@ -202,7 +200,7 @@ class ReserveBalanceUpdatedTransaction(
      * Amount that hasn't been withdrawn yet.
      */
     val reserveUnclaimedAmount: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val title: String? = null
     override val displayAmount = DisplayAmount(reserveBalance, AmountType.Neutral)
     override fun isCurrency(currency: String) = reserveBalance.currency == currency
@@ -211,6 +209,7 @@ class ReserveBalanceUpdatedTransaction(
 @JsonTypeName("withdrawn")
 class WithdrawTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Exchange that was withdrawn from.
      */
@@ -230,7 +229,7 @@ class WithdrawTransaction(
      * Amount that actually was added to the wallet's balance.
      */
     val amountWithdrawnEffective: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val detailPageLayout = R.layout.fragment_event_withdraw
     override val title = cleanExchange(exchangeBaseUrl)
     override val icon = R.drawable.transaction_withdrawal
@@ -242,11 +241,12 @@ class WithdrawTransaction(
 @JsonTypeName("order-accepted")
 class OrderAcceptedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed info about the order.
      */
     val orderShortInfo: OrderShortInfo
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.ic_add_circle
     override val title: String? = null
     override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
@@ -255,11 +255,12 @@ class OrderAcceptedTransaction(
 @JsonTypeName("order-refused")
 class OrderRefusedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed info about the order.
      */
     val orderShortInfo: OrderShortInfo
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.ic_cancel
     override val title: String? = null
     override fun isCurrency(currency: String) = orderShortInfo.amount.currency == currency
@@ -268,6 +269,7 @@ class OrderRefusedTransaction(
 @JsonTypeName("payment-sent")
 class PaymentTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed info about the order that we already paid for.
      */
@@ -289,7 +291,7 @@ class PaymentTransaction(
      * Session ID that the payment was (re-)submitted under.
      */
     val sessionId: String?
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val detailPageLayout = R.layout.fragment_event_paid
     override val title = orderShortInfo.summary
     override val icon = R.drawable.ic_cash_usd_outline
@@ -301,6 +303,7 @@ class PaymentTransaction(
 @JsonTypeName("payment-aborted")
 class PaymentAbortedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed info about the order that we already paid for.
      */
@@ -309,7 +312,7 @@ class PaymentAbortedTransaction(
      * Amount that was lost due to refund and refreshing fees.
      */
     val amountLost: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val title = orderShortInfo.summary
     override val icon = R.drawable.transaction_payment_aborted
     override val showToUser = true
@@ -320,6 +323,7 @@ class PaymentAbortedTransaction(
 @JsonTypeName("refreshed")
 class RefreshTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Amount that is now available again because it has
      * been refreshed.
@@ -341,7 +345,7 @@ class RefreshTransaction(
      * more refresh session IDs.
      */
     val refreshGroupId: String
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.transaction_refresh
     override val title: String? = null
     override val showToUser = !(amountRefreshedRaw - amountRefreshedEffective).isZero()
@@ -360,6 +364,7 @@ class RefreshTransaction(
 @JsonTypeName("order-redirected")
 class OrderRedirectedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Condensed info about the new order that contains a
      * product (identified by the fulfillment URL) that we've already paid for.
@@ -369,7 +374,7 @@ class OrderRedirectedTransaction(
      * Condensed info about the order that we already paid for.
      */
     val alreadyPaidOrderShortInfo: OrderShortInfo
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.ic_directions
     override val title = newOrderShortInfo.summary
     override fun isCurrency(currency: String) = newOrderShortInfo.amount.currency == currency
@@ -378,6 +383,7 @@ class OrderRedirectedTransaction(
 @JsonTypeName("tip-accepted")
 class TipAcceptedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Unique identifier for the tip to query more information.
      */
@@ -386,7 +392,7 @@ class TipAcceptedTransaction(
      * Raw amount of the tip, without extra fees that apply.
      */
     val tipRaw: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.transaction_tip_accepted
     override val title: String? = null
     override val showToUser = true
@@ -397,6 +403,7 @@ class TipAcceptedTransaction(
 @JsonTypeName("tip-declined")
 class TipDeclinedTransaction(
     timestamp: Timestamp,
+    eventId: String,
     /**
      * Unique identifier for the tip to query more information.
      */
@@ -405,7 +412,7 @@ class TipDeclinedTransaction(
      * Raw amount of the tip, without extra fees that apply.
      */
     val tipAmount: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.transaction_tip_declined
     override val title: String? = null
     override val showToUser = true
@@ -416,6 +423,7 @@ class TipDeclinedTransaction(
 @JsonTypeName("refund")
 class RefundTransaction(
     timestamp: Timestamp,
+    eventId: String,
     val orderShortInfo: OrderShortInfo,
     /**
      * Unique identifier for this refund.
@@ -435,7 +443,7 @@ class RefundTransaction(
      * Amount will be added to the wallet's balance after fees and refreshing.
      */
     val amountRefundedEffective: Amount
-) : Transaction(timestamp) {
+) : Transaction(timestamp, eventId) {
     override val icon = R.drawable.transaction_refund
     override val title = orderShortInfo.summary
     override val detailPageLayout = R.layout.fragment_event_paid
