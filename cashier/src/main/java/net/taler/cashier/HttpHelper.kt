@@ -23,6 +23,8 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.Response
+import org.json.JSONException
 import org.json.JSONObject
 
 object HttpHelper {
@@ -43,14 +45,14 @@ object HttpHelper {
                 .execute()
         } catch (e: Exception) {
             Log.e(TAG, "Error retrieving $url", e)
-            return HttpJsonResult.Error(500)
+            return HttpJsonResult.Error(0)
         }
         return if (response.code() == 200 && response.body() != null) {
             val jsonObject = JSONObject(response.body()!!.string())
             HttpJsonResult.Success(jsonObject)
         } else {
             Log.e(TAG, "Received status ${response.code()} from $url expected 200")
-            HttpJsonResult.Error(response.code())
+            HttpJsonResult.Error(response.code(), getErrorBody(response))
         }
     }
 
@@ -69,14 +71,14 @@ object HttpHelper {
                 .execute()
         } catch (e: Exception) {
             Log.e(TAG, "Error retrieving $url", e)
-            return HttpJsonResult.Error(500)
+            return HttpJsonResult.Error(0)
         }
         return if (response.code() == 200 && response.body() != null) {
             val jsonObject = JSONObject(response.body()!!.string())
             HttpJsonResult.Success(jsonObject)
         } else {
             Log.e(TAG, "Received status ${response.code()} from $url expected 200")
-            HttpJsonResult.Error(response.code())
+            HttpJsonResult.Error(response.code(), getErrorBody(response))
         }
     }
 
@@ -94,9 +96,24 @@ object HttpHelper {
                 .build()
         }.build()
 
+    private fun getErrorBody(response: Response): String? {
+        val body = response.body()?.string() ?: return null
+        Log.e(TAG, "Response body: $body")
+        return try {
+            val json = JSONObject(body)
+            "${json.optString("ec")} ${json.optString("error")}"
+        } catch (e: JSONException) {
+            null
+        }
+    }
+
 }
 
 sealed class HttpJsonResult {
-    class Error(val statusCode: Int) : HttpJsonResult()
+    class Error(val statusCode: Int, private val errorMsg: String? = null) : HttpJsonResult() {
+        val msg: String
+            get() = errorMsg?.let { "\n\n$statusCode $it" } ?: ": $statusCode"
+    }
+
     class Success(val json: JSONObject) : HttpJsonResult()
 }

@@ -102,7 +102,7 @@ class WithdrawManager(
                     timer.start()
                 }
                 is Error -> {
-                    val errorStr = app.getString(R.string.withdraw_error_fetch)
+                    val errorStr = app.getString(R.string.withdraw_error_fetch, result.msg)
                     mWithdrawResult.postValue(WithdrawResult.Error(errorStr))
                 }
             }

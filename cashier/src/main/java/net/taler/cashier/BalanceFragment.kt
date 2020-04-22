@@ -35,11 +35,12 @@ import net.taler.cashier.withdraw.LastTransaction
 import net.taler.cashier.withdraw.WithdrawStatus
 import net.taler.common.Amount
 import net.taler.common.SignedAmount
+import net.taler.common.exhaustive
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 
 sealed class BalanceResult {
-    object Error : BalanceResult()
+    class Error(val msg: String) : BalanceResult()
     object Offline : BalanceResult()
     class Success(val amount: SignedAmount) : BalanceResult()
 }
@@ -62,10 +63,7 @@ class BalanceFragment : Fragment() {
             onLastTransaction(lastTransaction)
         })
         viewModel.balance.observe(viewLifecycleOwner, Observer { result ->
-            when (result) {
-                is BalanceResult.Success -> onBalanceUpdated(result.amount)
-                else -> onBalanceUpdated(null, result is BalanceResult.Offline)
-            }
+            onBalanceUpdated(result)
         })
         button5.setOnClickListener { onAmountButtonPressed(5) }
         button10.setOnClickListener { onAmountButtonPressed(10) }
@@ -121,20 +119,26 @@ class BalanceFragment : Fragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun onBalanceUpdated(amount: SignedAmount?, isOffline: Boolean = false) {
+    private fun onBalanceUpdated(result: BalanceResult) {
         val uiList = listOf(
             introView,
             button5, button10, button20, button50,
             amountView, currencyView, confirmWithdrawalButton
         )
-        if (amount == null) {
-            balanceView.text =
-                getString(if (isOffline) R.string.balance_offline else R.string.balance_error)
-            uiList.forEach { it.fadeOut() }
-        } else {
-            balanceView.text = amount.toString()
-            uiList.forEach { it.fadeIn() }
-        }
+        when (result) {
+            is BalanceResult.Success -> {
+                balanceView.text = result.amount.toString()
+                uiList.forEach { it.fadeIn() }
+            }
+            is BalanceResult.Error -> {
+                balanceView.text = getString(R.string.balance_error, result.msg)
+                uiList.forEach { it.fadeOut() }
+            }
+            BalanceResult.Offline -> {
+                balanceView.text = getString(R.string.balance_offline)
+                uiList.forEach { it.fadeOut() }
+            }
+        }.exhaustive
         progressBar.fadeOut()
     }
 

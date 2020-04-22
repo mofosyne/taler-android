@@ -97,14 +97,13 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                         prefs.edit().putString(PREF_KEY_CURRENCY, amount.amount.currency).apply()
                         // save config
                         saveConfig(config)
-                        ConfigResult(true)
+                        ConfigResult.Success
                     } catch (e: AmountParserException) {
-                        ConfigResult(false)
+                        ConfigResult.Error(false, "Invalid Amount: $balance")
                     }
                 }
                 is HttpJsonResult.Error -> {
-                    val authError = response.statusCode == 401
-                    ConfigResult(false, authError)
+                    ConfigResult.Error(response.statusCode == 401, response.msg)
                 }
             }
             mConfigResult.postValue(result)
@@ -132,11 +131,11 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                 try {
                     BalanceResult.Success(SignedAmount.fromJSONString(balance))
                 } catch (e: AmountParserException) {
-                    BalanceResult.Error
+                    BalanceResult.Error("invalid amount: $balance")
                 }
             }
             is HttpJsonResult.Error -> {
-                if (app.isOnline()) BalanceResult.Error
+                if (app.isOnline()) BalanceResult.Error(response.msg)
                 else BalanceResult.Offline
             }
         }
@@ -155,4 +154,7 @@ data class Config(
     val password: String
 )
 
-class ConfigResult(val success: Boolean, val authError: Boolean = false)
+sealed class ConfigResult {
+    class Error(val authError: Boolean, val msg: String) : ConfigResult()
+    object Success : ConfigResult()
+}

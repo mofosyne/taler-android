@@ -7,12 +7,12 @@
     <string name="config_button_save">Save</string>
     <string name="config_bank_url_error">The address in invalid.</string>
     <string name="config_username_error">Please enter your username</string>
-    <string name="config_error">Error retrieving configuration</string>
+    <string name="config_error">Error retrieving configuration%s</string>
     <string name="config_error_auth">Invalid username or password</string>
     <string name="config_demo_hint" tools:ignore="StringFormatInvalid">For testing, you can <![CDATA[<a href="%s">create a test account at the demo bank</a>]]>.</string>
 
     <string name="balance_current_label">Current balance</string>
-    <string name="balance_error">ERROR</string>
+    <string name="balance_error">ERROR%s</string>
     <string name="balance_offline">Offline. Please connect to the Internet</string>
     <string name="action_reconfigure">Reconfigure</string>
     <string name="action_lock">Lock</string>
@@ -21,7 +21,7 @@
     <string name="withdraw_into">How much e-cash should be withdrawn?</string>
     <string name="withdraw_error_zero">Enter positive amount</string>
     <string name="withdraw_error_insufficient_balance">Insufficient balance</string>
-    <string name="withdraw_error_fetch">Error communicating with bank</string>
+    <string name="withdraw_error_fetch">Error communicating with bank%s</string>
     <string name="withdraw_button_confirm">Withdraw</string>
 
     <string name="transaction_intro">Scan code\nwith the Taler wallet app\nto get</string>

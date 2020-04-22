@@ -34,6 +34,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_config.*
+import net.taler.common.exhaustive
 
 private const val URL_BANK_TEST = "https://bank.test.taler.net"
 private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
@@ -125,13 +126,20 @@ class ConfigFragment : Fragment() {
 
     private val onConfigResult = Observer<ConfigResult> { result ->
         if (result == null) return@Observer
-        if (result.success) {
-            val action = ConfigFragmentDirections.actionConfigFragmentToBalanceFragment()
-            findNavController().navigate(action)
-        } else {
-            val res = if (result.authError) R.string.config_error_auth else R.string.config_error
-            Snackbar.make(view!!, res, LENGTH_LONG).show()
-        }
+        when (result) {
+            is ConfigResult.Success -> {
+                val action = ConfigFragmentDirections.actionConfigFragmentToBalanceFragment()
+                findNavController().navigate(action)
+            }
+            is ConfigResult.Error -> {
+                if (result.authError) {
+                    Snackbar.make(view!!, R.string.config_error_auth, LENGTH_LONG).show()
+                } else {
+                    val str = getString(R.string.config_error, result.msg)
+                    Snackbar.make(view!!, str, LENGTH_LONG).show()
+                }
+            }
+        }.exhaustive
         saveButton.visibility = VISIBLE
         progressBar.visibility = INVISIBLE
         viewModel.configResult.removeObservers(viewLifecycleOwner)
