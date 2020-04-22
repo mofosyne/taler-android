@@ -40,7 +40,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="32dp"
-        android:text="@string/transaction_error"
         android:textAlignment="center"
         android:textColor="@color/red"
         app:autoSizeMaxTextSize="42sp"
@@ -49,7 +48,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        tools:text="@string/withdraw_error_timeout" />
 
     <Button
         android:id="@+id/backButton"

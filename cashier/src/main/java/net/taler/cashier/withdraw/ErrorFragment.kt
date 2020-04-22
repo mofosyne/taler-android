@@ -42,11 +42,14 @@ class ErrorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer { status ->
+            if (status == null) return@Observer
             if (status is WithdrawStatus.Aborted) {
                 textView.setText(R.string.transaction_aborted)
+            } else if (status is WithdrawStatus.Error) {
+                textView.text = status.msg
             }
+            withdrawManager.completeTransaction()
         })
-        withdrawManager.completeTransaction()
         backButton.setOnClickListener {
             findNavController().popBackStack()
         }

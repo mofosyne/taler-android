@@ -125,7 +125,8 @@ class WithdrawManager(
 
         override fun onFinish() {
             abort()
-            mWithdrawStatus.postValue(WithdrawStatus.Error)
+            val str = app.getString(R.string.withdraw_error_timeout)
+            mWithdrawStatus.postValue(WithdrawStatus.Error(str))
             cancel()
         }
     }
@@ -196,7 +197,7 @@ class WithdrawManager(
                 }
                 is Error -> {
                     Log.e(TAG, "Error confirming withdrawal. Status code: ${result.statusCode}")
-                    mWithdrawStatus.postValue(WithdrawStatus.Error)
+                    mWithdrawStatus.postValue(WithdrawStatus.Error(result.msg))
                 }
             }
         }
@@ -220,7 +221,7 @@ sealed class WithdrawResult {
 }
 
 sealed class WithdrawStatus {
-    object Error : WithdrawStatus()
+    class Error(val msg: String) : WithdrawStatus()
     object Aborted : WithdrawStatus()
     class SelectionDone(val withdrawalId: String) : WithdrawStatus()
     object Confirming : WithdrawStatus()
