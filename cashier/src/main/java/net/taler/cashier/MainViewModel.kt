@@ -103,7 +103,11 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                     }
                 }
                 is HttpJsonResult.Error -> {
-                    ConfigResult.Error(response.statusCode == 401, response.msg)
+                    if (response.statusCode > 0 && app.isOnline()) {
+                        ConfigResult.Error(response.statusCode == 401, response.msg)
+                    } else {
+                        ConfigResult.Offline
+                    }
                 }
             }
             mConfigResult.postValue(result)
@@ -156,5 +160,6 @@ data class Config(
 
 sealed class ConfigResult {
     class Error(val authError: Boolean, val msg: String) : ConfigResult()
+    object Offline : ConfigResult()
     object Success : ConfigResult()
 }

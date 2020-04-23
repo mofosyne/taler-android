@@ -131,6 +131,9 @@ class ConfigFragment : Fragment() {
                 val action = ConfigFragmentDirections.actionConfigFragmentToBalanceFragment()
                 findNavController().navigate(action)
             }
+            ConfigResult.Offline -> {
+                Snackbar.make(view!!, R.string.config_error_offline, LENGTH_LONG).show()
+            }
             is ConfigResult.Error -> {
                 if (result.authError) {
                     Snackbar.make(view!!, R.string.config_error_auth, LENGTH_LONG).show()

@@ -112,7 +112,7 @@ object HttpHelper {
 sealed class HttpJsonResult {
     class Error(val statusCode: Int, private val errorMsg: String? = null) : HttpJsonResult() {
         val msg: String
-            get() = errorMsg?.let { "\n\n$statusCode $it" } ?: ": $statusCode"
+            get() = errorMsg?.let { "\n\n$statusCode $it" } ?: "$statusCode"
     }
 
     class Success(val json: JSONObject) : HttpJsonResult()

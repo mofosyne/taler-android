@@ -36,6 +36,7 @@ import net.taler.cashier.withdraw.WithdrawResult.Error
 import net.taler.cashier.withdraw.WithdrawResult.InsufficientBalance
 import net.taler.cashier.withdraw.WithdrawResult.Success
 import net.taler.common.NfcManager
+import net.taler.common.exhaustive
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 
@@ -101,16 +102,9 @@ class TransactionFragment : Fragment() {
                 .start()
         }
         when (result) {
-            is InsufficientBalance -> {
-                val c = getColor(requireContext(), R.color.design_default_color_error)
-                introView.setTextColor(c)
-                introView.text = getString(R.string.withdraw_error_insufficient_balance)
-            }
-            is Error -> {
-                val c = getColor(requireContext(), R.color.design_default_color_error)
-                introView.setTextColor(c)
-                introView.text = result.msg
-            }
+            is InsufficientBalance -> setErrorMsg(getString(R.string.withdraw_error_insufficient_balance))
+            is WithdrawResult.Offline -> setErrorMsg(getString(R.string.withdraw_error_offline))
+            is Error -> setErrorMsg(result.msg)
             is Success -> {
                 // start NFC
                 nfcManager.setTagString(result.talerUri)
@@ -129,7 +123,14 @@ class TransactionFragment : Fragment() {
                     .setDuration(750)
                     .start()
             }
-        }
+            null -> return
+        }.exhaustive
+    }
+
+    private fun setErrorMsg(str: String) {
+        val c = getColor(requireContext(), R.color.design_default_color_error)
+        introView.setTextColor(c)
+        introView.text = str
     }
 
     private fun onWithdrawStatusChanged(status: WithdrawStatus?): Any = when (status) {

@@ -36,6 +36,7 @@ import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
 import net.taler.common.Amount
 import net.taler.common.QrCodeManager.makeQrCode
+import net.taler.common.isOnline
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -90,22 +91,27 @@ class WithdrawManager(
             Log.d(TAG, "Starting withdrawal at $url")
             val map = mapOf("amount" to amount.toJSONString())
             val body = JSONObject(map)
-            when (val result = makeJsonPostRequest(url, body, config)) {
+            val result = when (val response = makeJsonPostRequest(url, body, config)) {
                 is Success -> {
-                    val talerUri = result.json.getString("taler_withdraw_uri")
+                    val talerUri = response.json.getString("taler_withdraw_uri")
                     val withdrawResult = WithdrawResult.Success(
-                        id = result.json.getString("withdrawal_id"),
+                        id = response.json.getString("withdrawal_id"),
                         talerUri = talerUri,
                         qrCode = makeQrCode(talerUri)
                     )
-                    mWithdrawResult.postValue(withdrawResult)
-                    timer.start()
+                    withdrawResult
                 }
                 is Error -> {
-                    val errorStr = app.getString(R.string.withdraw_error_fetch, result.msg)
-                    mWithdrawResult.postValue(WithdrawResult.Error(errorStr))
+                    if (response.statusCode > 0 && app.isOnline()) {
+                        val errorStr = app.getString(R.string.withdraw_error_fetch, response.msg)
+                        WithdrawResult.Error(errorStr)
+                    } else {
+                        WithdrawResult.Offline
+                    }
                 }
             }
+            mWithdrawResult.postValue(result)
+            if (result is WithdrawResult.Success) timer.start()
         }
     }
 
@@ -125,8 +131,12 @@ class WithdrawManager(
 
         override fun onFinish() {
             abort()
-            val str = app.getString(R.string.withdraw_error_timeout)
-            mWithdrawStatus.postValue(WithdrawStatus.Error(str))
+            val result = if (app.isOnline()) {
+                WithdrawStatus.Error(app.getString(R.string.withdraw_error_timeout))
+            } else {
+                WithdrawStatus.Error(app.getString(R.string.withdraw_error_offline))
+            }
+            mWithdrawStatus.postValue(result)
             cancel()
         }
     }
@@ -191,13 +201,18 @@ class WithdrawManager(
             val url =
                 "${config.bankUrl}/accounts/${config.username}/withdrawals/${withdrawalId}/confirm"
             Log.d(TAG, "Confirming withdrawal at $url")
-            when (val result = makeJsonPostRequest(url, JSONObject(), config)) {
+            when (val response = makeJsonPostRequest(url, JSONObject(), config)) {
                 is Success -> {
                     // no-op still waiting for [timer] to confirm our confirmation
                 }
                 is Error -> {
-                    Log.e(TAG, "Error confirming withdrawal. Status code: ${result.statusCode}")
-                    mWithdrawStatus.postValue(WithdrawStatus.Error(result.msg))
+                    Log.e(TAG, "Error confirming withdrawal. Status code: ${response.statusCode}")
+                    val result = if (response.statusCode > 0 && app.isOnline()) {
+                        WithdrawStatus.Error(response.msg)
+                    } else {
+                        WithdrawStatus.Error(app.getString(R.string.withdraw_error_offline))
+                    }
+                    mWithdrawStatus.postValue(result)
                 }
             }
         }
@@ -216,6 +231,7 @@ class WithdrawManager(
 
 sealed class WithdrawResult {
     object InsufficientBalance : WithdrawResult()
+    object Offline : WithdrawResult()
     class Error(val msg: String) : WithdrawResult()
     class Success(val id: String, val talerUri: String, val qrCode: Bitmap) : WithdrawResult()
 }

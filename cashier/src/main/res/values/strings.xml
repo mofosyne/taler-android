@@ -7,12 +7,13 @@
     <string name="config_button_save">Save</string>
     <string name="config_bank_url_error">The address is invalid.</string>
     <string name="config_username_error">Please enter your username!</string>
-    <string name="config_error">Error retrieving configuration%s</string>
+    <string name="config_error">Error retrieving configuration: %s</string>
     <string name="config_error_auth">Invalid username or password!</string>
+    <string name="config_error_offline" translatable="false">@string/balance_offline</string>
     <string name="config_demo_hint" tools:ignore="StringFormatInvalid">For testing, you can <![CDATA[<a href="%s">create a test account at the demo bank</a>]]>.</string>
 
     <string name="balance_current_label">Current balance</string>
-    <string name="balance_error">ERROR%s</string>
+    <string name="balance_error">ERROR: %s</string>
     <string name="balance_offline">Offline. Please connect to the Internet.</string>
     <string name="action_reconfigure">Reconfigure</string>
     <string name="action_lock">Lock</string>
@@ -21,14 +22,15 @@
     <string name="withdraw_into">How much e-cash should be withdrawn?</string>
     <string name="withdraw_error_zero">Enter positive amount!</string>
     <string name="withdraw_error_insufficient_balance">Insufficient balance</string>
-    <string name="withdraw_error_fetch">Error communicating with bank%s</string>
+    <string name="withdraw_error_fetch">Error communicating with bank: %s</string>
     <string name="withdraw_error_timeout">No wallet tried to withdraw. Please try again.</string>
+    <string name="withdraw_error_offline" translatable="false">@string/balance_offline</string>
     <string name="withdraw_button_confirm">Withdraw</string>
 
-    <!-- "to get" refers to the amount that will be withdrawn, e.g. to get 12 EUR -->
-    <string name="transaction_intro">Scan code with the Taler wallet app to get</string>
-    <!-- "to get" refers to the amount that will be withdrawn, e.g. to get 12 EUR -->
-    <string name="transaction_intro_nfc">Scan code or use NFC with the Taler wallet app to get</string>
+    <!-- "to withdraw" refers to the amount that will be withdrawn, e.g. to withdraw 12 EUR -->
+    <string name="transaction_intro">Scan code with the Taler wallet app to withdraw:</string>
+    <!-- "to withdraw" refers to the amount that will be withdrawn, e.g. to withdraw 12 EUR -->
+    <string name="transaction_intro_nfc">Scan code or use NFC with the Taler wallet app to withdraw:</string>
     <string name="transaction_intro_scanned">Please confirm the transaction!</string>
     <string name="transaction_confirm">Confirm</string>
     <string name="transaction_abort">Abort</string>
