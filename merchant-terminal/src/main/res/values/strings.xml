@@ -16,11 +16,11 @@
     <string name="order_next">Next</string>
     <string name="order_complete">Complete</string>
 
-    <string name="config_label">Merchant Settings</string>
+    <string name="config_label">Merchant settings</string>
     <string name="config_url">Configuration URL</string>
     <string name="config_username">Username</string>
     <string name="config_password">Password</string>
-    <string name="config_ok">Fetch Configuration</string>
+    <string name="config_ok">Fetch configuration</string>
     <string name="config_auth_error">Error: Invalid username or password</string>
     <string name="config_error_network">Error: Could not connect to configuration server</string>
     <string name="config_error_category">Error: No valid product category found</string>
@@ -28,31 +28,31 @@
     <string name="config_error_currency">Error: Product %1$s has currency %2$s, but %3$s expected</string>
     <string name="config_error_product_category_id">Error: Product %1$s references unknown category ID %2$d</string>
     <string name="config_error_product_zero">Error: No valid products found</string>
-    <string name="config_error_unknown">Error: Invalid Configuration</string>
-    <string name="config_fetching">Fetching Configuration…</string>
-    <string name="config_save_password">Remember Password</string>
+    <string name="config_error_unknown">Error: Invalid configuration</string>
+    <string name="config_fetching">Fetching configuration…</string>
+    <string name="config_save_password">Remember password</string>
     <string name="config_forget_password">Forget</string>
     <string name="config_changed">Changed to new merchant using %s</string>
-    <string name="config_fetching_label">Fetching Configuration</string>
+    <string name="config_fetching_label">Fetching configuration</string>
     <string name="config_docs">Please refer to <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">the documentation</a> for the configuration format.</string>
 
-    <string name="payment_intro_nfc">Please let customer scan QR Code or use NFC to pay</string>
-    <string name="payment_intro">Please let customer scan QR Code to pay</string>
-    <string name="payment_cancel">Cancel Payment</string>
+    <string name="payment_intro_nfc">Please let customer scan QR Code or use NFC to pay.</string>
+    <string name="payment_intro">Please let customer scan QR Code to pay.</string>
+    <string name="payment_cancel">Cancel payment</string>
     <string name="payment_received">Payment received</string>
     <string name="payment_back_button">Continue</string>
-    <string name="payment_order_ref">Order Reference: %s</string>
-    <string name="payment_process_label">Customer Payment Required</string>
-    <string name="payment_canceled">Payment Canceled</string>
+    <string name="payment_order_ref">Purchase reference: %s</string>
+    <string name="payment_process_label">Payment required</string>
+    <string name="payment_canceled">Payment canceled</string>
 
-    <string name="history_label">Payment History</string>
+    <string name="history_label">Payment history</string>
     <string name="history_ref_no">Ref. No: %s</string>
-    <string name="history_refund">Refund Order</string>
+    <string name="history_refund">Refund</string>
     <string name="refund_amount">Amount</string>
     <string name="refund_reason">Refund reason</string>
     <string name="refund_abort">Abort</string>
     <string name="refund_complete">Received</string>
-    <string name="refund_confirm">Give Refund</string>
+    <string name="refund_confirm">Approve refund</string>
     <string name="refund_error_max_amount">Greater than order amount of %s</string>
     <string name="refund_error_invalid_amount">Invalid amount</string>
     <string name="refund_error_zero">Needs to be positive amount</string>
@@ -61,10 +61,10 @@
     <string name="refund_error_already_refunded">Already refunded</string>
     <string name="refund_intro_nfc">Please let customer scan QR Code or use NFC to give refund</string>
     <string name="refund_intro">Please let customer scan QR Code to give refund</string>
-    <string name="refund_order_ref">Order Reference: %1$s\n\n%2$s</string>
+    <string name="refund_order_ref">Purchase reference: %1$s\n\n%2$s</string>
 
-    <string name="error_network">Network Error</string>
+    <string name="error_network">Network error</string>
 
-    <string name="toast_back_to_exit">Click BACK again to exit</string>
+    <string name="toast_back_to_exit">Click «back» again to exit</string>
 
 </resources>
