@@ -14,8 +14,24 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Taler Wallet</string>
+
+    <string name="google_play_title" tools:keep="@string/google_play_title">Taler Wallet (experimental)</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler makes privacy-friendly online transactions fast and easy.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc"><![CDATA[
+This app is a wallet for GNU Taler. It is highly experimental, and not ready for production use yet.
+
+GNU Taler is a privacy-preserving payment system. Customers can stay anonymous, but merchants can not hide their income through payments with GNU Taler. This helps to avoid tax evasion and money laundering.
+
+The primary use case of GNU Taler is payments; it is not meant as a store of value. Payments are always backed by an existing currency.
+
+Payment are made after exchanging existing money into electronic money with the help of an Exchange service, that is, a payment service provider for Taler.
+
+When making a payment, customers only need a charged wallet. A merchant can accept payments without making their customers register on the merchant\'s Website.
+
+GNU Taler is immune against many types of fraud, such as phishing of credit card information or chargeback fraud. In case of loss or theft, only the limited amount of money left in the wallet might be gone.
+]]></string>
 
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Wallet</string>
@@ -56,9 +72,9 @@
     <string name="transaction_reserve_balance_updated">Reserve Balance Updated</string>
     <string name="transaction_payment">Payment</string>
     <string name="transaction_paid">Paid</string>
-    <string name="transaction_order_total">Order Total</string>
-    <string name="transaction_order">Order</string>
-    <string name="transaction_order_id">Order Reference: %1$s</string>
+    <string name="transaction_order_total">Total</string>
+    <string name="transaction_order">Purchase</string>
+    <string name="transaction_order_id">Purchase Reference: %1$s</string>
     <string name="transaction_order_accepted">Purchase Confirmed</string>
     <string name="transaction_order_refused">Purchase Cancelled</string>
     <string name="transaction_tip_accepted">Tip Accepted</string>
@@ -75,7 +91,7 @@
     <string name="payment_fee">+%s payment fee</string>
     <string name="payment_button_confirm">Confirm Payment</string>
     <string name="payment_label_amount_total">Total Amount:</string>
-    <string name="payment_label_order_summary">Order</string>
+    <string name="payment_label_order_summary">Purchase</string>
     <string name="payment_error">Error: %s</string>
     <string name="payment_balance_insufficient">Balance insufficient!</string>
     <string name="payment_show_details">Show Details</string>
@@ -83,7 +99,7 @@
     <string name="payment_successful">Payment was successful</string>
     <string name="payment_back_button">OK</string>
     <string name="payment_already_paid_title">Already paid</string>
-    <string name="payment_already_paid">You\'ve already paid for this order.</string>
+    <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
 
     <string name="withdraw_accepted">Withdrawal accepted</string>
     <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>

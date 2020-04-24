@@ -16,3 +16,10 @@
 .externalNativeBuild
 .cxx
 /*/release/
+
+# Fastlane
+*/Gemfile
+*/Gemfile.lock
+*/fastlane/report.xml
+*/fastlane/README.md
+*/fastlane/metadata/android/screenshots.html

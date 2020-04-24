@@ -1,0 +1,1 @@
+GNU Taler makes privacy-friendly online transactions fast and easy.
