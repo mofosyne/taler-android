@@ -81,15 +81,15 @@ internal class TransactionAdapter(
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
 
-        private val selectableBackground = v.background
+        private val selectableForeground = v.foreground
         private val amountColor = amount.currentTextColor
 
         open fun bind(transaction: Transaction, selected: Boolean) {
             if (devMode || transaction.detailPageLayout != 0) {
-                v.background = selectableBackground
+                v.foreground = selectableForeground
                 v.setOnClickListener { listener.onTransactionClicked(transaction) }
             } else {
-                v.background = null
+                v.foreground = null
                 v.setOnClickListener(null)
             }
             v.isActivated = selected
