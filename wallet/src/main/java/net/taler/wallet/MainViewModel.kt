@@ -37,6 +37,12 @@ import org.json.JSONObject
 
 const val TAG = "taler-wallet"
 
+private val transactionNotifications = listOf(
+    "proposal-accepted",
+    "refresh-revealed",
+    "withdraw-group-finished"
+)
+
 data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
@@ -56,6 +62,13 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         ) {
             Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
             loadBalances()
+            if (payload.optString("type") in transactionNotifications) {
+                // update transaction list
+                // TODO do this in a better way
+                transactionManager.showAll.value?.let {
+                    transactionManager.showAll.postValue(it)
+                }
+            }
         }
     }
 
@@ -66,7 +79,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager = PendingOperationsManager(walletBackendApi)
-    val transactionManager = TransactionManager(walletBackendApi, mapper)
+    val transactionManager: TransactionManager = TransactionManager(walletBackendApi, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
     override fun onCleared() {
