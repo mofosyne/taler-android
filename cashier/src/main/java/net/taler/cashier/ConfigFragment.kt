@@ -132,14 +132,14 @@ class ConfigFragment : Fragment() {
                 findNavController().navigate(action)
             }
             ConfigResult.Offline -> {
-                Snackbar.make(view!!, R.string.config_error_offline, LENGTH_LONG).show()
+                Snackbar.make(requireView(), R.string.config_error_offline, LENGTH_LONG).show()
             }
             is ConfigResult.Error -> {
                 if (result.authError) {
-                    Snackbar.make(view!!, R.string.config_error_auth, LENGTH_LONG).show()
+                    Snackbar.make(requireView(), R.string.config_error_auth, LENGTH_LONG).show()
                 } else {
                     val str = getString(R.string.config_error, result.msg)
-                    Snackbar.make(view!!, str, LENGTH_LONG).show()
+                    Snackbar.make(requireView(), str, LENGTH_LONG).show()
                 }
             }
         }.exhaustive

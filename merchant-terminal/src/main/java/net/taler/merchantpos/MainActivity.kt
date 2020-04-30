@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
     private var reallyExit = false
 
     companion object {
-        val TAG = "taler-pos"
+        const val TAG = "taler-pos"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

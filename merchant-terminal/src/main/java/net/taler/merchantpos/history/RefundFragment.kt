@@ -100,7 +100,7 @@ class RefundFragment : Fragment() {
     }
 
     private fun onError(@StringRes res: Int) {
-        Snackbar.make(view!!, res, LENGTH_LONG).show()
+        Snackbar.make(requireView(), res, LENGTH_LONG).show()
         progressBar.fadeOut()
         refundButton.fadeIn()
     }

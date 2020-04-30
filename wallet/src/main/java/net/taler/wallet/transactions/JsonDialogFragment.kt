@@ -45,7 +45,7 @@ class JsonDialogFragment : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val json = arguments!!.getString("json")
+        val json = requireArguments().getString("json")
         jsonView.text = json
     }
 

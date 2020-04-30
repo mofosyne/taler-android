@@ -147,13 +147,13 @@ class MerchantConfigFragment : Fragment() {
     private fun onConfigReceived(currency: String) {
         onResultReceived()
         updateView()
-        topSnackbar(view!!, getString(R.string.config_changed, currency), LENGTH_LONG)
+        topSnackbar(requireView(), getString(R.string.config_changed, currency), LENGTH_LONG)
         navigate(actionSettingsToOrder())
     }
 
     private fun onError(msg: String) {
         onResultReceived()
-        Snackbar.make(view!!, msg, LENGTH_LONG).show()
+        Snackbar.make(requireView(), msg, LENGTH_LONG).show()
     }
 
     private fun onResultReceived() {

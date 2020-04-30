@@ -58,7 +58,7 @@ class ConfigFetcherFragment : Fragment() {
     }
 
     private fun onNetworkError(msg: String) {
-        Snackbar.make(view!!, msg, LENGTH_SHORT).show()
+        Snackbar.make(requireView(), msg, LENGTH_SHORT).show()
         navigate(actionConfigFetcherToMerchantSettings())
     }
 

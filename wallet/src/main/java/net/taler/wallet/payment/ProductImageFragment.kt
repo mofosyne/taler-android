@@ -45,7 +45,7 @@ class ProductImageFragment private constructor() : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val bitmap = arguments!!.getParcelable<Bitmap>(IMAGE)
+        val bitmap = requireArguments().getParcelable<Bitmap>(IMAGE)
         productImageView.setImageBitmap(bitmap)
     }
 

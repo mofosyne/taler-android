@@ -37,9 +37,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 import kotlinx.android.synthetic.main.fragment_pending_operations.*
+import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
-import net.taler.wallet.MainViewModel
 import org.json.JSONObject
 
 interface PendingOperationClickListener {
@@ -109,7 +109,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
     }
 
     override fun onPendingOperationClick(type: String, detail: JSONObject) {
-        Snackbar.make(view!!, "No detail view for $type implemented yet.", LENGTH_SHORT).show()
+        Snackbar.make(requireView(), "No detail view for $type implemented yet.", LENGTH_SHORT).show()
     }
 
     override fun onPendingOperationActionClick(type: String, detail: JSONObject) {

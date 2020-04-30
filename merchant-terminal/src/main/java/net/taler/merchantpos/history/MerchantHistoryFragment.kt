@@ -103,7 +103,7 @@ class MerchantHistoryFragment : Fragment(), RefundClickListener {
     }
 
     private fun onError() {
-        Snackbar.make(view!!, R.string.error_network, LENGTH_SHORT).show()
+        Snackbar.make(requireView(), R.string.error_network, LENGTH_SHORT).show()
     }
 
     override fun onRefundClicked(item: HistoryItem) {

@@ -77,10 +77,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setMessage("Do you really want to reset the wallet and lose all coins and purchases?")
             .setPositiveButton("Reset") { _, _ ->
                 model.dangerouslyReset()
-                Snackbar.make(view!!, "Wallet has been reset", LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Wallet has been reset", LENGTH_SHORT).show()
             }
             .setNegativeButton("Cancel") { _, _ ->
-                Snackbar.make(view!!, "Reset cancelled", LENGTH_SHORT).show()
+                Snackbar.make(requireView(), "Reset cancelled", LENGTH_SHORT).show()
             }
             .show()
     }

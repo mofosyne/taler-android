@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Taler Merchant PoS Terminal</string>
+    <string name="app_name">GNU Taler Point-of-Sale</string>
     <string name="app_name_short">Merchant Terminal</string>
     <string name="project_name">GNU Taler</string>
 
@@ -59,8 +59,8 @@
     <string name="refund_error_backend">Error processing refund</string>
     <string name="refund_error_deadline">Refund deadline has passed</string>
     <string name="refund_error_already_refunded">Already refunded</string>
-    <string name="refund_intro_nfc">Please let customer scan QR Code or use NFC to give refund</string>
-    <string name="refund_intro">Please let customer scan QR Code to give refund</string>
+    <string name="refund_intro_nfc">Please let customer scan QR Code or use NFC to offer refund</string>
+    <string name="refund_intro">Please let customer scan QR Code to offer refund</string>
     <string name="refund_order_ref">Purchase reference: %1$s\n\n%2$s</string>
 
     <string name="error_network">Network error</string>
