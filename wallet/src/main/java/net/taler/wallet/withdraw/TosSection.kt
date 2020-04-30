@@ -17,6 +17,7 @@
 package net.taler.wallet.withdraw
 
 import io.noties.markwon.Markwon
+import org.commonmark.node.Code
 import org.commonmark.node.Document
 import org.commonmark.node.Heading
 import org.commonmark.node.Node
@@ -44,14 +45,9 @@ internal fun parseTos(markwon: Markwon, text: String): List<TosSection> {
                 sections.add(TosSection(lastHeading, section))
                 section = Document()
             }
-            // check that this is a plain heading
-            if (node.firstChild !is Text || node.firstChild.next != null) {
-                throw ParseException(
-                    "Primary heading includes more than just text", sections.size
-                )
-            }
-            // start new section
-            lastHeading = (node.firstChild as Text).literal
+            // start new section with new heading (stripped of markup)
+            lastHeading = getNodeText(node)
+            if (lastHeading.isBlank()) throw ParseException("Empty heading", 0)
         } else if (lastHeading == null) {
             throw ParseException("Found text before first primary heading", 0)
         } else {
@@ -62,4 +58,18 @@ internal fun parseTos(markwon: Markwon, text: String): List<TosSection> {
     check(lastHeading != null)
     sections.add(TosSection(lastHeading, section))
     return sections
+}
+
+private fun getNodeText(rootNode: Node): String {
+    var node: Node? = rootNode.firstChild
+    var text = ""
+    while (node != null) {
+        text += when (node) {
+            is Text -> node.literal
+            is Code -> node.literal
+            else -> getNodeText(node)
+        }
+        node = node.next
+    }
+    return text
 }
