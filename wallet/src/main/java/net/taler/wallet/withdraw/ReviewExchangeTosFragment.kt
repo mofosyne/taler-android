@@ -16,7 +16,6 @@
 
 package net.taler.wallet.withdraw
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,16 +24,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import io.noties.markwon.Markwon
 import kotlinx.android.synthetic.main.fragment_review_exchange_tos.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
+import java.text.ParseException
 
 class ReviewExchangeTosFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
+    private val markwon by lazy { Markwon.builder(requireContext()).build() }
+    private val adapter by lazy { TosAdapter(markwon) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,8 +56,18 @@ class ReviewExchangeTosFragment : Fragment() {
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is WithdrawStatus.TermsOfServiceReviewRequired -> {
-                    tosTextView.text = it.tosText
-                    tosTextView.fadeIn()
+                    val sections = try {
+                        // TODO remove next line once exchange delivers proper markdown
+                        val text = it.tosText.replace("****************", "================")
+                        parseTos(markwon, text)
+                    } catch (e: ParseException) {
+                        onTosError(e.message ?: "Unknown Error")
+                        return@Observer
+                    }
+                    adapter.setSections(sections)
+                    tosList.adapter = adapter
+                    tosList.fadeIn()
+
                     acceptTosCheckBox.fadeIn()
                     progressBar.fadeOut()
                 }
@@ -66,6 +79,14 @@ class ReviewExchangeTosFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun onTosError(msg: String) {
+        tosList.fadeIn()
+        progressBar.fadeOut()
+        buttonCard.fadeOut()
+        errorView.text = getString(R.string.exchange_tos_error, "\n\n$msg")
+        errorView.fadeIn()
     }
 
 }
