@@ -41,12 +41,12 @@
     <string name="payment_cancel">Cancel payment</string>
     <string name="payment_received">Payment received</string>
     <string name="payment_back_button">Continue</string>
-    <string name="payment_order_ref">Purchase reference: %s</string>
+    <string name="payment_order_id">Receipt #%s</string>
     <string name="payment_process_label">Payment required</string>
     <string name="payment_canceled">Payment canceled</string>
 
     <string name="history_label">Payment history</string>
-    <string name="history_ref_no">Ref. No: %s</string>
+    <string name="history_ref_no" translatable="false">@string/payment_order_id</string>
     <string name="history_refund">Refund</string>
     <string name="refund_amount">Amount</string>
     <string name="refund_reason">Refund reason</string>

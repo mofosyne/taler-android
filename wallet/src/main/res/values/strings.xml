@@ -74,7 +74,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_paid">Paid</string>
     <string name="transaction_order_total">Total</string>
     <string name="transaction_order">Purchase</string>
-    <string name="transaction_order_id">Purchase Reference: %1$s</string>
+    <string name="transaction_order_id">Receipt #%1$s</string>
     <string name="transaction_order_accepted">Purchase Confirmed</string>
     <string name="transaction_order_refused">Purchase Cancelled</string>
     <string name="transaction_tip_accepted">Tip Accepted</string>

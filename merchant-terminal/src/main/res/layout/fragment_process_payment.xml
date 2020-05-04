@@ -91,7 +91,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/amountView"
-        tools:text="@string/payment_order_ref"
+        tools:text="@string/payment_order_id"
         tools:visibility="visible" />
 
     <Button

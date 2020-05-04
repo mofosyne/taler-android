@@ -74,7 +74,7 @@ class ProcessPaymentFragment : Fragment() {
         payIntroView.fadeIn()
         amountView.text = payment.order.total.toString()
         payment.orderId?.let {
-            orderRefView.text = getString(R.string.payment_order_ref, it)
+            orderRefView.text = getString(R.string.payment_order_id, it)
             orderRefView.fadeIn()
         }
         payment.talerPayUri?.let {
