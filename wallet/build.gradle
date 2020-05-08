@@ -23,7 +23,7 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "taler-wallet-android.js"
+def walletCoreVersion = "v0.7.1-dev.1"
 
 android {
     compileSdkVersion 29
@@ -35,7 +35,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 6
-        versionName "0.6.0pre8"
+        versionName "0.7.1.dev.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -105,7 +105,7 @@ dependencies {
 
 def walletLibraryDir = "src/main/assets"
 task downloadWalletLibrary(type: Download) {
-    src "https://git.taler.net/wallet-android.git/plain/${walletCoreVersion}?h=binary-deps"
+    src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-android.js?h=prebuilt"
     dest "${walletLibraryDir}/taler-wallet-android.js"
     onlyIfModified true
     doFirst {
