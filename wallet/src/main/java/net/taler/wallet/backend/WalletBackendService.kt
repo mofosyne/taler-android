@@ -26,6 +26,7 @@ import android.os.Message
 import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
+import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -55,7 +56,7 @@ class WalletBackendService : Service() {
     private val subscribers = LinkedList<Messenger>()
 
     override fun onCreate() {
-        val talerWalletAndroidCode = assets.open("taler-wallet-android.js").use {
+        val talerWalletAndroidCode = assets.open("taler-wallet-android-$WALLET_CORE_VERSION.js").use {
             it.readBytes().toString(Charsets.UTF_8)
         }
 

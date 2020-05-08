@@ -37,6 +37,7 @@ android {
         versionCode 6
         versionName "0.7.1.dev.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
     buildTypes {
         release {
@@ -90,10 +91,10 @@ dependencies {
     implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
 
     // Markdown rendering
-    final def  markwon_version =  '4.3.1'
-    implementation  "io.noties.markwon:core:$markwon_version"
-    implementation  "io.noties.markwon:ext-tables:$markwon_version"
-    implementation  "io.noties.markwon:recycler:$markwon_version"
+    final def markwon_version = '4.3.1'
+    implementation "io.noties.markwon:core:$markwon_version"
+    implementation "io.noties.markwon:ext-tables:$markwon_version"
+    implementation "io.noties.markwon:recycler:$markwon_version"
 
     // JSON parsing and serialization
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2'
@@ -106,8 +107,9 @@ dependencies {
 def walletLibraryDir = "src/main/assets"
 task downloadWalletLibrary(type: Download) {
     src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-android.js?h=prebuilt"
-    dest "${walletLibraryDir}/taler-wallet-android.js"
+    dest "${walletLibraryDir}/taler-wallet-android-${walletCoreVersion}.js"
     onlyIfModified true
+    overwrite false
     doFirst {
         new File(walletLibraryDir).mkdirs()
     }
