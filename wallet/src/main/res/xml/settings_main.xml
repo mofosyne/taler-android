@@ -32,6 +32,43 @@
         tools:isPreferenceVisible="true" />
 
     <Preference
+        app:icon="@drawable/ic_account_balance_wallet"
+        app:isPreferenceVisible="false"
+        app:key="pref_version_app"
+        app:selectable="false"
+        app:summary="@string/settings_version_unknown"
+        app:title="@string/settings_version_app"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:icon="@drawable/ic_adjust"
+        app:isPreferenceVisible="false"
+        app:key="pref_version_core"
+        app:selectable="false"
+        app:summary="@string/settings_version_unknown"
+        app:title="@string/settings_version_core"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:icon="@drawable/ic_account_balance"
+        app:isPreferenceVisible="false"
+        app:key="pref_version_protocol_exchange"
+        app:selectable="false"
+        app:summary="@string/settings_version_unknown"
+        app:title="@string/settings_version_protocol_exchange"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:icon="@drawable/ic_store_mall"
+        app:isPreferenceVisible="false"
+        app:key="pref_version_protocol_merchant"
+        app:selectable="false"
+        app:summary="@string/settings_version_unknown"
+        app:title="@string/settings_version_protocol_merchant"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:icon="@drawable/ic_nuke"
         app:isPreferenceVisible="false"
         app:key="pref_reset"
         app:summary="@string/settings_reset_summary"

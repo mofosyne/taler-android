@@ -26,6 +26,9 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
+import net.taler.wallet.BuildConfig.VERSION_CODE
+import net.taler.wallet.BuildConfig.VERSION_NAME
+import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -35,12 +38,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var prefDevMode: SwitchPreferenceCompat
     private lateinit var prefWithdrawTest: Preference
+    private lateinit var prefVersionApp: Preference
+    private lateinit var prefVersionCore: Preference
+    private lateinit var prefVersionExchange: Preference
+    private lateinit var prefVersionMerchant: Preference
     private lateinit var prefReset: Preference
+    private val devPrefs by lazy {
+        listOf(
+            prefWithdrawTest,
+            prefVersionApp,
+            prefVersionCore,
+            prefVersionExchange,
+            prefVersionMerchant,
+            prefReset
+        )
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
         prefDevMode = findPreference("pref_dev_mode")!!
         prefWithdrawTest = findPreference("pref_testkudos")!!
+        prefVersionApp = findPreference("pref_version_app")!!
+        prefVersionCore = findPreference("pref_version_core")!!
+        prefVersionExchange = findPreference("pref_version_protocol_exchange")!!
+        prefVersionMerchant = findPreference("pref_version_protocol_merchant")!!
         prefReset = findPreference("pref_reset")!!
     }
 
@@ -49,8 +70,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
             prefDevMode.isChecked = enabled
-            prefWithdrawTest.isVisible = enabled
-            prefReset.isVisible = enabled
+            if (enabled) {
+                prefVersionApp.summary = "$VERSION_NAME ($VERSION_CODE)"
+                prefVersionCore.summary = WALLET_CORE_VERSION
+            }
+            devPrefs.forEach { it.isVisible = enabled }
         })
         prefDevMode.setOnPreferenceChangeListener { _, newValue ->
             model.devMode.value = newValue as Boolean
