@@ -41,4 +41,5 @@ wallet_deploy_nightly:
     - apt update && apt install patch
     - patch -b /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
     # END
+    - fdroid --version
     - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v --archive-older 6

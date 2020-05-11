@@ -28,14 +28,6 @@ index 7a90294d..9ad806b3 100644
  
          ssh_private_key_file = _ssh_key_from_debug_keystore()
          # this is needed for GitPython to find the SSH key
-@@ -235,6 +238,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
-         config += "archive_name = '%s'\n" % (repo_git_base + ' archive')
-         config += "archive_url = '%s'\n" % (repo_base + '/archive')
-         config += "archive_icon = 'icon.png'\n"
-+        config += "archive_description = 'Old nightly builds that have been archived.'\n"
-         config += "archive_older = %i\n" % options.archive_older
-         config += "servergitmirrors = '%s'\n" % servergitmirror
-         config += "keystore = '%s'\n" % KEYSTORE_FILE
 @@ -244,7 +248,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
          config += "keydname = '%s'\n" % DISTINGUISHED_NAME
          config += "make_current_version_link = False\n"
