@@ -69,6 +69,8 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     transactionManager.showAll.postValue(it)
                 }
             }
+            // refresh pending ops with each notification
+            if (devMode.value == true) pendingOperationsManager.getPending()
         }
     }
 
@@ -78,7 +80,8 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     val withdrawManager = WithdrawManager(walletBackendApi)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
-    val pendingOperationsManager = PendingOperationsManager(walletBackendApi)
+    val pendingOperationsManager: PendingOperationsManager =
+        PendingOperationsManager(walletBackendApi)
     val transactionManager: TransactionManager = TransactionManager(walletBackendApi, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
