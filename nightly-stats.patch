@@ -1,7 +1,16 @@
 diff --git a/fdroidserver/nightly.py b/fdroidserver/nightly.py
-index 0a3a8012..ae3aa0e3 100644
+index 7a90294d..9ad806b3 100644
 --- a/fdroidserver/nightly.py
 +++ b/fdroidserver/nightly.py
+@@ -102,7 +102,7 @@ def main():
+                         help=_('The file to be included in the repo (path or glob)'))
+     parser.add_argument("--no-checksum", action="store_true", default=False,
+                         help=_("Don't use rsync checksums"))
+-    parser.add_argument("--archive-older", default=20,
++    parser.add_argument("--archive-older", type=int, default=20,
+                         help=_("Set maximum releases in repo before older ones are archived"))
+     # TODO add --with-btlog
+     options = parser.parse_args()
 @@ -170,6 +170,7 @@ def main():
          git_mirror_path = os.path.join(repo_basedir, 'git-mirror')
          git_mirror_repodir = os.path.join(git_mirror_path, 'fdroid', 'repo')
@@ -19,7 +28,15 @@ index 0a3a8012..ae3aa0e3 100644
  
          ssh_private_key_file = _ssh_key_from_debug_keystore()
          # this is needed for GitPython to find the SSH key
-@@ -246,7 +249,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
+@@ -235,6 +238,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
+         config += "archive_name = '%s'\n" % (repo_git_base + ' archive')
+         config += "archive_url = '%s'\n" % (repo_base + '/archive')
+         config += "archive_icon = 'icon.png'\n"
++        config += "archive_description = 'Old nightly builds that have been archived.'\n"
+         config += "archive_older = %i\n" % options.archive_older
+         config += "servergitmirrors = '%s'\n" % servergitmirror
+         config += "keystore = '%s'\n" % KEYSTORE_FILE
+@@ -244,7 +248,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
          config += "keydname = '%s'\n" % DISTINGUISHED_NAME
          config += "make_current_version_link = False\n"
          config += "accepted_formats = ('txt', 'yml')\n"
@@ -28,7 +45,7 @@ index 0a3a8012..ae3aa0e3 100644
          with open('config.py', 'w') as fp:
              fp.write(config)
          os.chmod('config.py', 0o600)
-@@ -293,6 +296,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
+@@ -291,6 +295,7 @@ Last updated: {date}'''.format(repo_git_base=repo_git_base,
          subprocess.check_call(['fdroid', 'update', '--rename-apks', '--create-metadata', '--verbose'],
                                cwd=repo_basedir)
          common.local_rsync(options, repo_basedir + '/metadata/', git_mirror_metadatadir + '/')
