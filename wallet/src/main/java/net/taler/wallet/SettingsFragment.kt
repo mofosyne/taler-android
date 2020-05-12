@@ -73,6 +73,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (enabled) {
                 prefVersionApp.summary = "$VERSION_NAME ($VERSION_CODE)"
                 prefVersionCore.summary = WALLET_CORE_VERSION
+                model.exchangeVersion?.let { prefVersionExchange.summary = it }
+                model.merchantVersion?.let { prefVersionMerchant.summary = it }
             }
             devPrefs.forEach { it.isVisible = enabled }
         })

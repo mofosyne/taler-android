@@ -52,14 +52,20 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
+    var exchangeVersion: String? = null
+        private set
+    var merchantVersion: String? = null
+        private set
 
     private val walletBackendApi = WalletBackendApi(app, {
         // nothing to do when we connect, balance will be requested by BalanceFragment in onStart()
     }) { payload ->
-        if (
-            payload.getString("type") != "waiting-for-retry" && // ignore ping
-            payload.optString("operation") != "init" // ignore init notification
-        ) {
+        if (payload.optString("operation") == "init") {
+            val result = payload.getJSONObject("result")
+            val versions = result.getJSONObject("supported_protocol_versions")
+            exchangeVersion = versions.getString("exchange")
+            merchantVersion = versions.getString("merchant")
+        } else if (payload.getString("type") != "waiting-for-retry") {  // ignore ping
             Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
             loadBalances()
             if (payload.optString("type") in transactionNotifications) {
