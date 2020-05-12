@@ -23,11 +23,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.common.Amount
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
@@ -70,13 +72,13 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             loadBalances()
             if (payload.optString("type") in transactionNotifications) {
                 // update transaction list
-                // TODO do this in a better way
-                transactionManager.showAll.value?.let {
-                    transactionManager.showAll.postValue(it)
-                }
+                transactionManager.loadTransactions()
             }
-            // refresh pending ops with each notification
-            if (devMode.value == true) pendingOperationsManager.getPending()
+            // refresh pending ops and history with each notification
+            if (devMode.value == true) {
+                pendingOperationsManager.getPending()
+                historyManager.loadHistory()
+            }
         }
     }
 
@@ -88,7 +90,10 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
-    val transactionManager: TransactionManager = TransactionManager(walletBackendApi, mapper)
+    val historyManager: DevHistoryManager =
+        DevHistoryManager(walletBackendApi, viewModelScope, mapper)
+    val transactionManager: TransactionManager =
+        TransactionManager(walletBackendApi, viewModelScope, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
     override fun onCleared() {

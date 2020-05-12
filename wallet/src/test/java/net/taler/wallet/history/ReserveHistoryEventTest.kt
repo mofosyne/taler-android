@@ -14,16 +14,17 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.transactions
+package net.taler.wallet.history
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.taler.wallet.history.ReserveDepositTransaction
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.random.Random
 
-class ReserveTransactionTest {
+class ReserveHistoryEventTest {
 
     private val mapper = ObjectMapper().registerModule(KotlinModule())
 

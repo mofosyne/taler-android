@@ -14,8 +14,9 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.transactions
+package net.taler.wallet.history
 
+import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -24,16 +25,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.history.History
-import net.taler.wallet.history.HistoryEvent
 import org.json.JSONObject
 
-sealed class TransactionsResult {
-    object Error : TransactionsResult()
-    class Success(val transactions: History) : TransactionsResult()
+sealed class HistoryResult {
+    object Error : HistoryResult()
+    class Success(val history: History) : HistoryResult()
 }
 
-class TransactionManager(
+class DevHistoryManager(
     private val walletBackendApi: WalletBackendApi,
     private val scope: CoroutineScope,
     private val mapper: ObjectMapper
@@ -42,38 +41,38 @@ class TransactionManager(
     private val mProgress = MutableLiveData<Boolean>()
     val progress: LiveData<Boolean> = mProgress
 
-    var selectedCurrency: String? = null
-    var selectedEvent: HistoryEvent? = null
+    private val mHistory = MutableLiveData<HistoryResult>()
+    val history: LiveData<HistoryResult> = mHistory
 
-    private val mTransactions = MutableLiveData<TransactionsResult>()
-    val transactions: LiveData<TransactionsResult> = mTransactions
-
-    fun loadTransactions() {
-        mProgress.postValue(true)
+    @UiThread
+    internal fun loadHistory() {
+        mProgress.value = true
         walletBackendApi.sendRequest("getHistory", null) { isError, result ->
             scope.launch(Dispatchers.Default) {
-                onTransactionsLoaded(isError, result)
+                onEventsLoaded(isError, result)
             }
         }
     }
 
-    private fun onTransactionsLoaded(isError: Boolean, result: JSONObject) {
+    private fun onEventsLoaded(isError: Boolean, result: JSONObject) {
         if (isError) {
-            mTransactions.postValue(TransactionsResult.Error)
+            mHistory.postValue(HistoryResult.Error)
             return
         }
-        val transactions = History()
+        val history = History()
         val json = result.getJSONArray("history")
-        val currency = selectedCurrency
         for (i in 0 until json.length()) {
             val event: HistoryEvent = mapper.readValue(json.getString(i))
-            if (event.showToUser && (currency == null || event.isCurrency(currency))) {
-                transactions.add(event)
-            }
+            event.json = json.getJSONObject(i)
+            history.add(event)
         }
-        transactions.reverse()  // show latest first
+        history.reverse()  // show latest first
         mProgress.postValue(false)
-        mTransactions.postValue(TransactionsResult.Success(transactions))
+        mHistory.postValue(
+            HistoryResult.Success(
+                history
+            )
+        )
     }
 
 }

@@ -14,75 +14,52 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.transactions
+package net.taler.wallet.history
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.ItemKeyProvider
-import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
-import net.taler.wallet.history.AmountType
-import net.taler.wallet.history.DisplayAmount
-import net.taler.wallet.history.History
-import net.taler.wallet.history.HistoryEvent
-import net.taler.wallet.history.OrderAcceptedHistoryEvent
-import net.taler.wallet.history.OrderRefusedHistoryEvent
-import net.taler.wallet.history.RefreshHistoryEvent
-import net.taler.wallet.history.RefreshReason
-import net.taler.wallet.history.ReserveBalanceUpdatedHistoryEvent
-import net.taler.wallet.history.TipAcceptedHistoryEvent
-import net.taler.wallet.history.TipDeclinedHistoryEvent
-import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
+import net.taler.wallet.history.DevHistoryAdapter.HistoryViewHolder
 
-
-internal class TransactionAdapter(
-    private val listener: OnTransactionClickListener,
-    private var transactions: History = History()
-) : Adapter<TransactionViewHolder>() {
-
-    lateinit var tracker: SelectionTracker<String>
-    val keyProvider = TransactionKeyProvider()
+@Deprecated("Replaced by TransactionAdapter")
+internal class DevHistoryAdapter(
+    private val listener: OnEventClickListener,
+    private var history: History = History()
+) : Adapter<HistoryViewHolder>() {
 
     init {
         setHasStableIds(false)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_history, parent, false)
-        return TransactionViewHolder(view)
+        return HistoryViewHolder(view)
     }
 
-    override fun getItemCount(): Int = transactions.size
+    override fun getItemCount(): Int = history.size
 
-    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val transaction = transactions[position]
-        holder.bind(transaction, tracker.isSelected(transaction.eventId))
+    override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
+        val transaction = history[position]
+        holder.bind(transaction)
     }
 
-    fun update(updatedTransactions: History) {
-        this.transactions = updatedTransactions
+    fun update(updatedHistory: History) {
+        this.history = updatedHistory
         this.notifyDataSetChanged()
     }
 
-    fun selectAll() = transactions.forEach {
-        tracker.select(it.eventId)
-    }
-
-    internal open inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
+    internal open inner class HistoryViewHolder(private val v: View) : ViewHolder(v) {
 
         protected val context: Context = v.context
 
@@ -91,34 +68,26 @@ internal class TransactionAdapter(
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
 
-        private val selectableForeground = v.foreground
         private val amountColor = amount.currentTextColor
 
-        open fun bind(transaction: HistoryEvent, selected: Boolean) {
-            if (transaction.detailPageLayout != 0) {
-                v.foreground = selectableForeground
-                v.setOnClickListener { listener.onTransactionClicked(transaction) }
-            } else {
-                v.foreground = null
-                v.setOnClickListener(null)
-            }
-            v.isActivated = selected
-            icon.setImageResource(transaction.icon)
+        open fun bind(historyEvent: HistoryEvent) {
+            v.setOnClickListener { listener.onTransactionClicked(historyEvent) }
+            icon.setImageResource(historyEvent.icon)
 
-            title.text = if (transaction.title == null) {
-                when (transaction) {
-                    is RefreshHistoryEvent -> getRefreshTitle(transaction)
+            title.text = if (historyEvent.title == null) {
+                when (historyEvent) {
+                    is RefreshHistoryEvent -> getRefreshTitle(historyEvent)
                     is OrderAcceptedHistoryEvent -> context.getString(R.string.transaction_order_accepted)
                     is OrderRefusedHistoryEvent -> context.getString(R.string.transaction_order_refused)
                     is TipAcceptedHistoryEvent -> context.getString(R.string.transaction_tip_accepted)
                     is TipDeclinedHistoryEvent -> context.getString(R.string.transaction_tip_declined)
                     is ReserveBalanceUpdatedHistoryEvent -> context.getString(R.string.transaction_reserve_balance_updated)
-                    else -> transaction::class.java.simpleName
+                    else -> historyEvent::class.java.simpleName
                 }
-            } else transaction.title
+            } else historyEvent.title
 
-            time.text = transaction.timestamp.ms.toRelativeTime(context)
-            bindAmount(transaction.displayAmount)
+            time.text = historyEvent.timestamp.ms.toRelativeTime(context)
+            bindAmount(historyEvent.displayAmount)
         }
 
         private fun bindAmount(displayAmount: DisplayAmount?) {
@@ -161,28 +130,4 @@ internal class TransactionAdapter(
 
     }
 
-    internal inner class TransactionKeyProvider : ItemKeyProvider<String>(SCOPE_MAPPED) {
-        override fun getKey(position: Int) = transactions[position].eventId
-        override fun getPosition(key: String): Int {
-            return transactions.indexOfFirst { it.eventId == key }
-        }
-    }
-
-}
-
-internal class TransactionLookup(
-    private val list: RecyclerView,
-    private val adapter: TransactionAdapter
-) : ItemDetailsLookup<String>() {
-    override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
-        list.findChildViewUnder(e.x, e.y)?.let { view ->
-            val holder = list.getChildViewHolder(view)
-            val position = holder.adapterPosition
-            return object : ItemDetails<String>() {
-                override fun getPosition(): Int = position
-                override fun getSelectionKey(): String = adapter.keyProvider.getKey(position)
-            }
-        }
-        return null
-    }
 }

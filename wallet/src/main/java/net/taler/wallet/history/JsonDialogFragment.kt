@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.transactions
+package net.taler.wallet.history
 
 import android.os.Bundle
 import android.view.LayoutInflater

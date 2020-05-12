@@ -37,6 +37,11 @@ import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.history.JsonDialogFragment
+import net.taler.wallet.history.OrderShortInfo
+import net.taler.wallet.history.PaymentHistoryEvent
+import net.taler.wallet.history.RefundHistoryEvent
+import net.taler.wallet.history.WithdrawHistoryEvent
 
 class TransactionDetailFragment : Fragment() {
 
@@ -65,9 +70,9 @@ class TransactionDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         timeView.text = event.timestamp.ms.toAbsoluteTime(requireContext())
         when (val e = event) {
-            is WithdrawTransaction -> bind(e)
-            is PaymentTransaction -> bind(e)
-            is RefundTransaction -> bind(e)
+            is WithdrawHistoryEvent -> bind(e)
+            is PaymentHistoryEvent -> bind(e)
+            is RefundHistoryEvent -> bind(e)
             else -> Toast.makeText(
                 requireContext(),
                 "event ${e.javaClass} not implement",
@@ -90,7 +95,7 @@ class TransactionDetailFragment : Fragment() {
         }
     }
 
-    private fun bind(event: WithdrawTransaction) {
+    private fun bind(event: WithdrawHistoryEvent) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
         effectiveAmountView.text = event.amountWithdrawnEffective.toString()
         chosenAmountLabel.text = getString(R.string.amount_chosen)
@@ -101,13 +106,13 @@ class TransactionDetailFragment : Fragment() {
         exchangeView.text = cleanExchange(event.exchangeBaseUrl)
     }
 
-    private fun bind(event: PaymentTransaction) {
+    private fun bind(event: PaymentHistoryEvent) {
         amountPaidWithFeesView.text = event.amountPaidWithFees.toString()
         val fee = event.amountPaidWithFees - event.orderShortInfo.amount
         bindOrderAndFee(event.orderShortInfo, fee)
     }
 
-    private fun bind(event: RefundTransaction) {
+    private fun bind(event: RefundHistoryEvent) {
         amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
         amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
         amountPaidWithFeesView.text =

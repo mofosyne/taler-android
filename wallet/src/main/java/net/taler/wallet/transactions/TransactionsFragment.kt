@@ -42,17 +42,18 @@ import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.history.HistoryEvent
 
-interface OnEventClickListener {
-    fun onTransactionClicked(transaction: Transaction)
+interface OnTransactionClickListener {
+    fun onTransactionClicked(transaction: HistoryEvent)
 }
 
-class TransactionsFragment : Fragment(), OnEventClickListener, ActionMode.Callback {
+class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.Callback {
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
 
-    private val transactionAdapter by lazy { TransactionAdapter(model.devMode.value == true, this) }
+    private val transactionAdapter by lazy { TransactionAdapter(this) }
     private val currency by lazy { transactionManager.selectedCurrency!! }
     private var tracker: SelectionTracker<String>? = null
     private var actionMode: ActionMode? = null
@@ -109,7 +110,7 @@ class TransactionsFragment : Fragment(), OnEventClickListener, ActionMode.Callba
         })
 
         // kicks off initial load, needs to be adapted if showAll state is ever saved
-        if (savedInstanceState == null) transactionManager.showAll.value = model.devMode.value
+        if (savedInstanceState == null) transactionManager.loadTransactions()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -137,14 +138,11 @@ class TransactionsFragment : Fragment(), OnEventClickListener, ActionMode.Callba
         }
     }
 
-    override fun onTransactionClicked(transaction: Transaction) {
+    override fun onTransactionClicked(transaction: HistoryEvent) {
         if (actionMode != null) return // don't react on clicks while in action mode
         if (transaction.detailPageLayout != 0) {
             transactionManager.selectedEvent = transaction
             findNavController().navigate(R.id.action_nav_transaction_detail)
-        } else if (model.devMode.value == true) {
-            JsonDialogFragment.new(transaction.json.toString(2))
-                .show(parentFragmentManager, null)
         }
     }
 
