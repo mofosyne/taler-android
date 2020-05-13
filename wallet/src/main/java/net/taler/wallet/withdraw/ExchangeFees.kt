@@ -22,15 +22,11 @@ import org.json.JSONObject
 
 data class CoinFee(
     val coin: Amount,
+    val quantity: Int,
     val feeDeposit: Amount,
     val feeRefresh: Amount,
     val feeRefund: Amount,
     val feeWithdraw: Amount
-)
-
-data class CoinFees(
-    val quantity: Int,
-    val coinFee: CoinFee
 )
 
 data class WireFee(
@@ -44,26 +40,28 @@ data class ExchangeFees(
     val withdrawFee: Amount,
     val overhead: Amount,
     val earliestDepositExpiration: Timestamp,
-    val coinFees: List<CoinFees>,
+    val coinFees: List<CoinFee>,
     val wireFees: List<WireFee>
 ) {
     companion object {
         fun fromExchangeWithdrawDetailsJson(json: JSONObject): ExchangeFees {
             val earliestDepositExpiration =
                 json.getJSONObject("earliestDepositExpiration").getLong("t_ms")
-
-            val selectedDenoms = json.getJSONArray("selectedDenoms")
-            val coinFees = HashMap<CoinFee, Int>(selectedDenoms.length())
-            for (i in 0 until selectedDenoms.length()) {
-                val denom = selectedDenoms.getJSONObject(i)
+            val selectedDenoms = json.getJSONObject("selectedDenoms")
+            val denoms = selectedDenoms.getJSONArray("selectedDenoms")
+            val coinFees = ArrayList<CoinFee>(denoms.length())
+            for (i in 0 until denoms.length()) {
+                val denom = denoms.getJSONObject(i)
+                val d = denom.getJSONObject("denom")
                 val coinFee = CoinFee(
-                    coin = Amount.fromJsonObject(denom.getJSONObject("value")),
-                    feeDeposit = Amount.fromJsonObject(denom.getJSONObject("feeDeposit")),
-                    feeRefresh = Amount.fromJsonObject(denom.getJSONObject("feeRefresh")),
-                    feeRefund = Amount.fromJsonObject(denom.getJSONObject("feeRefund")),
-                    feeWithdraw = Amount.fromJsonObject(denom.getJSONObject("feeWithdraw"))
+                    coin = Amount.fromJsonObject(d.getJSONObject("value")),
+                    quantity = denom.getInt("count"),
+                    feeDeposit = Amount.fromJsonObject(d.getJSONObject("feeDeposit")),
+                    feeRefresh = Amount.fromJsonObject(d.getJSONObject("feeRefresh")),
+                    feeRefund = Amount.fromJsonObject(d.getJSONObject("feeRefund")),
+                    feeWithdraw = Amount.fromJsonObject(d.getJSONObject("feeWithdraw"))
                 )
-                coinFees[coinFee] = (coinFees[coinFee] ?: 0) + 1
+                coinFees.add(coinFee)
             }
 
             val wireFeesJson = json.getJSONObject("wireFees")
@@ -89,9 +87,7 @@ data class ExchangeFees(
                 withdrawFee = Amount.fromJsonObject(json.getJSONObject("withdrawFee")),
                 overhead = Amount.fromJsonObject(json.getJSONObject("overhead")),
                 earliestDepositExpiration = Timestamp(earliestDepositExpiration),
-                coinFees = coinFees.map { (coinFee, quantity) ->
-                    CoinFees(quantity, coinFee)
-                },
+                coinFees = coinFees,
                 wireFees = wireFees
             )
         }

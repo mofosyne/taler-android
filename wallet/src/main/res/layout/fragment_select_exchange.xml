@@ -80,7 +80,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="@+id/withdrawFeeView"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/expirationLabel"
             app:layout_constraintTop_toTopOf="@+id/expirationLabel"
             tools:text="in 5 years" />
@@ -100,11 +101,13 @@
             android:id="@+id/coinFeesList"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:overScrollMode="never"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="@+id/withdrawFeeView"
-            app:layout_constraintStart_toStartOf="@+id/withdrawFeeLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/coinFeesLabel"
             tools:listitem="@layout/list_item_coin_fee" />
 
@@ -123,11 +126,13 @@
             android:id="@+id/wireFeesList"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:overScrollMode="never"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="@+id/withdrawFeeView"
-            app:layout_constraintStart_toStartOf="@+id/withdrawFeeLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/wireFeesLabel"
             tools:listitem="@layout/list_item_wire_fee" />
 

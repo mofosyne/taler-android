@@ -31,8 +31,8 @@ import kotlinx.android.synthetic.main.fragment_select_exchange.*
 import net.taler.common.Amount
 import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 import net.taler.wallet.withdraw.CoinFeeAdapter.CoinFeeViewHolder
 import net.taler.wallet.withdraw.WireFeeAdapter.WireFeeViewHolder
 
@@ -73,7 +73,7 @@ class SelectExchangeFragment : Fragment() {
 
 }
 
-private class CoinFeeAdapter(private val items: List<CoinFees>) : Adapter<CoinFeeViewHolder>() {
+private class CoinFeeAdapter(private val items: List<CoinFee>) : Adapter<CoinFeeViewHolder>() {
     override fun getItemCount() = items.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinFeeViewHolder {
         val v =
@@ -92,22 +92,21 @@ private class CoinFeeAdapter(private val items: List<CoinFees>) : Adapter<CoinFe
         private val depositFeeView: TextView = v.findViewById(R.id.depositFeeView)
         private val refreshFeeView: TextView = v.findViewById(R.id.refreshFeeView)
         private val refundFeeView: TextView = v.findViewById(R.id.refundFeeView)
-        fun bind(item: CoinFees) {
-            val fee = item.coinFee
+        fun bind(item: CoinFee) {
             coinView.text = res.getQuantityString(
                 R.plurals.exchange_fee_coin,
                 item.quantity,
-                fee.coin,
+                item.coin,
                 item.quantity
             )
             withdrawFeeView.text =
-                v.context.getString(R.string.exchange_fee_withdraw_fee, fee.feeWithdraw)
+                v.context.getString(R.string.exchange_fee_withdraw_fee, item.feeWithdraw)
             depositFeeView.text =
-                v.context.getString(R.string.exchange_fee_deposit_fee, fee.feeDeposit)
+                v.context.getString(R.string.exchange_fee_deposit_fee, item.feeDeposit)
             refreshFeeView.text =
-                v.context.getString(R.string.exchange_fee_refresh_fee, fee.feeRefresh)
+                v.context.getString(R.string.exchange_fee_refresh_fee, item.feeRefresh)
             refundFeeView.text =
-                v.context.getString(R.string.exchange_fee_refund_fee, fee.feeRefresh)
+                v.context.getString(R.string.exchange_fee_refund_fee, item.feeRefresh)
         }
     }
 }
