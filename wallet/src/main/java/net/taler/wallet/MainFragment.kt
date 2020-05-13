@@ -30,6 +30,7 @@ import net.taler.wallet.transactions.TransactionsFragment
 class MainFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
+    private var currentTag: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,15 +56,17 @@ class MainFragment : Fragment() {
     }
 
     private fun onBalancesChanged(balances: List<BalanceItem>) {
-        if (childFragmentManager.fragments.isEmpty()) {
-            val f = if (balances.size == 1) {
+        val tag = if (balances.size == 1) "single" else "multi"
+        if (currentTag != tag) {
+            val f = if (tag == "single") {
                 model.transactionManager.selectedCurrency = balances[0].available.currency
                 TransactionsFragment()
             } else {
                 BalancesFragment()
             }
+            currentTag = tag
             childFragmentManager.beginTransaction()
-                .add(R.id.mainFragmentContainer, f)
+                .replace(R.id.mainFragmentContainer, f, tag)
                 .commitNow()
         }
     }
