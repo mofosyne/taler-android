@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Caissier Taler</string>
+    <string name="config_bank_url">Adresse de l\'API de la banque</string>
+    <string name="config_username">Identifiant</string>
+    <string name="config_password">Mot de passe</string>
+    <string name="config_button_save">Enregistrer</string>
+    <string name="config_bank_url_error">L\'adresse est invalide.</string>
+    <string name="config_username_error">Veuillez saisir votre identifiant !</string>
+    <string name="config_error">Erreur lors de la récupération de la configuration : %s</string>
+    <string name="config_error_auth">Identifiant ou mot de passe invalide !</string>
+    <string name="config_demo_hint" tools:ignore="StringFormatInvalid">Pour les tests, vous pouvez &lt;a href=%s&gt;créer un compte de test dans la banque de démonstration&lt;/a&gt; .</string>
+    <string name="balance_current_label">Solde actuel</string>
+    <string name="balance_error">ERREUR : %s</string>
+    <string name="balance_offline">Hors-ligne. Connectez vous à Internet.</string>
+    <string name="action_reconfigure">Reconfiguration</string>
+    <string name="action_lock">Verrouiller</string>
+    <string name="withdraw_input_amount">Montant</string>
+    <string name="withdraw_into">Combien d\'argent électronique doit être retiré \?</string>
+    <string name="withdraw_error_zero">Entrez un montant positif !</string>
+    <string name="withdraw_error_insufficient_balance">Solde insuffisant</string>
+    <string name="withdraw_error_fetch">Erreur de communication avec la banque : %s</string>
+    <string name="withdraw_error_timeout">Aucun portefeuille n\'a tenté de se connecter. Essayez à nouveau.</string>
+    <string name="withdraw_button_confirm">Retrait</string>
+    <string name="transaction_intro">Scannez le code avec l\'application de portefeuille Taler pour effectuer un retrait :</string>
+    <string name="transaction_intro_nfc">Scannez le code ou utilisez la NFC avec l\'application de portefeuille Taler pour effectuer un retrait :</string>
+    <string name="transaction_intro_scanned">Veuillez confirmer la transaction !</string>
+    <string name="transaction_confirm">Confirmer</string>
+    <string name="transaction_abort">Annuler</string>
+    <string name="transaction_aborted">Transaction annulée</string>
+    <string name="transaction_button_back">Retour</string>
+    <string name="transaction_last_success">Dernière transaction : %s retiré</string>
+    <string name="transaction_last_aborted">Dernière transaction : Annulée</string>
+    <string name="transaction_last_error">Dernière transaction : Échec</string>
+</resources>

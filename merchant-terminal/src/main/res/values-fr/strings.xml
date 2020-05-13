@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="config_username">Identifiant</string>
+    <string name="config_password">Mot de passe</string>
+    <string name="config_error_product_category_id">Erreur : le produit %1$s fait référence à un identifiant de catégorie inconnu %2$d</string>
+    <string name="project_name">GNU Taler</string>
+    <string name="order_total">Total : %s</string>
+    <string name="config_error_network">Erreur : impossible de se connecter au serveur de configuration</string>
+    <string name="config_error_product_zero">Erreur : aucun produit valide trouvé</string>
+    <string name="config_docs">Veuillez vous référer à <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">la documentation</a> pour le format de configuration.</string>
+    <string name="refund_confirm">Approuver le remboursement</string>
+    <string name="refund_error_backend">Erreur lors du traitement du remboursement</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="app_name">Point de vente GNU Taler</string>
+    <string name="app_name_short">Terminal marchand</string>
+    <string name="menu_order">Commandes</string>
+    <string name="order_label_title">Commande numéro %s</string>
+    <string name="order_restart">Redémarrer</string>
+    <string name="order_undo">Annuler</string>
+    <string name="order_previous">Préc.</string>
+    <string name="order_next">Suivant</string>
+    <string name="order_complete">Finalisé</string>
+    <string name="config_label">Paramètres marchand</string>
+    <string name="config_url">URL de configuration</string>
+    <string name="config_ok">Récupérer la configuration</string>
+    <string name="config_auth_error">Identifiant ou Mot de passe invalide</string>
+    <string name="config_error_category">Erreur : aucune catégorie de produit valide n\'a été trouvée</string>
+    <string name="config_error_malformed">Erreur : la configuration JSON est incorrecte</string>
+    <string name="config_error_currency">Erreur : Le produit %1$s a la devise %2$s, mais devrait avoir %3$s</string>
+    <string name="config_error_unknown">Erreur : configuration non valide</string>
+    <string name="config_fetching">Récupération de la configuration…</string>
+    <string name="config_save_password">Se rappeler du mot de passe</string>
+    <string name="config_forget_password">Oublier</string>
+    <string name="config_changed">Changé en nouveau marchand en utilisant %s</string>
+    <string name="config_fetching_label">Récupération de la configuration</string>
+    <string name="payment_intro_nfc">Veuillez laisser le client scanner le QR Code ou utiliser la NFC pour payer.</string>
+    <string name="payment_intro">Demandez au client de scanner le QR code pour payer.</string>
+    <string name="payment_cancel">Annuler le Paiement</string>
+    <string name="payment_received">Paiement reçu</string>
+    <string name="payment_back_button">Continuer</string>
+    <string name="payment_order_id">Justificatif numéro %s</string>
+    <string name="payment_process_label">Paiement requis</string>
+    <string name="payment_canceled">Paiement annulé</string>
+    <string name="history_label">Historique des paiements</string>
+    <string name="history_refund">Remboursement</string>
+    <string name="refund_amount">Montant</string>
+    <string name="refund_reason">Motif du remboursement</string>
+    <string name="refund_abort">Abandonner</string>
+    <string name="refund_complete">Reçu</string>
+    <string name="refund_error_max_amount">Supérieur au montant de la commande de %s</string>
+    <string name="refund_error_invalid_amount">Montant invalide</string>
+    <string name="refund_error_zero">Doit être un montant positif</string>
+    <string name="refund_error_deadline">Le délai de remboursement est dépassé</string>
+    <string name="refund_error_already_refunded">Déjà remboursé</string>
+    <string name="menu_history">Historique</string>
+    <string name="refund_intro_nfc">Demandez au client de scanner le QR code ou d\'utiliser la NFC pour effectuer le remboursement</string>
+    <string name="refund_intro">Demandez au client de scanner le QR code pour effectuer le remboursement</string>
+    <string name="refund_order_ref">Référence d\'achat : %1$s
+\n
+\n%2$s</string>
+    <string name="error_network">Erreur réseau</string>
+    <string name="toast_back_to_exit">Cliquez à nouveau sur «retour» pour quitter</string>
+</resources>

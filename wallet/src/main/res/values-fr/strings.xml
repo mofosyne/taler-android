@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="menu_retry_pending_operations">Réessayer les opérations en attente</string>
+    <string name="balances_empty_state">Il n\'y a pas d\'argent éléctronique dans votre portefeuille. 
+\n
+\nVous pouvez obtenir de l\'argent de test auprès de la banque de démonstration :
+\n
+\nhttps://bank.demo.taler.net</string>
+    <string name="withdraw_error_message">Pour l\'instant il n\'est pas possible de retirer. Veuillez réessayer plus tard !</string>
+    <plurals name="exchange_fee_coin">
+        <item quantity="one">Pièce : %s (utilisée %d fois)</item>
+        <item quantity="other">Pièce : %s (utilisée %d fois)</item>
+    </plurals>
+    <string name="settings_dev_mode">Mode développeur</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="settings_reset">Réinitialiser le portefeuille (dangereux!)</string>
+    <string name="app_name">Portefeuille Taler</string>
+    <string name="google_play_title" tools:keep="@string/google_play_title">Portefeuille Taler (expérimental)</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler facilite et accélère les transactions en ligne respectueuses de la vie privée.</string>
+    <string name="button_scan_qr_code">Scanner le QR code Taler</string>
+    <string name="servicedesc">mon service</string>
+    <string name="aiddescription">mon aide</string>
+    <string name="balances_title">Soldes</string>
+    <string name="amount_positive">+ %s</string>
+    <string name="amount_chosen">Montant choisi</string>
+    <string name="balances_inbound_label">entrant</string>
+    <string name="transactions_title">Transactions</string>
+    <string name="transactions_empty">Vous n\'avez aucune transaction</string>
+    <string name="transactions_error">Impossible de charger les transactions</string>
+    <string name="transactions_detail_title">Transaction</string>
+    <string name="transactions_detail_title_balance">Solde : %s</string>
+    <string name="transactions_detail_json">Afficher le JSON</string>
+    <string name="transactions_delete">Supprimer</string>
+    <string name="transactions_select_all">Tout sélectionner</string>
+    <string name="transaction_reserve_balance_updated">Solde de réserve mis à jour</string>
+    <string name="transaction_payment">Paiement</string>
+    <string name="transaction_paid">Payé</string>
+    <string name="transaction_order_total">Total</string>
+    <string name="transaction_order">Acheter</string>
+    <string name="transaction_order_id">Reçu numéro %1$s</string>
+    <string name="transaction_order_accepted">Achat validé</string>
+    <string name="transaction_order_refused">Achat annulé</string>
+    <string name="transaction_tip_accepted">Pourboire accepté</string>
+    <string name="transaction_tip_declined">Pourboire refusé</string>
+    <string name="transaction_refund">Remboursement</string>
+    <string name="transaction_refresh">Monnaie obtenue</string>
+    <string name="transaction_refresh_reason_manual">en raison d\'une demande manuelle</string>
+    <string name="transaction_refresh_reason_pay">pour le paiement</string>
+    <string name="transaction_refresh_reason_recoup">pour récupérer les fonds</string>
+    <string name="transaction_refresh_reason_backup_restored">en raison de la restauration à partir de la sauvegarde</string>
+    <string name="payment_fee">+%s frais de transaction</string>
+    <string name="payment_button_confirm">Confirmer le paiement</string>
+    <string name="button_continue">Continuer</string>
+    <string name="nav_exchange_fees">Frais de change</string>
+    <string name="amount_negative">- %s</string>
+    <string name="transaction_refresh_reason_abort_pay">pour abandonner le paiement</string>
+    <string name="nav_header_title">GNU Taler</string>
+    <string name="nav_header_subtitle">Portefeuille</string>
+    <string name="nav_header_desc">En-tête de navigation</string>
+    <string name="nav_prompt_withdraw">Retirer de l\'argent électronique</string>
+    <string name="nav_exchange_tos">Conditions générale d\'utilisation du change</string>
+    <string name="nav_error">Erreur</string>
+    <string name="button_back">Retour</string>
+    <string name="payment_label_order_summary">Achat</string>
+    <string name="payment_balance_insufficient">Solde insuffisant !</string>
+    <string name="payment_hide_details">Masquer les détails</string>
+    <string name="payment_successful">Paiement réussi</string>
+    <string name="payment_back_button">OK</string>
+    <string name="payment_already_paid_title">Déjà payé</string>
+    <string name="payment_already_paid">Vous avez déjà payé cet achat.</string>
+    <string name="withdraw_accepted">Retrait accepté</string>
+    <string name="withdraw_total">Retrait</string>
+    <string name="withdraw_fees">Frais</string>
+    <string name="withdraw_exchange">Change</string>
+    <string name="withdraw_button_confirm">Confirmer le retrait</string>
+    <string name="withdraw_button_tos">Vérifier les conditions</string>
+    <string name="withdraw_error_title">Erreur de retrait</string>
+    <string name="exchange_fee_withdrawal_fee_label">Frais de retrait :</string>
+    <string name="exchange_fee_overhead_label">Erreur d\'arrondi :</string>
+    <string name="exchange_fee_coin_fees_label">Frais de pièces</string>
+    <string name="exchange_fee_wire_fees_label">Frais de virement</string>
+    <string name="exchange_fee_withdraw_fee">Frais de retrait : %s</string>
+    <string name="exchange_fee_deposit_fee">Frais de dépôt : %s</string>
+    <string name="exchange_fee_refresh_fee">Frais de monnaie : %s</string>
+    <string name="exchange_fee_refund_fee">Frais de remboursement : %s</string>
+    <string name="exchange_fee_wire_fee_timespan">Durée : %1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_wire_fee">Frais de virement : %s</string>
+    <string name="exchange_fee_wire_fee_closing_fee">Frais de clôture : %s</string>
+    <string name="exchange_tos_accept">Accepter les conditions générales d\'utilisations</string>
+    <string name="exchange_tos_error">Erreur lors de l\'affichage des conditions générales d\'utilisation : %s</string>
+    <string name="pending_operations_title">Opérations en attente</string>
+    <string name="pending_operations_refuse">Refuser la proposition</string>
+    <string name="pending_operations_no_action">(aucune action)</string>
+    <string name="settings_dev_mode_summary">Affiche plus d\'informations pour le débogage</string>
+    <string name="settings_withdraw_testkudos">Retrait TESTKUDOS</string>
+    <string name="settings_withdraw_testkudos_summary">Obtenez de l\'argent pour les tests</string>
+    <string name="settings_reset_summary">Détruit votre argent</string>
+    <string name="refund_error">Erreur lors du traitement du remboursement</string>
+    <string name="refund_success">Remboursement reçu</string>
+    <string name="payment_error">Erreur : %s</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Cette application est un portefeuille pour GNU Taler. Elle est très expérimentale et n\'est pas encore prête à être utilisée en production. GNU Taler est un système de paiement préservant la vie privée. Les clients peuvent rester anonymes, mais les commerçants ne peuvent pas cacher leurs revenus par des paiements avec GNU Taler. Cela permet d\'éviter l\'évasion fiscale et le blanchiment d\'argent. Le principal cas d\'utilisation de GNU Taler est celui des paiements ; il ne s\'agit pas d\'une réserve de valeur. Les paiements sont toujours garantis par une devise existante. Les paiements sont effectués après avoir échangé l\'argent existant en monnaie électronique avec l\'aide d\'un service d\'échange, c\'est-à-dire un fournisseur de services de paiement pour le Taler. Pour effectuer un paiement, les clients n\'ont besoin que d\'un portefeuille chargé. Un commerçant peut accepter des paiements sans que ses clients ne s\'inscrivent sur son site web. GNU Taler est immunisé contre de nombreux types de fraude, tels que l\'hameçonnage des informations relatives aux cartes de crédit ou la fraude par rétrofacturation. En cas de perte ou de vol, seule la quantité limitée d\'argent restant dans le portefeuille peut disparaître.</string>
+    <string name="transaction_refresh_reason_refund">pour le remboursement</string>
+    <string name="payment_label_amount_total">Montant total :</string>
+    <string name="payment_show_details">Afficher les détails</string>
+    <string name="withdraw_success_info">Le virement doit maintenant être confirmé par la banque. Une fois le virement effectué, l\'argent électronique apparaîtra automatiquement dans ce portefeuille.</string>
+    <string name="exchange_fee_coin_expiration_label">Expiration de la pièce au plus tôt :</string>
+</resources>
