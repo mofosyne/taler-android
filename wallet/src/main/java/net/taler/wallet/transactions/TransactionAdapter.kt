@@ -70,12 +70,12 @@ internal class TransactionAdapter(
         tracker.select(it.transactionId)
     }
 
-    internal open inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
-
-        protected val context: Context = v.context
+    internal inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
+        private val context: Context = v.context
 
         private val icon: ImageView = v.findViewById(R.id.icon)
-        protected val title: TextView = v.findViewById(R.id.title)
+        private val title: TextView = v.findViewById(R.id.title)
+        private val extraInfoView: TextView = v.findViewById(R.id.extraInfoView)
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
@@ -85,18 +85,19 @@ internal class TransactionAdapter(
         private val red = context.getColor(R.color.red)
         private val green = context.getColor(R.color.green)
 
-        open fun bind(transaction: Transaction, selected: Boolean) {
-            if (transaction.detailPageLayout != 0) {
-                v.foreground = selectableForeground
-                v.setOnClickListener { listener.onTransactionClicked(transaction) }
-            } else {
-                v.foreground = null
-                v.setOnClickListener(null)
-            }
+        fun bind(transaction: Transaction, selected: Boolean) {
+            v.foreground = selectableForeground
+            v.setOnClickListener { listener.onTransactionClicked(transaction) }
             v.isActivated = selected
-            icon.setImageResource(transaction.icon)
 
+            icon.setImageResource(transaction.icon)
             title.text = transaction.getTitle(context)
+            if (transaction is TransactionWithdrawal && !transaction.confirmed) {
+                extraInfoView.setText(R.string.withdraw_waiting_confirm)
+                extraInfoView.visibility = VISIBLE
+            } else {
+                extraInfoView.visibility = GONE
+            }
             time.text = transaction.timestamp.ms.toRelativeTime(context)
             bindAmount(transaction)
             pendingView.visibility = if (transaction.pending) VISIBLE else GONE
