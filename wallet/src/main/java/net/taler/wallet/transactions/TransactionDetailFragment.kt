@@ -16,12 +16,15 @@
 
 package net.taler.wallet.transactions
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
@@ -33,6 +36,8 @@ import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.*
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.feeView
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.timeView
 import net.taler.common.Amount
+import net.taler.common.AmountOverflowException
+import net.taler.common.isSafe
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
@@ -90,10 +95,22 @@ class TransactionDetailFragment : Fragment() {
     private fun bind(t: TransactionWithdrawal) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
         effectiveAmountView.text = t.amountEffective.toString()
+        if (t.pending && !t.confirmed && t.bankConfirmationUrl != null) {
+            val i = Intent().apply {
+                data = Uri.parse(t.bankConfirmationUrl)
+            }
+            if (i.isSafe(requireContext())) {
+                confirmWithdrawalButton.setOnClickListener { startActivity(i) }
+            }
+        } else confirmWithdrawalButton.visibility = GONE
         chosenAmountLabel.text = getString(R.string.amount_chosen)
         chosenAmountView.text =
             getString(R.string.amount_positive, t.amountRaw.toString())
-        val fee = t.amountRaw - (t.amountEffective ?: t.amountRaw)
+        val fee = try {  // TODO remove when fixed in wallet-core
+            t.amountRaw - (t.amountEffective ?: t.amountRaw)
+        } catch (e: AmountOverflowException) {
+            (t.amountEffective ?: t.amountRaw) - t.amountRaw
+        }
         feeView.text = getString(R.string.amount_negative, fee.toString())
         exchangeView.text = cleanExchange(t.exchangeBaseUrl)
     }
@@ -117,6 +134,14 @@ class TransactionDetailFragment : Fragment() {
         orderAmountView.text = raw.toString()
         feeView.text = getString(R.string.amount_negative, fee.toString())
         orderSummaryView.text = info.summary
+        if (info.fulfillmentUrl.startsWith("http")) {
+            val i = Intent().apply {
+                data = Uri.parse(info.fulfillmentUrl)
+            }
+            if (i.isSafe(requireContext())) {
+                orderSummaryView.setOnClickListener { startActivity(i) }
+            }
+        }
         orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
     }
 

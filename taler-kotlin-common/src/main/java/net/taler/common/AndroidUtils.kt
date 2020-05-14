@@ -18,6 +18,8 @@ package net.taler.common
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
+import android.content.Intent
+import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
@@ -73,6 +75,10 @@ fun Context.isOnline(): Boolean {
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
         capabilities.hasCapability(NET_CAPABILITY_INTERNET)
     }
+}
+
+fun Intent.isSafe(context: Context): Boolean {
+    return context.packageManager.queryIntentActivities(this, MATCH_DEFAULT_ONLY).isNotEmpty()
 }
 
 fun Fragment.navigate(directions: NavDirections) = findNavController().navigate(directions)

@@ -104,6 +104,7 @@
         <TextView
             android:id="@+id/orderSummaryView"
             style="@style/TransactionContent"
+            android:textColor="?android:textColorPrimary"
             app:layout_constraintBottom_toTopOf="@+id/orderIdView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,6 +114,7 @@
         <TextView
             android:id="@+id/orderIdView"
             style="@style/TransactionLabel"
+            android:layout_marginBottom="16dp"
             android:text="@string/transaction_order_id"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

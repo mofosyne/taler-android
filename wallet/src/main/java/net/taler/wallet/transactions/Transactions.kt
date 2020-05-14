@@ -140,7 +140,11 @@ class TransactionRefund(
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_refund, info.merchant.name)
+        return if (info.merchant.name == null) {
+            context.getString(R.string.transaction_refund_for, info.summary)
+        } else {
+            context.getString(R.string.transaction_refund_from, info.merchant.name)
+        }
     }
 }
 
