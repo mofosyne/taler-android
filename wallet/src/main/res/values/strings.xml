@@ -80,8 +80,10 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_order_refused">Purchase Cancelled</string>
     <string name="transaction_tip_accepted">Tip Accepted</string>
     <string name="transaction_tip_declined">Tip Declined</string>
-    <string name="transaction_refund">Refund</string>
-    <string name="transaction_refresh">Obtained change</string>
+    <string name="transaction_tip_from">Tip from %s</string>
+    <string name="transaction_refund">Refund from %s</string>
+    <string name="transaction_pending">PENDING</string>
+    <string name="transaction_refresh">Coin expiry change fee</string>
     <string name="transaction_refresh_reason_manual">because of manual request</string>
     <string name="transaction_refresh_reason_pay">for payment</string>
     <string name="transaction_refresh_reason_refund">for refund</string>

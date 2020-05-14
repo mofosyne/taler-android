@@ -16,8 +16,4 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/show_json"
-        android:title="@string/transactions_detail_json"
-        app:showAsAction="never" />
 </menu>

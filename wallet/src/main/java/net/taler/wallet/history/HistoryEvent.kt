@@ -233,7 +233,7 @@ class WithdrawHistoryEvent(
      */
     val amountWithdrawnEffective: Amount
 ) : HistoryEvent(timestamp, eventId) {
-    override val detailPageLayout = R.layout.fragment_event_withdraw
+    override val detailPageLayout = R.layout.fragment_transaction_withdrawal
     override val title = cleanExchange(exchangeBaseUrl)
     override val icon = R.drawable.transaction_withdrawal
     override val showToUser = true
@@ -298,7 +298,7 @@ class PaymentHistoryEvent(
      */
     val sessionId: String?
 ) : HistoryEvent(timestamp, eventId) {
-    override val detailPageLayout = R.layout.fragment_event_paid
+    override val detailPageLayout = R.layout.fragment_transaction_payment
     override val title = orderShortInfo.summary
     override val icon = R.drawable.ic_cash_usd_outline
     override val showToUser = true
@@ -464,7 +464,7 @@ class RefundHistoryEvent(
 ) : HistoryEvent(timestamp, eventId) {
     override val icon = R.drawable.transaction_refund
     override val title = orderShortInfo.summary
-    override val detailPageLayout = R.layout.fragment_event_paid
+    override val detailPageLayout = R.layout.fragment_transaction_payment
     override val showToUser = true
     override val displayAmount = DisplayAmount(
         amountRefundedEffective,

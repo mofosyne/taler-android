@@ -28,26 +28,21 @@ import android.widget.Toast.LENGTH_LONG
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_event_paid.*
-import kotlinx.android.synthetic.main.fragment_event_withdraw.*
-import kotlinx.android.synthetic.main.fragment_event_withdraw.feeView
-import kotlinx.android.synthetic.main.fragment_event_withdraw.timeView
+import kotlinx.android.synthetic.main.fragment_transaction_payment.*
+import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.*
+import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.feeView
+import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.timeView
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.history.JsonDialogFragment
-import net.taler.wallet.history.OrderShortInfo
-import net.taler.wallet.history.PaymentHistoryEvent
-import net.taler.wallet.history.RefundHistoryEvent
-import net.taler.wallet.history.WithdrawHistoryEvent
 
 class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
-    private val event by lazy { requireNotNull(transactionManager.selectedEvent) }
+    private val transaction by lazy { requireNotNull(transactionManager.selectedTransaction) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,21 +53,22 @@ class TransactionDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(event.detailPageLayout, container, false)
+        return inflater.inflate(transaction.detailPageLayout, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        requireActivity().title =
-            if (event.title != null) event.title else getString(R.string.transactions_detail_title)
+        requireActivity().apply {
+            title = transaction.getTitle(this)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        timeView.text = event.timestamp.ms.toAbsoluteTime(requireContext())
-        when (val e = event) {
-            is WithdrawHistoryEvent -> bind(e)
-            is PaymentHistoryEvent -> bind(e)
-            is RefundHistoryEvent -> bind(e)
+        timeView.text = transaction.timestamp.ms.toAbsoluteTime(requireContext())
+        when (val e = transaction) {
+            is TransactionWithdrawal -> bind(e)
+            is TransactionPayment -> bind(e)
+            is TransactionRefund -> bind(e)
             else -> Toast.makeText(
                 requireContext(),
                 "event ${e.javaClass} not implement",
@@ -87,46 +83,41 @@ class TransactionDetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.show_json -> {
-                JsonDialogFragment.new(event.json.toString(2)).show(parentFragmentManager, null)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun bind(event: WithdrawHistoryEvent) {
+    private fun bind(t: TransactionWithdrawal) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
-        effectiveAmountView.text = event.amountWithdrawnEffective.toString()
+        effectiveAmountView.text = t.amountEffective.toString()
         chosenAmountLabel.text = getString(R.string.amount_chosen)
         chosenAmountView.text =
-            getString(R.string.amount_positive, event.amountWithdrawnRaw.toString())
-        val fee = event.amountWithdrawnRaw - event.amountWithdrawnEffective
+            getString(R.string.amount_positive, t.amountRaw.toString())
+        val fee = t.amountRaw - (t.amountEffective ?: t.amountRaw)
         feeView.text = getString(R.string.amount_negative, fee.toString())
-        exchangeView.text = cleanExchange(event.exchangeBaseUrl)
+        exchangeView.text = cleanExchange(t.exchangeBaseUrl)
     }
 
-    private fun bind(event: PaymentHistoryEvent) {
-        amountPaidWithFeesView.text = event.amountPaidWithFees.toString()
-        val fee = event.amountPaidWithFees - event.orderShortInfo.amount
-        bindOrderAndFee(event.orderShortInfo, fee)
+    private fun bind(t: TransactionPayment) {
+        amountPaidWithFeesView.text = t.amountEffective.toString()
+        val fee = (t.amountEffective ?: t.amountRaw) - t.amountRaw
+        bindOrderAndFee(t.info, t.amountRaw, fee)
     }
 
-    private fun bind(event: RefundHistoryEvent) {
+    private fun bind(t: TransactionRefund) {
         amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
         amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
         amountPaidWithFeesView.text =
-            getString(R.string.amount_positive, event.amountRefundedEffective.toString())
-        val fee = event.orderShortInfo.amount - event.amountRefundedEffective
-        bindOrderAndFee(event.orderShortInfo, fee)
+            getString(R.string.amount_positive, t.amountEffective.toString())
+        val fee = t.amountRaw - (t.amountEffective ?: t.amountRaw)
+        bindOrderAndFee(t.info, t.amountRaw, fee)
     }
 
-    private fun bindOrderAndFee(orderShortInfo: OrderShortInfo, fee: Amount) {
-        orderAmountView.text = orderShortInfo.amount.toString()
+    private fun bindOrderAndFee(info: TransactionInfo, raw: Amount, fee: Amount) {
+        orderAmountView.text = raw.toString()
         feeView.text = getString(R.string.amount_negative, fee.toString())
-        orderSummaryView.text = orderShortInfo.summary
-        orderIdView.text =
-            getString(R.string.transaction_order_id, orderShortInfo.orderId)
+        orderSummaryView.text = info.summary
+        orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
     }
 
 }

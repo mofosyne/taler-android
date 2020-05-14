@@ -16,6 +16,7 @@
 
 package net.taler.wallet.transactions
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -24,13 +25,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.history.History
-import net.taler.wallet.history.HistoryEvent
 import org.json.JSONObject
+import java.util.*
 
 sealed class TransactionsResult {
     object Error : TransactionsResult()
-    class Success(val transactions: History) : TransactionsResult()
+    class Success(val transactions: List<Transaction>) : TransactionsResult()
 }
 
 class TransactionManager(
@@ -43,14 +43,15 @@ class TransactionManager(
     val progress: LiveData<Boolean> = mProgress
 
     var selectedCurrency: String? = null
-    var selectedEvent: HistoryEvent? = null
+    var selectedTransaction: Transaction? = null
 
     private val mTransactions = MutableLiveData<TransactionsResult>()
     val transactions: LiveData<TransactionsResult> = mTransactions
 
     fun loadTransactions() {
         mProgress.postValue(true)
-        walletBackendApi.sendRequest("getHistory", null) { isError, result ->
+        val request = JSONObject(mapOf("currency" to selectedCurrency))
+        walletBackendApi.sendRequest("getTransactions", request) { isError, result ->
             scope.launch(Dispatchers.Default) {
                 onTransactionsLoaded(isError, result)
             }
@@ -62,15 +63,9 @@ class TransactionManager(
             mTransactions.postValue(TransactionsResult.Error)
             return
         }
-        val transactions = History()
-        val json = result.getJSONArray("history")
-        val currency = selectedCurrency
-        for (i in 0 until json.length()) {
-            val event: HistoryEvent = mapper.readValue(json.getString(i))
-            if (event.showToUser && (currency == null || event.isCurrency(currency))) {
-                transactions.add(event)
-            }
-        }
+        Log.e("TEST", result.toString(2))  // TODO remove once API finalized
+        val transactionsArray = result.getString("transactions")
+        val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
         transactions.reverse()  // show latest first
         mProgress.postValue(false)
         mTransactions.postValue(TransactionsResult.Success(transactions))

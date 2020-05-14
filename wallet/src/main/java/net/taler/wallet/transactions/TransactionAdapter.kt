@@ -35,24 +35,13 @@ import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.history.AmountType
-import net.taler.wallet.history.DisplayAmount
-import net.taler.wallet.history.History
-import net.taler.wallet.history.HistoryEvent
-import net.taler.wallet.history.OrderAcceptedHistoryEvent
-import net.taler.wallet.history.OrderRefusedHistoryEvent
-import net.taler.wallet.history.RefreshHistoryEvent
-import net.taler.wallet.history.RefreshReason
-import net.taler.wallet.history.ReserveBalanceUpdatedHistoryEvent
-import net.taler.wallet.history.TipAcceptedHistoryEvent
-import net.taler.wallet.history.TipDeclinedHistoryEvent
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
-
 internal class TransactionAdapter(
-    private val listener: OnTransactionClickListener,
-    private var transactions: History = History()
+    private val listener: OnTransactionClickListener
 ) : Adapter<TransactionViewHolder>() {
 
+    private var transactions: List<Transaction> = ArrayList()
     lateinit var tracker: SelectionTracker<String>
     val keyProvider = TransactionKeyProvider()
 
@@ -62,7 +51,7 @@ internal class TransactionAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_item_history, parent, false)
+            .inflate(R.layout.list_item_transaction, parent, false)
         return TransactionViewHolder(view)
     }
 
@@ -70,16 +59,16 @@ internal class TransactionAdapter(
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
-        holder.bind(transaction, tracker.isSelected(transaction.eventId))
+        holder.bind(transaction, tracker.isSelected(transaction.transactionId))
     }
 
-    fun update(updatedTransactions: History) {
+    fun update(updatedTransactions: List<Transaction>) {
         this.transactions = updatedTransactions
         this.notifyDataSetChanged()
     }
 
     fun selectAll() = transactions.forEach {
-        tracker.select(it.eventId)
+        tracker.select(it.transactionId)
     }
 
     internal open inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
@@ -90,11 +79,14 @@ internal class TransactionAdapter(
         protected val title: TextView = v.findViewById(R.id.title)
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
+        private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
         private val selectableForeground = v.foreground
         private val amountColor = amount.currentTextColor
+        private val red = context.getColor(R.color.red)
+        private val green = context.getColor(R.color.green)
 
-        open fun bind(transaction: HistoryEvent, selected: Boolean) {
+        open fun bind(transaction: Transaction, selected: Boolean) {
             if (transaction.detailPageLayout != 0) {
                 v.foreground = selectableForeground
                 v.setOnClickListener { listener.onTransactionClicked(transaction) }
@@ -105,66 +97,43 @@ internal class TransactionAdapter(
             v.isActivated = selected
             icon.setImageResource(transaction.icon)
 
-            title.text = if (transaction.title == null) {
-                when (transaction) {
-                    is RefreshHistoryEvent -> getRefreshTitle(transaction)
-                    is OrderAcceptedHistoryEvent -> context.getString(R.string.transaction_order_accepted)
-                    is OrderRefusedHistoryEvent -> context.getString(R.string.transaction_order_refused)
-                    is TipAcceptedHistoryEvent -> context.getString(R.string.transaction_tip_accepted)
-                    is TipDeclinedHistoryEvent -> context.getString(R.string.transaction_tip_declined)
-                    is ReserveBalanceUpdatedHistoryEvent -> context.getString(R.string.transaction_reserve_balance_updated)
-                    else -> transaction::class.java.simpleName
-                }
-            } else transaction.title
-
+            title.text = transaction.getTitle(context)
             time.text = transaction.timestamp.ms.toRelativeTime(context)
-            bindAmount(transaction.displayAmount)
+            bindAmount(transaction)
+            pendingView.visibility = if (transaction.pending) VISIBLE else GONE
         }
 
-        private fun bindAmount(displayAmount: DisplayAmount?) {
-            if (displayAmount == null) {
+        private fun bindAmount(transaction: Transaction) {
+            val amountEffective = transaction.amountEffective
+            if (amountEffective == null) {
                 amount.visibility = GONE
             } else {
                 amount.visibility = VISIBLE
-                when (displayAmount.type) {
+                when (transaction.amountType) {
                     AmountType.Positive -> {
-                        amount.text = context.getString(
-                            R.string.amount_positive, displayAmount.amount.amountStr
-                        )
-                        amount.setTextColor(context.getColor(R.color.green))
+                        amount.text =
+                            context.getString(R.string.amount_positive, amountEffective.amountStr)
+                        amount.setTextColor(if (transaction.pending) amountColor else green)
                     }
                     AmountType.Negative -> {
-                        amount.text = context.getString(
-                            R.string.amount_negative, displayAmount.amount.amountStr
-                        )
-                        amount.setTextColor(context.getColor(R.color.red))
+                        amount.text =
+                            context.getString(R.string.amount_negative, amountEffective.amountStr)
+                        amount.setTextColor(if (transaction.pending) amountColor else red)
                     }
                     AmountType.Neutral -> {
-                        amount.text = displayAmount.amount.amountStr
+                        amount.text = amountEffective.amountStr
                         amount.setTextColor(amountColor)
                     }
                 }.exhaustive
             }
         }
 
-        private fun getRefreshTitle(transaction: RefreshHistoryEvent): String {
-            val res = when (transaction.refreshReason) {
-                RefreshReason.MANUAL -> R.string.transaction_refresh_reason_manual
-                RefreshReason.PAY -> R.string.transaction_refresh_reason_pay
-                RefreshReason.REFUND -> R.string.transaction_refresh_reason_refund
-                RefreshReason.ABORT_PAY -> R.string.transaction_refresh_reason_abort_pay
-                RefreshReason.RECOUP -> R.string.transaction_refresh_reason_recoup
-                RefreshReason.BACKUP_RESTORED -> R.string.transaction_refresh_reason_backup_restored
-            }
-            return context.getString(R.string.transaction_refresh) + " " + context.getString(res)
-        }
-
     }
 
     internal inner class TransactionKeyProvider : ItemKeyProvider<String>(SCOPE_MAPPED) {
-        override fun getKey(position: Int) = transactions[position].eventId
+        override fun getKey(position: Int) = transactions[position].transactionId
         override fun getPosition(key: String): Int {
-            return transactions.indexOfFirst { it.eventId == key }
+            return transactions.indexOfFirst { it.transactionId == key }
         }
     }
 

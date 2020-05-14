@@ -67,6 +67,11 @@ data class ContractProduct(
     }
 }
 
+data class ContractMerchant(
+    // TODO this shouldn't be nullable
+    val name: String?
+)
+
 @JsonInclude(NON_EMPTY)
 class Timestamp(
     @JsonProperty("t_ms")

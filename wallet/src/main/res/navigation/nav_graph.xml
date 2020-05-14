@@ -71,7 +71,7 @@
         android:id="@+id/nav_transactions_detail"
         android:name="net.taler.wallet.transactions.TransactionDetailFragment"
         android:label="@string/transactions_detail_title"
-        tools:layout="@layout/fragment_event_withdraw" />
+        tools:layout="@layout/fragment_transaction_withdrawal" />
 
     <fragment
         android:id="@+id/alreadyPaid"

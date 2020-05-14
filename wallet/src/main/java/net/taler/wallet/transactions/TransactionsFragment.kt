@@ -42,10 +42,9 @@ import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.history.HistoryEvent
 
 interface OnTransactionClickListener {
-    fun onTransactionClicked(transaction: HistoryEvent)
+    fun onTransactionClicked(transaction: Transaction)
 }
 
 class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.Callback {
@@ -138,10 +137,10 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         }
     }
 
-    override fun onTransactionClicked(transaction: HistoryEvent) {
+    override fun onTransactionClicked(transaction: Transaction) {
         if (actionMode != null) return // don't react on clicks while in action mode
         if (transaction.detailPageLayout != 0) {
-            transactionManager.selectedEvent = transaction
+            transactionManager.selectedTransaction = transaction
             findNavController().navigate(R.id.action_nav_transaction_detail)
         }
     }
