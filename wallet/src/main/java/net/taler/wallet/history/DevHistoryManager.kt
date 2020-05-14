@@ -26,10 +26,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
+import java.util.*
 
 sealed class HistoryResult {
     object Error : HistoryResult()
-    class Success(val history: History) : HistoryResult()
+    class Success(val history: List<HistoryEvent>) : HistoryResult()
 }
 
 class DevHistoryManager(
@@ -59,7 +60,7 @@ class DevHistoryManager(
             mHistory.postValue(HistoryResult.Error)
             return
         }
-        val history = History()
+        val history = LinkedList<HistoryEvent>()
         val json = result.getJSONArray("history")
         for (i in 0 until json.length()) {
             val event: HistoryEvent = mapper.readValue(json.getString(i))
@@ -68,11 +69,7 @@ class DevHistoryManager(
         }
         history.reverse()  // show latest first
         mProgress.postValue(false)
-        mHistory.postValue(
-            HistoryResult.Success(
-                history
-            )
-        )
+        mHistory.postValue(HistoryResult.Success(history))
     }
 
 }

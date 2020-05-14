@@ -30,12 +30,13 @@ import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.history.DevHistoryAdapter.HistoryViewHolder
+import net.taler.wallet.transactions.AmountType
 
-@Deprecated("Replaced by TransactionAdapter")
 internal class DevHistoryAdapter(
-    private val listener: OnEventClickListener,
-    private var history: History = History()
+    private val listener: OnEventClickListener
 ) : Adapter<HistoryViewHolder>() {
+
+    private var history: List<HistoryEvent> = ArrayList()
 
     init {
         setHasStableIds(false)
@@ -54,7 +55,7 @@ internal class DevHistoryAdapter(
         holder.bind(transaction)
     }
 
-    fun update(updatedHistory: History) {
+    fun update(updatedHistory: List<HistoryEvent>) {
         this.history = updatedHistory
         this.notifyDataSetChanged()
     }
@@ -73,19 +74,7 @@ internal class DevHistoryAdapter(
         open fun bind(historyEvent: HistoryEvent) {
             v.setOnClickListener { listener.onTransactionClicked(historyEvent) }
             icon.setImageResource(historyEvent.icon)
-
-            title.text = if (historyEvent.title == null) {
-                when (historyEvent) {
-                    is RefreshHistoryEvent -> getRefreshTitle(historyEvent)
-                    is OrderAcceptedHistoryEvent -> context.getString(R.string.transaction_order_accepted)
-                    is OrderRefusedHistoryEvent -> context.getString(R.string.transaction_order_refused)
-                    is TipAcceptedHistoryEvent -> context.getString(R.string.transaction_tip_accepted)
-                    is TipDeclinedHistoryEvent -> context.getString(R.string.transaction_tip_declined)
-                    is ReserveBalanceUpdatedHistoryEvent -> context.getString(R.string.transaction_reserve_balance_updated)
-                    else -> historyEvent::class.java.simpleName
-                }
-            } else historyEvent.title
-
+            title.text = historyEvent.title
             time.text = historyEvent.timestamp.ms.toRelativeTime(context)
             bindAmount(historyEvent.displayAmount)
         }
@@ -114,18 +103,6 @@ internal class DevHistoryAdapter(
                     }
                 }.exhaustive
             }
-        }
-
-        private fun getRefreshTitle(transaction: RefreshHistoryEvent): String {
-            val res = when (transaction.refreshReason) {
-                RefreshReason.MANUAL -> R.string.transaction_refresh_reason_manual
-                RefreshReason.PAY -> R.string.transaction_refresh_reason_pay
-                RefreshReason.REFUND -> R.string.transaction_refresh_reason_refund
-                RefreshReason.ABORT_PAY -> R.string.transaction_refresh_reason_abort_pay
-                RefreshReason.RECOUP -> R.string.transaction_refresh_reason_recoup
-                RefreshReason.BACKUP_RESTORED -> R.string.transaction_refresh_reason_backup_restored
-            }
-            return context.getString(R.string.transaction_refresh) + " " + context.getString(res)
         }
 
     }

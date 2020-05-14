@@ -32,7 +32,6 @@ import net.taler.common.ContractProduct
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.history.AmountType
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
 @JsonSubTypes(
@@ -58,6 +57,12 @@ abstract class Transaction(
     abstract val amountType: AmountType
 
     abstract fun getTitle(context: Context): String
+}
+
+sealed class AmountType {
+    object Positive : AmountType()
+    object Negative : AmountType()
+    object Neutral : AmountType()
 }
 
 @JsonTypeName("withdrawal")

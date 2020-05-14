@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
-import net.taler.wallet.history.AmountType
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
 internal class TransactionAdapter(
