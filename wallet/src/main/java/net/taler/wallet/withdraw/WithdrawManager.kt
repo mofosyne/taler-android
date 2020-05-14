@@ -43,8 +43,7 @@ sealed class WithdrawStatus {
     ) : WithdrawStatus()
 
     data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
-
-    object Success : WithdrawStatus()
+    data class Success(val currency: String) : WithdrawStatus()
     data class Error(val message: String?) : WithdrawStatus()
 }
 
@@ -145,7 +144,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
         }
     }
 
-    fun acceptWithdrawal(talerWithdrawUri: String, selectedExchange: String) {
+    fun acceptWithdrawal(talerWithdrawUri: String, selectedExchange: String, currency: String) {
         val args = JSONObject()
         args.put("talerWithdrawUri", talerWithdrawUri)
         args.put("selectedExchange", selectedExchange)
@@ -154,7 +153,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
         walletBackendApi.sendRequest("acceptWithdrawal", args) { isError, result ->
             if (isError) {
-                Log.v(TAG, "got acceptWithdrawal error result: ${result.toString(4)}")
+                Log.v(TAG, "got acceptWithdrawal error result: ${result.toString(2)}")
                 return@sendRequest
             }
             Log.v(TAG, "got acceptWithdrawal result")
@@ -163,7 +162,7 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
                 Log.w(TAG, "ignoring acceptWithdrawal result, invalid state: $status")
                 return@sendRequest
             }
-            withdrawStatus.postValue(WithdrawStatus.Success)
+            withdrawStatus.postValue(WithdrawStatus.Success(currency))
         }
     }
 

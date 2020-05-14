@@ -45,6 +45,7 @@ class TransactionManager(
     var selectedCurrency: String? = null
     var selectedTransaction: Transaction? = null
 
+    // TODO maybe cache transactions per currency?
     private val mTransactions = MutableLiveData<TransactionsResult>()
     val transactions: LiveData<TransactionsResult> = mTransactions
 

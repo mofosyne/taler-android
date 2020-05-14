@@ -24,12 +24,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import kotlinx.android.synthetic.main.fragment_prompt_withdraw.*
 import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
 import net.taler.wallet.withdraw.WithdrawStatus.TermsOfServiceReviewRequired
@@ -63,7 +65,11 @@ class PromptWithdrawFragment : Fragment() {
                 setOnClickListener {
                     it.fadeOut()
                     confirmProgressBar.fadeIn()
-                    withdrawManager.acceptWithdrawal(status.talerWithdrawUri, status.exchange)
+                    withdrawManager.acceptWithdrawal(
+                        status.talerWithdrawUri,
+                        status.exchange,
+                        status.amount.currency
+                    )
                 }
                 isEnabled = true
             }
@@ -71,7 +77,10 @@ class PromptWithdrawFragment : Fragment() {
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null
-            findNavController().navigate(R.id.action_promptWithdraw_to_withdrawSuccessful)
+            // TODO bring the user to the currency's transaction page, if there's more than one currency
+            model.transactionManager.selectedCurrency = status.currency
+            findNavController().navigate(R.id.action_promptWithdraw_to_nav_main)
+            Snackbar.make(requireView(), R.string.withdraw_initiated, LENGTH_LONG).show()
         }
         is Loading -> {
             model.showProgressBar.value = true

@@ -30,14 +30,16 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager.beginDelayedTransition
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import kotlinx.android.synthetic.main.payment_bottom_bar.*
 import kotlinx.android.synthetic.main.payment_details.*
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 
 /**
  * Show a payment and ask the user to accept/decline.
@@ -97,7 +99,10 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
                 confirmButton.isEnabled = true
                 confirmButton.setOnClickListener {
                     model.showProgressBar.value = true
-                    paymentManager.confirmPay(payStatus.proposalId)
+                    paymentManager.confirmPay(
+                        payStatus.proposalId,
+                        payStatus.contractTerms.amount.currency
+                    )
                     confirmButton.fadeOut()
                     confirmProgressBar.fadeIn()
                 }
@@ -111,7 +116,10 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             is PayStatus.Success -> {
                 showLoading(false)
                 paymentManager.resetPayStatus()
-                findNavController().navigate(R.id.action_promptPayment_to_paymentSuccessful)
+                // TODO bring the user to the currency's transaction page, if there's more than one currency
+                model.transactionManager.selectedCurrency = payStatus.currency
+                findNavController().navigate(R.id.action_promptPayment_to_nav_main)
+                Snackbar.make(requireView(), R.string.payment_initiated, LENGTH_LONG).show()
             }
             is PayStatus.AlreadyPaid -> {
                 showLoading(false)

@@ -34,6 +34,7 @@ import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.transactions.TransactionManager
+import net.taler.wallet.transactions.TransactionsResult
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
@@ -120,6 +121,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     .getJSONObject("pendingIncoming")
                 val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
                 balanceMap[currency] = BalanceItem(amount, amountIncoming)
+            }
+            // TODO remove when wallet-core supports 0 balance for pending transactions
+            if (balanceMap.isEmpty()) {
+                val transactionsResult = transactionManager.transactions.value
+                if (transactionsResult is TransactionsResult.Success && transactionsResult.transactions.isNotEmpty()) {
+                    val currency = transactionsResult.transactions[0].amountRaw.currency
+                    balanceMap[currency] = BalanceItem(Amount.zero(currency), Amount.zero(currency))
+                }
             }
             mBalances.postValue(balanceMap)
             showProgressBar.postValue(false)

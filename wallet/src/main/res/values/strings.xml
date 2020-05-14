@@ -99,12 +99,12 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_balance_insufficient">Balance insufficient!</string>
     <string name="payment_show_details">Show Details</string>
     <string name="payment_hide_details">Hide Details</string>
-    <string name="payment_successful">Payment was successful</string>
+    <string name="payment_initiated">Payment initiated</string>
     <string name="payment_back_button">OK</string>
     <string name="payment_already_paid_title">Already paid</string>
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
 
-    <string name="withdraw_accepted">Withdrawal accepted</string>
+    <string name="withdraw_initiated">Withdrawal initiated</string>
     <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>
     <string name="withdraw_total">Withdraw</string>
     <string name="withdraw_fees">Fee</string>

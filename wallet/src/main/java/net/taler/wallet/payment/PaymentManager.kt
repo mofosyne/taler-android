@@ -107,11 +107,11 @@ class PaymentManager(
         mDetailsShown.value = !oldValue
     }
 
-    fun confirmPay(proposalId: String) {
+    fun confirmPay(proposalId: String, currency: String) {
         val args = JSONObject(mapOf("proposalId" to proposalId))
 
         walletBackendApi.sendRequest("confirmPay", args) { _, _ ->
-            mPayStatus.postValue(PayStatus.Success)
+            mPayStatus.postValue(PayStatus.Success(currency))
         }
     }
 
@@ -157,5 +157,5 @@ sealed class PayStatus {
     data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
     data class AlreadyPaid(val contractTerms: ContractTerms) : PayStatus()
     data class Error(val error: String) : PayStatus()
-    object Success : PayStatus()
+    data class Success(val currency: String) : PayStatus()
 }

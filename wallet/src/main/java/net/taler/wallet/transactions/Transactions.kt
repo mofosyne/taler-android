@@ -73,9 +73,7 @@ class TransactionWithdrawal(
     val exchangeBaseUrl: String = "unknown",  // TODO fix in wallet-core
     val confirmed: Boolean,
     val bankConfirmationUrl: String?,
-    @JsonProperty("amountEffective")  // TODO remove when fixed in wallet-core
     amountRaw: Amount,
-    @JsonProperty("amountRaw")  // TODO remove when fixed in wallet-core
     amountEffective: Amount?
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_withdrawal

@@ -42,19 +42,14 @@
         android:label="Review Payment"
         tools:layout="@layout/fragment_prompt_payment">
         <action
-            android:id="@+id/action_promptPayment_to_paymentSuccessful"
-            app:destination="@id/paymentSuccessful"
+            android:id="@+id/action_promptPayment_to_nav_main"
+            app:destination="@id/nav_main"
             app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptPayment_to_alreadyPaid"
             app:destination="@id/alreadyPaid"
             app:popUpTo="@id/nav_main" />
     </fragment>
-    <fragment
-        android:id="@+id/paymentSuccessful"
-        android:name="net.taler.wallet.payment.PaymentSuccessfulFragment"
-        android:label="Payment Successful"
-        tools:layout="@layout/fragment_payment_successful" />
 
     <fragment
         android:id="@+id/nav_settings"
@@ -85,26 +80,20 @@
         android:label="@string/nav_prompt_withdraw"
         tools:layout="@layout/fragment_prompt_withdraw">
         <action
+            android:id="@+id/action_promptWithdraw_to_selectExchangeFragment"
+            app:destination="@id/selectExchangeFragment" />
+        <action
             android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
             app:destination="@id/reviewExchangeTOS" />
         <action
-            android:id="@+id/action_promptWithdraw_to_withdrawSuccessful"
-            app:destination="@id/withdrawSuccessful"
+            android:id="@+id/action_promptWithdraw_to_nav_main"
+            app:destination="@id/nav_main"
             app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptWithdraw_to_errorFragment"
             app:destination="@id/errorFragment"
             app:popUpTo="@id/nav_main" />
-        <action
-            android:id="@+id/action_promptWithdraw_to_selectExchangeFragment"
-            app:destination="@id/selectExchangeFragment" />
     </fragment>
-
-    <fragment
-        android:id="@+id/withdrawSuccessful"
-        android:name="net.taler.wallet.withdraw.WithdrawSuccessfulFragment"
-        android:label="@string/withdraw_accepted"
-        tools:layout="@layout/fragment_withdraw_successful" />
 
     <fragment
         android:id="@+id/reviewExchangeTOS"
