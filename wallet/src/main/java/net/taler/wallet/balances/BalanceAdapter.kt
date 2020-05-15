@@ -24,9 +24,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import net.taler.wallet.BalanceItem
+import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.balances.BalanceAdapter.BalanceViewHolder
+
+data class BalanceItem(val available: Amount, val pendingIncoming: Amount, val hasPending: Boolean)
 
 class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 
@@ -55,10 +57,11 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
     }
 
     inner class BalanceViewHolder(private val v: View) : RecyclerView.ViewHolder(v) {
-        private val currencyView: TextView = v.findViewById(R.id.balance_currency)
-        private val amountView: TextView = v.findViewById(R.id.balance_amount)
+        private val currencyView: TextView = v.findViewById(R.id.balanceCurrencyView)
+        private val amountView: TextView = v.findViewById(R.id.balanceAmountView)
         private val balanceInboundAmount: TextView = v.findViewById(R.id.balanceInboundAmount)
         private val balanceInboundLabel: TextView = v.findViewById(R.id.balanceInboundLabel)
+        private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
         fun bind(item: BalanceItem) {
             v.setOnClickListener { listener.onBalanceClick(item.available.currency) }
@@ -75,6 +78,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
                 balanceInboundAmount.text =
                     v.context.getString(R.string.amount_positive, amountIncoming)
             }
+            pendingView.visibility = if (item.hasPending) VISIBLE else GONE
         }
     }
 

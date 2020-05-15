@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
 import net.taler.common.EventObserver
 import net.taler.wallet.CurrencyMode.MULTI
 import net.taler.wallet.CurrencyMode.SINGLE
+import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalancesFragment
 import net.taler.wallet.transactions.TransactionsFragment
 

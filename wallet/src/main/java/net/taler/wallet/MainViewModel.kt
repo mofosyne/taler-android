@@ -32,6 +32,7 @@ import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
@@ -47,8 +48,6 @@ private val transactionNotifications = listOf(
     "refresh-revealed",
     "withdraw-group-finished"
 )
-
-data class BalanceItem(val available: Amount, val pendingIncoming: Amount)
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
@@ -127,7 +126,8 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                 val jsonAmountIncoming = byCurrency.getJSONObject(currency)
                     .getJSONObject("pendingIncoming")
                 val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
-                balanceMap[currency] = BalanceItem(amount, amountIncoming)
+                val hasPending = transactionManager.hasPending(currency)
+                balanceMap[currency] = BalanceItem(amount, amountIncoming, hasPending)
             }
             mBalances.postValue(balanceMap)
             showProgressBar.postValue(false)

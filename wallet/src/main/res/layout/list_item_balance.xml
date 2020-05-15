@@ -23,12 +23,12 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/balance_amount"
+        android:id="@+id/balanceAmountView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:textSize="40sp"
-        app:layout_constraintEnd_toStartOf="@+id/balance_currency"
+        app:layout_constraintEnd_toStartOf="@+id/balanceCurrencyView"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,15 +36,16 @@
         tools:text="100.50" />
 
     <TextView
-        android:id="@+id/balance_currency"
+        android:id="@+id/balanceCurrencyView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balance_amount"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/balance_amount"
-        app:layout_constraintTop_toTopOf="@+id/balance_amount"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceAmountView"
+        app:layout_constraintEnd_toStartOf="@+id/pendingView"
+        app:layout_constraintStart_toEndOf="@+id/balanceAmountView"
+        app:layout_constraintTop_toTopOf="@+id/balanceAmountView"
         tools:text="TESTKUDOS" />
 
     <TextView
@@ -58,7 +59,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/balance_amount"
+        app:layout_constraintTop_toBottomOf="@+id/balanceAmountView"
         tools:text="+10 TESTKUDOS"
         tools:visibility="visible" />
 
@@ -74,5 +75,16 @@
         app:layout_constraintStart_toEndOf="@+id/balanceInboundAmount"
         app:layout_constraintTop_toTopOf="@+id/balanceInboundAmount"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/pendingView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/badge"
+        android:text="@string/transaction_pending"
+        android:textColor="?android:textColorPrimaryInverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

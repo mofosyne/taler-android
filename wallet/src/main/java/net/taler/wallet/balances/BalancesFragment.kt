@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_balances.*
 import net.taler.common.fadeIn
-import net.taler.wallet.BalanceItem
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 
