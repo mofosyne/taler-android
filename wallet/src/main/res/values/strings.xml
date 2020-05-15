@@ -44,7 +44,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="nav_error">Error</string>
 
     <string name="button_back">Go Back</string>
-    <string name="button_continue">Continue</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
 
     <string name="menu_settings">Settings</string>
@@ -65,33 +64,21 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transactions_error">Could not load transactions</string>
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Balance: %s</string>
-    <string name="transactions_detail_json">Show JSON</string>
     <string name="transactions_delete">Delete</string>
     <string name="transactions_select_all">Select All</string>
 
     <!-- Transactions -->
-    <string name="transaction_reserve_balance_updated">Reserve Balance Updated</string>
     <string name="transaction_payment">Payment</string>
     <string name="transaction_paid">Paid</string>
     <string name="transaction_order_total">Total</string>
     <string name="transaction_order">Purchase</string>
     <string name="transaction_order_id">Receipt #%1$s</string>
-    <string name="transaction_order_accepted">Purchase Confirmed</string>
-    <string name="transaction_order_refused">Purchase Cancelled</string>
-    <string name="transaction_tip_accepted">Tip Accepted</string>
-    <string name="transaction_tip_declined">Tip Declined</string>
     <string name="transaction_tip_from">Tip from %s</string>
     <string name="transaction_refund">Refund</string>
     <string name="transaction_refund_from">Refund from %s</string>
     <string name="transaction_refund_for">Refund for %s</string>
     <string name="transaction_pending">PENDING</string>
     <string name="transaction_refresh">Coin expiry change fee</string>
-    <string name="transaction_refresh_reason_manual">because of manual request</string>
-    <string name="transaction_refresh_reason_pay">for payment</string>
-    <string name="transaction_refresh_reason_refund">for refund</string>
-    <string name="transaction_refresh_reason_abort_pay">to abort payment</string>
-    <string name="transaction_refresh_reason_recoup">to recoup funds</string>
-    <string name="transaction_refresh_reason_backup_restored">because of restoring from backup</string>
 
     <string name="payment_fee">+%s payment fee</string>
     <string name="payment_button_confirm">Confirm Payment</string>
@@ -102,12 +89,10 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_show_details">Show Details</string>
     <string name="payment_hide_details">Hide Details</string>
     <string name="payment_initiated">Payment initiated</string>
-    <string name="payment_back_button">OK</string>
     <string name="payment_already_paid_title">Already paid</string>
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
 
     <string name="withdraw_initiated">Withdrawal initiated</string>
-    <string name="withdraw_success_info">The wire transfer now needs to be confirmed with the bank. Once the wire transfer is complete, the digital cash will automatically show in this wallet.</string>
     <string name="withdraw_total">Withdraw</string>
     <string name="withdraw_fees">Fee</string>
     <string name="withdraw_exchange">Exchange</string>
