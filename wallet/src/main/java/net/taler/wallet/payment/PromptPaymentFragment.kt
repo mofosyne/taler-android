@@ -116,9 +116,8 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             is PayStatus.Success -> {
                 showLoading(false)
                 paymentManager.resetPayStatus()
-                // TODO bring the user to the currency's transaction page, if there's more than one currency
-                model.transactionManager.selectedCurrency = payStatus.currency
                 findNavController().navigate(R.id.action_promptPayment_to_nav_main)
+                model.showTransactions(payStatus.currency)
                 Snackbar.make(requireView(), R.string.payment_initiated, LENGTH_LONG).show()
             }
             is PayStatus.AlreadyPaid -> {

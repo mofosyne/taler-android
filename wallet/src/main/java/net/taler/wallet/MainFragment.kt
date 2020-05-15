@@ -23,14 +23,20 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_main.*
+import net.taler.common.EventObserver
+import net.taler.wallet.CurrencyMode.MULTI
+import net.taler.wallet.CurrencyMode.SINGLE
 import net.taler.wallet.balances.BalancesFragment
 import net.taler.wallet.transactions.TransactionsFragment
+
+enum class CurrencyMode { SINGLE, MULTI }
 
 class MainFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-    private var currentTag: String? = null
+    private var currencyMode: CurrencyMode? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +50,13 @@ class MainFragment : Fragment() {
         model.balances.observe(viewLifecycleOwner, Observer {
             onBalancesChanged(it.values.toList())
         })
+        model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
+            // we only need to navigate to a dedicated list, when in multi-currency mode
+            if (currencyMode == MULTI) {
+                model.transactionManager.selectedCurrency = currency
+                findNavController().navigate(R.id.action_nav_main_to_nav_transactions)
+            }
+        })
 
         mainFab.setOnClickListener {
             scanQrCode(requireActivity())
@@ -56,17 +69,17 @@ class MainFragment : Fragment() {
     }
 
     private fun onBalancesChanged(balances: List<BalanceItem>) {
-        val tag = if (balances.size == 1) "single" else "multi"
-        if (currentTag != tag) {
-            val f = if (tag == "single") {
+        val mode = if (balances.size == 1) SINGLE else MULTI
+        if (currencyMode != mode) {
+            val f = if (mode == SINGLE) {
                 model.transactionManager.selectedCurrency = balances[0].available.currency
                 TransactionsFragment()
             } else {
                 BalancesFragment()
             }
-            currentTag = tag
+            currencyMode = mode
             childFragmentManager.beginTransaction()
-                .replace(R.id.mainFragmentContainer, f, tag)
+                .replace(R.id.mainFragmentContainer, f, mode.name)
                 .commitNow()
         }
     }

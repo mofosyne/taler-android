@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
                     model.showProgressBar.value = false
                     val res = when (status) {
                         is RefundStatus.Error -> R.string.refund_error
+                        // TODO once wallet-core exposes currency, navigate to its transaction list
                         is RefundStatus.Success -> R.string.refund_success
                     }
                     Snackbar.make(nav_view, res, LENGTH_LONG).show()

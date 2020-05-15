@@ -77,9 +77,8 @@ class PromptWithdrawFragment : Fragment() {
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null
-            // TODO bring the user to the currency's transaction page, if there's more than one currency
-            model.transactionManager.selectedCurrency = status.currency
             findNavController().navigate(R.id.action_promptWithdraw_to_nav_main)
+            model.showTransactions(status.currency)
             Snackbar.make(requireView(), R.string.withdraw_initiated, LENGTH_LONG).show()
         }
         is Loading -> {

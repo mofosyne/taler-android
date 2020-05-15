@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_balances.*
@@ -79,8 +78,7 @@ class BalancesFragment : Fragment(),
     }
 
     override fun onBalanceClick(currency: String) {
-        model.transactionManager.selectedCurrency = currency
-        findNavController().navigate(R.id.action_nav_main_to_nav_transactions)
+        model.showTransactions(currency)
     }
 
 }

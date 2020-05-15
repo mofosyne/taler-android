@@ -28,7 +28,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PRO
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.common.Amount
+import net.taler.common.Event
 import net.taler.common.assertUiThread
+import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
@@ -99,6 +101,9 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         TransactionManager(walletBackendApi, viewModelScope, mapper)
     val refundManager = RefundManager(walletBackendApi)
 
+    private val mTransactionsEvent = MutableLiveData<Event<String>>()
+    val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
+
     override fun onCleared() {
         walletBackendApi.destroy()
         super.onCleared()
@@ -127,6 +132,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             mBalances.postValue(balanceMap)
             showProgressBar.postValue(false)
         }
+    }
+
+    /**
+     * Navigates to the given currency's transaction list, when [MainFragment] is shown.
+     */
+    @UiThread
+    fun showTransactions(currency: String) {
+        mTransactionsEvent.value = currency.toEvent()
     }
 
     @UiThread
