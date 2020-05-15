@@ -23,6 +23,7 @@ import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
+import android.os.Looper
 import android.text.format.DateUtils.DAY_IN_MILLIS
 import android.text.format.DateUtils.FORMAT_ABBREV_ALL
 import android.text.format.DateUtils.FORMAT_ABBREV_MONTH
@@ -58,6 +59,10 @@ fun View.fadeOut(endAction: () -> Unit = {}) {
         alpha = 1f
         endAction.invoke()
     }.start()
+}
+
+fun assertUiThread() {
+    check(Looper.getMainLooper().thread == Thread.currentThread())
 }
 
 /**

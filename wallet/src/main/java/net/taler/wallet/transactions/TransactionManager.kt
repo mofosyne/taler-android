@@ -17,6 +17,8 @@
 package net.taler.wallet.transactions
 
 import android.util.Log
+import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -45,23 +47,38 @@ class TransactionManager(
     var selectedCurrency: String? = null
     var selectedTransaction: Transaction? = null
 
-    // TODO maybe cache transactions per currency?
-    private val mTransactions = MutableLiveData<TransactionsResult>()
-    val transactions: LiveData<TransactionsResult> = mTransactions
+    private val mTransactions = HashMap<String, MutableLiveData<TransactionsResult>>()
+    val transactions: LiveData<TransactionsResult>
+        @UiThread
+        get() {
+            val currency = selectedCurrency
+            check(currency != null) { "Did not select currency before getting transactions" }
+            return mTransactions.getOrPut(currency) { MutableLiveData() }
+        }
 
+    @UiThread
     fun loadTransactions() {
-        mProgress.postValue(true)
-        val request = JSONObject(mapOf("currency" to selectedCurrency))
+        val currency = selectedCurrency ?: return
+        val liveData = mTransactions.getOrPut(currency) {
+            MutableLiveData<TransactionsResult>()
+        }
+        if (liveData.value == null) mProgress.value = true
+        val request = JSONObject(mapOf("currency" to currency))
         walletBackendApi.sendRequest("getTransactions", request) { isError, result ->
             scope.launch(Dispatchers.Default) {
-                onTransactionsLoaded(isError, result)
+                onTransactionsLoaded(liveData, isError, result)
             }
         }
     }
 
-    private fun onTransactionsLoaded(isError: Boolean, result: JSONObject) {
+    @WorkerThread
+    private fun onTransactionsLoaded(
+        liveData: MutableLiveData<TransactionsResult>,
+        isError: Boolean,
+        result: JSONObject
+    ) {
         if (isError) {
-            mTransactions.postValue(TransactionsResult.Error)
+            liveData.postValue(TransactionsResult.Error)
             return
         }
         Log.e("TEST", result.toString(2))  // TODO remove once API finalized
@@ -69,7 +86,7 @@ class TransactionManager(
         val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
         transactions.reverse()  // show latest first
         mProgress.postValue(false)
-        mTransactions.postValue(TransactionsResult.Success(transactions))
+        liveData.postValue(TransactionsResult.Success(transactions))
     }
 
 }

@@ -28,13 +28,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PRO
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.common.Amount
+import net.taler.common.assertUiThread
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.transactions.TransactionManager
-import net.taler.wallet.transactions.TransactionsResult
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
@@ -72,7 +72,9 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
             loadBalances()
             if (payload.optString("type") in transactionNotifications) {
-                // update transaction list
+                assertUiThread()
+                // TODO notification API should give us a currency to update
+                // update currently selected transaction list
                 transactionManager.loadTransactions()
             }
             // refresh pending ops and history with each notification
