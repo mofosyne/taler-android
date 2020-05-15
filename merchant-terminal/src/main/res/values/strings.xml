@@ -8,7 +8,7 @@
     <string name="menu_settings">Settings</string>
 
     <string name="order_label_title">Order #%s</string>
-    <!-- The first placeholder is the amount and the second the currency -->
+    <!-- The placeholder is the total order amount with currency -->
     <string name="order_total">Total: %s</string>
     <string name="order_restart">Restart</string>
     <string name="order_undo">Undo</string>
