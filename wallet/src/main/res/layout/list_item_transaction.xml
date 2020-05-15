@@ -47,7 +47,7 @@
         app:layout_constraintEnd_toStartOf="@+id/barrier"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/transaction_payment" />
+        tools:text="@string/payment_title" />
 
     <TextView
         android:id="@+id/extraInfoView"

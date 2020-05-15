@@ -68,7 +68,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transactions_select_all">Select All</string>
 
     <!-- Transactions -->
-    <string name="transaction_payment">Payment</string>
     <string name="transaction_paid">Paid</string>
     <string name="transaction_order_total">Total</string>
     <string name="transaction_order">Purchase</string>
@@ -80,6 +79,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_pending">PENDING</string>
     <string name="transaction_refresh">Coin expiry change fee</string>
 
+    <string name="payment_title">Payment</string>
     <string name="payment_fee">+%s payment fee</string>
     <string name="payment_button_confirm">Confirm Payment</string>
     <string name="payment_label_amount_total">Total Amount:</string>
@@ -93,6 +93,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
 
     <string name="withdraw_initiated">Withdrawal initiated</string>
+    <string name="withdraw_title">Withdrawal</string>
     <string name="withdraw_total">Withdraw</string>
     <string name="withdraw_fees">Fee</string>
     <string name="withdraw_exchange">Exchange</string>
@@ -138,7 +139,10 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
     <string name="settings_reset_summary">Throws away your money</string>
 
+    <string name="refund_title">Refund</string>
     <string name="refund_error">Error processing refund</string>
     <string name="refund_success">Refund received</string>
+
+    <string name="tip_title">Tip</string>
 
 </resources>

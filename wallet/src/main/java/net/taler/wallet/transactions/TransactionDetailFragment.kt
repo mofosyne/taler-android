@@ -63,7 +63,7 @@ class TransactionDetailFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().apply {
-            title = transaction.getTitle(this)
+            title = getString(transaction.generalTitleRes)
         }
     }
 

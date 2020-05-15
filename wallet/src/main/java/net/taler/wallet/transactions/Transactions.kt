@@ -19,6 +19,7 @@ package net.taler.wallet.transactions
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type
@@ -57,6 +58,9 @@ abstract class Transaction(
     abstract val amountType: AmountType
 
     abstract fun getTitle(context: Context): String
+
+    @get:StringRes
+    abstract val generalTitleRes: Int
 }
 
 sealed class AmountType {
@@ -80,6 +84,7 @@ class TransactionWithdrawal(
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
+    override val generalTitleRes = R.string.withdraw_title
 }
 
 @JsonTypeName("payment")
@@ -96,6 +101,7 @@ class TransactionPayment(
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context) = info.merchant.name ?: info.summary
+    override val generalTitleRes = R.string.payment_title
 }
 
 class TransactionInfo(
@@ -143,6 +149,7 @@ class TransactionRefund(
             context.getString(R.string.transaction_refund_from, info.merchant.name)
         }
     }
+    override val generalTitleRes = R.string.refund_title
 }
 
 @JsonTypeName("tip")
@@ -162,6 +169,7 @@ class TransactionTip(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_tip_from, merchant.name)
     }
+    override val generalTitleRes = R.string.tip_title
 }
 
 @JsonTypeName("refresh")
@@ -179,4 +187,5 @@ class TransactionRefresh(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refresh)
     }
+    override val generalTitleRes = R.string.transaction_refresh
 }
