@@ -46,7 +46,7 @@ abstract class Transaction(
     val timestamp: Timestamp,
     val pending: Boolean,
     val amountRaw: Amount,
-    val amountEffective: Amount?
+    val amountEffective: Amount
 ) {
     @get:DrawableRes
     abstract val icon: Int
@@ -70,11 +70,11 @@ class TransactionWithdrawal(
     transactionId: String,
     timestamp: Timestamp,
     pending: Boolean,
-    val exchangeBaseUrl: String = "unknown",  // TODO fix in wallet-core
+    val exchangeBaseUrl: String,
     val confirmed: Boolean,
     val bankConfirmationUrl: String?,
     amountRaw: Amount,
-    amountEffective: Amount?
+    amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_withdrawal
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
@@ -90,7 +90,7 @@ class TransactionPayment(
     val info: TransactionInfo,
     val status: PaymentStatus,
     amountRaw: Amount,
-    amountEffective: Amount?
+    amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageLayout = R.layout.fragment_transaction_payment
@@ -102,7 +102,7 @@ class TransactionInfo(
     val orderId: String,
     val merchant: ContractMerchant,
     val summary: String,
-    @get:JsonProperty("description_i18n")
+    @get:JsonProperty("summary_i18n")
     val summaryI18n: Map<String, String>?,
     val products: List<ContractProduct>,
     val fulfillmentUrl: String
@@ -118,9 +118,6 @@ enum class PaymentStatus {
     @JsonProperty("paid")
     Paid,
 
-    @JsonProperty("offered")
-    Offered,
-
     @JsonProperty("accepted")
     Accepted
 }
@@ -134,7 +131,7 @@ class TransactionRefund(
     val info: TransactionInfo,
     val amountInvalid: Amount,
     amountRaw: Amount,
-    amountEffective: Amount?
+    amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refund
     override val detailPageLayout = R.layout.fragment_transaction_payment
@@ -157,7 +154,7 @@ class TransactionTip(
     val exchangeBaseUrl: String,
     val merchant: ContractMerchant,
     amountRaw: Amount,
-    amountEffective: Amount?
+    amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
     override val detailPageLayout = R.layout.fragment_transaction_payment
@@ -174,7 +171,7 @@ class TransactionRefresh(
     pending: Boolean,
     val exchangeBaseUrl: String,
     amountRaw: Amount,
-    amountEffective: Amount?
+    amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refresh
     override val detailPageLayout = R.layout.fragment_transaction_payment

@@ -104,30 +104,22 @@ internal class TransactionAdapter(
         }
 
         private fun bindAmount(transaction: Transaction) {
-            val amountEffective = transaction.amountEffective
-            if (amountEffective == null) {
-                amount.visibility = GONE
-            } else {
-                amount.visibility = VISIBLE
-                when (transaction.amountType) {
-                    AmountType.Positive -> {
-                        amount.text =
-                            context.getString(R.string.amount_positive, amountEffective.amountStr)
-                        amount.setTextColor(if (transaction.pending) amountColor else green)
-                    }
-                    AmountType.Negative -> {
-                        amount.text =
-                            context.getString(R.string.amount_negative, amountEffective.amountStr)
-                        amount.setTextColor(if (transaction.pending) amountColor else red)
-                    }
-                    AmountType.Neutral -> {
-                        amount.text = amountEffective.amountStr
-                        amount.setTextColor(amountColor)
-                    }
-                }.exhaustive
-            }
+            val amountStr = transaction.amountEffective.amountStr
+            when (transaction.amountType) {
+                AmountType.Positive -> {
+                    amount.text = context.getString(R.string.amount_positive, amountStr)
+                    amount.setTextColor(if (transaction.pending) amountColor else green)
+                }
+                AmountType.Negative -> {
+                    amount.text = context.getString(R.string.amount_negative, amountStr)
+                    amount.setTextColor(if (transaction.pending) amountColor else red)
+                }
+                AmountType.Neutral -> {
+                    amount.text = amountStr
+                    amount.setTextColor(amountColor)
+                }
+            }.exhaustive
         }
-
     }
 
     internal inner class TransactionKeyProvider : ItemKeyProvider<String>(SCOPE_MAPPED) {

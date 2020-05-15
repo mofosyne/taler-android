@@ -122,14 +122,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                 val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
                 balanceMap[currency] = BalanceItem(amount, amountIncoming)
             }
-            // TODO remove when wallet-core supports 0 balance for pending transactions
-            if (balanceMap.isEmpty()) {
-                val transactionsResult = transactionManager.transactions.value
-                if (transactionsResult is TransactionsResult.Success && transactionsResult.transactions.isNotEmpty()) {
-                    val currency = transactionsResult.transactions[0].amountRaw.currency
-                    balanceMap[currency] = BalanceItem(Amount.zero(currency), Amount.zero(currency))
-                }
-            }
             mBalances.postValue(balanceMap)
             showProgressBar.postValue(false)
         }

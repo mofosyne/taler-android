@@ -36,7 +36,6 @@ import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.*
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.feeView
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.timeView
 import net.taler.common.Amount
-import net.taler.common.AmountOverflowException
 import net.taler.common.isSafe
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
@@ -106,18 +105,14 @@ class TransactionDetailFragment : Fragment() {
         chosenAmountLabel.text = getString(R.string.amount_chosen)
         chosenAmountView.text =
             getString(R.string.amount_positive, t.amountRaw.toString())
-        val fee = try {  // TODO remove when fixed in wallet-core
-            t.amountRaw - (t.amountEffective ?: t.amountRaw)
-        } catch (e: AmountOverflowException) {
-            (t.amountEffective ?: t.amountRaw) - t.amountRaw
-        }
+        val fee = t.amountRaw - t.amountEffective
         feeView.text = getString(R.string.amount_negative, fee.toString())
         exchangeView.text = cleanExchange(t.exchangeBaseUrl)
     }
 
     private fun bind(t: TransactionPayment) {
         amountPaidWithFeesView.text = t.amountEffective.toString()
-        val fee = (t.amountEffective ?: t.amountRaw) - t.amountRaw
+        val fee = t.amountEffective - t.amountRaw
         bindOrderAndFee(t.info, t.amountRaw, fee)
     }
 
@@ -126,7 +121,7 @@ class TransactionDetailFragment : Fragment() {
         amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
         amountPaidWithFeesView.text =
             getString(R.string.amount_positive, t.amountEffective.toString())
-        val fee = t.amountRaw - (t.amountEffective ?: t.amountRaw)
+        val fee = t.amountRaw - t.amountEffective
         bindOrderAndFee(t.info, t.amountRaw, fee)
     }
 
