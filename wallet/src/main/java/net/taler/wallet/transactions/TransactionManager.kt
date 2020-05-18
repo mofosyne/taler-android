@@ -16,7 +16,6 @@
 
 package net.taler.wallet.transactions
 
-import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
@@ -81,9 +80,10 @@ class TransactionManager(
             liveData.postValue(TransactionsResult.Error)
             return
         }
-        Log.e("TEST", result.toString(2))  // TODO remove once API finalized
         val transactionsArray = result.getString("transactions")
         val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
+        // TODO remove when fixed in wallet-core
+        transactions.sortWith(compareBy({ it.pending }, { it.timestamp.ms }, { it.transactionId }))
         transactions.reverse()  // show latest first
         mProgress.postValue(false)
         liveData.postValue(TransactionsResult.Success(transactions))

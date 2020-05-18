@@ -100,7 +100,7 @@ class TransactionPayment(
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Negative
-    override fun getTitle(context: Context) = info.merchant.name ?: info.summary
+    override fun getTitle(context: Context) = info.merchant.name
     override val generalTitleRes = R.string.payment_title
 }
 
@@ -143,11 +143,7 @@ class TransactionRefund(
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
-        return if (info.merchant.name == null) {
-            context.getString(R.string.transaction_refund_for, info.summary)
-        } else {
-            context.getString(R.string.transaction_refund_from, info.merchant.name)
-        }
+        return context.getString(R.string.transaction_refund_from, info.merchant.name)
     }
     override val generalTitleRes = R.string.refund_title
 }
