@@ -190,7 +190,7 @@ class TransactionRefresh(
     amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refresh
-    override val detailPageLayout = R.layout.fragment_transaction_payment
+    override val detailPageLayout = R.layout.fragment_transaction_withdrawal
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refresh)

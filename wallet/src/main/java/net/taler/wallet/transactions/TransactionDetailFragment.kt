@@ -73,9 +73,10 @@ class TransactionDetailFragment : Fragment() {
             is TransactionWithdrawal -> bind(e)
             is TransactionPayment -> bind(e)
             is TransactionRefund -> bind(e)
+            is TransactionRefresh -> bind(e)
             else -> Toast.makeText(
                 requireContext(),
-                "event ${e.javaClass} not implement",
+                "Transaction ${e.javaClass.simpleName} not implemented.",
                 LENGTH_LONG
             ).show()
         }
@@ -123,6 +124,17 @@ class TransactionDetailFragment : Fragment() {
             getString(R.string.amount_positive, t.amountEffective.toString())
         val fee = t.amountRaw - t.amountEffective
         bindOrderAndFee(t.info, t.amountRaw, fee)
+    }
+
+    private fun bind(t: TransactionRefresh) {
+        effectiveAmountLabel.visibility = GONE
+        effectiveAmountView.visibility = GONE
+        confirmWithdrawalButton.visibility = GONE
+        chosenAmountLabel.visibility = GONE
+        chosenAmountView.visibility = GONE
+        val fee = t.amountEffective
+        feeView.text = getString(R.string.amount_negative, fee.toString())
+        exchangeView.text = cleanExchange(t.exchangeBaseUrl)
     }
 
     private fun bindOrderAndFee(info: TransactionInfo, raw: Amount, fee: Amount) {
