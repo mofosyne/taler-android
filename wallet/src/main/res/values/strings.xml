@@ -87,6 +87,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_balance_insufficient">Balance insufficient!</string>
     <string name="payment_show_details">Show Details</string>
     <string name="payment_hide_details">Hide Details</string>
+    <string name="payment_aborted">Aborted</string>
+    <string name="payment_failed">Failed</string>
     <string name="payment_initiated">Payment initiated</string>
     <string name="payment_already_paid_title">Already paid</string>
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>

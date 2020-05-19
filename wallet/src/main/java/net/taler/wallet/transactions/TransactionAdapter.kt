@@ -92,15 +92,29 @@ internal class TransactionAdapter(
 
             icon.setImageResource(transaction.icon)
             title.text = transaction.getTitle(context)
-            if (transaction is TransactionWithdrawal && !transaction.confirmed) {
+            bindExtraInfo(transaction)
+            time.text = transaction.timestamp.ms.toRelativeTime(context)
+            bindAmount(transaction)
+            pendingView.visibility = if (transaction.pending) VISIBLE else GONE
+        }
+
+        private fun bindExtraInfo(transaction: Transaction) {
+            if (transaction.error != null) {
+                extraInfoView.text =
+                    context.getString(R.string.payment_error, transaction.error.text)
+                extraInfoView.setTextColor(red)
+                extraInfoView.visibility = VISIBLE
+            } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
                 extraInfoView.setText(R.string.withdraw_waiting_confirm)
+                extraInfoView.setTextColor(amountColor)
+                extraInfoView.visibility = VISIBLE
+            } else if (transaction is TransactionPayment && transaction.status != PaymentStatus.Paid && transaction.status != PaymentStatus.Accepted) {
+                extraInfoView.setText(if (transaction.status == PaymentStatus.Aborted) R.string.payment_aborted else R.string.payment_failed)
+                extraInfoView.setTextColor(amountColor)
                 extraInfoView.visibility = VISIBLE
             } else {
                 extraInfoView.visibility = GONE
             }
-            time.text = transaction.timestamp.ms.toRelativeTime(context)
-            bindAmount(transaction)
-            pendingView.visibility = if (transaction.pending) VISIBLE else GONE
         }
 
         private fun bindAmount(transaction: Transaction) {

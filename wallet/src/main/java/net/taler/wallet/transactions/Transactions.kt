@@ -46,6 +46,7 @@ abstract class Transaction(
     val transactionId: String,
     val timestamp: Timestamp,
     val pending: Boolean,
+    val error: TransactionError? = null,
     val amountRaw: Amount,
     val amountEffective: Amount
 ) {
@@ -69,6 +70,10 @@ sealed class AmountType {
     object Neutral : AmountType()
 }
 
+class TransactionError(private val ec: Int, private val hint: String?) {
+    val text get() = if (hint == null) "$ec" else "$ec - $hint"
+}
+
 @JsonTypeName("withdrawal")
 class TransactionWithdrawal(
     transactionId: String,
@@ -77,9 +82,10 @@ class TransactionWithdrawal(
     val exchangeBaseUrl: String,
     val confirmed: Boolean,
     val bankConfirmationUrl: String?,
+    error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
+) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_withdrawal
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
     override val amountType = AmountType.Positive
@@ -94,9 +100,10 @@ class TransactionPayment(
     pending: Boolean,
     val info: TransactionInfo,
     val status: PaymentStatus,
+    error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
+) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Negative
@@ -136,15 +143,17 @@ class TransactionRefund(
     val refundedTransactionId: String,
     val info: TransactionInfo,
     val amountInvalid: Amount,
+    error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
+) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refund
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refund_from, info.merchant.name)
     }
+
     override val generalTitleRes = R.string.refund_title
 }
 
@@ -156,15 +165,17 @@ class TransactionTip(
     // TODO status: TipStatus,
     val exchangeBaseUrl: String,
     val merchant: ContractMerchant,
+    error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
+) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_tip_from, merchant.name)
     }
+
     override val generalTitleRes = R.string.tip_title
 }
 
@@ -174,14 +185,16 @@ class TransactionRefresh(
     timestamp: Timestamp,
     pending: Boolean,
     val exchangeBaseUrl: String,
+    error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, amountRaw, amountEffective) {
+) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refresh
     override val detailPageLayout = R.layout.fragment_transaction_payment
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refresh)
     }
+
     override val generalTitleRes = R.string.transaction_refresh
 }
