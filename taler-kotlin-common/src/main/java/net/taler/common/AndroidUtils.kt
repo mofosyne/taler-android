@@ -43,7 +43,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
-    if (visibility == VISIBLE) return
+    if (visibility == VISIBLE && alpha == 1f) return
     alpha = 0f
     visibility = VISIBLE
     animate().alpha(1f).withEndAction {

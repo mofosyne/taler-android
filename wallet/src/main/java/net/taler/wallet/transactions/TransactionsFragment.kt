@@ -23,11 +23,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -102,14 +102,11 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         })
 
         transactionManager.progress.observe(viewLifecycleOwner, Observer { show ->
-            progressBar.visibility = if (show) VISIBLE else INVISIBLE
+            if (show) progressBar.fadeIn() else progressBar.fadeOut()
         })
         transactionManager.transactions.observe(viewLifecycleOwner, Observer { result ->
             onTransactionsResult(result)
         })
-
-        // kicks off initial load, needs to be adapted if showAll state is ever saved
-        if (savedInstanceState == null) transactionManager.loadTransactions()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -129,12 +126,29 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.transactions, menu)
+        setupSearch(menu.findItem(R.id.action_search))
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            else -> super.onOptionsItemSelected(item)
-        }
+    private fun setupSearch(item: MenuItem) {
+        item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem) = true
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                onSearchClosed()
+                return true
+            }
+        })
+        val searchView = item.actionView as SearchView
+        searchView.setOnQueryTextListener(object : OnQueryTextListener {
+            override fun onQueryTextChange(newText: String) = false
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // workaround to avoid issues with some emulators and keyboard devices
+                // firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                item.actionView.clearFocus()
+                onSearch(query)
+                return true
+            }
+        })
     }
 
     override fun onTransactionClicked(transaction: Transaction) {
@@ -152,10 +166,27 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             emptyState.fadeIn()
         }
         is TransactionsResult.Success -> {
-            emptyState.visibility = if (result.transactions.isEmpty()) VISIBLE else INVISIBLE
-            transactionAdapter.update(result.transactions)
-            list.fadeIn()
+            if (result.transactions.isEmpty()) {
+                val isSearch = transactionManager.searchQuery.value != null
+                emptyState.setText(if (isSearch) R.string.transactions_empty_search else R.string.transactions_empty)
+                emptyState.fadeIn()
+                list.fadeOut()
+            } else {
+                emptyState.fadeOut()
+                transactionAdapter.update(result.transactions)
+                list.fadeIn()
+            }
         }
+    }
+
+    private fun onSearch(query: String) {
+        list.fadeOut()
+        progressBar.fadeIn()
+        transactionManager.searchQuery.value = query
+    }
+
+    private fun onSearchClosed() {
+        transactionManager.searchQuery.value = null
     }
 
     override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {

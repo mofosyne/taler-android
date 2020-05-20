@@ -45,6 +45,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="button_back">Go Back</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
+    <string name="search">Search</string>
 
     <string name="menu_settings">Settings</string>
     <string name="menu_retry_pending_operations">Retry Pending Operations</string>
@@ -61,6 +62,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="transactions_title">Transactions</string>
     <string name="transactions_empty">You don\'t have any transactions</string>
+    <string name="transactions_empty_search">No transactions found. Try a different search.</string>
     <string name="transactions_error">Could not load transactions</string>
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Balance: %s</string>

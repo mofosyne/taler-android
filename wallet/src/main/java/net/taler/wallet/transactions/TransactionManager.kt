@@ -20,6 +20,7 @@ import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
@@ -46,26 +47,36 @@ class TransactionManager(
     var selectedCurrency: String? = null
     var selectedTransaction: Transaction? = null
 
+    val searchQuery = MutableLiveData<String>(null)
+    private val allTransactions = HashMap<String, List<Transaction>>()
     private val mTransactions = HashMap<String, MutableLiveData<TransactionsResult>>()
     val transactions: LiveData<TransactionsResult>
         @UiThread
-        get() {
+        get() = searchQuery.switchMap { query ->
             val currency = selectedCurrency
             check(currency != null) { "Did not select currency before getting transactions" }
-            return mTransactions.getOrPut(currency) { MutableLiveData() }
+            loadTransactions(query)
+            mTransactions[currency]!! // non-null because filled in [loadTransactions]
         }
 
     @UiThread
-    fun loadTransactions() {
+    fun loadTransactions(searchQuery: String? = null) {
         val currency = selectedCurrency ?: return
-        val liveData = mTransactions.getOrPut(currency) {
-            MutableLiveData<TransactionsResult>()
+        val liveData = mTransactions.getOrPut(currency) { MutableLiveData() }
+        if (searchQuery == null && allTransactions.containsKey(currency)) {
+            liveData.value = TransactionsResult.Success(allTransactions[currency]!!)
         }
         if (liveData.value == null) mProgress.value = true
         val request = JSONObject(mapOf("currency" to currency))
+        searchQuery?.let { request.put("search", it) }
         walletBackendApi.sendRequest("getTransactions", request) { isError, result ->
-            scope.launch(Dispatchers.Default) {
-                onTransactionsLoaded(liveData, isError, result)
+            if (isError) {
+                liveData.postValue(TransactionsResult.Error)
+            } else {
+                val currencyToUpdate = if (searchQuery == null) currency else null
+                scope.launch(Dispatchers.Default) {
+                    onTransactionsLoaded(liveData, currencyToUpdate, result)
+                }
             }
         }
     }
@@ -73,13 +84,9 @@ class TransactionManager(
     @WorkerThread
     private fun onTransactionsLoaded(
         liveData: MutableLiveData<TransactionsResult>,
-        isError: Boolean,
+        currency: String?,  // only non-null if we should update all transactions cache
         result: JSONObject
     ) {
-        if (isError) {
-            liveData.postValue(TransactionsResult.Error)
-            return
-        }
         val transactionsArray = result.getString("transactions")
         val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
         // TODO remove when fixed in wallet-core
@@ -87,6 +94,10 @@ class TransactionManager(
         transactions.reverse()  // show latest first
         mProgress.postValue(false)
         liveData.postValue(TransactionsResult.Success(transactions))
+        // update all transactions on UiThread if there was a currency
+        currency?.let {
+            scope.launch(Dispatchers.Main) { allTransactions[currency] = transactions }
+        }
     }
 
     @UiThread
