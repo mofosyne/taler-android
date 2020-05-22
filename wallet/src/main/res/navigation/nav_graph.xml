@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_nav_main_to_nav_transactions"
             app:destination="@id/nav_transactions" />
+        <action
+            android:id="@+id/action_nav_main_to_nav_uri_input"
+            app:destination="@id/nav_uri_input" />
     </fragment>
 
     <fragment
@@ -122,6 +125,12 @@
         android:name="net.taler.wallet.history.DevHistoryFragment"
         android:label="@string/nav_history"
         tools:layout="@layout/fragment_transactions" />
+
+    <fragment
+        android:id="@+id/nav_uri_input"
+        android:name="net.taler.wallet.UriInputFragment"
+        android:label="@string/enter_uri"
+        tools:layout="@layout/fragment_uri_input" />
 
     <fragment
         android:id="@+id/errorFragment"
