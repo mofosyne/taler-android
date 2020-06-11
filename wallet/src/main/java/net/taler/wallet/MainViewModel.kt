@@ -40,6 +40,9 @@ import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
+import java.util.concurrent.TimeUnit.DAYS
+import java.util.concurrent.TimeUnit.MINUTES
+import kotlin.random.Random
 
 const val TAG = "taler-wallet"
 
@@ -102,6 +105,13 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
+
+    private val mLastBackup = MutableLiveData(
+        // fake backup time until we actually do backup
+        System.currentTimeMillis() -
+                Random.nextLong(MINUTES.toMillis(5), DAYS.toMillis(2))
+    )
+    val lastBackup: LiveData<Long> = mLastBackup
 
     override fun onCleared() {
         walletBackendApi.destroy()

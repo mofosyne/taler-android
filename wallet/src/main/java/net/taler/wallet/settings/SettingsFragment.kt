@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.settings
 
 import android.os.Bundle
 import android.view.View
@@ -26,9 +26,12 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
+import net.taler.common.toRelativeTime
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
+import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -36,6 +39,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private lateinit var prefBackup: Preference
     private lateinit var prefDevMode: SwitchPreferenceCompat
     private lateinit var prefWithdrawTest: Preference
     private lateinit var prefVersionApp: Preference
@@ -45,6 +49,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefReset: Preference
     private val devPrefs by lazy {
         listOf(
+            prefBackup,
             prefWithdrawTest,
             prefVersionApp,
             prefVersionCore,
@@ -56,6 +61,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
+        prefBackup = findPreference("pref_backup")!!
         prefDevMode = findPreference("pref_dev_mode")!!
         prefWithdrawTest = findPreference("pref_testkudos")!!
         prefVersionApp = findPreference("pref_version_app")!!
@@ -67,6 +73,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        model.lastBackup.observe(viewLifecycleOwner, Observer {
+            val time = it.toRelativeTime(requireContext())
+            prefBackup.summary = getString(R.string.backup_last, time)
+        })
 
         model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
             prefDevMode.isChecked = enabled

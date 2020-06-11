@@ -37,6 +37,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
@@ -54,7 +57,8 @@ import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import net.taler.wallet.refund.RefundStatus
 import java.util.Locale.ROOT
 
-class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
+    OnPreferenceStartFragmentCallback {
 
     private val model: MainViewModel by viewModels()
 
@@ -204,6 +208,17 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
                 model.tunnelResponse(it)
             }
         }
+    }
+
+    override fun onPreferenceStartFragment(
+        caller: PreferenceFragmentCompat,
+        pref: Preference
+    ): Boolean {
+        when (pref.key) {
+            "pref_backup" -> nav.navigate(R.id.action_nav_settings_to_nav_settings_backup)
+            "pref_backup_recovery" -> nav.navigate(R.id.action_nav_settings_backup_to_nav_anastasis_intro)
+        }
+        return true
     }
 
 }

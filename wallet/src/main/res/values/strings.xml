@@ -147,6 +147,9 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
     <string name="settings_reset_summary">Throws away your money</string>
 
+    <string name="nav_settings_backup">Backup</string>
+    <string name="backup_last">Last Backup: %s</string>
+
     <string name="refund_title">Refund</string>
     <string name="refund_error">Error processing refund</string>
     <string name="refund_success">Refund received</string>

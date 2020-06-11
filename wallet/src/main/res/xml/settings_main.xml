@@ -17,6 +17,14 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <Preference
+        app:fragment="net.taler.wallet.settings.BackupSettingsFragment"
+        app:icon="@drawable/ic_baseline_backup"
+        app:isPreferenceVisible="false"
+        app:key="pref_backup"
+        app:title="Backup"
+        tools:isPreferenceVisible="true" />
+
     <SwitchPreferenceCompat
         app:icon="@drawable/ic_developer_mode"
         app:key="pref_dev_mode"
