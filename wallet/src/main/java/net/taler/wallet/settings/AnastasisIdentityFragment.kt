@@ -32,6 +32,9 @@ import kotlinx.android.synthetic.main.fragment_anastasis_identity.*
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import java.util.*
+import java.util.concurrent.TimeUnit.DAYS
+
+private const val MIN_AGE = 18
 
 class AnastasisIdentityFragment : Fragment() {
 
@@ -53,6 +56,7 @@ class AnastasisIdentityFragment : Fragment() {
         }
         birthDateInput.editText?.setOnClickListener {
             val picker = DatePickerDialog(requireContext())
+            picker.datePicker.maxDate = System.currentTimeMillis() - DAYS.toMillis(365) * MIN_AGE
             picker.setOnDateSetListener { _, year, month, dayOfMonth ->
                 val calender = Calendar.getInstance().apply {
                     set(year, month, dayOfMonth)
@@ -70,9 +74,13 @@ class AnastasisIdentityFragment : Fragment() {
 
     private fun getCountryName(): String {
         val tm = requireContext().getSystemService(TelephonyManager::class.java)!!
-        val countryIso = if (tm.networkCountryIso.isNullOrEmpty())
-            tm.simCountryIso else tm.networkCountryIso
-        var countryName = "Unknown"
+        val countryIso = if (tm.networkCountryIso.isNullOrEmpty()) {
+            if (tm.simCountryIso.isNullOrEmpty()) {
+                if (Locale.getDefault().country.isNullOrEmpty()) "unknown"
+                else Locale.getDefault().country
+            } else tm.simCountryIso
+        } else tm.networkCountryIso
+        var countryName = countryIso
         for (locale in Locale.getAvailableLocales()) {
             @SuppressLint("DefaultLocale")
             if (locale.country.toLowerCase() == countryIso) {

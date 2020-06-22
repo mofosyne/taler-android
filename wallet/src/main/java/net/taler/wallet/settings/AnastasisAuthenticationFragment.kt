@@ -23,8 +23,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
 import kotlinx.android.synthetic.main.fragment_anastasis_authentication.*
 import net.taler.common.Amount
@@ -35,6 +39,7 @@ import net.taler.wallet.R
 class AnastasisAuthenticationFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
+    private val anastasisManager by lazy { model.anastasisManager }
 
     private var price: Amount = Amount.zero("KUDOS")
 
@@ -48,9 +53,10 @@ class AnastasisAuthenticationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         passwordCard.setOnClickListener {
-            toggleCard(
+            showDialog(
+                R.id.action_nav_anastasis_authentication_to_securityQuestionFragment,
                 passwordCard,
-                Amount.fromJSONString("KUDOS:0.5")
+                "question_card"
             )
         }
         postidentCard.setOnClickListener {
@@ -59,8 +65,41 @@ class AnastasisAuthenticationFragment : Fragment() {
                 Amount.fromJSONString("KUDOS:3.5")
             )
         }
-        smsCard.setOnClickListener { toggleCard(smsCard, Amount.fromJSONString("KUDOS:1.0")) }
-        videoCard.setOnClickListener { toggleCard(videoCard, Amount.fromJSONString("KUDOS:2.25")) }
+        smsCard.setOnClickListener {
+            showDialog(
+                R.id.action_nav_anastasis_authentication_to_smsFragment,
+                smsCard,
+                "sms_card"
+            )
+        }
+        videoCard.setOnClickListener {
+            showDialog(
+                R.id.action_nav_anastasis_authentication_to_videoFragment,
+                videoCard,
+                "video_card"
+            )
+        }
+
+        anastasisManager.securityQuestionChecked.observe(viewLifecycleOwner, Observer { checked ->
+            passwordCard.isChecked = checked
+            updatePrice(checked, Amount.fromJSONString("KUDOS:0.5"))
+            updateNextButtonState()
+        })
+        anastasisManager.smsChecked.observe(viewLifecycleOwner, Observer { checked ->
+            smsCard.isChecked = checked
+            updatePrice(checked, Amount.fromJSONString("KUDOS:1.0"))
+            updateNextButtonState()
+        })
+        anastasisManager.videoChecked.observe(viewLifecycleOwner, Observer { checked ->
+            videoCard.isChecked = checked
+            updatePrice(checked, Amount.fromJSONString("KUDOS:2.25"))
+            updateNextButtonState()
+        })
+    }
+
+    private fun showDialog(@IdRes resId: Int, view: View, transitionName: String) {
+        val extras = FragmentNavigatorExtras(view to transitionName)
+        findNavController().navigate(resId, null, null, extras)
     }
 
     private fun toggleCard(card: MaterialCardView, price: Amount) {

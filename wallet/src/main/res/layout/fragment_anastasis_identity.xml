@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_marginTop="24dp"
-            android:text="To find your secret later, we create an anonymous identifier from unforgettable information about you.\n\nFeel free to lie as long as you will be able to provide exactly the same information when needing to restore."
+            android:text="To find your secret later, we create an anonymous identifier from unforgettable information about you.\n\nThis information will not be stored and not shared with anybody.\n\nFeel free to lie as long as you will be able to provide exactly the same information when needing to restore."
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent" />
@@ -87,6 +87,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
                 android:hint="Name" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -104,6 +105,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text|textCapWords"
                 android:hint="Place of birth" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -133,7 +135,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/createIdentifierButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/birthDateInput"
@@ -143,6 +144,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="AHV number"
+                android:inputType="number"
+                android:maxLength="13" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/taxIdInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/createIdentifierButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/idNumberInput"
+            app:layout_constraintVertical_bias="0.0">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tax ID number"
                 android:inputType="number"
                 android:maxLength="13" />
 
