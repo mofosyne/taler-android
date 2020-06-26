@@ -46,7 +46,20 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_nav_anastasis_identity_to_nav_change_location"
+            app:destination="@id/nav_change_location"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_change_location"
+        android:name="org.gnu.anastasis.ui.identity.ChangeLocationFragment"
+        android:label="Select country"
+        tools:layout="@layout/fragment_change_location"/>
 
     <fragment
         android:id="@+id/nav_anastasis_authentication"

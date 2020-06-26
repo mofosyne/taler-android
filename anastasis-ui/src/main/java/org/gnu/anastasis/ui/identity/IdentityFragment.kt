@@ -26,12 +26,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_identity.*
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit.DAYS
 
 private const val MIN_AGE = 18
@@ -50,9 +52,15 @@ class AnastasisIdentityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        countryView.text = getCountryName()
+        model.currentCountry.observe(viewLifecycleOwner, Observer { country ->
+            countryView.text = country.name
+            if (stub != null) {
+                stub.layoutResource = country.layoutRes
+                stub.inflate()
+            }
+        })
         changeCountryView.setOnClickListener {
-            Snackbar.make(view, "Not implemented", Snackbar.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_nav_anastasis_identity_to_nav_change_location)
         }
         birthDateInput.editText?.setOnClickListener {
             val picker = DatePickerDialog(requireContext())
@@ -72,6 +80,7 @@ class AnastasisIdentityFragment : Fragment() {
         }
     }
 
+    @Suppress("unused")
     private fun getCountryName(): String {
         val tm = requireContext().getSystemService(TelephonyManager::class.java)!!
         val countryIso = if (tm.networkCountryIso.isNullOrEmpty()) {

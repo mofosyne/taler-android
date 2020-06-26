@@ -14,19 +14,16 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package org.gnu.anastasis.ui
+package org.gnu.anastasis.ui.identity
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import org.gnu.anastasis.ui.identity.LOCATIONS
+import androidx.annotation.LayoutRes
+import org.gnu.anastasis.ui.R
 
-class MainViewModel(private val app: Application) : AndroidViewModel(app) {
+data class Location(val name: String, @LayoutRes val layoutRes: Int)
 
-    val currentCountry = MutableLiveData(LOCATIONS[0])
-
-    val securityQuestionChecked = MutableLiveData<Boolean>()
-    val smsChecked = MutableLiveData<Boolean>()
-    val videoChecked = MutableLiveData<Boolean>()
-
-}
+val LOCATIONS = listOf(
+    Location("Switzerland", R.layout.country_switzerland),
+    Location("Germany", R.layout.country_germany),
+    Location("Unites States", R.layout.country_usa),
+    Location("India", R.layout.country_india)
+)
