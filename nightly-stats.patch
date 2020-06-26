@@ -2,15 +2,6 @@ diff --git a/fdroidserver/nightly.py b/fdroidserver/nightly.py
 index 7a90294d..9ad806b3 100644
 --- a/fdroidserver/nightly.py
 +++ b/fdroidserver/nightly.py
-@@ -102,7 +102,7 @@ def main():
-                         help=_('The file to be included in the repo (path or glob)'))
-     parser.add_argument("--no-checksum", action="store_true", default=False,
-                         help=_("Don't use rsync checksums"))
--    parser.add_argument("--archive-older", default=20,
-+    parser.add_argument("--archive-older", type=int, default=20,
-                         help=_("Set maximum releases in repo before older ones are archived"))
-     # TODO add --with-btlog
-     options = parser.parse_args()
 @@ -170,6 +170,7 @@ def main():
          git_mirror_path = os.path.join(repo_basedir, 'git-mirror')
          git_mirror_repodir = os.path.join(git_mirror_path, 'fdroid', 'repo')
