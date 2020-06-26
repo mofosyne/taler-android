@@ -1,2 +1,3 @@
 include ':cashier', ':merchant-terminal', ':wallet'
 include ':taler-kotlin-common'
+include ':anastasis-ui'

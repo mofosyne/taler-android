@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui.authentication
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
@@ -36,8 +36,8 @@ import androidx.transition.TransitionManager.beginDelayedTransition
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
 import kotlinx.android.synthetic.main.fragment_video.*
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.R
 import java.io.FileDescriptor
 
 private const val REQUEST_IMAGE_CAPTURE = 1
@@ -45,8 +45,7 @@ private const val REQUEST_IMAGE_OPEN = 2
 
 class VideoFragment : Fragment() {
 
-    private val model: MainViewModel by activityViewModels()
-    private val anastasisManager by lazy { model.anastasisManager }
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,7 +64,9 @@ class VideoFragment : Fragment() {
             val pm = requireContext().packageManager
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(pm)?.also {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                    startActivityForResult(takePictureIntent,
+                        REQUEST_IMAGE_CAPTURE
+                    )
                 }
             }
         }
@@ -74,11 +75,13 @@ class VideoFragment : Fragment() {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
             }
-            startActivityForResult(intent, REQUEST_IMAGE_OPEN)
+            startActivityForResult(intent,
+                REQUEST_IMAGE_OPEN
+            )
         }
 
         saveVideoButton.setOnClickListener {
-            anastasisManager.videoChecked.value = true
+            viewModel.videoChecked.value = true
             findNavController().popBackStack()
         }
     }

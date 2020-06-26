@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of GNU Taler
+  ~ (C) 2020 Taler Systems S.A.
+  ~
+  ~ GNU Taler is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU General Public License as published by the Free Software
+  ~ Foundation; either version 3, or (at your option) any later version.
+  ~
+  ~ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+  ~ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  ~ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_anastasis_intro">
+
+    <fragment
+        android:id="@+id/nav_anastasis_intro"
+        android:name="org.gnu.anastasis.ui.IntroFragment"
+        android:label="Secure Cloud Recovery"
+        tools:layout="@layout/fragment_intro">
+        <action
+            android:id="@+id/action_nav_anastasis_intro_to_nav_anastasis_identity"
+            app:destination="@id/nav_anastasis_identity"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_anastasis_identity"
+        android:name="org.gnu.anastasis.ui.identity.AnastasisIdentityFragment"
+        android:label="Define your identity"
+        tools:layout="@layout/fragment_identity">
+        <action
+            android:id="@+id/action_nav_anastasis_intro_to_nav_anastasis_authentication"
+            app:destination="@id/nav_anastasis_authentication"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_anastasis_authentication"
+        android:name="org.gnu.anastasis.ui.authentication.AuthenticationFragment"
+        android:label="Choose authentication methods"
+        tools:layout="@layout/fragment_authentication">
+        <action
+            android:id="@+id/action_nav_anastasis_authentication_to_securityQuestionFragment"
+            app:destination="@id/securityQuestionFragment" />
+        <action
+            android:id="@+id/action_nav_anastasis_authentication_to_smsFragment"
+            app:destination="@id/smsFragment" />
+        <action
+            android:id="@+id/action_nav_anastasis_authentication_to_videoFragment"
+            app:destination="@id/videoFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/securityQuestionFragment"
+        android:name="org.gnu.anastasis.ui.authentication.SecurityQuestionFragment"
+        android:label="Security question"
+        tools:layout="@layout/fragment_security_question" />
+    <fragment
+        android:id="@+id/smsFragment"
+        android:name="org.gnu.anastasis.ui.authentication.SmsFragment"
+        android:label="SMS"
+        tools:layout="@layout/fragment_sms" />
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="org.gnu.anastasis.ui.authentication.VideoFragment"
+        android:label="Video identification"
+        tools:layout="@layout/fragment_video" />
+
+</navigation>

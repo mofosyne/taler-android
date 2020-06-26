@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui.authentication
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,14 +25,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
-import kotlinx.android.synthetic.main.fragment_security_question.*
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import kotlinx.android.synthetic.main.fragment_sms.*
+import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.R
 
-class SecurityQuestionFragment : Fragment() {
+class SmsFragment : Fragment() {
 
-    private val model: MainViewModel by activityViewModels()
-    private val anastasisManager by lazy { model.anastasisManager }
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,14 +40,14 @@ class SecurityQuestionFragment : Fragment() {
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             fadeMode = FADE_MODE_CROSS
         }
-        return inflater.inflate(R.layout.fragment_security_question, container, false).apply {
-            transitionName = "question_card"
+        return inflater.inflate(R.layout.fragment_sms, container, false).apply {
+            transitionName = "sms_card"
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        saveQuestionButton.setOnClickListener {
-            anastasisManager.securityQuestionChecked.value = true
+        saveSmsButton.setOnClickListener {
+            viewModel.smsChecked.value = true
             findNavController().popBackStack()
         }
     }

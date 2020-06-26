@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui.authentication
 
 import android.os.Bundle
 import android.view.Gravity.CENTER
@@ -30,16 +30,14 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
-import kotlinx.android.synthetic.main.fragment_anastasis_authentication.*
+import kotlinx.android.synthetic.main.fragment_authentication.*
 import net.taler.common.Amount
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.R
 
+class AuthenticationFragment : Fragment() {
 
-class AnastasisAuthenticationFragment : Fragment() {
-
-    private val model: MainViewModel by activityViewModels()
-    private val anastasisManager by lazy { model.anastasisManager }
+    private val viewModel: MainViewModel by activityViewModels()
 
     private var price: Amount = Amount.zero("KUDOS")
 
@@ -47,7 +45,7 @@ class AnastasisAuthenticationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_anastasis_authentication, container, false)
+        return inflater.inflate(R.layout.fragment_authentication, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,17 +78,17 @@ class AnastasisAuthenticationFragment : Fragment() {
             )
         }
 
-        anastasisManager.securityQuestionChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.securityQuestionChecked.observe(viewLifecycleOwner, Observer { checked ->
             passwordCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:0.5"))
             updateNextButtonState()
         })
-        anastasisManager.smsChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.smsChecked.observe(viewLifecycleOwner, Observer { checked ->
             smsCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:1.0"))
             updateNextButtonState()
         })
-        anastasisManager.videoChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.videoChecked.observe(viewLifecycleOwner, Observer { checked ->
             videoCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:2.25"))
             updateNextButtonState()

@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui.authentication
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,29 +23,33 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_anastasis_intro.*
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
+import kotlinx.android.synthetic.main.fragment_security_question.*
+import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.R
 
+class SecurityQuestionFragment : Fragment() {
 
-class AnastasisIntroFragment : Fragment() {
-
-    private val model: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_anastasis_intro, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        button.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_anastasis_intro_to_nav_anastasis_identity)
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            fadeMode = FADE_MODE_CROSS
+        }
+        return inflater.inflate(R.layout.fragment_security_question, container, false).apply {
+            transitionName = "question_card"
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        saveQuestionButton.setOnClickListener {
+            viewModel.securityQuestionChecked.value = true
+            findNavController().popBackStack()
+        }
+    }
 
 }

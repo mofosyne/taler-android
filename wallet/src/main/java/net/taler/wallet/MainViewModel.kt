@@ -37,7 +37,6 @@ import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
-import net.taler.wallet.settings.AnastasisManager
 import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
@@ -103,7 +102,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val transactionManager: TransactionManager =
         TransactionManager(walletBackendApi, viewModelScope, mapper)
     val refundManager = RefundManager(walletBackendApi)
-    val anastasisManager = AnastasisManager()
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent

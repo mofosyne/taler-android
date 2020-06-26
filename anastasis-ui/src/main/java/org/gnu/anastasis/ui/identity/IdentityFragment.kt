@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui.identity
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -28,9 +28,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_anastasis_identity.*
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import kotlinx.android.synthetic.main.fragment_identity.*
+import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.R
 import java.util.*
 import java.util.concurrent.TimeUnit.DAYS
 
@@ -44,7 +44,7 @@ class AnastasisIdentityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_anastasis_identity, container, false)
+        return inflater.inflate(R.layout.fragment_identity, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

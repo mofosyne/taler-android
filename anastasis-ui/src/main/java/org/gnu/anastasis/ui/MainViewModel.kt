@@ -14,11 +14,13 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 
-class AnastasisManager {
+class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
     val securityQuestionChecked = MutableLiveData<Boolean>()
     val smsChecked = MutableLiveData<Boolean>()

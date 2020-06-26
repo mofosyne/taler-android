@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.settings
+package org.gnu.anastasis.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,34 +23,26 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
-import kotlinx.android.synthetic.main.fragment_sms.*
-import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import kotlinx.android.synthetic.main.fragment_intro.*
 
-class SmsFragment : Fragment() {
+class IntroFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-    private val anastasisManager by lazy { model.anastasisManager }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        sharedElementEnterTransition = MaterialContainerTransform().apply {
-            fadeMode = FADE_MODE_CROSS
-        }
-        return inflater.inflate(R.layout.fragment_sms, container, false).apply {
-            transitionName = "sms_card"
-        }
+        return inflater.inflate(R.layout.fragment_intro, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        saveSmsButton.setOnClickListener {
-            anastasisManager.smsChecked.value = true
-            findNavController().popBackStack()
+        super.onViewCreated(view, savedInstanceState)
+
+        button.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_anastasis_intro_to_nav_anastasis_identity)
         }
     }
+
 
 }

@@ -14,7 +14,8 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreferenceCompat
         app:defaultValue="@bool/settings_backup_default"
@@ -48,10 +49,9 @@
         <Preference
             app:dependency="pref_backup_switch"
             app:icon="@drawable/ic_baseline_cloud_circle"
-            app:fragment="net.taler.wallet.settings.SettingsFragment"
             app:key="pref_backup_recovery"
             app:summary="Not used"
-            app:title="Secure cloud recovery" />
+            app:title="Secure cloud recovery"/>
 
     </PreferenceCategory>
 

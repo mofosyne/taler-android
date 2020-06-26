@@ -216,7 +216,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     ): Boolean {
         when (pref.key) {
             "pref_backup" -> nav.navigate(R.id.action_nav_settings_to_nav_settings_backup)
-            "pref_backup_recovery" -> nav.navigate(R.id.action_nav_settings_backup_to_nav_anastasis_intro)
         }
         return true
     }

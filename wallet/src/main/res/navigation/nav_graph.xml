@@ -66,75 +66,7 @@
     <fragment
         android:id="@+id/nav_settings_backup"
         android:name="net.taler.wallet.settings.BackupSettingsFragment"
-        android:label="@string/nav_settings_backup">
-        <action
-            android:id="@+id/action_nav_settings_backup_to_nav_anastasis_intro"
-            app:destination="@id/nav_anastasis_intro"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_anastasis_intro"
-        android:name="net.taler.wallet.settings.AnastasisIntroFragment"
-        android:label="Secure Cloud Recovery"
-        tools:layout="@layout/fragment_anastasis_intro">
-        <action
-            android:id="@+id/action_nav_anastasis_intro_to_nav_anastasis_identity"
-            app:destination="@id/nav_anastasis_identity"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_anastasis_identity"
-        android:name="net.taler.wallet.settings.AnastasisIdentityFragment"
-        android:label="Define your identity"
-        tools:layout="@layout/fragment_anastasis_identity">
-        <action
-            android:id="@+id/action_nav_anastasis_intro_to_nav_anastasis_authentication"
-            app:destination="@id/nav_anastasis_authentication"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_anastasis_authentication"
-        android:name="net.taler.wallet.settings.AnastasisAuthenticationFragment"
-        android:label="Choose authentication methods"
-        tools:layout="@layout/fragment_anastasis_authentication">
-        <action
-            android:id="@+id/action_nav_anastasis_authentication_to_securityQuestionFragment"
-            app:destination="@id/securityQuestionFragment" />
-        <action
-            android:id="@+id/action_nav_anastasis_authentication_to_smsFragment"
-            app:destination="@id/smsFragment" />
-        <action
-            android:id="@+id/action_nav_anastasis_authentication_to_videoFragment"
-            app:destination="@id/videoFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/securityQuestionFragment"
-        android:name="net.taler.wallet.settings.SecurityQuestionFragment"
-        android:label="Security question"
-        tools:layout="@layout/fragment_security_question" />
-    <fragment
-        android:id="@+id/smsFragment"
-        android:name="net.taler.wallet.settings.SmsFragment"
-        android:label="SMS"
-        tools:layout="@layout/fragment_sms" />
-    <fragment
-        android:id="@+id/videoFragment"
-        android:name="net.taler.wallet.settings.VideoFragment"
-        android:label="Video identification"
-        tools:layout="@layout/fragment_video" />
+        android:label="@string/nav_settings_backup"/>
 
     <fragment
         android:id="@+id/nav_transactions"
