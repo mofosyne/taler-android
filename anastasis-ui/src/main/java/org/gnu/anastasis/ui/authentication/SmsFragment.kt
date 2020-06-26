@@ -16,10 +16,16 @@
 
 package org.gnu.anastasis.ui.authentication
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresPermission
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -27,7 +33,10 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
 import kotlinx.android.synthetic.main.fragment_sms.*
 import org.gnu.anastasis.ui.MainViewModel
+import org.gnu.anastasis.ui.PERMISSION_REQUEST_CODE
 import org.gnu.anastasis.ui.R
+
+private const val PERMISSION = Manifest.permission.READ_PHONE_STATE
 
 class SmsFragment : Fragment() {
 
@@ -46,9 +55,50 @@ class SmsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        smsView.editText?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) checkPerm()
+        }
         saveSmsButton.setOnClickListener {
             viewModel.smsChecked.value = true
             findNavController().popBackStack()
+        }
+    }
+
+    private fun checkPerm() = when {
+        ContextCompat.checkSelfPermission(requireContext(), PERMISSION)
+                == PERMISSION_GRANTED -> {
+            // You can use the API that requires the permission.
+            fillPhoneNumber()
+        }
+        shouldShowRequestPermissionRationale(PERMISSION) -> {
+            // In an educational UI, explain to the user why your app requires this
+            // permission for a specific feature to behave as expected. In this UI,
+            // include a "cancel" or "no thanks" button that allows the user to
+            // continue using your app without granting the permission.
+        }
+        else -> {
+            // You can directly ask for the permission.
+            requestPermissions(arrayOf(PERMISSION), PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() &&
+            grantResults[0] == PERMISSION_GRANTED
+        ) checkPerm()
+    }
+
+    @SuppressLint("HardwareIds")
+    @RequiresPermission(PERMISSION)
+    private fun fillPhoneNumber() {
+        val telephonyService = requireContext().getSystemService(TelephonyManager::class.java)
+        telephonyService?.line1Number?.let { phoneNumber ->
+            smsView?.editText?.setText(phoneNumber)
+            smsView?.editText?.setSelection(phoneNumber.length)
         }
     }
 

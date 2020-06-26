@@ -24,6 +24,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity.*
 
+internal const val PERMISSION_REQUEST_CODE = 1
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var nav: NavController
