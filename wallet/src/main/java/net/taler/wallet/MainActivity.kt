@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -48,6 +49,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import net.taler.common.isOnline
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
@@ -144,6 +146,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     }
 
     private fun handleTalerUri(url: String, from: String) {
+        val uri = Uri.parse(url)
+        if (uri.fragment != null && !isOnline()) {
+            connectToWifi(this, uri.fragment!!)
+        }
         when {
             url.toLowerCase(ROOT).startsWith("taler://pay/") -> {
                 Log.v(TAG, "navigating!")

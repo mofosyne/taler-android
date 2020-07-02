@@ -18,6 +18,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="net.taler.wallet">
 
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.NFC" />
 
     <uses-feature

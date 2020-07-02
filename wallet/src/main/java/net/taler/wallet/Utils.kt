@@ -17,6 +17,18 @@
 package net.taler.wallet
 
 import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSpecifier
+import android.os.Build.VERSION.SDK_INT
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
+import androidx.annotation.RequiresApi
 import com.google.zxing.integration.android.IntentIntegrator
 
 fun scanQrCode(activity: Activity) {
@@ -25,6 +37,57 @@ fun scanQrCode(activity: Activity) {
         setBeepEnabled(true)
         setOrientationLocked(false)
     }.initiateScan(listOf(IntentIntegrator.QR_CODE))
+}
+
+fun connectToWifi(context: Context, ssid: String) {
+    if (SDK_INT >= 29) {
+        connectToWifi29(context, ssid)
+    } else {
+        connectToWifiDeprecated(context, ssid)
+    }
+}
+
+@RequiresApi(29)
+private fun connectToWifi29(context: Context, ssid: String) {
+    val wifiManager = context.getSystemService(WifiManager::class.java)
+    if (wifiManager?.isWifiEnabled == false) {
+        // we are not allowed to enable the WiFi anymore, so show at least a hint about it
+        Toast.makeText(context, R.string.wifi_disabled_error, LENGTH_LONG).show()
+    }
+
+    val specifier = WifiNetworkSpecifier.Builder()
+        .setSsid(ssid)
+        .build()
+    val request = NetworkRequest.Builder()
+        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        .setNetworkSpecifier(specifier)
+        .build()
+    val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
+    connectivityManager?.requestNetwork(request, NetworkCallback())
+}
+
+@Suppress("DEPRECATION")
+private fun connectToWifiDeprecated(context: Context, ssid: String) {
+    context.getSystemService(WifiManager::class.java)?.apply {
+        if (!isWifiEnabled) {
+            val enabledResult = setWifiEnabled(true)
+            while (enabledResult && !isWifiEnabled) Thread.sleep(25)
+        }
+        val wifiConfig = WifiConfiguration().apply {
+            SSID = "\"$ssid\""
+            allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+        }
+        addNetwork(wifiConfig).let { netId ->
+            if (netId == -1) {
+                val str = context.getString(R.string.wifi_connect_error, ssid)
+                Toast.makeText(context, str, LENGTH_LONG).show()
+            } else {
+                disconnect()
+                enableNetwork(netId, true)
+                reconnect()
+            }
+        }
+    }
 }
 
 fun cleanExchange(exchange: String) = exchange.let {
