@@ -49,4 +49,13 @@
         android:visibility="invisible"
         tools:visibility="visible" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addExchangeFab"
+        style="@style/FabStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/exchange_list_add"
+        android:src="@drawable/ic_baseline_add"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -21,6 +21,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.taler.common.Event
+import net.taler.common.toEvent
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
@@ -36,13 +38,20 @@ class ExchangeManager(
     private val mExchanges = MutableLiveData<List<ExchangeItem>>()
     val exchanges: LiveData<List<ExchangeItem>> get() = list()
 
+    private val mAddError = MutableLiveData<Event<Boolean>>()
+    val addError: LiveData<Event<Boolean>> = mAddError
+
     fun add(exchangeUrl: String) {
+        mProgress.value = true
         val args = JSONObject().apply { put("exchangeBaseUrl", exchangeUrl) }
         walletBackendApi.sendRequest("addExchange", args) { isError, result ->
+            mProgress.value = false
             if (isError) {
-                Log.e(TAG, "add Error: $result")
+                Log.e(TAG, "$result")
+                mAddError.value = true.toEvent()
             } else {
-                Log.e(TAG, "add Success: $result")
+                Log.d(TAG, "Exchange $exchangeUrl added")
+                list()
             }
         }
     }
@@ -54,7 +63,7 @@ class ExchangeManager(
                 throw AssertionError("Wallet core failed to return exchanges!")
             } else {
                 val exchanges: List<ExchangeItem> = mapper.readValue(result.getString("exchanges"))
-                Log.e(TAG, "list Success: $exchanges")
+                Log.d(TAG, "Exchange list: $exchanges")
                 mProgress.value = false
                 mExchanges.value = exchanges
             }

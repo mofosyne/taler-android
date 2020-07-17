@@ -20,12 +20,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_exchange_list.*
+import net.taler.common.EventObserver
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
@@ -49,20 +52,34 @@ class ExchangeListFragment : Fragment() {
             adapter = exchangeAdapter
             addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
         }
+        addExchangeFab.setOnClickListener {
+            AddExchangeDialogFragment().show(parentFragmentManager, "ADD_EXCHANGE")
+        }
 
         exchangeManager.progress.observe(viewLifecycleOwner, Observer { show ->
             if (show) progressBar.fadeIn() else progressBar.fadeOut()
         })
         exchangeManager.exchanges.observe(viewLifecycleOwner, Observer { exchanges ->
-            exchangeAdapter.update(exchanges)
-            if (exchanges.isEmpty()) {
-                emptyState.fadeIn()
-                list.fadeOut()
-            } else {
-                emptyState.fadeOut()
-                list.fadeIn()
-            }
+            onExchangeUpdate(exchanges)
         })
+        exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
+            if (error) onAddExchangeFailed()
+        })
+    }
+
+    private fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
+        exchangeAdapter.update(exchanges)
+        if (exchanges.isEmpty()) {
+            emptyState.fadeIn()
+            list.fadeOut()
+        } else {
+            emptyState.fadeOut()
+            list.fadeIn()
+        }
+    }
+
+    private fun onAddExchangeFailed() {
+        Toast.makeText(requireContext(), R.string.exchange_add_error, LENGTH_LONG).show()
     }
 
 }

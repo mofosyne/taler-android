@@ -110,7 +110,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showResetDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext(), R.style.DialogTheme)
             .setMessage("Do you really want to reset the wallet and lose all coins and purchases?")
             .setPositiveButton("Reset") { _, _ ->
                 model.dangerouslyReset()
