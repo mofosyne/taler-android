@@ -33,6 +33,7 @@ import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
+import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
@@ -102,6 +103,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val transactionManager: TransactionManager =
         TransactionManager(walletBackendApi, viewModelScope, mapper)
     val refundManager = RefundManager(walletBackendApi)
+    val exchangeManager: ExchangeManager = ExchangeManager(walletBackendApi, mapper)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent

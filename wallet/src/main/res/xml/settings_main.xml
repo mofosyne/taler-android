@@ -18,6 +18,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <Preference
+        app:fragment="net.taler.wallet.exchanges.ExchangeListFragment"
+        app:icon="@drawable/ic_account_balance"
+        app:key="pref_exchanges"
+        app:summary="@string/exchange_settings_summary"
+        app:title="@string/exchange_settings_title" />
+
+    <Preference
         app:fragment="net.taler.wallet.settings.BackupSettingsFragment"
         app:icon="@drawable/ic_baseline_backup"
         app:isPreferenceVisible="false"
