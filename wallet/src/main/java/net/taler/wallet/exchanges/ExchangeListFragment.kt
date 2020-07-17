@@ -25,8 +25,9 @@ import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import kotlinx.android.synthetic.main.fragment_exchange_list.*
 import net.taler.common.EventObserver
 import net.taler.common.fadeIn
@@ -34,11 +35,11 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 
-class ExchangeListFragment : Fragment() {
+class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager by lazy { model.exchangeManager }
-    private val exchangeAdapter by lazy { ExchangeAdapter() }
+    private val exchangeAdapter by lazy { ExchangeAdapter(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +51,7 @@ class ExchangeListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         list.apply {
             adapter = exchangeAdapter
-            addItemDecoration(DividerItemDecoration(context, LinearLayoutManager.VERTICAL))
+            addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
         addExchangeFab.setOnClickListener {
             AddExchangeDialogFragment().show(parentFragmentManager, "ADD_EXCHANGE")
@@ -80,6 +81,11 @@ class ExchangeListFragment : Fragment() {
 
     private fun onAddExchangeFailed() {
         Toast.makeText(requireContext(), R.string.exchange_add_error, LENGTH_LONG).show()
+    }
+
+    override fun onManualWithdraw(item: ExchangeItem) {
+        exchangeManager.withdrawalExchange = item
+        findNavController().navigate(R.id.action_nav_settings_exchanges_to_nav_exchange_manual_withdrawal)
     }
 
 }

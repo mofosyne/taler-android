@@ -159,6 +159,7 @@ data class Amount(
 
     @Throws(AmountOverflowException::class)
     operator fun times(factor: Int): Amount {
+        if (factor == 0) return zero(currency)
         var result = this
         for (i in 1 until factor) result += this
         return result

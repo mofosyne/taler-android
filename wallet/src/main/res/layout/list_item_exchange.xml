@@ -21,16 +21,17 @@
     android:layout_height="wrap_content"
     android:background="@drawable/selectable_background"
     android:foreground="?attr/selectableItemBackground"
-    android:padding="16dp">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/urlView"
         style="@style/TransactionTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/overflowIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="exchange.test.taler.net" />
@@ -40,11 +41,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/overflowIcon"
         app:layout_constraintStart_toStartOf="@+id/urlView"
         app:layout_constraintTop_toBottomOf="@+id/urlView"
         tools:text="@string/exchange_list_currency" />
+
+    <ImageButton
+        android:id="@+id/overflowIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/menu"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_more_vert" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

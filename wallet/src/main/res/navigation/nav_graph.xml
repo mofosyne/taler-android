@@ -69,7 +69,16 @@
     <fragment
         android:id="@+id/nav_settings_exchanges"
         android:name="net.taler.wallet.exchanges.ExchangeListFragment"
-        android:label="@string/exchange_list_title"/>
+        android:label="@string/exchange_list_title">
+        <action
+            android:id="@+id/action_nav_settings_exchanges_to_nav_exchange_manual_withdrawal"
+            app:destination="@id/nav_exchange_manual_withdrawal" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_exchange_manual_withdrawal"
+        android:name="net.taler.wallet.exchanges.ManualWithdrawFragment"
+        android:label="@string/withdraw_title"/>
 
     <fragment
         android:id="@+id/nav_settings_backup"

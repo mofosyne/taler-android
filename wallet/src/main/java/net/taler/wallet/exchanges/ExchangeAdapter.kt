@@ -19,8 +19,11 @@ package net.taler.wallet.exchanges
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Adapter
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.exchanges.ExchangeAdapter.ExchangeItemViewHolder
@@ -29,9 +32,16 @@ data class ExchangeItem(
     val exchangeBaseUrl: String,
     val currency: String,
     val paytoUris: List<String>
-)
+) {
+    val name: String get() = cleanExchange(exchangeBaseUrl)
+}
 
-internal class ExchangeAdapter : RecyclerView.Adapter<ExchangeItemViewHolder>() {
+interface ExchangeClickListener {
+    fun onManualWithdraw(item: ExchangeItem)
+}
+
+internal class ExchangeAdapter(private val listener: ExchangeClickListener) :
+    Adapter<ExchangeItemViewHolder>() {
 
     private val items = ArrayList<ExchangeItem>()
 
@@ -57,9 +67,26 @@ internal class ExchangeAdapter : RecyclerView.Adapter<ExchangeItemViewHolder>() 
         private val context = v.context
         private val urlView: TextView = v.findViewById(R.id.urlView)
         private val currencyView: TextView = v.findViewById(R.id.currencyView)
+        private val overflowIcon: ImageButton = v.findViewById(R.id.overflowIcon)
+
         fun bind(item: ExchangeItem) {
-            urlView.text = cleanExchange(item.exchangeBaseUrl)
+            urlView.text = item.name
             currencyView.text = context.getString(R.string.exchange_list_currency, item.currency)
+            overflowIcon.setOnClickListener { openMenu(overflowIcon, item) }
+        }
+
+        private fun openMenu(anchor: View, item: ExchangeItem) = PopupMenu(context, anchor).apply {
+            inflate(R.menu.exchange)
+            setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_manual_withdrawal -> {
+                        listener.onManualWithdraw(item)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            show()
         }
     }
 

@@ -38,6 +38,8 @@ import android.text.format.DateUtils.getRelativeTimeSpanString
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -59,6 +61,11 @@ fun View.fadeOut(endAction: () -> Unit = {}) {
         alpha = 1f
         endAction.invoke()
     }.start()
+}
+
+fun View.hideKeyboard() {
+    getSystemService(context, InputMethodManager::class.java)
+        ?.hideSoftInputFromWindow(windowToken, 0)
 }
 
 fun assertUiThread() {

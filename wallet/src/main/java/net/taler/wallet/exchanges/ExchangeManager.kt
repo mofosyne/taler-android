@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.taler.common.Amount
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
@@ -41,6 +42,23 @@ class ExchangeManager(
     private val mAddError = MutableLiveData<Event<Boolean>>()
     val addError: LiveData<Event<Boolean>> = mAddError
 
+    var withdrawalExchange: ExchangeItem? = null
+
+    private fun list(): LiveData<List<ExchangeItem>> {
+        mProgress.value = true
+        walletBackendApi.sendRequest("listExchanges", JSONObject()) { isError, result ->
+            if (isError) {
+                throw AssertionError("Wallet core failed to return exchanges!")
+            } else {
+                val exchanges: List<ExchangeItem> = mapper.readValue(result.getString("exchanges"))
+                Log.d(TAG, "Exchange list: $exchanges")
+                mProgress.value = false
+                mExchanges.value = exchanges
+            }
+        }
+        return mExchanges
+    }
+
     fun add(exchangeUrl: String) {
         mProgress.value = true
         val args = JSONObject().apply { put("exchangeBaseUrl", exchangeUrl) }
@@ -56,19 +74,18 @@ class ExchangeManager(
         }
     }
 
-    private fun list(): LiveData<List<ExchangeItem>> {
-        mProgress.value = true
-        walletBackendApi.sendRequest("listExchanges", JSONObject()) { isError, result ->
+    fun getWithdrawalDetails(exchangeItem: ExchangeItem, amount: Amount) {
+        val args = JSONObject().apply {
+            put("exchangeBaseUrl", exchangeItem.exchangeBaseUrl)
+            put("amount", amount.toJSONString())
+        }
+        walletBackendApi.sendRequest("getWithdrawalDetailsForAmount", args) { isError, result ->
             if (isError) {
-                throw AssertionError("Wallet core failed to return exchanges!")
+                Log.e(TAG, "$result")
             } else {
-                val exchanges: List<ExchangeItem> = mapper.readValue(result.getString("exchanges"))
-                Log.d(TAG, "Exchange list: $exchanges")
-                mProgress.value = false
-                mExchanges.value = exchanges
+                Log.e(TAG, "$result")
             }
         }
-        return mExchanges
     }
 
 }
