@@ -158,7 +158,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
             url.toLowerCase(ROOT).startsWith("taler://withdraw/") -> {
                 Log.v(TAG, "navigating!")
-                nav.navigate(R.id.action_nav_main_to_promptWithdraw)
+                // there's more than one entry point, so use global action
+                nav.navigate(R.id.action_global_promptWithdraw)
                 model.withdrawManager.getWithdrawalInfo(url)
             }
             url.toLowerCase(ROOT).startsWith("taler://refund/") -> {

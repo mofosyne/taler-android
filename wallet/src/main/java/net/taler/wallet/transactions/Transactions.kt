@@ -33,6 +33,8 @@ import net.taler.common.ContractProduct
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
+import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
 @JsonSubTypes(
@@ -80,8 +82,7 @@ class TransactionWithdrawal(
     timestamp: Timestamp,
     pending: Boolean,
     val exchangeBaseUrl: String,
-    val confirmed: Boolean,
-    val bankConfirmationUrl: String?,
+    val withdrawalDetails: WithdrawalDetails,
     error: TransactionError? = null,
     amountRaw: Amount,
     amountEffective: Amount
@@ -91,6 +92,41 @@ class TransactionWithdrawal(
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
     override val generalTitleRes = R.string.withdraw_title
+    val confirmed: Boolean =
+        withdrawalDetails is TalerBankIntegrationApi && withdrawalDetails.confirmed
+}
+
+@JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
+@JsonSubTypes(
+    Type(value = TalerBankIntegrationApi::class, name = "taler-bank-integration-api"),
+    Type(value = ManualTransfer::class, name = "manual-transfer")
+)
+sealed class WithdrawalDetails {
+    @JsonTypeName("manual-transfer")
+    class ManualTransfer(
+        /**
+         * Payto URIs that the exchange supports.
+         *
+         * Already contains the amount and message.
+         */
+        val exchangePaytoUris: List<String>
+    ) : WithdrawalDetails()
+
+    @JsonTypeName("taler-bank-integration-api")
+    class TalerBankIntegrationApi(
+        /**
+         * Set to true if the bank has confirmed the withdrawal, false if not.
+         * An unconfirmed withdrawal usually requires user-input
+         * and should be highlighted in the UI.
+         * See also bankConfirmationUrl below.
+         */
+        val confirmed: Boolean,
+
+        /**
+         * If the withdrawal is unconfirmed, this can include a URL for user-initiated confirmation.
+         */
+        val bankConfirmationUrl: String?
+    ) : WithdrawalDetails()
 }
 
 @JsonTypeName("payment")

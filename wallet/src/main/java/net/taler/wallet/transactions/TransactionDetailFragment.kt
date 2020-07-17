@@ -41,6 +41,7 @@ import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 
 class TransactionDetailFragment : Fragment() {
 
@@ -95,9 +96,9 @@ class TransactionDetailFragment : Fragment() {
     private fun bind(t: TransactionWithdrawal) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
         effectiveAmountView.text = t.amountEffective.toString()
-        if (t.pending && !t.confirmed && t.bankConfirmationUrl != null) {
+        if (t.pending && t.withdrawalDetails is TalerBankIntegrationApi && !t.confirmed && t.withdrawalDetails.bankConfirmationUrl != null) {
             val i = Intent().apply {
-                data = Uri.parse(t.bankConfirmationUrl)
+                data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
             }
             if (i.isSafe(requireContext())) {
                 confirmWithdrawalButton.setOnClickListener { startActivity(i) }

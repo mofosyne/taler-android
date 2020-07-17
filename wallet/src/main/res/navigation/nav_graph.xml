@@ -29,9 +29,6 @@
             android:id="@+id/action_nav_main_to_promptPayment"
             app:destination="@id/promptPayment" />
         <action
-            android:id="@+id/action_nav_main_to_promptWithdraw"
-            app:destination="@id/promptWithdraw" />
-        <action
             android:id="@+id/action_nav_main_to_nav_transactions"
             app:destination="@id/nav_transactions" />
         <action
@@ -163,6 +160,10 @@
         android:name="net.taler.wallet.withdraw.ErrorFragment"
         android:label="@string/nav_error"
         tools:layout="@layout/fragment_error" />
+
+    <action
+        android:id="@+id/action_global_promptWithdraw"
+        app:destination="@id/promptWithdraw" />
 
     <action
         android:id="@+id/action_global_promptPayment"
