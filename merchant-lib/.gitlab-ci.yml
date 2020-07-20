@@ -1,0 +1,11 @@
+merchant_lib_test:
+  stage: test
+  only:
+    changes:
+      - merchant-lib/**/*
+      - build.gradle
+  script: ./gradlew :merchant-lib:check
+  artifacts:
+    paths:
+      - merchant-lib/build/reports/lint-results.html
+    expire_in: 1 week

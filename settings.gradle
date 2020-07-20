@@ -1,3 +1,4 @@
 include ':cashier', ':merchant-terminal', ':wallet'
 include ':taler-kotlin-common'
+include ':merchant-lib'
 include ':anastasis-ui'

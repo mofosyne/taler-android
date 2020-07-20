@@ -34,9 +34,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.merchantlib.ConfigResponse
+import net.taler.merchantlib.MerchantApi
 import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.R
 import org.json.JSONObject
+
+private const val VERSION = "0:0:0"
 
 private const val SETTINGS_NAME = "taler-merchant-terminal"
 
@@ -60,6 +64,7 @@ interface ConfigurationReceiver {
 class ConfigManager(
     private val context: Context,
     private val scope: CoroutineScope,
+    private val api: MerchantApi,
     private val mapper: ObjectMapper,
     private val queue: RequestQueue
 ) {
@@ -114,25 +119,27 @@ class ConfigManager(
             return
         }
 
-        val params = mapOf("instance" to merchantConfig.instance)
-        val req = MerchantRequest(GET, merchantConfig, "config", params, null,
-            Listener { onMerchantConfigReceived(config, json, merchantConfig, it) },
-            LogErrorListener { onNetworkError(it) }
-        )
-        queue.add(req)
+        scope.launch(Dispatchers.IO) {
+            val configResponse = api.getConfig(merchantConfig.baseUrl, merchantConfig.apiKey)
+            onMerchantConfigReceived(config, json, merchantConfig, configResponse)
+        }
     }
 
     private fun onMerchantConfigReceived(
         newConfig: Config?,
         configJson: JSONObject,
         merchantConfig: MerchantConfig,
-        json: JSONObject
+        configResponse: ConfigResponse
     ) = scope.launch(Dispatchers.Default) {
-        val currency = json.getString("currency")
-
+        // TODO do real matching
+        if (VERSION != configResponse.version) {
+            val str = context.getString(R.string.config_error_version)
+            mConfigUpdateResult.postValue(ConfigUpdateResult.Error(str))
+            return@launch
+        }
         for (receiver in configurationReceivers) {
             val result = try {
-                receiver.onConfigurationReceived(configJson, currency)
+                receiver.onConfigurationReceived(configJson, configResponse.currency)
             } catch (e: Exception) {
                 Log.e(TAG, "Error handling configuration by ${receiver::class.java.simpleName}", e)
                 context.getString(R.string.config_error_unknown)
@@ -146,8 +153,8 @@ class ConfigManager(
             config = it
             saveConfig(it)
         }
-        this@ConfigManager.merchantConfig = merchantConfig.copy(currency = currency)
-        mConfigUpdateResult.postValue(ConfigUpdateResult.Success(currency))
+        this@ConfigManager.merchantConfig = merchantConfig.copy(currency = configResponse.currency)
+        mConfigUpdateResult.postValue(ConfigUpdateResult.Success(configResponse.currency))
     }
 
     fun forgetPassword() {
