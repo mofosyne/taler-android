@@ -92,8 +92,11 @@ class TransactionWithdrawal(
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
     override val generalTitleRes = R.string.withdraw_title
-    val confirmed: Boolean =
-        withdrawalDetails is TalerBankIntegrationApi && withdrawalDetails.confirmed
+    val confirmed: Boolean
+        get() = !pending && (
+                (withdrawalDetails is TalerBankIntegrationApi && withdrawalDetails.confirmed) ||
+                        withdrawalDetails is ManualTransfer
+                )
 }
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
