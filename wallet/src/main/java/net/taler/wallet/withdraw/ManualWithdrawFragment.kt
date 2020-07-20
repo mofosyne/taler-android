@@ -14,8 +14,9 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.exchanges
+package net.taler.wallet.withdraw
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,12 +31,14 @@ import net.taler.common.hideKeyboard
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.scanQrCode
+import java.util.Locale
 
 class ManualWithdrawFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager by lazy { model.exchangeManager }
     private val exchangeItem by lazy { requireNotNull(exchangeManager.withdrawalExchange) }
+    private val withdrawManager by lazy { model.withdrawManager }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,14 +50,17 @@ class ManualWithdrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         qrCodeButton.setOnClickListener { scanQrCode(requireActivity()) }
         currencyView.text = exchangeItem.currency
+        val paymentOptions = exchangeItem.paytoUris.mapNotNull {paytoUri ->
+            Uri.parse(paytoUri).authority?.toUpperCase(Locale.getDefault())
+        }.joinToString(separator = "\n", prefix = "• ")
         paymentOptionsLabel.text =
-            getString(R.string.withdraw_manual_payment_options, exchangeItem.name)
+            getString(R.string.withdraw_manual_payment_options, exchangeItem.name, paymentOptions)
         checkFeesButton.setOnClickListener {
             val value = amountView.text.toString().toLong()
             val amount = Amount(exchangeItem.currency, value, 0)
             amountView.hideKeyboard()
             Toast.makeText(view.context, "Not implemented: $amount", LENGTH_SHORT).show()
-            exchangeManager.getWithdrawalDetails(exchangeItem, amount)
+            withdrawManager.getWithdrawalDetails(exchangeItem, amount)
         }
     }
 

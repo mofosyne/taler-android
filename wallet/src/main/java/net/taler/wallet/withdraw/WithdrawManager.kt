@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import net.taler.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 import org.json.JSONObject
 
@@ -60,6 +61,21 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
         walletBackendApi.sendRequest("withdrawTestkudos", null) { _, _ ->
             testWithdrawalInProgress.postValue(false)
+        }
+    }
+
+    fun getWithdrawalDetails(exchangeItem: ExchangeItem, amount: Amount) {
+        val args = JSONObject().apply {
+            put("exchangeBaseUrl", exchangeItem.exchangeBaseUrl)
+            put("amount", amount.toJSONString())
+        }
+        walletBackendApi.sendRequest("getWithdrawalDetailsForAmount", args) { isError, result ->
+            // {"rawAmount":"TESTKUDOS:5","effectiveAmount":"TESTKUDOS:4.8","paytoUris":["payto:\/\/x-taler-bank\/bank.test.taler.net\/Exchange"],"tosAccepted":false}
+            if (isError) {
+                Log.e(TAG, "$result")
+            } else {
+                Log.e(TAG, "$result")
+            }
         }
     }
 

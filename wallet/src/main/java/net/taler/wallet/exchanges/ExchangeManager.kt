@@ -74,18 +74,4 @@ class ExchangeManager(
         }
     }
 
-    fun getWithdrawalDetails(exchangeItem: ExchangeItem, amount: Amount) {
-        val args = JSONObject().apply {
-            put("exchangeBaseUrl", exchangeItem.exchangeBaseUrl)
-            put("amount", amount.toJSONString())
-        }
-        walletBackendApi.sendRequest("getWithdrawalDetailsForAmount", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "$result")
-            } else {
-                Log.e(TAG, "$result")
-            }
-        }
-    }
-
 }
