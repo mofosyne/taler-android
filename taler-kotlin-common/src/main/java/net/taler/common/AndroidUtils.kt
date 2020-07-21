@@ -112,3 +112,12 @@ fun Long.toShortDate(context: Context): CharSequence {
     val flags = FORMAT_SHOW_DATE or FORMAT_SHOW_YEAR or FORMAT_ABBREV_ALL
     return formatDateTime(context, this, flags)
 }
+
+fun Version.getIncompatibleStringOrNull(context: Context, otherVersion: String): String? {
+    val other = Version.parse(otherVersion) ?: return context.getString(R.string.version_invalid)
+    val match = compare(other) ?: return context.getString(R.string.version_invalid)
+    if (match.compatible) return null
+    if (match.currentCmp < 0) return context.getString(R.string.version_too_old)
+    if (match.currentCmp > 0) return context.getString(R.string.version_too_new)
+    throw AssertionError("$this == $other")
+}

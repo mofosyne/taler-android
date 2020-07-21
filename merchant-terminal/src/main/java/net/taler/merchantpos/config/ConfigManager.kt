@@ -34,13 +34,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.common.Version
+import net.taler.common.getIncompatibleStringOrNull
 import net.taler.merchantlib.ConfigResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.R
 import org.json.JSONObject
-
-private const val VERSION = "0:0:0"
 
 private const val SETTINGS_NAME = "taler-merchant-terminal"
 
@@ -51,6 +51,8 @@ private const val SETTINGS_PASSWORD = "password"
 internal const val CONFIG_URL_DEMO = "https://docs.taler.net/_static/sample-pos-config.json"
 internal const val CONFIG_USERNAME_DEMO = ""
 internal const val CONFIG_PASSWORD_DEMO = ""
+
+private val VERSION = Version(1, 0, 0)
 
 private val TAG = ConfigManager::class.java.simpleName
 
@@ -131,10 +133,9 @@ class ConfigManager(
         merchantConfig: MerchantConfig,
         configResponse: ConfigResponse
     ) = scope.launch(Dispatchers.Default) {
-        // TODO do real matching
-        if (VERSION != configResponse.version) {
-            val str = context.getString(R.string.config_error_version)
-            mConfigUpdateResult.postValue(ConfigUpdateResult.Error(str))
+        val versionIncompatible = VERSION.getIncompatibleStringOrNull(context, configResponse.version)
+        if (versionIncompatible != null) {
+            mConfigUpdateResult.postValue(ConfigUpdateResult.Error(versionIncompatible))
             return@launch
         }
         for (receiver in configurationReceivers) {

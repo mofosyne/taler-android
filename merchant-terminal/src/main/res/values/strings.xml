@@ -22,7 +22,6 @@
     <string name="config_password">Password</string>
     <string name="config_ok">Fetch configuration</string>
     <string name="config_auth_error">Error: Invalid username or password</string>
-    <string name="config_error_version">Error: Incompatible backend version</string>
     <string name="config_error_network">Error: Could not connect to configuration server</string>
     <string name="config_error_category">Error: No valid product category found</string>
     <string name="config_error_malformed">Error: The configuration JSON is malformed</string>
