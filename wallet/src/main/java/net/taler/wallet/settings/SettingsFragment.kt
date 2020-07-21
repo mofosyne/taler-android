@@ -27,6 +27,7 @@ import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.toRelativeTime
+import net.taler.wallet.BuildConfig.FLAVOR
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
@@ -82,7 +83,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
             prefDevMode.isChecked = enabled
             if (enabled) {
-                prefVersionApp.summary = "$VERSION_NAME ($VERSION_CODE)"
+                prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
                 prefVersionCore.summary = WALLET_CORE_VERSION
                 model.exchangeVersion?.let { prefVersionExchange.summary = it }
                 model.merchantVersion?.let { prefVersionMerchant.summary = it }

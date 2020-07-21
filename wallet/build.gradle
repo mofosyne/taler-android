@@ -25,6 +25,18 @@ plugins {
 
 def walletCoreVersion = "v0.7.1-dev.10"
 
+static def versionCodeEpoch() {
+    return (new Date().getTime() / 1000).toInteger()
+}
+def gitCommit = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short=7', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 android {
     compileSdkVersion 29
     //noinspection GradleDependency
@@ -43,6 +55,22 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "distributionChannel"
+    productFlavors {
+        fdroid {
+            dimension "distributionChannel"
+            applicationIdSuffix ".fdroid"
+        }
+        google {
+            dimension "distributionChannel"
+        }
+        nightly {
+            dimension "distributionChannel"
+            applicationIdSuffix ".nightly"
+            versionCode versionCodeEpoch()
+            versionNameSuffix " ($gitCommit)"
         }
     }
 
