@@ -21,17 +21,13 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.http.HttpHeaders.Authorization
 
 class MerchantApi(private val httpClient: HttpClient) {
 
     constructor() : this(getDefaultHttpClient())
 
-    suspend fun getConfig(baseUrl: String, apiKey: String = "sandbox"): ConfigResponse {
-        return httpClient.get("$baseUrl/config") {
-            header(Authorization, "ApiKey $apiKey")
-        }
+    suspend fun getConfig(baseUrl: String): ConfigResponse {
+        return httpClient.get("$baseUrl/config")
     }
 
 }

@@ -122,7 +122,7 @@ class ConfigManager(
         }
 
         scope.launch(Dispatchers.IO) {
-            val configResponse = api.getConfig(merchantConfig.baseUrl, merchantConfig.apiKey)
+            val configResponse = api.getConfig(merchantConfig.baseUrl)
             onMerchantConfigReceived(config, json, merchantConfig, configResponse)
         }
     }
