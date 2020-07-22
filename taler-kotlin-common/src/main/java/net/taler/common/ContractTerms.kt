@@ -23,13 +23,20 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.taler.common.TalerUtils.getLocalizedString
 
+@Serializable
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class ContractTerms(
     val summary: String,
-    val products: List<ContractProduct>,
-    val amount: Amount
+    @SerialName("summary_i18n")
+    val summaryI18n: Map<String, String>? = null,
+    val amount: Amount,
+    @SerialName("fulfillment_url")
+    val fulfillmentUrl: String,
+    val products: List<ContractProduct>
 )
 
 @JsonInclude(NON_NULL)
@@ -52,13 +59,17 @@ abstract class Product {
         get() = getLocalizedString(descriptionI18n, description)
 }
 
+@Serializable
 data class ContractProduct(
-    override val productId: String?,
+    @SerialName("product_id")
+    override val productId: String? = null,
     override val description: String,
-    override val descriptionI18n: Map<String, String>?,
+    @SerialName("description_i18n")
+    override val descriptionI18n: Map<String, String>? = null,
     override val price: Amount,
-    override val location: String?,
-    override val image: String?,
+    @SerialName("delivery_location")
+    override val location: String? = null,
+    override val image: String? = null,
     val quantity: Int
 ) : Product() {
     @get:JsonIgnore

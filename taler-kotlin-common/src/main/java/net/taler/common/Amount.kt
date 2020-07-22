@@ -26,6 +26,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 import org.json.JSONObject
 import java.lang.Math.floorDiv
 import kotlin.math.pow
@@ -34,6 +39,7 @@ import kotlin.math.roundToInt
 class AmountParserException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 class AmountOverflowException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 
+@Serializable(with = KotlinXAmountSerializer::class)
 @JsonSerialize(using = AmountSerializer::class)
 @JsonDeserialize(using = AmountDeserializer::class)
 data class Amount(
@@ -209,6 +215,17 @@ data class Amount(
         }
     }
 
+}
+
+@Serializer(forClass = Amount::class)
+object KotlinXAmountSerializer: KSerializer<Amount> {
+    override fun serialize(encoder: Encoder, value: Amount) {
+        encoder.encodeString(value.toJSONString())
+    }
+
+    override fun deserialize(decoder: Decoder): Amount {
+        return Amount.fromJSONString(decoder.decodeString())
+    }
 }
 
 class AmountSerializer : StdSerializer<Amount>(Amount::class.java) {
