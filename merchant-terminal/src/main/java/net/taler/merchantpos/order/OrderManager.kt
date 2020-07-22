@@ -113,7 +113,7 @@ class OrderManager(
 
     @UiThread
     internal fun getOrder(orderId: Int): LiveOrder {
-        return orders[orderId] ?: throw IllegalArgumentException()
+        return orders[orderId] ?: throw IllegalArgumentException("Order not found: $orderId")
     }
 
     @UiThread

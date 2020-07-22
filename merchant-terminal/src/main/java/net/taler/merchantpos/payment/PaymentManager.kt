@@ -16,41 +16,32 @@
 
 package net.taler.merchantpos.payment
 
+import android.content.Context
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.android.volley.Request.Method.GET
-import com.android.volley.Request.Method.POST
-import com.android.volley.RequestQueue
-import com.android.volley.Response.Listener
-import com.fasterxml.jackson.databind.ObjectMapper
-import net.taler.common.Timestamp
-import net.taler.common.now
-import net.taler.merchantpos.LogErrorListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import net.taler.merchantlib.CheckPaymentResponse
+import net.taler.merchantlib.MerchantApi
+import net.taler.merchantlib.PostOrderResponse
+import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigManager
-import net.taler.merchantpos.config.MerchantRequest
 import net.taler.merchantpos.order.Order
-import org.json.JSONArray
-import org.json.JSONObject
-import java.net.URLEncoder
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
 private val TIMEOUT = MINUTES.toMillis(2)
 private val CHECK_INTERVAL = SECONDS.toMillis(1)
-private const val FULFILLMENT_PREFIX = "taler://fulfillment-success/"
 
 class PaymentManager(
+    private val context: Context,
     private val configManager: ConfigManager,
-    private val queue: RequestQueue,
-    private val mapper: ObjectMapper
+    private val scope: CoroutineScope,
+    private val api: MerchantApi
 ) {
-
-    companion object {
-        val TAG = PaymentManager::class.java.simpleName
-    }
 
     private val mPayment = MutableLiveData<Payment>()
     val payment: LiveData<Payment> = mPayment
@@ -63,93 +54,51 @@ class PaymentManager(
         }
 
         override fun onFinish() {
-            payment.value?.copy(error = true)?.let { mPayment.value = it }
+            val str = context.getString(R.string.error_timeout)
+            payment.value?.copy(error = str)?.let { mPayment.value = it }
         }
     }
 
     @UiThread
     fun createPayment(order: Order) {
         val merchantConfig = configManager.merchantConfig!!
-
-        val currency = merchantConfig.currency!!
-        val summary = order.summary
-        val summaryI18n = order.summaryI18n
-        val now = now()
-        val deadline = Timestamp(now + MINUTES.toMillis(120))
-
-        mPayment.value = Payment(order, summary, currency)
-
-        val fulfillmentId = "${now}-${order.hashCode()}"
-        val fulfillmentUrl =
-            "${FULFILLMENT_PREFIX}${URLEncoder.encode(summary, "UTF-8")}#$fulfillmentId"
-        val body = JSONObject().apply {
-            put("order", JSONObject().apply {
-                put("amount", order.total.toJSONString())
-                put("summary", summary)
-                if (summaryI18n != null) put("summary_i18n", order.summaryI18n)
-                // fulfillment_url needs to be unique per order
-                put("fulfillment_url", fulfillmentUrl)
-                put("instance", "default")
-                put("wire_transfer_deadline", JSONObject(mapper.writeValueAsString(deadline)))
-                put("refund_deadline", JSONObject(mapper.writeValueAsString(deadline)))
-                put("products", order.getProductsJson())
-            })
+        mPayment.value = Payment(order, order.summary, merchantConfig.currency!!)
+        scope.launch(Dispatchers.IO) {
+            val response = api.postOrder(merchantConfig.convert(), order.toContractTerms())
+            response.handle(::onNetworkError, ::onOrderCreated)
         }
-
-        Log.d(TAG, body.toString(4))
-
-        val req = MerchantRequest(POST, merchantConfig, "order", null, body,
-            Listener { onOrderCreated(it) },
-            LogErrorListener { onNetworkError() }
-        )
-        queue.add(req)
     }
 
-    private fun Order.getProductsJson(): JSONArray {
-        val contractProducts = products.map { it.toContractProduct() }
-        val productsStr = mapper.writeValueAsString(contractProducts)
-        return JSONArray(productsStr)
-    }
-
-    private fun onOrderCreated(orderResponse: JSONObject) {
-        val orderId = orderResponse.getString("order_id")
-        mPayment.value = mPayment.value!!.copy(orderId = orderId)
+    private fun onOrderCreated(orderResponse: PostOrderResponse) = scope.launch(Dispatchers.Main) {
+        mPayment.value = mPayment.value!!.copy(orderId = orderResponse.orderId)
         checkTimer.start()
     }
 
     private fun checkPayment(orderId: String) {
         val merchantConfig = configManager.merchantConfig!!
-        val params = mapOf(
-            "order_id" to orderId,
-            "instance" to merchantConfig.instance
-        )
-
-        val req = MerchantRequest(GET, merchantConfig, "check-payment", params, null,
-            Listener { onPaymentChecked(it) },
-            LogErrorListener { onNetworkError() })
-        queue.add(req)
-    }
-
-    /**
-     * Called when the /check-payment response gave a result.
-     */
-    private fun onPaymentChecked(checkPaymentResponse: JSONObject) {
-        val currentValue = requireNotNull(mPayment.value)
-        if (checkPaymentResponse.getBoolean("paid")) {
-            mPayment.value = currentValue.copy(paid = true)
-            checkTimer.cancel()
-        } else if (currentValue.talerPayUri == null) {
-            val talerPayUri = checkPaymentResponse.getString("taler_pay_uri")
-            mPayment.value = currentValue.copy(talerPayUri = talerPayUri)
+        scope.launch(Dispatchers.IO) {
+            val response = api.checkOrder(merchantConfig.convert(), orderId)
+            response.handle(::onNetworkError, ::onPaymentChecked)
         }
     }
 
-    private fun onNetworkError() {
-        cancelPayment()
+    private fun onPaymentChecked(response: CheckPaymentResponse) = scope.launch(Dispatchers.Main) {
+        val currentValue = requireNotNull(mPayment.value)
+        if (response.paid) {
+            mPayment.value = currentValue.copy(paid = true)
+            checkTimer.cancel()
+        } else if (currentValue.talerPayUri == null) {
+            response as CheckPaymentResponse.Unpaid
+            mPayment.value = currentValue.copy(talerPayUri = response.talerPayUri)
+        }
     }
 
-    fun cancelPayment() {
-        mPayment.value = mPayment.value!!.copy(error = true)
+    private fun onNetworkError(error: String) = scope.launch(Dispatchers.Main) {
+        cancelPayment(error)
+    }
+
+    fun cancelPayment(error: String) {
+        mPayment.value = mPayment.value!!.copy(error = error)
         checkTimer.cancel()
     }
 

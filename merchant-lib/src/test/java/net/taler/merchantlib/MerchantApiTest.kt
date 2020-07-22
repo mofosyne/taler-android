@@ -16,15 +16,25 @@
 
 package net.taler.merchantlib
 
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.runBlocking
+import net.taler.common.Amount
+import net.taler.common.ContractProduct
+import net.taler.common.ContractTerms
 import net.taler.merchantlib.MockHttpClient.giveJsonResponse
 import net.taler.merchantlib.MockHttpClient.httpClient
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MerchantApiTest {
 
     private val api = MerchantApi(httpClient)
+    private val merchantConfig = MerchantConfig(
+        baseUrl = "http://example.net/",
+        instance = "testInstance",
+        apiKey = "apiKeyFooBar"
+    )
 
     @Test
     fun testGetConfig() = runBlocking {
@@ -38,6 +48,91 @@ class MerchantApiTest {
         }
         val response = api.getConfig("https://backend.int.taler.net")
         assertEquals(ConfigResponse("0:0:0", "INTKUDOS"), response)
+    }
+
+    @Test
+    fun testPostOrder() = runBlocking {
+        val product = ContractProduct(
+            productId = "foo",
+            description = "bar",
+            price = Amount("TEST", 1, 0),
+            quantity = 2
+        )
+        val contractTerms = ContractTerms(
+            summary = "test",
+            amount = Amount("TEST", 2, 1),
+            fulfillmentUrl = "http://example.org",
+            products = listOf(product)
+        )
+        val contractTermsJson = """
+            {
+                "order": {
+                    "summary": "${contractTerms.summary}",
+                    "amount": "${contractTerms.amount.toJSONString()}",
+                    "fulfillment_url": "${contractTerms.fulfillmentUrl}",
+                    "products": [
+                        {
+                            "product_id": "${product.productId}",
+                            "description": "${product.description}",
+                            "price": "${product.price.toJSONString()}",
+                            "quantity": ${product.quantity}
+                        }
+                    ]
+                }
+            }
+        """.trimIndent()
+        httpClient.giveJsonResponse(
+            "http://example.net/instances/testInstance/private/orders",
+            contractTermsJson
+        ) {
+            """{"order_id": "test"}"""
+        }
+        api.postOrder(merchantConfig, contractTerms).assertSuccess {
+            assertEquals(PostOrderResponse("test"), it)
+        }
+
+        httpClient.giveJsonResponse(
+            "http://example.net/instances/testInstance/private/orders",
+            statusCode = HttpStatusCode.NotFound
+        ) {
+            """{
+                "code": 2000,
+                "hint": "merchant instance unknown"
+            }"""
+        }
+        api.postOrder(merchantConfig, contractTerms).assertFailure {
+            assertTrue(it.contains("2000"))
+            assertTrue(it.contains("merchant instance unknown"))
+        }
+    }
+
+    @Test
+    fun testCheckOrder() = runBlocking {
+        val orderId = "orderIdFoo"
+        val unpaidResponse = CheckPaymentResponse.Unpaid(false, "http://taler.net/foo")
+        httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
+            """{
+                "paid": ${unpaidResponse.paid},
+                "taler_pay_uri": "${unpaidResponse.talerPayUri}"
+            }""".trimIndent()
+        }
+        api.checkOrder(merchantConfig, orderId).assertSuccess {
+            assertEquals(unpaidResponse, it)
+        }
+
+        httpClient.giveJsonResponse(
+            "http://example.net/instances/testInstance/private/orders/$orderId",
+            statusCode = HttpStatusCode.NotFound
+        ) {
+            """{
+                "code": 2909,
+                "hint": "Did not find contract terms for order in DB"
+            }"""
+        }
+        api.checkOrder(merchantConfig, orderId).assertFailure {
+            assertTrue(it.contains("2909"))
+            assertTrue(it.contains("Did not find contract terms for order in DB"))
+        }
     }
 
 }

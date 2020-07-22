@@ -14,16 +14,16 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.merchantpos.payment
+package net.taler.merchantlib
 
-import net.taler.merchantpos.order.Order
+import org.junit.Assert
 
-data class Payment(
-    val order: Order,
-    val summary: String,
-    val currency: String,
-    val orderId: String? = null,
-    val talerPayUri: String? = null,
-    val paid: Boolean = false,
-    val error: String? = null
-)
+internal suspend fun <T> Response<T>.assertSuccess(assertions: (T) -> Any) {
+    Assert.assertFalse(isFailure)
+    handle(onSuccess = { assertions(it) })
+}
+
+internal suspend fun <T> Response<T>.assertFailure(assertions: (String) -> Any) {
+    Assert.assertTrue(isFailure)
+    handle(onFailure = { assertions(it) })
+}

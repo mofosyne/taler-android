@@ -14,16 +14,24 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.merchantpos.payment
+package net.taler.merchantlib
 
-import net.taler.merchantpos.order.Order
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class Payment(
-    val order: Order,
-    val summary: String,
-    val currency: String,
-    val orderId: String? = null,
-    val talerPayUri: String? = null,
-    val paid: Boolean = false,
-    val error: String? = null
-)
+@Serializable
+data class MerchantConfig(
+    @SerialName("base_url")
+    val baseUrl: String,
+    val instance: String,
+    @SerialName("api_key")
+    val apiKey: String
+) {
+    fun urlFor(endpoint: String, params: Map<String, String>? = null): String {
+        val sb = StringBuilder(baseUrl)
+        if (sb.last() != '/') sb.append('/')
+        sb.append("instances/$instance/")
+        sb.append(endpoint)
+        return sb.toString()
+    }
+}

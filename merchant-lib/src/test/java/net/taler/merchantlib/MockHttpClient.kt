@@ -21,31 +21,50 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.Logging
+import io.ktor.client.features.logging.SIMPLE
 import io.ktor.http.ContentType.Application.Json
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
+import io.ktor.http.content.TextContent
 import io.ktor.http.fullPath
 import io.ktor.http.headersOf
 import io.ktor.http.hostWithPort
+import org.junit.Assert.assertEquals
 
 object MockHttpClient {
 
     val httpClient = HttpClient(MockEngine) {
         install(JsonFeature) {
-            serializer = KotlinxSerializer()
+            serializer = getSerializer()
+        }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.ALL
         }
         engine {
             addHandler { error("No response handler set") }
         }
     }
 
-    fun HttpClient.giveJsonResponse(url: String, jsonProducer: () -> String) {
+    fun HttpClient.giveJsonResponse(
+        url: String,
+        expectedBody: String? = null,
+        statusCode: HttpStatusCode = HttpStatusCode.OK,
+        jsonProducer: () -> String
+    ) {
         val httpConfig = engineConfig as MockEngineConfig
         httpConfig.requestHandlers.removeAt(0)
         httpConfig.requestHandlers.add { request ->
             if (request.url.fullUrl == url) {
                 val headers = headersOf("Content-Type" to listOf(Json.toString()))
-                respond(jsonProducer(), headers = headers)
+                if (expectedBody != null) {
+                    val content = request.body as TextContent
+                    assertJsonEquals(expectedBody, content.text)
+                }
+                respond(jsonProducer(), headers = headers, status = statusCode)
             } else {
                 error("Unexpected URL: ${request.url.fullUrl}")
             }
@@ -54,5 +73,11 @@ object MockHttpClient {
 
     private val Url.hostWithPortIfRequired: String get() = if (port == protocol.defaultPort) host else hostWithPort
     private val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"
+
+    private fun assertJsonEquals(json1: String, json2: String) {
+        val parsed1 = kotlinx.serialization.json.Json.parseJson(json1)
+        val parsed2 = kotlinx.serialization.json.Json.parseJson(json2)
+        assertEquals(parsed1, parsed2)
+    }
 
 }

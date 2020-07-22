@@ -61,8 +61,8 @@ class ProcessPaymentFragment : Fragment() {
     }
 
     private fun onPaymentStateChanged(payment: Payment) {
-        if (payment.error) {
-            topSnackbar(requireView(), R.string.error_network, LENGTH_LONG)
+        if (payment.error != null) {
+            topSnackbar(requireView(), payment.error, LENGTH_LONG)
             findNavController().navigateUp()
             return
         }
@@ -86,7 +86,7 @@ class ProcessPaymentFragment : Fragment() {
     }
 
     private fun onPaymentCancel() {
-        paymentManager.cancelPayment()
+        paymentManager.cancelPayment(getString(R.string.error_cancelled))
         findNavController().navigateUp()
         topSnackbar(requireView(), R.string.payment_canceled, LENGTH_LONG)
     }

@@ -23,7 +23,7 @@ import net.taler.common.Amount
 import net.taler.common.ContractProduct
 import net.taler.common.Product
 import net.taler.common.TalerUtils
-import java.util.*
+import java.util.UUID
 
 data class Config(
     val configUrl: String,
@@ -50,6 +50,9 @@ data class MerchantConfig(
         }
         return uriBuilder.toString()
     }
+    fun convert() = net.taler.merchantlib.MerchantConfig(
+        baseUrl, instance, apiKey
+    )
 }
 
 data class Category(

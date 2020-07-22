@@ -16,7 +16,6 @@
 
 package net.taler.merchantpos.config
 
-
 import android.util.ArrayMap
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest

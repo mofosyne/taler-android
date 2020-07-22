@@ -3,6 +3,7 @@ merchant_test:
   only:
     changes:
       - merchant-terminal/**/*
+      - merchant-lib/**/*
       - taler-kotlin-common/**/*
       - build.gradle
   script: ./gradlew :merchant-terminal:check :merchant-terminal:assembleRelease

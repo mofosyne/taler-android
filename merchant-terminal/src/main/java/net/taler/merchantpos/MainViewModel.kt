@@ -42,7 +42,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val configManager = ConfigManager(app, viewModelScope, api, mapper, queue).apply {
         addConfigurationReceiver(orderManager)
     }
-    val paymentManager = PaymentManager(configManager, queue, mapper)
+    val paymentManager = PaymentManager(app, configManager, viewModelScope, api)
     val historyManager = HistoryManager(configManager, queue, mapper)
     val refundManager = RefundManager(configManager, queue)
 

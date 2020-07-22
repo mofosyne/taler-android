@@ -21,6 +21,16 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.http.ContentType.Application.Json
+import io.ktor.http.HttpHeaders.Authorization
+import io.ktor.http.contentType
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import net.taler.common.ContractTerms
+import net.taler.merchantlib.Response.Companion.failure
+import net.taler.merchantlib.Response.Companion.success
 
 class MerchantApi(private val httpClient: HttpClient) {
 
@@ -30,10 +40,46 @@ class MerchantApi(private val httpClient: HttpClient) {
         return httpClient.get("$baseUrl/config")
     }
 
+    suspend fun postOrder(
+        merchantConfig: MerchantConfig,
+        contractTerms: ContractTerms
+    ): Response<PostOrderResponse> = response {
+        httpClient.post(merchantConfig.urlFor("private/orders")) {
+            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+            contentType(Json)
+            body = PostOrderRequest(contractTerms)
+        } as PostOrderResponse
+    }
+
+    suspend fun checkOrder(
+        merchantConfig: MerchantConfig,
+        orderId: String
+    ): Response<CheckPaymentResponse> = response {
+        httpClient.get(merchantConfig.urlFor("private/orders/$orderId")) {
+            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+        } as CheckPaymentResponse
+    }
+
+    private suspend fun <T> response(request: suspend () -> T): Response<T> {
+        return try {
+            success(request())
+        } catch (e: Throwable) {
+            failure(e)
+        }
+    }
 }
 
 private fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(JsonFeature) {
-        serializer = KotlinxSerializer()
+        serializer = getSerializer()
     }
 }
+
+fun getSerializer() = KotlinxSerializer(
+    Json(
+        JsonConfiguration(
+            encodeDefaults = false,
+            ignoreUnknownKeys = true
+        )
+    )
+)

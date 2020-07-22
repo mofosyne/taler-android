@@ -17,8 +17,13 @@
 package net.taler.merchantpos.order
 
 import net.taler.common.Amount
+import net.taler.common.ContractTerms
+import net.taler.common.now
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
+import java.net.URLEncoder
+
+private const val FULFILLMENT_PREFIX = "taler://fulfillment-success/"
 
 data class Order(val id: Int, val currency: String, val availableCategories: Map<Int, Category>) {
     val products = ArrayList<ConfigProduct>()
@@ -102,5 +107,21 @@ data class Order(val id: Int, val currency: String, val availableCategories: Map
                 )
             }.toMap()
         }
+
+    private val fulfillmentUri: String
+        get() {
+            val fulfillmentId = "${now()}-${hashCode()}"
+            return "$FULFILLMENT_PREFIX${URLEncoder.encode(summary, "UTF-8")}#$fulfillmentId"
+        }
+
+    fun toContractTerms(): ContractTerms {
+        return ContractTerms(
+            summary = summary,
+            summaryI18n = summaryI18n,
+            amount = total,
+            fulfillmentUrl = fulfillmentUri,
+            products = products.map { it.toContractProduct() }
+        )
+    }
 
 }
