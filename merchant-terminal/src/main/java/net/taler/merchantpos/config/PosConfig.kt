@@ -16,9 +16,8 @@
 
 package net.taler.merchantpos.config
 
-import android.net.Uri
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.common.ContractProduct
 import net.taler.common.Product
@@ -34,51 +33,40 @@ data class Config(
     fun hasPassword() = !password.isBlank()
 }
 
-data class MerchantConfig(
-    @JsonProperty("base_url")
-    val baseUrl: String,
-    val instance: String,
-    @JsonProperty("api_key")
-    val apiKey: String,
-    val currency: String?
-) {
-    fun urlFor(endpoint: String, params: Map<String, String>?): String {
-        val uriBuilder = Uri.parse(baseUrl).buildUpon()
-        uriBuilder.appendPath(endpoint)
-        params?.forEach {
-            uriBuilder.appendQueryParameter(it.key, it.value)
-        }
-        return uriBuilder.toString()
-    }
-    fun convert() = net.taler.merchantlib.MerchantConfig(
-        baseUrl, instance, apiKey
-    )
-}
+@Serializable
+data class PosConfig(
+    @SerialName("config")
+    val merchantConfig: net.taler.merchantlib.MerchantConfig,
+    val categories: List<Category>,
+    val products: List<ConfigProduct>
+)
 
+@Serializable
 data class Category(
     val id: Int,
     val name: String,
-    @JsonProperty("name_i18n")
-    val nameI18n: Map<String, String>?
+    @SerialName("name_i18n")
+    val nameI18n: Map<String, String>? = null
 ) {
     var selected: Boolean = false
     val localizedName: String get() = TalerUtils.getLocalizedString(nameI18n, name)
 }
 
+@Serializable
 data class ConfigProduct(
-    @JsonIgnore
     val id: String = UUID.randomUUID().toString(),
-    override val productId: String?,
+    @SerialName("product_id")
+    override val productId: String? = null,
     override val description: String,
-    override val descriptionI18n: Map<String, String>?,
+    @SerialName("description_i18n")
+    override val descriptionI18n: Map<String, String>? = null,
     override val price: Amount,
-    override val location: String?,
-    override val image: String?,
+    @SerialName("delivery_location")
+    override val location: String? = null,
+    override val image: String? = null,
     val categories: List<Int>,
-    @JsonIgnore
     val quantity: Int = 0
 ) : Product() {
-    @get:JsonIgnore
     val totalPrice by lazy { price * quantity }
 
     fun toContractProduct() = ContractProduct(

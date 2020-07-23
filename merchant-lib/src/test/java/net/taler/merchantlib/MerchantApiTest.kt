@@ -46,8 +46,9 @@ class MerchantApiTest {
             }
             """.trimIndent()
         }
-        val response = api.getConfig("https://backend.int.taler.net")
-        assertEquals(ConfigResponse("0:0:0", "INTKUDOS"), response)
+        api.getConfig("https://backend.int.taler.net").assertSuccess {
+            assertEquals(ConfigResponse("0:0:0", "INTKUDOS"), it)
+        }
     }
 
     @Test

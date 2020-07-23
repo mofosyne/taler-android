@@ -22,19 +22,14 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.config.ConfigurationReceiver
+import net.taler.merchantpos.config.PosConfig
 import net.taler.merchantpos.order.RestartState.ENABLED
-import org.json.JSONObject
 
-class OrderManager(
-    private val context: Context,
-    private val mapper: ObjectMapper
-) : ConfigurationReceiver {
+class OrderManager(private val context: Context) : ConfigurationReceiver {
 
     companion object {
         val TAG = OrderManager::class.java.simpleName
@@ -55,26 +50,18 @@ class OrderManager(
     private val mCategories = MutableLiveData<List<Category>>()
     internal val categories: LiveData<List<Category>> = mCategories
 
-    override suspend fun onConfigurationReceived(json: JSONObject, currency: String): String? {
+    override suspend fun onConfigurationReceived(posConfig: PosConfig, currency: String): String? {
         // parse categories
-        val categoriesStr = json.getJSONArray("categories").toString()
-        val categoriesType = object : TypeReference<List<Category>>() {}
-        val categories: List<Category> = mapper.readValue(categoriesStr, categoriesType)
-        if (categories.isEmpty()) {
+        if (posConfig.categories.isEmpty()) {
             Log.e(TAG, "No valid category found.")
             return context.getString(R.string.config_error_category)
         }
         // pre-select the first category
-        categories[0].selected = true
-
-        // parse products (live data gets updated in setCurrentCategory())
-        val productsStr = json.getJSONArray("products").toString()
-        val productsType = object : TypeReference<List<ConfigProduct>>() {}
-        val products: List<ConfigProduct> = mapper.readValue(productsStr, productsType)
+        posConfig.categories[0].selected = true
 
         // group products by categories
         productsByCategory.clear()
-        products.forEach { product ->
+        posConfig.products.forEach { product ->
             val productCurrency = product.price.currency
             if (productCurrency != currency) {
                 Log.e(TAG, "Product $product has currency $productCurrency, $currency expected")
@@ -83,7 +70,7 @@ class OrderManager(
                 )
             }
             product.categories.forEach { categoryId ->
-                val category = categories.find { it.id == categoryId }
+                val category = posConfig.categories.find { it.id == categoryId }
                 if (category == null) {
                     Log.e(TAG, "Product $product has unknown category $categoryId")
                     return context.getString(
@@ -99,8 +86,8 @@ class OrderManager(
         }
         return if (productsByCategory.size > 0) {
             this.currency = currency
-            mCategories.postValue(categories)
-            mProducts.postValue(productsByCategory[categories[0]])
+            mCategories.postValue(posConfig.categories)
+            mProducts.postValue(productsByCategory[posConfig.categories[0]])
             // Initialize first empty order, note this won't work when updating config mid-flight
             if (orders.isEmpty()) {
                 val id = orderCounter++

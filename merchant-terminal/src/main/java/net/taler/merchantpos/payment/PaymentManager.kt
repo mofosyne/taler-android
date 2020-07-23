@@ -63,9 +63,9 @@ class PaymentManager(
     @UiThread
     fun createPayment(order: Order) {
         val merchantConfig = configManager.merchantConfig!!
-        mPayment.value = Payment(order, order.summary, merchantConfig.currency!!)
+        mPayment.value = Payment(order, order.summary, configManager.currency!!)
         scope.launch(Dispatchers.IO) {
-            val response = api.postOrder(merchantConfig.convert(), order.toContractTerms())
+            val response = api.postOrder(merchantConfig, order.toContractTerms())
             response.handle(::onNetworkError, ::onOrderCreated)
         }
     }
@@ -78,7 +78,7 @@ class PaymentManager(
     private fun checkPayment(orderId: String) {
         val merchantConfig = configManager.merchantConfig!!
         scope.launch(Dispatchers.IO) {
-            val response = api.checkOrder(merchantConfig.convert(), orderId)
+            val response = api.checkOrder(merchantConfig, orderId)
             response.handle(::onNetworkError, ::onPaymentChecked)
         }
     }
@@ -106,7 +106,7 @@ class PaymentManager(
             if (!payment.paid) payment.orderId?.let { orderId ->
                 Log.e(TAG, "Deleting cancelled and unpaid order $orderId")
                 scope.launch(Dispatchers.IO) {
-                    api.deleteOrder(merchantConfig.convert(), orderId)
+                    api.deleteOrder(merchantConfig, orderId)
                 }
             }
         }

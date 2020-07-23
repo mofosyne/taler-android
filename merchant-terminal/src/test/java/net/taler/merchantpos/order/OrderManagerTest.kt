@@ -19,12 +19,13 @@ package net.taler.merchantpos.order
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.runBlocking
+import net.taler.common.Amount
+import net.taler.merchantlib.MerchantConfig
 import net.taler.merchantpos.R
-import org.json.JSONObject
+import net.taler.merchantpos.config.Category
+import net.taler.merchantpos.config.ConfigProduct
+import net.taler.merchantpos.config.PosConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -35,118 +36,71 @@ import org.robolectric.annotation.Config
 @RunWith(AndroidJUnit4::class)
 class OrderManagerTest {
 
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-
     private val app: Application = getApplicationContext()
-    private val orderManager = OrderManager(app, mapper)
+    private val orderManager = OrderManager(app)
+    private val posConfig = PosConfig(
+        merchantConfig = MerchantConfig(
+            baseUrl = "http://example.org",
+            apiKey = "sandbox"
+        ),
+        categories = listOf(
+            Category(1, "one"),
+            Category(2, "two")
+        ),
+        products = listOf(
+            ConfigProduct(
+                description = "foo",
+                price = Amount("KUDOS", 1, 0),
+                categories = listOf(1)
+            ),
+            ConfigProduct(
+                description = "bar",
+                price = Amount("KUDOS", 1, 50000),
+                categories = listOf(2)
+            )
+        )
+    )
 
     @Test
     fun `config test missing categories`() = runBlocking {
-        val json = JSONObject(
-            """
-            { "categories": [] }
-        """.trimIndent()
-        )
-        val result = orderManager.onConfigurationReceived(json, "KUDOS")
+        val config = posConfig.copy(categories = emptyList())
+        val result = orderManager.onConfigurationReceived(config, "KUDOS")
         assertEquals(app.getString(R.string.config_error_category), result)
     }
 
     @Test
     fun `config test currency mismatch`() = runBlocking {
-        val json = JSONObject(
-            """{
-            "categories": [
-                {
-                    "id": 1,
-                    "name": "Snacks"
-                }
-            ],
-            "products": [
-                {
-                    "product_id": "631361561",
-                    "description": "Chips",
-                    "price": "WRONGCUR:1.00",
-                    "categories": [ 1 ],
-                    "delivery_location": "cafeteria"
-                }
-            ]
-        }""".trimIndent()
-        )
-        val result = orderManager.onConfigurationReceived(json, "KUDOS")
+        val products = listOf(posConfig.products[0].copy(price = Amount("WRONGCUR", 1, 0)))
+        val config = posConfig.copy(products = products)
+        val result = orderManager.onConfigurationReceived(config, "KUDOS")
         val expectedStr = app.getString(
-            R.string.config_error_currency, "Chips", "WRONGCUR", "KUDOS"
+            R.string.config_error_currency, "foo", "WRONGCUR", "KUDOS"
         )
         assertEquals(expectedStr, result)
     }
 
     @Test
     fun `config test unknown category ID`() = runBlocking {
-        val json = JSONObject(
-            """{
-            "categories": [
-                {
-                    "id": 1,
-                    "name": "Snacks"
-                }
-            ],
-            "products": [
-                {
-                    "product_id": "631361561",
-                    "description": "Chips",
-                    "price": "KUDOS:1.00",
-                    "categories": [ 2 ]
-                }
-            ]
-        }""".trimIndent()
-        )
-        val result = orderManager.onConfigurationReceived(json, "KUDOS")
+        val products = listOf(posConfig.products[0].copy(categories = listOf(42)))
+        val config = posConfig.copy(products = products)
+        val result = orderManager.onConfigurationReceived(config, "KUDOS")
         val expectedStr = app.getString(
-            R.string.config_error_product_category_id, "Chips", 2
+            R.string.config_error_product_category_id, "foo", 42
         )
         assertEquals(expectedStr, result)
     }
 
     @Test
     fun `config test no products`() = runBlocking {
-        val json = JSONObject(
-            """{
-            "categories": [
-                {
-                    "id": 1,
-                    "name": "Snacks"
-                }
-            ],
-            "products": []
-        }""".trimIndent()
-        )
-        val result = orderManager.onConfigurationReceived(json, "KUDOS")
+        val config = posConfig.copy(products = emptyList())
+        val result = orderManager.onConfigurationReceived(config, "KUDOS")
         val expectedStr = app.getString(R.string.config_error_product_zero)
         assertEquals(expectedStr, result)
     }
 
     @Test
     fun `config test valid config gets accepted`() = runBlocking {
-        val json = JSONObject(
-            """{
-            "categories": [
-                {
-                    "id": 1,
-                    "name": "Snacks"
-                }
-            ],
-            "products": [
-                {
-                    "product_id": "631361561",
-                    "description": "Chips",
-                    "price": "KUDOS:1.00",
-                    "categories": [ 1 ]
-                }
-            ]
-        }""".trimIndent()
-        )
-        val result = orderManager.onConfigurationReceived(json, "KUDOS")
+        val result = orderManager.onConfigurationReceived(posConfig, "KUDOS")
         assertNull(result)
     }
 

@@ -1,7 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: "androidx.navigation.safeargs.kotlin"
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlinx-serialization'
+    id 'androidx.navigation.safeargs.kotlin'
+}
 
 android {
     compileSdkVersion 29
@@ -54,7 +57,6 @@ android {
 }
 
 dependencies {
-    implementation project(":taler-kotlin-common")
     implementation project(":merchant-lib")
 
     implementation 'com.google.android.material:material:1.1.0'

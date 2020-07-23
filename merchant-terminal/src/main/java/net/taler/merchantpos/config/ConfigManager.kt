@@ -22,15 +22,14 @@ import android.util.Base64.NO_WRAP
 import android.util.Base64.encodeToString
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.android.volley.Request.Method.GET
-import com.android.volley.RequestQueue
-import com.android.volley.Response.Listener
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonObjectRequest
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.client.HttpClient
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders.Authorization
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,9 +37,8 @@ import net.taler.common.Version
 import net.taler.common.getIncompatibleStringOrNull
 import net.taler.merchantlib.ConfigResponse
 import net.taler.merchantlib.MerchantApi
-import net.taler.merchantpos.LogErrorListener
+import net.taler.merchantlib.MerchantConfig
 import net.taler.merchantpos.R
-import org.json.JSONObject
 
 private const val SETTINGS_NAME = "taler-merchant-terminal"
 
@@ -60,15 +58,14 @@ interface ConfigurationReceiver {
     /**
      * Returns null if the configuration was valid, or a error string for user display otherwise.
      */
-    suspend fun onConfigurationReceived(json: JSONObject, currency: String): String?
+    suspend fun onConfigurationReceived(posConfig: PosConfig, currency: String): String?
 }
 
 class ConfigManager(
     private val context: Context,
     private val scope: CoroutineScope,
-    private val api: MerchantApi,
-    private val mapper: ObjectMapper,
-    private val queue: RequestQueue
+    private val httpClient: HttpClient,
+    private val api: MerchantApi
 ) {
 
     private val prefs = context.getSharedPreferences(SETTINGS_NAME, MODE_PRIVATE)
@@ -79,7 +76,11 @@ class ConfigManager(
         username = prefs.getString(SETTINGS_USERNAME, CONFIG_USERNAME_DEMO)!!,
         password = prefs.getString(SETTINGS_PASSWORD, CONFIG_PASSWORD_DEMO)!!
     )
+    @Volatile
     var merchantConfig: MerchantConfig? = null
+        private set
+    @Volatile
+    var currency: String? = null
         private set
 
     private val mConfigUpdateResult = MutableLiveData<ConfigUpdateResult>()
@@ -96,74 +97,76 @@ class ConfigManager(
             if (savePassword) config else config.copy(password = "")
         } else null
 
-        val stringRequest = object : JsonObjectRequest(GET, config.configUrl, null,
-            Listener { onConfigReceived(it, configToSave) },
-            LogErrorListener { onNetworkError(it) }
-        ) {
-            // send basic auth header
-            override fun getHeaders(): MutableMap<String, String> {
-                val credentials = "${config.username}:${config.password}"
-                val auth = ("Basic ${encodeToString(credentials.toByteArray(), NO_WRAP)}")
-                return mutableMapOf("Authorization" to auth)
+        scope.launch(Dispatchers.IO) {
+            try {
+                // get PoS configuration
+                val posConfig: PosConfig = httpClient.get(config.configUrl) {
+                    val credentials = "${config.username}:${config.password}"
+                    val auth = ("Basic ${encodeToString(credentials.toByteArray(), NO_WRAP)}")
+                    header(Authorization, auth)
+                }
+                val merchantConfig = posConfig.merchantConfig
+                // get config from merchant backend API
+                api.getConfig(merchantConfig.baseUrl).handleSuspend(::onNetworkError) {
+                    onMerchantConfigReceived(configToSave, posConfig, merchantConfig, it)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error retrieving merchant config", e)
+                val msg = if (e is ClientRequestException) {
+                    context.getString(
+                        if (e.response.status.value == 401) R.string.config_auth_error
+                        else R.string.config_error_network
+                    )
+                } else {
+                    context.getString(R.string.config_error_malformed)
+                }
+                onNetworkError(msg)
             }
         }
-        queue.add(stringRequest)
     }
 
-    @UiThread
-    private fun onConfigReceived(json: JSONObject, config: Config?) {
-        val merchantConfig: MerchantConfig = try {
-            mapper.readValue(json.getString("config"))
-        } catch (e: Exception) {
-            Log.e(TAG, "Error parsing merchant config", e)
-            val msg = context.getString(R.string.config_error_malformed)
-            mConfigUpdateResult.value = ConfigUpdateResult.Error(msg)
-            return
-        }
-
-        scope.launch(Dispatchers.IO) {
-            val configResponse = api.getConfig(merchantConfig.baseUrl)
-            onMerchantConfigReceived(config, json, merchantConfig, configResponse)
-        }
-    }
-
-    private fun onMerchantConfigReceived(
+    @WorkerThread
+    private suspend fun onMerchantConfigReceived(
         newConfig: Config?,
-        configJson: JSONObject,
+        posConfig: PosConfig,
         merchantConfig: MerchantConfig,
         configResponse: ConfigResponse
-    ) = scope.launch(Dispatchers.Default) {
-        val versionIncompatible = VERSION.getIncompatibleStringOrNull(context, configResponse.version)
+    ) {
+        val versionIncompatible =
+            VERSION.getIncompatibleStringOrNull(context, configResponse.version)
         if (versionIncompatible != null) {
             mConfigUpdateResult.postValue(ConfigUpdateResult.Error(versionIncompatible))
-            return@launch
+            return
         }
         for (receiver in configurationReceivers) {
             val result = try {
-                receiver.onConfigurationReceived(configJson, configResponse.currency)
+                receiver.onConfigurationReceived(posConfig, configResponse.currency)
             } catch (e: Exception) {
                 Log.e(TAG, "Error handling configuration by ${receiver::class.java.simpleName}", e)
                 context.getString(R.string.config_error_unknown)
             }
             if (result != null) {  // error
                 mConfigUpdateResult.postValue(ConfigUpdateResult.Error(result))
-                return@launch
+                return
             }
         }
         newConfig?.let {
             config = it
             saveConfig(it)
         }
-        this@ConfigManager.merchantConfig = merchantConfig.copy(currency = configResponse.currency)
+        this.merchantConfig = merchantConfig
+        this.currency = configResponse.currency
         mConfigUpdateResult.postValue(ConfigUpdateResult.Success(configResponse.currency))
     }
 
+    @UiThread
     fun forgetPassword() {
         config = config.copy(password = "")
         saveConfig(config)
         merchantConfig = null
     }
 
+    @UiThread
     private fun saveConfig(config: Config) {
         prefs.edit()
             .putString(SETTINGS_CONFIG_URL, config.configUrl)
@@ -172,12 +175,7 @@ class ConfigManager(
             .apply()
     }
 
-    @UiThread
-    private fun onNetworkError(it: VolleyError?) {
-        val msg = context.getString(
-            if (it?.networkResponse?.statusCode == 401) R.string.config_auth_error
-            else R.string.config_error_network
-        )
+    private fun onNetworkError(msg: String) = scope.launch(Dispatchers.Main) {
         mConfigUpdateResult.value = ConfigUpdateResult.Error(msg)
     }
 

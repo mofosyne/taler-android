@@ -23,11 +23,12 @@ import kotlinx.serialization.Serializable
 data class MerchantConfig(
     @SerialName("base_url")
     val baseUrl: String,
-    val instance: String,
+    // TODO remove instance when it is part of baseURL
+    val instance: String? = null,
     @SerialName("api_key")
     val apiKey: String
 ) {
-    fun urlFor(endpoint: String, params: Map<String, String>? = null): String {
+    fun urlFor(endpoint: String): String {
         val sb = StringBuilder(baseUrl)
         if (sb.last() != '/') sb.append('/')
         sb.append("instances/$instance/")

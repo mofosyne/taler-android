@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PRO
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.merchantlib.MerchantApi
+import net.taler.merchantlib.getDefaultHttpClient
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.history.HistoryManager
 import net.taler.merchantpos.history.RefundManager
@@ -32,14 +33,15 @@ import net.taler.merchantpos.payment.PaymentManager
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val api = MerchantApi()
+    private val httpClient = getDefaultHttpClient()
+    private val api = MerchantApi(httpClient)
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val queue = Volley.newRequestQueue(app)
 
-    val orderManager = OrderManager(app, mapper)
-    val configManager = ConfigManager(app, viewModelScope, api, mapper, queue).apply {
+    val orderManager = OrderManager(app)
+    val configManager = ConfigManager(app, viewModelScope, httpClient, api).apply {
         addConfigurationReceiver(orderManager)
     }
     val paymentManager = PaymentManager(app, configManager, viewModelScope, api)
@@ -47,6 +49,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     val refundManager = RefundManager(configManager, queue)
 
     override fun onCleared() {
+        httpClient.close()
         queue.cancelAll { !it.isCanceled }
     }
 

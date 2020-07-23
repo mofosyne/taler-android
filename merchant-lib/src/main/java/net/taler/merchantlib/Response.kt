@@ -50,14 +50,29 @@ class Response<out T> private constructor(
         }
     }
 
+    suspend fun handleSuspend(
+        onFailure: ((String) -> Any)? = null,
+        onSuccess: (suspend (T) -> Any)? = null
+    ) {
+        if (value is Failure) onFailure?.let { it(getFailureString(value)) }
+        else onSuccess?.let {
+            @Suppress("UNCHECKED_CAST")
+            it(value as T)
+        }
+    }
+
     private suspend fun getFailureString(failure: Failure): String = when (failure.exception) {
         is ClientRequestException -> getExceptionString(failure.exception)
         else -> failure.exception.toString()
     }
 
     private suspend fun getExceptionString(e: ClientRequestException): String {
-        val error: Error = e.response.receive()
-        return "Error ${error.code}: ${error.hint}"
+        return try {
+            val error: Error = e.response.receive()
+            "Error ${error.code}: ${error.hint}"
+        } catch (ex: Exception) {
+            "Status code: ${e.response.status.value}"
+        }
     }
 
     private class Failure(val exception: Throwable)

@@ -37,8 +37,8 @@ import net.taler.merchantlib.Response.Companion.response
 
 class MerchantApi(private val httpClient: HttpClient) {
 
-    suspend fun getConfig(baseUrl: String): ConfigResponse {
-        return httpClient.get("$baseUrl/config")
+    suspend fun getConfig(baseUrl: String): Response<ConfigResponse> = response {
+        httpClient.get("$baseUrl/config") as ConfigResponse
     }
 
     suspend fun postOrder(
@@ -77,6 +77,11 @@ class MerchantApi(private val httpClient: HttpClient) {
 }
 
 fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
+    engine {
+        config {
+            retryOnConnectionFailure(true)
+        }
+    }
     install(JsonFeature) {
         serializer = getSerializer()
     }

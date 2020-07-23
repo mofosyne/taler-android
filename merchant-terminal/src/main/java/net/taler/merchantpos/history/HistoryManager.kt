@@ -65,7 +65,7 @@ class HistoryManager(
     internal fun fetchHistory() {
         mIsLoading.value = true
         val merchantConfig = configManager.merchantConfig!!
-        val params = mapOf("instance" to merchantConfig.instance)
+        val params = mapOf("instance" to merchantConfig.instance!!)
         val req = MerchantRequest(GET, merchantConfig, "history", params, null,
             Listener { onHistoryResponse(it) },
             LogErrorListener { onHistoryError() })

@@ -16,9 +16,11 @@
 
 package net.taler.merchantpos.config
 
+import android.net.Uri
 import android.util.ArrayMap
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import net.taler.merchantlib.MerchantConfig
 import net.taler.merchantpos.LogErrorListener
 import org.json.JSONObject
 
@@ -33,7 +35,7 @@ class MerchantRequest(
 ) :
     JsonObjectRequest(
         method,
-        merchantConfig.urlFor(endpoint, params),
+        merchantConfig.legacyUrl(endpoint, params),
         jsonRequest,
         listener,
         errorListener
@@ -44,4 +46,14 @@ class MerchantRequest(
         headerMap["Authorization"] = "ApiKey " + merchantConfig.apiKey
         return headerMap
     }
+
+}
+
+private fun MerchantConfig.legacyUrl(endpoint: String, params: Map<String, String>?): String {
+    val uriBuilder = Uri.parse(baseUrl).buildUpon()
+    uriBuilder.appendPath(endpoint)
+    params?.forEach {
+        uriBuilder.appendQueryParameter(it.key, it.value)
+    }
+    return uriBuilder.toString()
 }

@@ -65,7 +65,7 @@ class OrderFragment : Fragment() {
         super.onStart()
         if (!viewModel.configManager.config.isValid()) {
             navigate(actionOrderToMerchantSettings())
-        } else if (viewModel.configManager.merchantConfig?.currency == null) {
+        } else if (viewModel.configManager.currency == null) {
             navigate(actionGlobalConfigFetcher())
         }
     }
