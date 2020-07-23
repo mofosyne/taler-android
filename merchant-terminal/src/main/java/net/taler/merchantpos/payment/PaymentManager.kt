@@ -18,6 +18,7 @@ package net.taler.merchantpos.payment
 
 import android.content.Context
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 import net.taler.merchantlib.CheckPaymentResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.PostOrderResponse
+import net.taler.merchantpos.MainActivity.Companion.TAG
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.order.Order
@@ -54,8 +56,7 @@ class PaymentManager(
         }
 
         override fun onFinish() {
-            val str = context.getString(R.string.error_timeout)
-            payment.value?.copy(error = str)?.let { mPayment.value = it }
+            cancelPayment(context.getString(R.string.error_timeout))
         }
     }
 
@@ -97,7 +98,19 @@ class PaymentManager(
         cancelPayment(error)
     }
 
+    @UiThread
     fun cancelPayment(error: String) {
+        // delete unpaid order
+        val merchantConfig = configManager.merchantConfig!!
+        mPayment.value?.let { payment ->
+            if (!payment.paid) payment.orderId?.let { orderId ->
+                Log.e(TAG, "Deleting cancelled and unpaid order $orderId")
+                scope.launch(Dispatchers.IO) {
+                    api.deleteOrder(merchantConfig.convert(), orderId)
+                }
+            }
+        }
+
         mPayment.value = mPayment.value!!.copy(error = error)
         checkTimer.cancel()
     }

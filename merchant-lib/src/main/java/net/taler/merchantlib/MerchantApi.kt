@@ -16,25 +16,26 @@
 
 package net.taler.merchantlib
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readBytes
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import net.taler.common.ContractTerms
-import net.taler.merchantlib.Response.Companion.failure
-import net.taler.merchantlib.Response.Companion.success
+import net.taler.merchantlib.Response.Companion.response
 
 class MerchantApi(private val httpClient: HttpClient) {
-
-    constructor() : this(getDefaultHttpClient())
 
     suspend fun getConfig(baseUrl: String): ConfigResponse {
         return httpClient.get("$baseUrl/config")
@@ -60,16 +61,22 @@ class MerchantApi(private val httpClient: HttpClient) {
         } as CheckPaymentResponse
     }
 
-    private suspend fun <T> response(request: suspend () -> T): Response<T> {
-        return try {
-            success(request())
-        } catch (e: Throwable) {
-            failure(e)
-        }
+    suspend fun deleteOrder(
+        merchantConfig: MerchantConfig,
+        orderId: String
+    ): Response<HttpResponse> = response {
+        val resp = httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
+            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+        } as HttpResponse
+        // TODO remove when the API call was fixed
+        Log.e("TEST", "status: ${resp.status.value}")
+        Log.e("TEST", String(resp.readBytes()))
+        resp
     }
+
 }
 
-private fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
+fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
     install(JsonFeature) {
         serializer = getSerializer()
     }

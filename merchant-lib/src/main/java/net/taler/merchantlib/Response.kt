@@ -25,6 +25,14 @@ class Response<out T> private constructor(
 ) {
 
     companion object {
+        suspend fun <T> response(request: suspend () -> T): Response<T> {
+            return try {
+                success(request())
+            } catch (e: Throwable) {
+                failure(e)
+            }
+        }
+
         fun <T> success(value: T): Response<T> =
             Response(value)
 
