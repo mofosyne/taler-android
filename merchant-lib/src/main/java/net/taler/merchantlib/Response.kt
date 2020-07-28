@@ -16,8 +16,11 @@
 
 package net.taler.merchantlib
 
+import android.util.Log
 import io.ktor.client.call.receive
 import io.ktor.client.features.ClientRequestException
+import io.ktor.client.features.ResponseException
+import io.ktor.client.features.ServerResponseException
 import kotlinx.serialization.Serializable
 
 class Response<out T> private constructor(
@@ -29,6 +32,7 @@ class Response<out T> private constructor(
             return try {
                 success(request())
             } catch (e: Throwable) {
+                Log.e("merchant-lib", "Error", e)
                 failure(e)
             }
         }
@@ -63,10 +67,11 @@ class Response<out T> private constructor(
 
     private suspend fun getFailureString(failure: Failure): String = when (failure.exception) {
         is ClientRequestException -> getExceptionString(failure.exception)
+        is ServerResponseException -> getExceptionString(failure.exception)
         else -> failure.exception.toString()
     }
 
-    private suspend fun getExceptionString(e: ClientRequestException): String {
+    private suspend fun getExceptionString(e: ResponseException): String {
         return try {
             val error: Error = e.response.receive()
             "Error ${error.code}: ${error.hint}"

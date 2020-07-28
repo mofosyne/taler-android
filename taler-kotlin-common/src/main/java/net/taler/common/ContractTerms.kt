@@ -82,8 +82,10 @@ data class ContractMerchant(
     val name: String
 )
 
+@Serializable
 @JsonInclude(NON_EMPTY)
 class Timestamp(
+    @SerialName("t_ms")
     @JsonProperty("t_ms")
     val ms: Long
 )

@@ -18,21 +18,29 @@ package net.taler.merchantlib
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.taler.common.Amount
+import net.taler.common.Timestamp
 
 @Serializable
-data class MerchantConfig(
-    @SerialName("base_url")
-    val baseUrl: String,
-    // TODO remove instance when it is part of baseURL
-    val instance: String? = null,
-    @SerialName("api_key")
-    val apiKey: String
-) {
-    fun urlFor(endpoint: String): String {
-        val sb = StringBuilder(baseUrl)
-        if (sb.last() != '/') sb.append('/')
-        instance?.let { sb.append("instances/$it/") }
-        sb.append(endpoint)
-        return sb.toString()
-    }
-}
+data class OrderHistory(
+    val orders: List<OrderHistoryEntry>
+)
+
+@Serializable
+data class OrderHistoryEntry(
+    // order ID of the transaction related to this entry.
+    @SerialName("order_id")
+    val orderId: String,
+
+    // when the order was created
+    val timestamp: Timestamp,
+
+    // the amount of money the order is for
+    val amount: Amount,
+
+    // the summary of the order
+    val summary: String,
+
+    // whether some part of the order is refundable
+    val refundable: Boolean
+)

@@ -25,6 +25,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response.Listener
 import com.android.volley.VolleyError
 import net.taler.common.Amount
+import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.LogErrorListener
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.config.MerchantRequest
@@ -36,7 +37,7 @@ sealed class RefundResult {
     object AlreadyRefunded : RefundResult()
     class Success(
         val refundUri: String,
-        val item: HistoryItem,
+        val item: OrderHistoryEntry,
         val amount: Amount,
         val reason: String
     ) : RefundResult()
@@ -51,14 +52,14 @@ class RefundManager(
         val TAG = RefundManager::class.java.simpleName
     }
 
-    var toBeRefunded: HistoryItem? = null
+    var toBeRefunded: OrderHistoryEntry? = null
         private set
 
     private val mRefundResult = MutableLiveData<RefundResult>()
     internal val refundResult: LiveData<RefundResult> = mRefundResult
 
     @UiThread
-    internal fun startRefund(item: HistoryItem) {
+    internal fun startRefund(item: OrderHistoryEntry) {
         toBeRefunded = item
         mRefundResult.value = null
     }
@@ -70,7 +71,7 @@ class RefundManager(
     }
 
     @UiThread
-    internal fun refund(item: HistoryItem, amount: Amount, reason: String) {
+    internal fun refund(item: OrderHistoryEntry, amount: Amount, reason: String) {
         val merchantConfig = configManager.merchantConfig!!
         val refundRequest = mapOf(
             "order_id" to item.orderId,
@@ -89,7 +90,7 @@ class RefundManager(
     @UiThread
     private fun onRefundResponse(
         json: JSONObject,
-        item: HistoryItem,
+        item: OrderHistoryEntry,
         amount: Amount,
         reason: String
     ) {

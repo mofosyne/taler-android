@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
@@ -31,21 +33,22 @@ import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_merchant_history.*
 import net.taler.common.exhaustive
 import net.taler.common.navigate
 import net.taler.common.toRelativeTime
+import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.history.HistoryItemAdapter.HistoryItemViewHolder
 import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionGlobalMerchantSettings
 import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
-import java.util.*
+import java.util.ArrayList
 
 private interface RefundClickListener {
-    fun onRefundClicked(item: HistoryItem)
+    fun onRefundClicked(item: OrderHistoryEntry)
 }
 
 /**
@@ -87,7 +90,7 @@ class MerchantHistoryFragment : Fragment(), RefundClickListener {
         })
         historyManager.items.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
-                is HistoryResult.Error -> onError()
+                is HistoryResult.Error -> onError(result.msg)
                 is HistoryResult.Success -> historyListAdapter.setData(result.items)
             }.exhaustive
         })
@@ -95,18 +98,18 @@ class MerchantHistoryFragment : Fragment(), RefundClickListener {
 
     override fun onStart() {
         super.onStart()
-        if (model.configManager.merchantConfig?.instance == null) {
+        if (model.configManager.merchantConfig?.baseUrl == null) {
             navigate(actionGlobalMerchantSettings())
         } else {
             historyManager.fetchHistory()
         }
     }
 
-    private fun onError() {
-        Snackbar.make(requireView(), R.string.error_network, LENGTH_SHORT).show()
+    private fun onError(msg: String) {
+        Snackbar.make(requireView(), msg, LENGTH_LONG).show()
     }
 
-    override fun onRefundClicked(item: HistoryItem) {
+    override fun onRefundClicked(item: OrderHistoryEntry) {
         refundManager.startRefund(item)
         navigate(actionNavHistoryToRefundFragment())
     }
@@ -116,7 +119,7 @@ class MerchantHistoryFragment : Fragment(), RefundClickListener {
 private class HistoryItemAdapter(private val listener: RefundClickListener) :
     Adapter<HistoryItemViewHolder>() {
 
-    private val items = ArrayList<HistoryItem>()
+    private val items = ArrayList<OrderHistoryEntry>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryItemViewHolder {
         val v =
@@ -130,7 +133,7 @@ private class HistoryItemAdapter(private val listener: RefundClickListener) :
         holder.bind(items[position])
     }
 
-    fun setData(items: List<HistoryItem>) {
+    fun setData(items: List<OrderHistoryEntry>) {
         this.items.clear()
         this.items.addAll(items)
         this.notifyDataSetChanged()
@@ -144,13 +147,18 @@ private class HistoryItemAdapter(private val listener: RefundClickListener) :
         private val orderIdView: TextView = v.findViewById(R.id.orderIdView)
         private val refundButton: ImageButton = v.findViewById(R.id.refundButton)
 
-        fun bind(item: HistoryItem) {
+        fun bind(item: OrderHistoryEntry) {
             orderSummaryView.text = item.summary
             val amount = item.amount
             orderAmountView.text = amount.toString()
             orderIdView.text = v.context.getString(R.string.history_ref_no, item.orderId)
-            orderTimeView.text = item.time.toRelativeTime(v.context)
-            refundButton.setOnClickListener { listener.onRefundClicked(item) }
+            orderTimeView.text = item.timestamp.ms.toRelativeTime(v.context)
+            if (item.refundable) {
+                refundButton.visibility = VISIBLE
+                refundButton.setOnClickListener { listener.onRefundClicked(item) }
+            } else {
+                refundButton.visibility = GONE
+            }
         }
 
     }

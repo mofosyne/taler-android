@@ -20,9 +20,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.volley.toolbox.Volley
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.getDefaultHttpClient
 import net.taler.merchantpos.config.ConfigManager
@@ -35,9 +32,6 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val httpClient = getDefaultHttpClient()
     private val api = MerchantApi(httpClient)
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val queue = Volley.newRequestQueue(app)
 
     val orderManager = OrderManager(app)
@@ -45,7 +39,7 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         addConfigurationReceiver(orderManager)
     }
     val paymentManager = PaymentManager(app, configManager, viewModelScope, api)
-    val historyManager = HistoryManager(configManager, queue, mapper)
+    val historyManager = HistoryManager(configManager, viewModelScope, api)
     val refundManager = RefundManager(configManager, queue)
 
     override fun onCleared() {

@@ -19,40 +19,22 @@ package net.taler.merchantpos.history
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.android.volley.Request.Method.GET
-import com.android.volley.RequestQueue
-import com.android.volley.Response.Listener
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.common.Amount
-import net.taler.common.Timestamp
-import net.taler.merchantpos.LogErrorListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import net.taler.merchantlib.MerchantApi
+import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.config.ConfigManager
-import net.taler.merchantpos.config.MerchantRequest
-import org.json.JSONObject
-
-data class HistoryItem(
-    @JsonProperty("order_id")
-    val orderId: String,
-    val amount: Amount,
-    val summary: String,
-    val timestamp: Timestamp
-) {
-    @get:JsonIgnore
-    val time = timestamp.ms
-}
 
 sealed class HistoryResult {
-    object Error : HistoryResult()
-    class Success(val items: List<HistoryItem>) : HistoryResult()
+    class Error(val msg: String) : HistoryResult()
+    class Success(val items: List<OrderHistoryEntry>) : HistoryResult()
 }
 
 class HistoryManager(
     private val configManager: ConfigManager,
-    private val queue: RequestQueue,
-    private val mapper: ObjectMapper
+    private val scope: CoroutineScope,
+    private val api: MerchantApi
 ) {
 
     private val mIsLoading = MutableLiveData(false)
@@ -65,29 +47,17 @@ class HistoryManager(
     internal fun fetchHistory() {
         mIsLoading.value = true
         val merchantConfig = configManager.merchantConfig!!
-        val params = mapOf("instance" to merchantConfig.instance!!)
-        val req = MerchantRequest(GET, merchantConfig, "history", params, null,
-            Listener { onHistoryResponse(it) },
-            LogErrorListener { onHistoryError() })
-        queue.add(req)
-    }
-
-    @UiThread
-    private fun onHistoryResponse(body: JSONObject) {
-        mIsLoading.value = false
-        val items = arrayListOf<HistoryItem>()
-        val historyJson = body.getJSONArray("history")
-        for (i in 0 until historyJson.length()) {
-            val historyItem: HistoryItem = mapper.readValue(historyJson.getString(i))
-            items.add(historyItem)
+        scope.launch(Dispatchers.IO) {
+            api.getOrderHistory(merchantConfig).handle(::onHistoryError) {
+                mIsLoading.postValue(false)
+                mItems.postValue(HistoryResult.Success(it.orders))
+            }
         }
-        mItems.value = HistoryResult.Success(items)
     }
 
-    @UiThread
-    private fun onHistoryError() {
+    private fun onHistoryError(msg: String) = scope.launch(Dispatchers.Main) {
         mIsLoading.value = false
-        mItems.value = HistoryResult.Error
+        mItems.value = HistoryResult.Error(msg)
     }
 
 }

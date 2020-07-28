@@ -33,6 +33,7 @@ import net.taler.common.AmountParserException
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
+import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.history.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
@@ -65,7 +66,7 @@ class RefundFragment : Fragment() {
         })
     }
 
-    private fun onRefundButtonClicked(item: HistoryItem) {
+    private fun onRefundButtonClicked(item: OrderHistoryEntry) {
         val inputAmount = try {
             Amount.fromString(item.amount.currency, amountInputView.text.toString())
         } catch (e: AmountParserException) {

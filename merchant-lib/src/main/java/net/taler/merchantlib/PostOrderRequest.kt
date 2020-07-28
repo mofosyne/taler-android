@@ -48,11 +48,11 @@ sealed class CheckPaymentResponse {
         override fun deserialize(decoder: Decoder): CheckPaymentResponse {
             val input = decoder as JsonInput
             val tree = input.decodeJson() as JsonObject
-            val paid = tree.getPrimitive("paid").boolean
-//            return if (paid) decoder.json.fromJson(Paid.serializer(), tree)
+            val orderStatus = tree.getPrimitive("order_status").content
+//            return if (orderStatus == "paid") decoder.json.fromJson(Paid.serializer(), tree)
 //            else decoder.json.fromJson(Unpaid.serializer(), tree)
             // manual parsing due to https://github.com/Kotlin/kotlinx.serialization/issues/576
-            return if (paid) Paid(
+            return if (orderStatus == "paid") Paid(
                 refunded = tree.getPrimitive("refunded").boolean
             ) else Unpaid(
                 talerPayUri = tree.getPrimitive("taler_pay_uri").content

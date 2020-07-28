@@ -16,7 +16,6 @@
 
 package net.taler.merchantlib
 
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
@@ -25,8 +24,6 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readBytes
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.contentType
@@ -64,14 +61,16 @@ class MerchantApi(private val httpClient: HttpClient) {
     suspend fun deleteOrder(
         merchantConfig: MerchantConfig,
         orderId: String
-    ): Response<HttpResponse> = response {
-        val resp = httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
+    ): Response<Unit> = response {
+        httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
             header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-        } as HttpResponse
-        // TODO remove when the API call was fixed
-        Log.e("TEST", "status: ${resp.status.value}")
-        Log.e("TEST", String(resp.readBytes()))
-        resp
+        } as Unit
+    }
+
+    suspend fun getOrderHistory(merchantConfig: MerchantConfig): Response<OrderHistory> = response {
+        httpClient.get(merchantConfig.urlFor("private/orders")) {
+            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+        } as OrderHistory
     }
 
 }
