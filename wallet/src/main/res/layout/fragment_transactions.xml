@@ -27,7 +27,7 @@
         android:scrollbars="vertical"
         android:visibility="invisible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/list_item_history"
+        tools:listitem="@layout/list_item_transaction"
         tools:visibility="visible" />
 
     <TextView

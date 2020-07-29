@@ -26,10 +26,28 @@ import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
+import net.taler.wallet.payment.PreparePayResponse.InsufficientBalanceResponse
+import net.taler.wallet.payment.PreparePayResponse.PaymentPossibleResponse
 import org.json.JSONObject
 import java.net.MalformedURLException
 
 val REGEX_PRODUCT_IMAGE = Regex("^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$")
+
+sealed class PayStatus {
+    object None : PayStatus()
+    object Loading : PayStatus()
+    data class Prepared(
+        val contractTerms: ContractTerms,
+        val proposalId: String,
+        val totalFees: Amount
+    ) : PayStatus()
+
+    data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
+    object AlreadyPaid : PayStatus()
+    data class Error(val error: String) : PayStatus()
+    data class Success(val currency: String) : PayStatus()
+}
 
 class PaymentManager(
     private val walletBackendApi: WalletBackendApi,
@@ -42,50 +60,25 @@ class PaymentManager(
     private val mDetailsShown = MutableLiveData<Boolean>()
     internal val detailsShown: LiveData<Boolean> = mDetailsShown
 
-    private var currentPayRequestId = 0
-
     @UiThread
     fun preparePay(url: String) {
         mPayStatus.value = PayStatus.Loading
         mDetailsShown.value = false
 
-        val args = JSONObject(mapOf("url" to url))
-
-        currentPayRequestId += 1
-        val payRequestId = currentPayRequestId
-
+        val args = JSONObject(mapOf("talerPayUri" to url))
         walletBackendApi.sendRequest("preparePay", args) { isError, result ->
-            when {
-                isError -> {
-                    Log.v(TAG, "got preparePay error result")
-                    mPayStatus.value = PayStatus.Error(result.toString())
-                }
-                payRequestId != this.currentPayRequestId -> {
-                    Log.v(TAG, "preparePay result was for old request")
-                }
-                else -> {
-                    val status = result.getString("status")
-                    try {
-                        mPayStatus.postValue(getPayStatusUpdate(status, result))
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error getting PayStatusUpdate", e)
-                        mPayStatus.postValue(PayStatus.Error(e.message ?: "unknown error"))
-                    }
-                }
+            if (isError) {
+                handleError("preparePay", result.toString(2))
+                return@sendRequest
+            }
+            val response: PreparePayResponse = mapper.readValue(result.toString())
+            Log.e(TAG, "PreparePayResponse $response")
+            mPayStatus.value = when (response) {
+                is PaymentPossibleResponse -> TODO()
+                is InsufficientBalanceResponse -> TODO()
+                is AlreadyConfirmedResponse -> TODO()
             }
         }
-    }
-
-    private fun getPayStatusUpdate(status: String, json: JSONObject) = when (status) {
-        "payment-possible" -> PayStatus.Prepared(
-            contractTerms = getContractTerms(json),
-            proposalId = json.getString("proposalId"),
-            totalFees = Amount.fromJsonObject(json.getJSONObject("totalFees"))
-        )
-        "paid" -> PayStatus.AlreadyPaid(getContractTerms(json))
-        "insufficient-balance" -> PayStatus.InsufficientBalance(getContractTerms(json))
-        "error" -> PayStatus.Error("got some error")
-        else -> PayStatus.Error("unknown status")
     }
 
     private fun getContractTerms(json: JSONObject): ContractTerms {
@@ -101,16 +94,13 @@ class PaymentManager(
         return terms
     }
 
-    @UiThread
-    fun toggleDetailsShown() {
-        val oldValue = mDetailsShown.value ?: false
-        mDetailsShown.value = !oldValue
-    }
-
     fun confirmPay(proposalId: String, currency: String) {
         val args = JSONObject(mapOf("proposalId" to proposalId))
-
-        walletBackendApi.sendRequest("confirmPay", args) { _, _ ->
+        walletBackendApi.sendRequest("confirmPay", args) { isError, result ->
+            if (isError) {
+                handleError("preparePay", result.toString())
+                return@sendRequest
+            }
             mPayStatus.postValue(PayStatus.Success(currency))
         }
     }
@@ -129,8 +119,9 @@ class PaymentManager(
 
         Log.i(TAG, "aborting proposal")
 
-        walletBackendApi.sendRequest("abortProposal", args) { isError, _ ->
+        walletBackendApi.sendRequest("abortProposal", args) { isError, result ->
             if (isError) {
+                handleError("abortProposal", result.toString(2))
                 Log.e(TAG, "received error response to abortProposal")
                 return@sendRequest
             }
@@ -139,23 +130,19 @@ class PaymentManager(
     }
 
     @UiThread
+    fun toggleDetailsShown() {
+        val oldValue = mDetailsShown.value ?: false
+        mDetailsShown.value = !oldValue
+    }
+
+    @UiThread
     fun resetPayStatus() {
         mPayStatus.value = PayStatus.None
     }
 
-}
+    private fun handleError(operation: String, msg: String) {
+        Log.e(TAG, "got $operation error result $msg")
+        mPayStatus.value = PayStatus.Error(msg)
+    }
 
-sealed class PayStatus {
-    object None : PayStatus()
-    object Loading : PayStatus()
-    data class Prepared(
-        val contractTerms: ContractTerms,
-        val proposalId: String,
-        val totalFees: Amount
-    ) : PayStatus()
-
-    data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
-    data class AlreadyPaid(val contractTerms: ContractTerms) : PayStatus()
-    data class Error(val error: String) : PayStatus()
-    data class Success(val currency: String) : PayStatus()
 }

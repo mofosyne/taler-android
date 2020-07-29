@@ -133,7 +133,7 @@
     </fragment>
     <fragment
         android:id="@+id/selectExchangeFragment"
-        android:name="net.taler.wallet.withdraw.SelectExchangeFragment"
+        android:name="net.taler.wallet.exchanges.SelectExchangeFragment"
         android:label="@string/nav_exchange_fees"
         tools:layout="@layout/fragment_select_exchange" />
 
@@ -142,12 +142,6 @@
         android:name="net.taler.wallet.pending.PendingOperationsFragment"
         android:label="@string/pending_operations_title"
         tools:layout="@layout/fragment_pending_operations" />
-
-    <fragment
-        android:id="@+id/nav_history"
-        android:name="net.taler.wallet.history.DevHistoryFragment"
-        android:label="@string/nav_history"
-        tools:layout="@layout/fragment_transactions" />
 
     <fragment
         android:id="@+id/nav_uri_input"
@@ -172,10 +166,6 @@
     <action
         android:id="@+id/action_global_pending_operations"
         app:destination="@id/nav_pending_operations" />
-
-    <action
-        android:id="@+id/action_global_history"
-        app:destination="@id/nav_history" />
 
     <action
         android:id="@+id/action_nav_transaction_detail"

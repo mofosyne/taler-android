@@ -112,7 +112,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         model.balances.observe(viewLifecycleOwner, Observer { balances ->
-            balances[currency]?.available?.let { amount ->
+            balances.find { it.currency == currency }?.available?.let { amount ->
                 requireActivity().title =
                     getString(R.string.transactions_detail_title_balance, amount)
             }

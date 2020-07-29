@@ -30,7 +30,7 @@ import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.system.exitProcess
 
@@ -56,9 +56,10 @@ class WalletBackendService : Service() {
     private val subscribers = LinkedList<Messenger>()
 
     override fun onCreate() {
-        val talerWalletAndroidCode = assets.open("taler-wallet-android-$WALLET_CORE_VERSION.js").use {
-            it.readBytes().toString(Charsets.UTF_8)
-        }
+        val talerWalletAndroidCode =
+            assets.open("taler-wallet-android-$WALLET_CORE_VERSION.js").use {
+                it.readBytes().toString(Charsets.UTF_8)
+            }
 
 
         Log.i(TAG, "onCreate in wallet backend service")

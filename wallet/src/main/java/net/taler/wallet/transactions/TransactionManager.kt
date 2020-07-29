@@ -102,12 +102,4 @@ class TransactionManager(
         }
     }
 
-    @UiThread
-    fun hasPending(currency: String): Boolean {
-        val result = mTransactions[currency]?.value ?: return false
-        return if (result is TransactionsResult.Success) {
-            result.transactions.any { it.pending }
-        } else false
-    }
-
 }

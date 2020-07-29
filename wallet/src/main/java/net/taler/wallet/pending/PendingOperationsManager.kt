@@ -32,7 +32,7 @@ class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
     val pendingOperations = MutableLiveData<List<PendingOperationInfo>>()
 
     internal fun getPending() {
-        walletBackendApi.sendRequest("getPendingOperations", null) { isError, result ->
+        walletBackendApi.sendRequest("getPendingOperations") { isError, result ->
             if (isError) {
                 Log.i(TAG, "got getPending error result: $result")
                 return@sendRequest
@@ -51,7 +51,7 @@ class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
     }
 
     fun retryPendingNow() {
-        walletBackendApi.sendRequest("retryPendingNow", null)
+        walletBackendApi.sendRequest("retryPendingNow")
     }
 
 }

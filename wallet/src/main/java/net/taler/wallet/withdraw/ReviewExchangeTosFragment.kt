@@ -55,7 +55,7 @@ class ReviewExchangeTosFragment : Fragment() {
         }
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is WithdrawStatus.TermsOfServiceReviewRequired -> {
+                is WithdrawStatus.TosReviewRequired -> {
                     val sections = try {
                         // TODO remove next line once exchange delivers proper markdown
                         val text = it.tosText.replace("****************", "================")

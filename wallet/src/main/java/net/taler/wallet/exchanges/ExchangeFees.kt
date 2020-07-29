@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.withdraw
+package net.taler.wallet.exchanges
 
 import net.taler.common.Amount
 import net.taler.common.Timestamp

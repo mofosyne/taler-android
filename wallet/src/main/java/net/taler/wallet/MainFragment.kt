@@ -49,7 +49,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model.balances.observe(viewLifecycleOwner, Observer {
-            onBalancesChanged(it.values.toList())
+            onBalancesChanged(it)
         })
         model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
             // we only need to navigate to a dedicated list, when in multi-currency mode

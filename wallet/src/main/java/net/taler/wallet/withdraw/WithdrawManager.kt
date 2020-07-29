@@ -17,38 +17,57 @@
 package net.taler.wallet.withdraw
 
 import android.util.Log
+import androidx.annotation.UiThread
 import androidx.lifecycle.MutableLiveData
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 import org.json.JSONObject
 
 sealed class WithdrawStatus {
-    data class Loading(val talerWithdrawUri: String) : WithdrawStatus()
-    data class TermsOfServiceReviewRequired(
-        val talerWithdrawUri: String,
-        val exchange: String,
+    data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
+    data class TosReviewRequired(
+        val talerWithdrawUri: String? = null,
+        val exchangeBaseUrl: String,
+        val amountRaw: Amount,
+        val amountEffective: Amount,
         val tosText: String,
-        val tosEtag: String,
-        val amount: Amount,
-        val fee: Amount
+        val tosEtag: String
     ) : WithdrawStatus()
 
     data class ReceivedDetails(
-        val talerWithdrawUri: String,
-        val exchange: String,
-        val amount: Amount,
-        val fee: Amount
+        val talerWithdrawUri: String? = null,
+        val exchangeBaseUrl: String,
+        val amountRaw: Amount,
+        val amountEffective: Amount
     ) : WithdrawStatus()
 
-    data class Withdrawing(val talerWithdrawUri: String) : WithdrawStatus()
+    object Withdrawing : WithdrawStatus()
     data class Success(val currency: String) : WithdrawStatus()
     data class Error(val message: String?) : WithdrawStatus()
 }
 
-class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
+data class WithdrawalDetailsForUri(
+    val amount: Amount,
+    val defaultExchangeBaseUrl: String?,
+    val possibleExchanges: List<ExchangeItem>
+)
+
+data class WithdrawalDetails(
+    val tosAccepted: Boolean,
+    val amountRaw: Amount,
+    val amountEffective: Amount
+)
+
+class WithdrawManager(
+    private val walletBackendApi: WalletBackendApi,
+    private val mapper: ObjectMapper
+) {
 
     val withdrawStatus = MutableLiveData<WithdrawStatus>()
     val testWithdrawalInProgress = MutableLiveData(false)
@@ -58,127 +77,72 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
 
     fun withdrawTestkudos() {
         testWithdrawalInProgress.value = true
-
-        walletBackendApi.sendRequest("withdrawTestkudos", null) { _, _ ->
+        walletBackendApi.sendRequest("withdrawTestkudos") { _, _ ->
             testWithdrawalInProgress.postValue(false)
         }
     }
 
-    fun getWithdrawalDetails(exchangeItem: ExchangeItem, amount: Amount) {
+    fun getWithdrawalDetails(uri: String) {
+        withdrawStatus.value = WithdrawStatus.Loading(uri)
         val args = JSONObject().apply {
-            put("exchangeBaseUrl", exchangeItem.exchangeBaseUrl)
+            put("talerWithdrawUri", uri)
+        }
+        walletBackendApi.sendRequest("getWithdrawalDetailsForUri", args) { isError, result ->
+            if (isError) {
+                handleError("getWithdrawalDetailsForUri", result)
+                return@sendRequest
+            }
+            val details: WithdrawalDetailsForUri = mapper.readValue(result.toString())
+            if (details.defaultExchangeBaseUrl == null) {
+                // TODO go to exchange selection screen instead
+                val chosenExchange = details.possibleExchanges[0].exchangeBaseUrl
+                getWithdrawalDetails(chosenExchange, details.amount, uri)
+            } else {
+                getWithdrawalDetails(details.defaultExchangeBaseUrl, details.amount, uri)
+            }
+        }
+    }
+
+    fun getWithdrawalDetails(exchangeBaseUrl: String, amount: Amount, uri: String? = null) {
+        withdrawStatus.value = WithdrawStatus.Loading(uri)
+        val args = JSONObject().apply {
+            put("exchangeBaseUrl", exchangeBaseUrl)
             put("amount", amount.toJSONString())
         }
         walletBackendApi.sendRequest("getWithdrawalDetailsForAmount", args) { isError, result ->
-            // {"rawAmount":"TESTKUDOS:5","effectiveAmount":"TESTKUDOS:4.8","paytoUris":["payto:\/\/x-taler-bank\/bank.test.taler.net\/Exchange"],"tosAccepted":false}
             if (isError) {
-                Log.e(TAG, "$result")
-            } else {
-                Log.e(TAG, "$result")
-            }
-        }
-    }
-
-    fun getWithdrawalInfo(talerWithdrawUri: String) {
-        val args = JSONObject().apply {
-            put("talerWithdrawUri", talerWithdrawUri)
-        }
-        withdrawStatus.value = WithdrawStatus.Loading(talerWithdrawUri)
-
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
-                val message = if (result.has("message")) result.getString("message") else null
-                withdrawStatus.postValue(WithdrawStatus.Error(message))
+                handleError("getWithdrawalDetailsForAmount", result)
                 return@sendRequest
             }
-            Log.v(TAG, "got getWithdrawDetailsForUri result")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Loading) {
-                Log.v(TAG, "ignoring withdrawal info result, not loading.")
-                return@sendRequest
-            }
-            val wi = result.getJSONObject("bankWithdrawDetails")
-            val suggestedExchange = wi.getString("suggestedExchange")
-            // We just use the suggested exchange, in the future there will be
-            // a selection dialog.
-            getWithdrawalInfoWithExchange(talerWithdrawUri, suggestedExchange)
-        }
-    }
-
-    private fun getWithdrawalInfoWithExchange(talerWithdrawUri: String, selectedExchange: String) {
-        val args = JSONObject().apply {
-            put("talerWithdrawUri", talerWithdrawUri)
-            put("selectedExchange", selectedExchange)
-        }
-
-        walletBackendApi.sendRequest("getWithdrawDetailsForUri", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Error getWithdrawDetailsForUri ${result.toString(4)}")
-                val message = if (result.has("message")) result.getString("message") else null
-                withdrawStatus.postValue(WithdrawStatus.Error(message))
-                return@sendRequest
-            }
-            Log.v(TAG, "got getWithdrawDetailsForUri result (with exchange details)")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Loading) {
-                Log.w(TAG, "ignoring withdrawal info result, not loading.")
-                return@sendRequest
-            }
-            val wi = result.getJSONObject("bankWithdrawDetails")
-            val amount = Amount.fromJsonObject(wi.getJSONObject("amount"))
-
-            val ei = result.getJSONObject("exchangeWithdrawDetails")
-            val termsOfServiceAccepted = ei.getBoolean("termsOfServiceAccepted")
-
-            exchangeFees = ExchangeFees.fromExchangeWithdrawDetailsJson(ei)
-
-            val withdrawFee = Amount.fromJsonObject(ei.getJSONObject("withdrawFee"))
-            val overhead = Amount.fromJsonObject(ei.getJSONObject("overhead"))
-            val fee = withdrawFee + overhead
-
-            if (!termsOfServiceAccepted) {
-                val exchange = ei.getJSONObject("exchangeInfo")
-                val tosText = exchange.getString("termsOfServiceText")
-                val tosEtag = exchange.optString("termsOfServiceLastEtag", "undefined")
-                withdrawStatus.postValue(
-                    WithdrawStatus.TermsOfServiceReviewRequired(
-                        status.talerWithdrawUri,
-                        selectedExchange, tosText, tosEtag,
-                        amount, fee
-                    )
+            val details: WithdrawalDetails = mapper.readValue(result.toString())
+            if (details.tosAccepted)
+                withdrawStatus.value = ReceivedDetails(
+                    talerWithdrawUri = uri,
+                    exchangeBaseUrl = exchangeBaseUrl,
+                    amountRaw = details.amountRaw,
+                    amountEffective = details.amountEffective
                 )
-            } else {
-                withdrawStatus.postValue(
-                    ReceivedDetails(
-                        status.talerWithdrawUri,
-                        selectedExchange, amount,
-                        fee
-                    )
-                )
-            }
+            else getExchangeTos(exchangeBaseUrl, details, uri)
         }
     }
 
-    fun acceptWithdrawal(talerWithdrawUri: String, selectedExchange: String, currency: String) {
-        val args = JSONObject()
-        args.put("talerWithdrawUri", talerWithdrawUri)
-        args.put("selectedExchange", selectedExchange)
-
-        withdrawStatus.value = WithdrawStatus.Withdrawing(talerWithdrawUri)
-
-        walletBackendApi.sendRequest("acceptWithdrawal", args) { isError, result ->
+    private fun getExchangeTos(exchangeBaseUrl: String, details: WithdrawalDetails, uri: String?) {
+        val args = JSONObject().apply {
+            put("exchangeBaseUrl", exchangeBaseUrl)
+        }
+        walletBackendApi.sendRequest("getExchangeTos", args) { isError, result ->
             if (isError) {
-                Log.v(TAG, "got acceptWithdrawal error result: ${result.toString(2)}")
+                handleError("getExchangeTos", result)
                 return@sendRequest
             }
-            Log.v(TAG, "got acceptWithdrawal result")
-            val status = withdrawStatus.value
-            if (status !is WithdrawStatus.Withdrawing) {
-                Log.w(TAG, "ignoring acceptWithdrawal result, invalid state: $status")
-                return@sendRequest
-            }
-            withdrawStatus.postValue(WithdrawStatus.Success(currency))
+            withdrawStatus.value = WithdrawStatus.TosReviewRequired(
+                talerWithdrawUri = uri,
+                exchangeBaseUrl = exchangeBaseUrl,
+                amountRaw = details.amountRaw,
+                amountEffective = details.amountEffective,
+                tosText = result.getString("tos"),
+                tosEtag = result.getString("currentEtag")
+            )
         }
     }
 
@@ -186,21 +150,54 @@ class WithdrawManager(private val walletBackendApi: WalletBackendApi) {
      * Accept the currently displayed terms of service.
      */
     fun acceptCurrentTermsOfService() {
-        val s = withdrawStatus.value
-        check(s is WithdrawStatus.TermsOfServiceReviewRequired)
-
+        val s = withdrawStatus.value as WithdrawStatus.TosReviewRequired
         val args = JSONObject().apply {
-            put("exchangeBaseUrl", s.exchange)
+            put("exchangeBaseUrl", s.exchangeBaseUrl)
             put("etag", s.tosEtag)
         }
-        walletBackendApi.sendRequest("acceptExchangeTermsOfService", args) { isError, result ->
+        walletBackendApi.sendRequest("setExchangeTosAccepted", args) { isError, result ->
             if (isError) {
-                Log.e(TAG, "Error acceptExchangeTermsOfService ${result.toString(4)}")
+                handleError("setExchangeTosAccepted", result)
                 return@sendRequest
             }
-            val status = ReceivedDetails(s.talerWithdrawUri, s.exchange, s.amount, s.fee)
-            withdrawStatus.postValue(status)
+            withdrawStatus.value = ReceivedDetails(
+                talerWithdrawUri = s.talerWithdrawUri,
+                exchangeBaseUrl = s.exchangeBaseUrl,
+                amountRaw = s.amountRaw,
+                amountEffective = s.amountEffective
+            )
         }
+    }
+
+    @UiThread
+    fun acceptWithdrawal() {
+        val status = withdrawStatus.value as ReceivedDetails
+
+        val operation = if (status.talerWithdrawUri == null)
+            "acceptManualWithdrawal" else "acceptBankIntegratedWithdrawal"
+        val args = JSONObject().apply {
+            put("exchangeBaseUrl", status.exchangeBaseUrl)
+            if (status.talerWithdrawUri == null) {
+                put("amount", status.amountRaw)
+            } else {
+                put("talerWithdrawUri", status.talerWithdrawUri)
+            }
+        }
+        withdrawStatus.value = WithdrawStatus.Withdrawing
+        walletBackendApi.sendRequest(operation, args) { isError, result ->
+            if (isError) {
+                handleError(operation, result)
+                return@sendRequest
+            }
+            withdrawStatus.value = WithdrawStatus.Success(status.amountRaw.currency)
+        }
+    }
+
+    @UiThread
+    private fun handleError(operation: String, result: JSONObject) {
+        Log.e(TAG, "Error $operation ${result.toString(2)}")
+        val message = if (result.has("message")) result.getString("message") else null
+        withdrawStatus.value = WithdrawStatus.Error(message)
     }
 
 }

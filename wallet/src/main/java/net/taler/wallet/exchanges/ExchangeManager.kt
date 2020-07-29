@@ -21,7 +21,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.common.Amount
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
@@ -46,7 +45,7 @@ class ExchangeManager(
 
     private fun list(): LiveData<List<ExchangeItem>> {
         mProgress.value = true
-        walletBackendApi.sendRequest("listExchanges", JSONObject()) { isError, result ->
+        walletBackendApi.sendRequest("listExchanges") { isError, result ->
             if (isError) {
                 throw AssertionError("Wallet core failed to return exchanges!")
             } else {

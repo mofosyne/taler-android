@@ -28,7 +28,14 @@ import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.balances.BalanceAdapter.BalanceViewHolder
 
-data class BalanceItem(val available: Amount, val pendingIncoming: Amount, val hasPending: Boolean)
+data class BalanceItem(
+    val available: Amount,
+    val pendingIncoming: Amount,
+    val pendingOutgoing: Amount
+) {
+    val currency: String get() = available.currency
+    val hasPending: Boolean get() = !pendingIncoming.isZero() || !pendingOutgoing.isZero()
+}
 
 class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 
@@ -65,7 +72,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
 
         fun bind(item: BalanceItem) {
             v.setOnClickListener { listener.onBalanceClick(item.available.currency) }
-            currencyView.text = item.available.currency
+            currencyView.text = item.currency
             amountView.text = item.available.amountStr
 
             val amountIncoming = item.pendingIncoming

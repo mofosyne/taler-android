@@ -60,7 +60,7 @@ class BalancesFragment : Fragment(),
         }
 
         model.balances.observe(viewLifecycleOwner, Observer {
-            onBalancesChanged(it.values.toList())
+            onBalancesChanged(it)
         })
     }
 

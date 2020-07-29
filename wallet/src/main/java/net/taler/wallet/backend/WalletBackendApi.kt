@@ -30,7 +30,7 @@ import android.util.Log
 import android.util.SparseArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.LinkedList
 
 class WalletBackendApi(
     private val app: Application,
@@ -115,7 +115,7 @@ class WalletBackendApi(
 
     fun sendRequest(
         operation: String,
-        args: JSONObject?,
+        args: JSONObject? = null,
         onResponse: (isError: Boolean, message: JSONObject) -> Unit = { _, _ -> }
     ) {
         val requestID = nextRequestID++

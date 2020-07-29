@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.withdraw
+package net.taler.wallet.exchanges
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,8 +33,8 @@ import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.withdraw.CoinFeeAdapter.CoinFeeViewHolder
-import net.taler.wallet.withdraw.WireFeeAdapter.WireFeeViewHolder
+import net.taler.wallet.exchanges.CoinFeeAdapter.CoinFeeViewHolder
+import net.taler.wallet.exchanges.WireFeeAdapter.WireFeeViewHolder
 
 class SelectExchangeFragment : Fragment() {
 
@@ -59,8 +59,10 @@ class SelectExchangeFragment : Fragment() {
             overheadView.visibility = GONE
         } else overheadView.setAmount(fees.overhead)
         expirationView.text = fees.earliestDepositExpiration.ms.toRelativeTime(requireContext())
-        coinFeesList.adapter = CoinFeeAdapter(fees.coinFees)
-        wireFeesList.adapter = WireFeeAdapter(fees.wireFees)
+        coinFeesList.adapter =
+            CoinFeeAdapter(fees.coinFees)
+        wireFeesList.adapter =
+            WireFeeAdapter(fees.wireFees)
     }
 
     private fun TextView.setAmount(amount: Amount) {

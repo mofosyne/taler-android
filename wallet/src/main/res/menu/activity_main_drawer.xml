@@ -43,10 +43,6 @@
                     android:id="@+id/nav_pending_operations"
                     android:icon="@drawable/ic_sync"
                     android:title="@string/pending_operations_title" />
-                <item
-                    android:id="@+id/nav_history"
-                    android:icon="@drawable/ic_history"
-                    android:title="@string/nav_history" />
             </group>
         </menu>
     </item>

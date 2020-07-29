@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -34,7 +36,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
-import net.taler.wallet.withdraw.WithdrawStatus.TermsOfServiceReviewRequired
+import net.taler.wallet.withdraw.WithdrawStatus.TosReviewRequired
 import net.taler.wallet.withdraw.WithdrawStatus.Withdrawing
 
 class PromptWithdrawFragment : Fragment() {
@@ -59,17 +61,13 @@ class PromptWithdrawFragment : Fragment() {
 
     private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
         is WithdrawStatus.ReceivedDetails -> {
-            showContent(status.amount, status.fee, status.exchange)
+            showContent(status.amountRaw, status.amountEffective, status.exchangeBaseUrl)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_confirm)
                 setOnClickListener {
                     it.fadeOut()
                     confirmProgressBar.fadeIn()
-                    withdrawManager.acceptWithdrawal(
-                        status.talerWithdrawUri,
-                        status.exchange,
-                        status.amount.currency
-                    )
+                    withdrawManager.acceptWithdrawal()
                 }
                 isEnabled = true
             }
@@ -87,8 +85,8 @@ class PromptWithdrawFragment : Fragment() {
         is Withdrawing -> {
             model.showProgressBar.value = true
         }
-        is TermsOfServiceReviewRequired -> {
-            showContent(status.amount, status.fee, status.exchange)
+        is TosReviewRequired -> {
+            showContent(status.amountRaw, status.amountEffective, status.exchangeBaseUrl)
             confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_tos)
                 setOnClickListener {
@@ -104,20 +102,20 @@ class PromptWithdrawFragment : Fragment() {
         null -> model.showProgressBar.value = false
     }
 
-    private fun showContent(amount: Amount, fee: Amount, exchange: String) {
+    private fun showContent(amountRaw: Amount, amountEffective: Amount, exchange: String) {
         model.showProgressBar.value = false
         progressBar.fadeOut()
 
         introView.fadeIn()
-        effectiveAmountView.text = (amount - fee).toString()
+        effectiveAmountView.text = amountEffective.toString()
         effectiveAmountView.fadeIn()
 
         chosenAmountLabel.fadeIn()
-        chosenAmountView.text = amount.toString()
+        chosenAmountView.text = amountRaw.toString()
         chosenAmountView.fadeIn()
 
         feeLabel.fadeIn()
-        feeView.text = getString(R.string.amount_negative, fee.toString())
+        feeView.text = getString(R.string.amount_negative, (amountRaw - amountEffective).toString())
         feeView.fadeIn()
 
         exchangeIntroView.fadeIn()
@@ -125,7 +123,7 @@ class PromptWithdrawFragment : Fragment() {
         withdrawExchangeUrl.fadeIn()
         selectExchangeButton.fadeIn()
         selectExchangeButton.setOnClickListener {
-            findNavController().navigate(R.id.action_promptWithdraw_to_selectExchangeFragment)
+            Toast.makeText(context, "Not yet implemented", LENGTH_SHORT).show()
         }
 
         withdrawCard.fadeIn()

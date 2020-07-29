@@ -60,7 +60,7 @@ class ManualWithdrawFragment : Fragment() {
             val amount = Amount(exchangeItem.currency, value, 0)
             amountView.hideKeyboard()
             Toast.makeText(view.context, "Not implemented: $amount", LENGTH_SHORT).show()
-            withdrawManager.getWithdrawalDetails(exchangeItem, amount)
+            withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
         }
     }
 

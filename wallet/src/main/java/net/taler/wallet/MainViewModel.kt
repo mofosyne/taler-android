@@ -27,14 +27,13 @@ import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import net.taler.common.Amount
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.exchanges.ExchangeManager
-import net.taler.wallet.history.DevHistoryManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
@@ -55,8 +54,8 @@ private val transactionNotifications = listOf(
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
-    private val mBalances = MutableLiveData<Map<String, BalanceItem>>()
-    val balances: LiveData<Map<String, BalanceItem>> = mBalances.distinctUntilChanged()
+    private val mBalances = MutableLiveData<List<BalanceItem>>()
+    val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
@@ -85,7 +84,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             // refresh pending ops and history with each notification
             if (devMode.value == true) {
                 pendingOperationsManager.getPending()
-                historyManager.loadHistory()
             }
         }
     }
@@ -94,12 +92,10 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    val withdrawManager = WithdrawManager(walletBackendApi)
+    val withdrawManager = WithdrawManager(walletBackendApi, mapper)
     val paymentManager = PaymentManager(walletBackendApi, mapper)
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(walletBackendApi)
-    val historyManager: DevHistoryManager =
-        DevHistoryManager(walletBackendApi, viewModelScope, mapper)
     val transactionManager: TransactionManager =
         TransactionManager(walletBackendApi, viewModelScope, mapper)
     val refundManager = RefundManager(walletBackendApi)
@@ -123,26 +119,13 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     @UiThread
     fun loadBalances() {
         showProgressBar.value = true
-        walletBackendApi.sendRequest("getBalances", null) { isError, result ->
+        walletBackendApi.sendRequest("getBalances") { isError, result ->
             if (isError) {
                 Log.e(TAG, "Error retrieving balances: ${result.toString(2)}")
                 return@sendRequest
             }
-            val balanceMap = HashMap<String, BalanceItem>()
-            val byCurrency = result.getJSONObject("byCurrency")
-            val currencyList = byCurrency.keys().asSequence().toList().sorted()
-            for (currency in currencyList) {
-                val jsonAmount = byCurrency.getJSONObject(currency)
-                    .getJSONObject("available")
-                val amount = Amount.fromJsonObject(jsonAmount)
-                val jsonAmountIncoming = byCurrency.getJSONObject(currency)
-                    .getJSONObject("pendingIncoming")
-                val amountIncoming = Amount.fromJsonObject(jsonAmountIncoming)
-                val hasPending = transactionManager.hasPending(currency)
-                balanceMap[currency] = BalanceItem(amount, amountIncoming, hasPending)
-            }
-            mBalances.postValue(balanceMap)
-            showProgressBar.postValue(false)
+            mBalances.value = mapper.readValue(result.getString("balances"))
+            showProgressBar.value = false
         }
     }
 
@@ -156,17 +139,17 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     @UiThread
     fun dangerouslyReset() {
-        walletBackendApi.sendRequest("reset", null)
+        walletBackendApi.sendRequest("reset")
         withdrawManager.testWithdrawalInProgress.value = false
-        mBalances.value = emptyMap()
+        mBalances.value = emptyList()
     }
 
     fun startTunnel() {
-        walletBackendApi.sendRequest("startTunnel", null)
+        walletBackendApi.sendRequest("startTunnel")
     }
 
     fun stopTunnel() {
-        walletBackendApi.sendRequest("stopTunnel", null)
+        walletBackendApi.sendRequest("stopTunnel")
     }
 
     fun tunnelResponse(resp: String) {
