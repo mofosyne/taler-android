@@ -19,6 +19,7 @@ package net.taler.wallet.payment
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
+import net.taler.common.Amount
 import net.taler.common.ContractTerms
 
 @JsonTypeInfo(use = NAME, property = "status")
@@ -26,8 +27,17 @@ sealed class PreparePayResponse(open val proposalId: String) {
     @JsonTypeName("payment-possible")
     data class PaymentPossibleResponse(
         override val proposalId: String,
+        val amountRaw: Amount,
+        val amountEffective: Amount,
         val contractTerms: ContractTerms
-    ) : PreparePayResponse(proposalId)
+    ) : PreparePayResponse(proposalId) {
+        fun toPayStatusPrepared() = PayStatus.Prepared(
+            contractTerms = contractTerms,
+            proposalId = proposalId,
+            amountRaw = amountRaw,
+            amountEffective = amountEffective
+        )
+    }
 
     @JsonTypeName("insufficient-balance")
     data class InsufficientBalanceResponse(

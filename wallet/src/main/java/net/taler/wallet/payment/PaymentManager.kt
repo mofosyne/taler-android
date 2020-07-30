@@ -26,6 +26,8 @@ import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.payment.PayStatus.AlreadyPaid
+import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
 import net.taler.wallet.payment.PreparePayResponse.InsufficientBalanceResponse
 import net.taler.wallet.payment.PreparePayResponse.PaymentPossibleResponse
@@ -40,7 +42,8 @@ sealed class PayStatus {
     data class Prepared(
         val contractTerms: ContractTerms,
         val proposalId: String,
-        val totalFees: Amount
+        val amountRaw: Amount,
+        val amountEffective: Amount
     ) : PayStatus()
 
     data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
@@ -74,9 +77,9 @@ class PaymentManager(
             val response: PreparePayResponse = mapper.readValue(result.toString())
             Log.e(TAG, "PreparePayResponse $response")
             mPayStatus.value = when (response) {
-                is PaymentPossibleResponse -> TODO()
-                is InsufficientBalanceResponse -> TODO()
-                is AlreadyConfirmedResponse -> TODO()
+                is PaymentPossibleResponse -> response.toPayStatusPrepared()
+                is InsufficientBalanceResponse -> InsufficientBalance(response.contractTerms)
+                is AlreadyConfirmedResponse -> AlreadyPaid
             }
         }
     }

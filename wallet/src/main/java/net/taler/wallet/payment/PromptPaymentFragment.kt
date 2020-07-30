@@ -95,7 +95,8 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         when (payStatus) {
             is PayStatus.Prepared -> {
                 showLoading(false)
-                showOrder(payStatus.contractTerms, payStatus.totalFees)
+                val fees = payStatus.amountEffective - payStatus.amountRaw
+                showOrder(payStatus.contractTerms, fees)
                 confirmButton.isEnabled = true
                 confirmButton.setOnClickListener {
                     model.showProgressBar.value = true
@@ -109,7 +110,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             }
             is PayStatus.InsufficientBalance -> {
                 showLoading(false)
-                showOrder(payStatus.contractTerms, null)
+                showOrder(payStatus.contractTerms)
                 errorView.setText(R.string.payment_balance_insufficient)
                 errorView.fadeIn()
             }
@@ -141,7 +142,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         }
     }
 
-    private fun showOrder(contractTerms: ContractTerms, totalFees: Amount?) {
+    private fun showOrder(contractTerms: ContractTerms, totalFees: Amount? = null) {
         orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
         if (contractTerms.products.size == 1) paymentManager.toggleDetailsShown()
