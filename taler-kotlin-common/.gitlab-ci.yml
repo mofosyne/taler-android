@@ -4,8 +4,4 @@ taler_kotlin_common_test:
     changes:
       - taler-kotlin-common/**/*
       - build.gradle
-  script: ./gradlew :taler-kotlin-common:check
-  artifacts:
-    paths:
-      - taler-kotlin-common/build/reports/lint-results.html
-    expire_in: 1 week
+  script: ./gradlew :taler-kotlin-common:jvmTest

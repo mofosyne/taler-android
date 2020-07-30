@@ -18,7 +18,6 @@ package net.taler.common
 
 import androidx.annotation.RequiresApi
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
@@ -28,13 +27,14 @@ import kotlinx.serialization.Serializable
 import net.taler.common.TalerUtils.getLocalizedString
 
 @Serializable
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class ContractTerms(
     val summary: String,
     @SerialName("summary_i18n")
+    @get:JsonProperty("summary_i18n")
     val summaryI18n: Map<String, String>? = null,
     val amount: Amount,
     @SerialName("fulfillment_url")
+    @get:JsonProperty("fulfillment_url")
     val fulfillmentUrl: String,
     val products: List<ContractProduct>
 )

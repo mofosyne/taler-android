@@ -113,6 +113,7 @@ class MerchantApiTest {
         val unpaidResponse = CheckPaymentResponse.Unpaid(false, "http://taler.net/foo")
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
             """{
+                "order_status": "unpaid",
                 "paid": ${unpaidResponse.paid},
                 "taler_pay_uri": "${unpaidResponse.talerPayUri}"
             }""".trimIndent()

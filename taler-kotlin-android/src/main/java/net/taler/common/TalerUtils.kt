@@ -18,8 +18,7 @@ package net.taler.common
 
 import androidx.annotation.RequiresApi
 import androidx.core.os.LocaleListCompat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Locale
 
 object TalerUtils {
 

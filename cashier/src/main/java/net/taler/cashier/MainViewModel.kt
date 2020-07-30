@@ -40,6 +40,7 @@ import net.taler.common.isOnline
 
 private val TAG = MainViewModel::class.java.simpleName
 
+private const val VERSION_BANK = "0:0:0"
 private const val PREF_NAME = "net.taler.cashier.prefs"
 private const val PREF_KEY_BANK_URL = "bankUrl"
 private const val PREF_KEY_USERNAME = "username"
@@ -86,20 +87,21 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     fun checkAndSaveConfig(config: Config) {
         mConfigResult.value = null
         viewModelScope.launch(Dispatchers.IO) {
-            val url = "${config.bankUrl}/accounts/${config.username}/balance"
+            val url = "${config.bankUrl}/config"
             Log.d(TAG, "Checking config: $url")
             val result = when (val response = makeJsonGetRequest(url, config)) {
                 is HttpJsonResult.Success -> {
-                    val balance = response.json.getString("balance")
+                    val version = response.json.getString("version")
+                    // TODO check if version is compatible
+                    val currency = response.json.getString("currency")
                     try {
-                        val amount = SignedAmount.fromJSONString(balance)
-                        mCurrency.postValue(amount.amount.currency)
-                        prefs.edit().putString(PREF_KEY_CURRENCY, amount.amount.currency).apply()
+                        mCurrency.postValue(currency)
+                        prefs.edit().putString(PREF_KEY_CURRENCY, currency).apply()
                         // save config
                         saveConfig(config)
                         ConfigResult.Success
-                    } catch (e: AmountParserException) {
-                        ConfigResult.Error(false, "Invalid Amount: $balance")
+                    } catch (e: Exception) {
+                        ConfigResult.Error(false, "Invalid Config: ${response.json}")
                     }
                 }
                 is HttpJsonResult.Error -> {

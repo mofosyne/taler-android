@@ -16,20 +16,26 @@
 
 package net.taler.common
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
-import org.junit.Test
+import kotlin.random.Random
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.test.fail
 
 class AmountTest {
 
+    companion object {
+        fun getRandomAmount() = getRandomAmount(getRandomString(1, Random.nextInt(1, 12)))
+        fun getRandomAmount(currency: String): Amount {
+            val value = Random.nextLong(0, Amount.MAX_VALUE)
+            val fraction = Random.nextInt(0, Amount.MAX_FRACTION)
+            return Amount(currency, value, fraction)
+        }
+    }
+
     @Test
-    fun `test fromJSONString() works`() {
+    fun testFromJSONString() {
         var str = "TESTKUDOS:23.42"
         var amount = Amount.fromJSONString(str)
         assertEquals(str, amount.toJSONString())
@@ -56,7 +62,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test fromJSONString() accepts max values, rejects above`() {
+    fun testFromJSONStringAcceptsMaxValuesRejectsAbove() {
         val maxValue = 4503599627370496
         val str = "TESTKUDOS123:$maxValue.99999999"
         val amount = Amount.fromJSONString(str)
@@ -82,35 +88,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test JSON deserialization()`() {
-        val mapper = ObjectMapper().registerModule(KotlinModule())
-        var str = "TESTKUDOS:23.42"
-        var amount: Amount = mapper.readValue("\"$str\"")
-        assertEquals(str, amount.toJSONString())
-        assertEquals("TESTKUDOS", amount.currency)
-        assertEquals(23, amount.value)
-        assertEquals((0.42 * 1e8).toInt(), amount.fraction)
-        assertEquals("23.42 TESTKUDOS", amount.toString())
-
-        str = "EUR:500000000.00000001"
-        amount = mapper.readValue("\"$str\"")
-        assertEquals(str, amount.toJSONString())
-        assertEquals("EUR", amount.currency)
-        assertEquals(500000000, amount.value)
-        assertEquals(1, amount.fraction)
-        assertEquals("500000000.00000001 EUR", amount.toString())
-
-        str = "EUR:1500000000.00000003"
-        amount = mapper.readValue("\"$str\"")
-        assertEquals(str, amount.toJSONString())
-        assertEquals("EUR", amount.currency)
-        assertEquals(1500000000, amount.value)
-        assertEquals(3, amount.fraction)
-        assertEquals("1500000000.00000003 EUR", amount.toString())
-    }
-
-    @Test
-    fun `test fromJSONString() rejections`() {
+    fun testFromJSONStringRejections() {
         assertThrows<AmountParserException> {
             Amount.fromJSONString("TESTKUDOS:0,5")
         }
@@ -132,71 +110,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test fromJsonObject() works`() {
-        val map = mapOf(
-            "currency" to "TESTKUDOS",
-            "value" to "23",
-            "fraction" to "42000000"
-        )
-
-        val amount = Amount.fromJsonObject(JSONObject(map))
-        assertEquals("TESTKUDOS:23.42", amount.toJSONString())
-        assertEquals("TESTKUDOS", amount.currency)
-        assertEquals(23, amount.value)
-        assertEquals(42000000, amount.fraction)
-        assertEquals("23.42 TESTKUDOS", amount.toString())
-    }
-
-    @Test
-    fun `test fromJsonObject() accepts max values, rejects above`() {
-        val maxValue = 4503599627370496
-        val maxFraction = 99999999
-        var map = mapOf(
-            "currency" to "TESTKUDOS123",
-            "value" to "$maxValue",
-            "fraction" to "$maxFraction"
-        )
-
-        val amount = Amount.fromJsonObject(JSONObject(map))
-        assertEquals("TESTKUDOS123:$maxValue.$maxFraction", amount.toJSONString())
-        assertEquals("TESTKUDOS123", amount.currency)
-        assertEquals(maxValue, amount.value)
-        assertEquals(maxFraction, amount.fraction)
-        assertEquals("$maxValue.$maxFraction TESTKUDOS123", amount.toString())
-
-        // longer currency not accepted
-        assertThrows<AmountParserException>("longer currency was accepted") {
-            map = mapOf(
-                "currency" to "TESTKUDOS1234",
-                "value" to "$maxValue",
-                "fraction" to "$maxFraction"
-            )
-            Amount.fromJsonObject(JSONObject(map))
-        }
-
-        // max value + 1 not accepted
-        assertThrows<AmountParserException>("max value + 1 was accepted") {
-            map = mapOf(
-                "currency" to "TESTKUDOS123",
-                "value" to "${maxValue + 1}",
-                "fraction" to "$maxFraction"
-            )
-            Amount.fromJsonObject(JSONObject(map))
-        }
-
-        // max fraction + 1 not accepted
-        assertThrows<AmountParserException>("max fraction + 1 was accepted") {
-            map = mapOf(
-                "currency" to "TESTKUDOS123",
-                "value" to "$maxValue",
-                "fraction" to "${maxFraction + 1}"
-            )
-            Amount.fromJsonObject(JSONObject(map))
-        }
-    }
-
-    @Test
-    fun `test addition`() {
+    fun testAddition() {
         assertEquals(
             Amount.fromJSONString("EUR:2"),
             Amount.fromJSONString("EUR:1") + Amount.fromJSONString("EUR:1")
@@ -218,7 +132,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test times`() {
+    fun testTimes() {
         assertEquals(
             Amount.fromJSONString("EUR:2"),
             Amount.fromJSONString("EUR:2") * 1
@@ -231,6 +145,12 @@ class AmountTest {
             Amount.fromJSONString("EUR:4.5"),
             Amount.fromJSONString("EUR:1.5") * 3
         )
+        assertEquals(Amount.fromJSONString("EUR:0"), Amount.fromJSONString("EUR:1.11") * 0)
+        assertEquals(Amount.fromJSONString("EUR:1.11"), Amount.fromJSONString("EUR:1.11") * 1)
+        assertEquals(Amount.fromJSONString("EUR:2.22"), Amount.fromJSONString("EUR:1.11") * 2)
+        assertEquals(Amount.fromJSONString("EUR:3.33"), Amount.fromJSONString("EUR:1.11") * 3)
+        assertEquals(Amount.fromJSONString("EUR:4.44"), Amount.fromJSONString("EUR:1.11") * 4)
+        assertEquals(Amount.fromJSONString("EUR:5.55"), Amount.fromJSONString("EUR:1.11") * 5)
         assertEquals(
             Amount.fromJSONString("EUR:1500000000.00000003"),
             Amount.fromJSONString("EUR:500000000.00000001") * 3
@@ -241,7 +161,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test subtraction`() {
+    fun testSubtraction() {
         assertEquals(
             Amount.fromJSONString("EUR:0"),
             Amount.fromJSONString("EUR:1") - Amount.fromJSONString("EUR:1")
@@ -263,7 +183,7 @@ class AmountTest {
     }
 
     @Test
-    fun `test isZero()`() {
+    fun testIsZero() {
         assertTrue(Amount.zero("EUR").isZero())
         assertTrue(Amount.fromJSONString("EUR:0").isZero())
         assertTrue(Amount.fromJSONString("EUR:0.0").isZero())
@@ -276,14 +196,17 @@ class AmountTest {
     }
 
     @Test
-    fun `test comparision`() {
+    fun testComparision() {
         assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0"))
         assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0.00000001"))
         assertTrue(Amount.fromJSONString("EUR:0") < Amount.fromJSONString("EUR:0.00000001"))
         assertTrue(Amount.fromJSONString("EUR:0") < Amount.fromJSONString("EUR:1"))
-        assertTrue(Amount.fromJSONString("EUR:0") == Amount.fromJSONString("EUR:0"))
-        assertTrue(Amount.fromJSONString("EUR:42") == Amount.fromJSONString("EUR:42"))
-        assertTrue(Amount.fromJSONString("EUR:42.00000001") == Amount.fromJSONString("EUR:42.00000001"))
+        assertEquals(Amount.fromJSONString("EUR:0"), Amount.fromJSONString("EUR:0"))
+        assertEquals(Amount.fromJSONString("EUR:42"), Amount.fromJSONString("EUR:42"))
+        assertEquals(
+            Amount.fromJSONString("EUR:42.00000001"),
+            Amount.fromJSONString("EUR:42.00000001")
+        )
         assertTrue(Amount.fromJSONString("EUR:42.00000001") >= Amount.fromJSONString("EUR:42.00000001"))
         assertTrue(Amount.fromJSONString("EUR:42.00000002") >= Amount.fromJSONString("EUR:42.00000001"))
         assertTrue(Amount.fromJSONString("EUR:42.00000002") > Amount.fromJSONString("EUR:42.00000001"))

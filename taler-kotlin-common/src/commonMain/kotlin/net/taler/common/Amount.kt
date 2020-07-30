@@ -16,23 +16,12 @@
 
 package net.taler.common
 
-import android.annotation.SuppressLint
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonMappingException
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import org.json.JSONObject
-import java.lang.Math.floorDiv
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -40,8 +29,6 @@ class AmountParserException(msg: String? = null, cause: Throwable? = null) : Exc
 class AmountOverflowException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
 
 @Serializable(with = KotlinXAmountSerializer::class)
-@JsonSerialize(using = AmountSerializer::class)
-@JsonDeserialize(using = AmountDeserializer::class)
 data class Amount(
     /**
      * name of the currency using either a three-character ISO 4217 currency code,
@@ -70,29 +57,21 @@ data class Amount(
 
         private const val FRACTIONAL_BASE: Int = 100000000 // 1e8
 
-        @Suppress("unused")
-        private val REGEX = Regex("""^[-_*A-Za-z0-9]{1,12}:([0-9]+)\.?([0-9]+)?$""")
         private val REGEX_CURRENCY = Regex("""^[-_*A-Za-z0-9]{1,12}$""")
-        private val MAX_VALUE = 2.0.pow(52)
+        val MAX_VALUE = 2.0.pow(52).toLong()
         private const val MAX_FRACTION_LENGTH = 8
-        private const val MAX_FRACTION = 99_999_999
+        const val MAX_FRACTION = 99_999_999
 
-        @Throws(AmountParserException::class)
-        @SuppressLint("CheckedExceptions")
         fun zero(currency: String): Amount {
             return Amount(checkCurrency(currency), 0, 0)
         }
 
-        @Throws(AmountParserException::class)
-        @SuppressLint("CheckedExceptions")
         fun fromJSONString(str: String): Amount {
             val split = str.split(":")
             if (split.size != 2) throw AmountParserException("Invalid Amount Format")
             return fromString(split[0], split[1])
         }
 
-        @Throws(AmountParserException::class)
-        @SuppressLint("CheckedExceptions")
         fun fromString(currency: String, str: String): Amount {
             // value
             val valueSplit = str.split(".")
@@ -110,31 +89,23 @@ data class Amount(
             return Amount(checkCurrency(currency), value, fraction)
         }
 
-        @Throws(AmountParserException::class)
-        @SuppressLint("CheckedExceptions")
-        fun fromJsonObject(json: JSONObject): Amount {
-            val currency = checkCurrency(json.optString("currency"))
-            val value = checkValue(json.optString("value").toLongOrNull())
-            val fraction = checkFraction(json.optString("fraction").toIntOrNull())
-            return Amount(currency, value, fraction)
-        }
+        fun min(currency: String): Amount = Amount(currency, 0, 1)
+        fun max(currency: String): Amount = Amount(currency, MAX_VALUE, MAX_FRACTION)
 
-        @Throws(AmountParserException::class)
-        private fun checkCurrency(currency: String): String {
+
+        internal fun checkCurrency(currency: String): String {
             if (!REGEX_CURRENCY.matches(currency))
                 throw AmountParserException("Invalid currency: $currency")
             return currency
         }
 
-        @Throws(AmountParserException::class)
-        private fun checkValue(value: Long?): Long {
+        internal fun checkValue(value: Long?): Long {
             if (value == null || value > MAX_VALUE)
                 throw AmountParserException("Value $value greater than $MAX_VALUE")
             return value
         }
 
-        @Throws(AmountParserException::class)
-        private fun checkFraction(fraction: Int?): Int {
+        internal fun checkFraction(fraction: Int?): Int {
             if (fraction == null || fraction > MAX_FRACTION)
                 throw AmountParserException("Fraction $fraction greater than $MAX_FRACTION")
             return fraction
@@ -153,25 +124,23 @@ data class Amount(
             "$value.$fractionStr"
         }
 
-    @Throws(AmountOverflowException::class)
     operator fun plus(other: Amount): Amount {
         check(currency == other.currency) { "Can only subtract from same currency" }
-        val resultValue = value + other.value + floorDiv(fraction + other.fraction, FRACTIONAL_BASE)
+        val resultValue = value + other.value + floor((fraction + other.fraction).toDouble() / FRACTIONAL_BASE).toLong()
         if (resultValue > MAX_VALUE)
             throw AmountOverflowException()
         val resultFraction = (fraction + other.fraction) % FRACTIONAL_BASE
         return Amount(currency, resultValue, resultFraction)
     }
 
-    @Throws(AmountOverflowException::class)
     operator fun times(factor: Int): Amount {
+        // TODO consider replacing with a faster implementation
         if (factor == 0) return zero(currency)
         var result = this
         for (i in 1 until factor) result += this
         return result
     }
 
-    @Throws(AmountOverflowException::class)
     operator fun minus(other: Amount): Amount {
         check(currency == other.currency) { "Can only subtract from same currency" }
         var resultValue = value
@@ -225,22 +194,5 @@ object KotlinXAmountSerializer: KSerializer<Amount> {
 
     override fun deserialize(decoder: Decoder): Amount {
         return Amount.fromJSONString(decoder.decodeString())
-    }
-}
-
-class AmountSerializer : StdSerializer<Amount>(Amount::class.java) {
-    override fun serialize(value: Amount, gen: JsonGenerator, provider: SerializerProvider) {
-        gen.writeString(value.toJSONString())
-    }
-}
-
-class AmountDeserializer : StdDeserializer<Amount>(Amount::class.java) {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Amount {
-        val node = p.codec.readValue(p, String::class.java)
-        try {
-            return Amount.fromJSONString(node)
-        } catch (e: AmountParserException) {
-            throw JsonMappingException(p, "Error parsing Amount", e)
-        }
     }
 }

@@ -4,6 +4,7 @@ wallet_test:
     changes:
       - wallet/**/*
       - taler-kotlin-common/**/*
+      - taler-kotlin-android/**/*
       - build.gradle
   script: ./gradlew :wallet:check :wallet:assembleRelease
   artifacts:

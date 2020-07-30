@@ -14,31 +14,10 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.exchanges
+package net.taler.common
 
-import net.taler.common.Amount
-import net.taler.common.Timestamp
+import kotlin.system.getTimeMillis
 
-data class CoinFee(
-    val coin: Amount,
-    val quantity: Int,
-    val feeDeposit: Amount,
-    val feeRefresh: Amount,
-    val feeRefund: Amount,
-    val feeWithdraw: Amount
-)
-
-data class WireFee(
-    val start: Timestamp,
-    val end: Timestamp,
-    val wireFee: Amount,
-    val closingFee: Amount
-)
-
-data class ExchangeFees(
-    val withdrawFee: Amount,
-    val overhead: Amount,
-    val earliestDepositExpiration: Timestamp,
-    val coinFees: List<CoinFee>,
-    val wireFees: List<WireFee>
-)
+actual fun nowMillis(): Long {
+    return getTimeMillis()
+}

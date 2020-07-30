@@ -16,23 +16,12 @@
 
 package net.taler.wallet.payment
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
 import net.taler.common.ContractTerms
-import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
-import net.taler.wallet.payment.PreparePayResponse.InsufficientBalanceResponse
-import net.taler.wallet.payment.PreparePayResponse.PaymentPossibleResponse
 
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "status")
-@JsonSubTypes(
-    Type(value = PaymentPossibleResponse::class, name = "payment-possible"),
-    Type(value = AlreadyConfirmedResponse::class, name = "already-confirmed"),
-    Type(value = InsufficientBalanceResponse::class, name = "insufficient-balance")
-)
+@JsonTypeInfo(use = NAME, property = "status")
 sealed class PreparePayResponse(open val proposalId: String) {
     @JsonTypeName("payment-possible")
     data class PaymentPossibleResponse(

@@ -2,6 +2,7 @@ merchant_lib_test:
   stage: test
   only:
     changes:
+      - taler-kotlin-common/**/*
       - merchant-lib/**/*
       - build.gradle
   script: ./gradlew :merchant-lib:check

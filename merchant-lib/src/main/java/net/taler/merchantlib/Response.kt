@@ -16,7 +16,6 @@
 
 package net.taler.merchantlib
 
-import android.util.Log
 import io.ktor.client.call.receive
 import io.ktor.client.features.ClientRequestException
 import io.ktor.client.features.ResponseException
@@ -32,7 +31,7 @@ class Response<out T> private constructor(
             return try {
                 success(request())
             } catch (e: Throwable) {
-                Log.e("merchant-lib", "Error", e)
+                println(e)
                 failure(e)
             }
         }

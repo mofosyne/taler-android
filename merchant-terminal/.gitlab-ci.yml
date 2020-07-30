@@ -5,6 +5,7 @@ merchant_test:
       - merchant-terminal/**/*
       - merchant-lib/**/*
       - taler-kotlin-common/**/*
+      - taler-kotlin-android/**/*
       - build.gradle
   script: ./gradlew :merchant-terminal:check :merchant-terminal:assembleRelease
   artifacts:

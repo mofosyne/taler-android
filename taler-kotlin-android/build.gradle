@@ -27,13 +27,13 @@ android {
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     buildTypes {
@@ -42,18 +42,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude("META-INF/*.kotlin_module")
+    }
+
 }
 
 dependencies {
-    api project(":taler-kotlin-android")
+    api project(":taler-kotlin-common")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.3.0'
 
-    api "io.ktor:ktor-client:$ktor_version"
-    api "io.ktor:ktor-client-okhttp:$ktor_version"
-    api "io.ktor:ktor-client-serialization-jvm:$ktor_version"
+    // Navigation
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+
+    // ViewModel and LiveData
+    def lifecycle_version = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // QR codes
+    implementation 'com.google.zxing:core:3.4.0'  // needs minSdkVersion 24+
+
+    // JSON parsing and serialization
+    api "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2"
+
+    lintChecks 'com.github.thirdegg:lint-rules:0.0.4-alpha'
 
     testImplementation 'junit:junit:4.13'
-    testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_version"
-    testImplementation "io.ktor:ktor-client-logging-jvm:$ktor_version"
+    testImplementation 'org.json:json:20190722'
 }

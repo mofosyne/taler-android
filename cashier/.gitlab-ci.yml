@@ -6,6 +6,7 @@ cashier_test:
     changes:
       - cashier/**/*
       - taler-kotlin-common/**/*
+      - taler-kotlin-android/**/*
       - build.gradle
   script: ./gradlew :cashier:check :cashier:assembleRelease
   artifacts:

@@ -1,0 +1,12 @@
+taler_kotlin_android_test:
+  stage: test
+  only:
+    changes:
+      - taler-kotlin-android/**/*
+      - taler-kotlin-common/**/*
+      - build.gradle
+  script: ./gradlew :taler-kotlin-android:check
+  artifacts:
+    paths:
+      - taler-kotlin-android/build/reports/lint-results.html
+    expire_in: 1 week
