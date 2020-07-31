@@ -36,11 +36,13 @@ import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.withdraw.WithdrawManager
 import net.taler.common.AmountParserException
 import net.taler.common.SignedAmount
+import net.taler.common.Version
+import net.taler.common.getIncompatibleStringOrNull
 import net.taler.common.isOnline
 
 private val TAG = MainViewModel::class.java.simpleName
 
-private const val VERSION_BANK = "0:0:0"
+private val VERSION_BANK = Version(0, 0, 0)
 private const val PREF_NAME = "net.taler.cashier.prefs"
 private const val PREF_KEY_BANK_URL = "bankUrl"
 private const val PREF_KEY_USERNAME = "username"
@@ -91,17 +93,23 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             Log.d(TAG, "Checking config: $url")
             val result = when (val response = makeJsonGetRequest(url, config)) {
                 is HttpJsonResult.Success -> {
-                    val version = response.json.getString("version")
-                    // TODO check if version is compatible
-                    val currency = response.json.getString("currency")
-                    try {
-                        mCurrency.postValue(currency)
-                        prefs.edit().putString(PREF_KEY_CURRENCY, currency).apply()
-                        // save config
-                        saveConfig(config)
-                        ConfigResult.Success
-                    } catch (e: Exception) {
-                        ConfigResult.Error(false, "Invalid Config: ${response.json}")
+                    // check if bank's version is compatible with app
+                    // TODO use real version response when fixed in bank
+                    val version = "0:0:0" // response.json.getString("version")
+                    val versionIncompatible = VERSION_BANK.getIncompatibleStringOrNull(app, version)
+                    if (versionIncompatible != null) {
+                        ConfigResult.Error(false, versionIncompatible)
+                    } else {
+                        val currency = response.json.getString("currency")
+                        try {
+                            mCurrency.postValue(currency)
+                            prefs.edit().putString(PREF_KEY_CURRENCY, currency).apply()
+                            // save config
+                            saveConfig(config)
+                            ConfigResult.Success
+                        } catch (e: Exception) {
+                            ConfigResult.Error(false, "Invalid Config: ${response.json}")
+                        }
                     }
                 }
                 is HttpJsonResult.Error -> {
