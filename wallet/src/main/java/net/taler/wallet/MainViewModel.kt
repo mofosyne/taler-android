@@ -24,7 +24,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -32,6 +31,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.common.Amount
 import net.taler.common.AmountMixin
 import net.taler.common.Event
+import net.taler.common.Timestamp
+import net.taler.common.TimestampMixin
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
@@ -95,7 +96,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         .registerModule(KotlinModule())
         .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
         .addMixIn(Amount::class.java, AmountMixin::class.java)
-        .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
 
     val withdrawManager = WithdrawManager(walletBackendApi, mapper)
     val paymentManager = PaymentManager(walletBackendApi, mapper)

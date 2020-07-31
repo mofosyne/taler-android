@@ -19,7 +19,6 @@ package net.taler.common
 import androidx.annotation.RequiresApi
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.annotation.JsonProperty
 import kotlinx.serialization.SerialName
@@ -80,12 +79,4 @@ data class ContractProduct(
 
 data class ContractMerchant(
     val name: String
-)
-
-@Serializable
-@JsonInclude(NON_EMPTY)
-class Timestamp(
-    @SerialName("t_ms")
-    @JsonProperty("t_ms")
-    val ms: Long
 )
