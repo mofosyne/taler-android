@@ -36,7 +36,7 @@ import kotlin.system.exitProcess
 
 private const val TAG = "taler-wallet-backend"
 
-class RequestData(val clientRequestID: Int, val messenger: Messenger)
+class RequestData(val clientRequestId: Int, val messenger: Messenger)
 
 
 class WalletBackendService : Service() {
@@ -70,7 +70,6 @@ class WalletBackendService : Service() {
                 this@WalletBackendService.handleAkonoMessage(message)
             }
         })
-        akono.evalNodeCode("console.log('hello world from taler wallet-android')")
         //akono.evalNodeCode("require('source-map-support').install();")
         akono.evalNodeCode("require('akono');")
         akono.evalNodeCode("tw = require('taler-wallet-android');")
@@ -184,9 +183,9 @@ class WalletBackendService : Service() {
     }
 
     private fun handleAkonoMessage(messageStr: String) {
-        Log.v(TAG, "got back message: $messageStr")
         val message = JSONObject(messageStr)
-        when (message.getString("type")) {
+        Log.v(TAG, "got back message: ${message.toString(2)}")
+        when (val type = message.getString("type")) {
             "notification" -> {
                 sendNotify(message.getString("payload"))
             }
@@ -199,7 +198,7 @@ class WalletBackendService : Service() {
                 }
             }
             "response" -> {
-                when (val operation = message.getString("operation")) {
+                when (message.getString("operation")) {
                     "init" -> {
                         Log.v(TAG, "got response for init operation: ${message.toString(2)}")
                         sendNotify(message.toString(2))
@@ -208,29 +207,33 @@ class WalletBackendService : Service() {
                         exitProcess(1)
                     }
                     else -> {
-                        val id = message.getInt("id")
-                        Log.v(TAG, "got response for operation $operation")
-                        val rd = requests[id]
-                        if (rd == null) {
-                            Log.e(TAG, "wallet returned unknown request ID ($id)")
-                            return
-                        }
-                        val m = Message.obtain(null, MSG_REPLY)
-                        val b = m.data
-                        if (message.has("result")) {
-                            val respJson = message.getJSONObject("result")
-                            b.putString("response", respJson.toString(2))
-                        } else {
-                            b.putString("response", "{}")
-                        }
-                        b.putBoolean("isError", message.getBoolean("isError"))
-                        b.putInt("requestID", rd.clientRequestID)
-                        b.putString("operation", operation)
-                        rd.messenger.send(m)
+                        val payload = message.getJSONObject("result").toString(2)
+                        handleResponse(false, message, payload)
                     }
                 }
             }
+            "error" -> {
+                val payload = message.getJSONObject("error").toString(2)
+                handleResponse(true, message, payload)
+            }
+            else -> throw IllegalArgumentException("Unknown message type: $type")
         }
+    }
+
+    private fun handleResponse(isError: Boolean, message: JSONObject, payload: String) {
+        val id = message.getInt("id")
+        val rId = requests[id]
+        if (rId == null) {
+            Log.e(TAG, "wallet returned unknown request ID ($id)")
+            return
+        }
+        val m = Message.obtain(null, MSG_REPLY)
+        val b = m.data
+        b.putInt("requestID", rId.clientRequestId)
+        b.putBoolean("isError", isError)
+        b.putString("response", payload)
+        b.putString("operation", message.getString("operation"))
+        rId.messenger.send(m)
     }
 
     companion object {

@@ -1,7 +1,7 @@
+enableFeaturePreview('GRADLE_METADATA')
+
 include ':cashier', ':merchant-terminal', ':wallet'
 include ':taler-kotlin-common'
 include ':taler-kotlin-android'
 include ':merchant-lib'
 include ':anastasis-ui'
-
-enableFeaturePreview('GRADLE_METADATA')
