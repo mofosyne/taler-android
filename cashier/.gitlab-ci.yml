@@ -36,7 +36,7 @@ cashier_deploy_nightly:
     # Set nightly application ID
     - sed -i "s,^\(\s*applicationId\) \"*[a-z\.].*\",\1 \"net.taler.cashier.nightly\"," cashier/build.gradle
     # Build the APK
-    - ./gradlew :cashier:assembleDebug
+    - ./gradlew :cashier:assembleRelease
     # START only needed while patch not accepted/released upstream
     - apt update && apt install patch
     - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch

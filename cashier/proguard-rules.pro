@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# androidx.security:security-crypto
+# https://github.com/google/tink/issues/361
+-keep class * extends com.google.crypto.tink.shaded.protobuf.GeneratedMessageLite { *; }

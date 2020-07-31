@@ -1,0 +1,1 @@
+-keep class net.taler.merchantlib.** {*;}
