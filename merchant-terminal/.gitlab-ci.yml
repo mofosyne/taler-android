@@ -21,6 +21,7 @@ merchant_deploy_nightly:
       - master
     changes:
       - merchant-terminal/**/*
+      - merchant-lib/**/*
   needs: ["merchant_test"]
   script:
     # Ensure that key exists

@@ -65,6 +65,7 @@ class MerchantApiTest {
             fulfillmentUrl = "http://example.org",
             products = listOf(product)
         )
+        val request = PostOrderRequest(contractTerms)
         val contractTermsJson = """
             {
                 "order": {
@@ -88,7 +89,7 @@ class MerchantApiTest {
         ) {
             """{"order_id": "test"}"""
         }
-        api.postOrder(merchantConfig, contractTerms).assertSuccess {
+        api.postOrder(merchantConfig, request).assertSuccess {
             assertEquals(PostOrderResponse("test"), it)
         }
 
@@ -101,7 +102,7 @@ class MerchantApiTest {
                 "hint": "merchant instance unknown"
             }"""
         }
-        api.postOrder(merchantConfig, contractTerms).assertFailure {
+        api.postOrder(merchantConfig, request).assertFailure {
             assertTrue(it.contains("2000"))
             assertTrue(it.contains("merchant instance unknown"))
         }
