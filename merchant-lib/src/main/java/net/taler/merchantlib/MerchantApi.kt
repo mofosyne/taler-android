@@ -29,7 +29,6 @@ import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import net.taler.common.ContractTerms
 import net.taler.merchantlib.Response.Companion.response
 
 class MerchantApi(private val httpClient: HttpClient) {
@@ -40,12 +39,12 @@ class MerchantApi(private val httpClient: HttpClient) {
 
     suspend fun postOrder(
         merchantConfig: MerchantConfig,
-        contractTerms: ContractTerms
+        orderRequest: PostOrderRequest
     ): Response<PostOrderResponse> = response {
         httpClient.post(merchantConfig.urlFor("private/orders")) {
             header(Authorization, "ApiKey ${merchantConfig.apiKey}")
             contentType(Json)
-            body = PostOrderRequest(contractTerms)
+            body = orderRequest
         } as PostOrderResponse
     }
 

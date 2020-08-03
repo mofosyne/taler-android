@@ -41,6 +41,9 @@ data class OrderHistoryEntry(
     // the summary of the order
     val summary: String,
 
+    // if the order has been paid
+    val paid: Boolean,
+
     // whether some part of the order is refundable
     val refundable: Boolean
 )

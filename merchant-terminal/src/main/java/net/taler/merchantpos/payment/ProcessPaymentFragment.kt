@@ -60,6 +60,11 @@ class ProcessPaymentFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        paymentManager.cancelPayment(getString(R.string.error_cancelled))
+    }
+
     private fun onPaymentStateChanged(payment: Payment) {
         if (payment.error != null) {
             topSnackbar(requireView(), payment.error, LENGTH_LONG)

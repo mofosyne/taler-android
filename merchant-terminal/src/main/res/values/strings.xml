@@ -47,6 +47,7 @@
 
     <string name="history_label">Payment history</string>
     <string name="history_ref_no" translatable="false">@string/payment_order_id</string>
+    <string name="history_unpaid">Unpaid</string>
     <string name="history_refund">Refund</string>
     <string name="refund_amount">Amount</string>
     <string name="refund_reason">Refund reason</string>

@@ -35,7 +35,13 @@ data class ContractTerms(
     @SerialName("fulfillment_url")
     @get:JsonProperty("fulfillment_url")
     val fulfillmentUrl: String,
-    val products: List<ContractProduct>
+    val products: List<ContractProduct>,
+    @SerialName("wire_transfer_deadline")
+    @get:JsonProperty("wire_transfer_deadline")
+    val wireTransferDeadline: Timestamp? = null,
+    @SerialName("refund_deadline")
+    @get:JsonProperty("refund_deadline")
+    val refundDeadline: Timestamp? = null
 )
 
 @JsonInclude(NON_NULL)

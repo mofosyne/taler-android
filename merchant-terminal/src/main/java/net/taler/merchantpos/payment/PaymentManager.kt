@@ -25,13 +25,16 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.common.Duration
 import net.taler.merchantlib.CheckPaymentResponse
 import net.taler.merchantlib.MerchantApi
+import net.taler.merchantlib.PostOrderRequest
 import net.taler.merchantlib.PostOrderResponse
 import net.taler.merchantpos.MainActivity.Companion.TAG
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.order.Order
+import java.util.concurrent.TimeUnit.HOURS
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -65,7 +68,11 @@ class PaymentManager(
         val merchantConfig = configManager.merchantConfig!!
         mPayment.value = Payment(order, order.summary, configManager.currency!!)
         scope.launch(Dispatchers.IO) {
-            val response = api.postOrder(merchantConfig, order.toContractTerms())
+            val request = PostOrderRequest(
+                contractTerms = order.toContractTerms(),
+                refundDelay = Duration(HOURS.toMillis(1))
+            )
+            val response = api.postOrder(merchantConfig, request)
             response.handle(::onNetworkError, ::onOrderCreated)
         }
     }

@@ -18,10 +18,12 @@ package net.taler.merchantpos.order
 
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
+import net.taler.common.Timestamp
 import net.taler.common.now
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
 import java.net.URLEncoder
+import java.util.concurrent.TimeUnit.HOURS
 
 private const val FULFILLMENT_PREFIX = "taler://fulfillment-success/"
 
@@ -115,12 +117,15 @@ data class Order(val id: Int, val currency: String, val availableCategories: Map
         }
 
     fun toContractTerms(): ContractTerms {
+        val deadline = Timestamp(now() + HOURS.toMillis(1))
         return ContractTerms(
             summary = summary,
             summaryI18n = summaryI18n,
             amount = total,
             fulfillmentUrl = fulfillmentUri,
-            products = products.map { it.toContractProduct() }
+            products = products.map { it.toContractProduct() },
+            refundDeadline = deadline,
+            wireTransferDeadline = deadline
         )
     }
 

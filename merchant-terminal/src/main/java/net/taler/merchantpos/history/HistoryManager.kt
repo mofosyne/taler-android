@@ -55,9 +55,9 @@ class HistoryManager(
         }
     }
 
-    private fun onHistoryError(msg: String) = scope.launch(Dispatchers.Main) {
-        mIsLoading.value = false
-        mItems.value = HistoryResult.Error(msg)
+    private fun onHistoryError(msg: String) {
+        mIsLoading.postValue(false)
+        mItems.postValue(HistoryResult.Error(msg))
     }
 
 }

@@ -25,12 +25,14 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.json.JsonInput
 import kotlinx.serialization.json.JsonObject
 import net.taler.common.ContractTerms
+import net.taler.common.Duration
 
 @Serializable
 data class PostOrderRequest(
     @SerialName("order")
-    val contractTerms: ContractTerms
-
+    val contractTerms: ContractTerms,
+    @SerialName("refund_delay")
+    val refundDelay: Duration? = null
 )
 
 @Serializable
