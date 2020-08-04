@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.merchantpos.history
+package net.taler.merchantpos.refund
 
 import android.os.Bundle
 import android.view.LayoutInflater

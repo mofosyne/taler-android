@@ -35,8 +35,8 @@ import net.taler.common.navigate
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionGlobalMerchantSettings
-import net.taler.merchantpos.history.MerchantHistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
+import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionGlobalMerchantSettings
+import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
 
 internal interface RefundClickListener {
     fun onRefundClicked(item: OrderHistoryEntry)
@@ -45,7 +45,7 @@ internal interface RefundClickListener {
 /**
  * Fragment to display the merchant's payment history, received from the backend.
  */
-class MerchantHistoryFragment : Fragment(), RefundClickListener {
+class HistoryFragment : Fragment(), RefundClickListener {
 
     companion object {
         const val TAG = "taler-merchant"

@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/nav_history"
-        android:name="net.taler.merchantpos.history.MerchantHistoryFragment"
+        android:name="net.taler.merchantpos.history.HistoryFragment"
         android:label="@string/history_label"
         tools:layout="@layout/fragment_merchant_history">
         <action
@@ -64,7 +64,7 @@
 
     <fragment
         android:id="@+id/refundFragment"
-        android:name="net.taler.merchantpos.history.RefundFragment"
+        android:name="net.taler.merchantpos.refund.RefundFragment"
         android:label="@string/history_refund"
         tools:layout="@layout/fragment_refund">
         <action
@@ -75,13 +75,13 @@
 
     <fragment
         android:id="@+id/refundUriFragment"
-        android:name="net.taler.merchantpos.history.RefundUriFragment"
+        android:name="net.taler.merchantpos.refund.RefundUriFragment"
         android:label="@string/history_refund"
         tools:layout="@layout/fragment_refund_uri" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="net.taler.merchantpos.config.MerchantConfigFragment"
+        android:name="net.taler.merchantpos.config.ConfigFragment"
         android:label="@string/config_label"
         tools:layout="@layout/fragment_merchant_config">
         <action

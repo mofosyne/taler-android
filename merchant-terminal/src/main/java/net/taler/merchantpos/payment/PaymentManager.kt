@@ -110,8 +110,8 @@ class PaymentManager(
         // delete unpaid order
         val merchantConfig = configManager.merchantConfig!!
         mPayment.value?.let { payment ->
-            if (!payment.paid) payment.orderId?.let { orderId ->
-                Log.e(TAG, "Deleting cancelled and unpaid order $orderId")
+            if (!payment.paid && payment.error != null) payment.orderId?.let { orderId ->
+                Log.d(TAG, "Deleting cancelled and unpaid order $orderId")
                 scope.launch(Dispatchers.IO) {
                     api.deleteOrder(merchantConfig, orderId)
                 }

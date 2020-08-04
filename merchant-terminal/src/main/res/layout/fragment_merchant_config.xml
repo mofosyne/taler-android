@@ -24,7 +24,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".config.MerchantConfigFragment">
+        tools:context=".config.ConfigFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/configUrlView"

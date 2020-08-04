@@ -34,13 +34,13 @@ import kotlinx.android.synthetic.main.fragment_merchant_config.*
 import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.config.MerchantConfigFragmentDirections.Companion.actionSettingsToOrder
+import net.taler.merchantpos.config.ConfigFragmentDirections.Companion.actionSettingsToOrder
 import net.taler.merchantpos.topSnackbar
 
 /**
  * Fragment that displays merchant settings.
  */
-class MerchantConfigFragment : Fragment() {
+class ConfigFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val configManager by lazy { model.configManager }

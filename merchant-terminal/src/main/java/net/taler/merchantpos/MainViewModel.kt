@@ -19,20 +19,18 @@ package net.taler.merchantpos
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.volley.toolbox.Volley
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.getDefaultHttpClient
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.history.HistoryManager
-import net.taler.merchantpos.history.RefundManager
 import net.taler.merchantpos.order.OrderManager
 import net.taler.merchantpos.payment.PaymentManager
+import net.taler.merchantpos.refund.RefundManager
 
 class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val httpClient = getDefaultHttpClient()
     private val api = MerchantApi(httpClient)
-    private val queue = Volley.newRequestQueue(app)
 
     val orderManager = OrderManager(app)
     val configManager = ConfigManager(app, viewModelScope, httpClient, api).apply {
@@ -40,11 +38,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     }
     val paymentManager = PaymentManager(app, configManager, viewModelScope, api)
     val historyManager = HistoryManager(configManager, viewModelScope, api)
-    val refundManager = RefundManager(configManager, queue)
+    val refundManager = RefundManager(configManager, viewModelScope, api)
 
     override fun onCleared() {
         httpClient.close()
-        queue.cancelAll { !it.isCanceled }
     }
 
 }

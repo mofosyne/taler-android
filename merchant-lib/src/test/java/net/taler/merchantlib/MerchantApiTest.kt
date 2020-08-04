@@ -16,11 +16,12 @@
 
 package net.taler.merchantlib
 
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.HttpStatusCode.Companion.NotFound
 import kotlinx.coroutines.runBlocking
 import net.taler.common.Amount
 import net.taler.common.ContractProduct
 import net.taler.common.ContractTerms
+import net.taler.common.Timestamp
 import net.taler.merchantlib.MockHttpClient.giveJsonResponse
 import net.taler.merchantlib.MockHttpClient.httpClient
 import org.junit.Assert.assertEquals
@@ -35,6 +36,7 @@ class MerchantApiTest {
         instance = "testInstance",
         apiKey = "apiKeyFooBar"
     )
+    private val orderId = "orderIdFoo"
 
     @Test
     fun testGetConfig() = runBlocking {
@@ -95,7 +97,7 @@ class MerchantApiTest {
 
         httpClient.giveJsonResponse(
             "http://example.net/instances/testInstance/private/orders",
-            statusCode = HttpStatusCode.NotFound
+            statusCode = NotFound
         ) {
             """{
                 "code": 2000,
@@ -110,7 +112,6 @@ class MerchantApiTest {
 
     @Test
     fun testCheckOrder() = runBlocking {
-        val orderId = "orderIdFoo"
         val unpaidResponse = CheckPaymentResponse.Unpaid(false, "http://taler.net/foo")
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
             """{
@@ -125,7 +126,7 @@ class MerchantApiTest {
 
         httpClient.giveJsonResponse(
             "http://example.net/instances/testInstance/private/orders/$orderId",
-            statusCode = HttpStatusCode.NotFound
+            statusCode = NotFound
         ) {
             """{
                 "code": 2909,
@@ -135,6 +136,95 @@ class MerchantApiTest {
         api.checkOrder(merchantConfig, orderId).assertFailure {
             assertTrue(it.contains("2909"))
             assertTrue(it.contains("Did not find contract terms for order in DB"))
+        }
+    }
+
+    @Test
+    fun testDeleteOrder() = runBlocking {
+        httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
+            "{}"
+        }
+        api.deleteOrder(merchantConfig, orderId).assertSuccess {}
+
+        httpClient.giveJsonResponse(
+            "http://example.net/instances/testInstance/private/orders/$orderId",
+            statusCode = NotFound
+        ) {
+            """{
+                "code": 2511,
+                "hint": "Order unknown"
+                }
+            """.trimIndent()
+        }
+        api.deleteOrder(merchantConfig, orderId).assertFailure {
+            assertTrue(it.contains("2511"))
+            assertTrue(it.contains("Order unknown"))
+        }
+    }
+
+    @Test
+    fun testGetOrderHistory() = runBlocking {
+        httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders") {
+            """{  "orders": [
+                    {
+                      "order_id": "2020.217-0281FGXCS25P2",
+                      "row_id": 183,
+                      "timestamp": {
+                        "t_ms": 1596542338000
+                      },
+                      "amount": "TESTKUDOS:1",
+                      "summary": "Chips",
+                      "refundable": true,
+                      "paid": true
+                    },
+                    {
+                      "order_id": "2020.216-01G2ZPXSP6BYT",
+                      "row_id": 154,
+                      "timestamp": {
+                        "t_ms": 1596468174000
+                      },
+                      "amount": "TESTKUDOS:0.8",
+                      "summary": "Peanuts",
+                      "refundable": false,
+                      "paid": false
+                    }
+                ]
+            }""".trimIndent()
+        }
+        api.getOrderHistory(merchantConfig).assertSuccess {
+            assertEquals(2, it.orders.size)
+
+            val order1 = it.orders[0]
+            assertEquals(Amount("TESTKUDOS", 1, 0), order1.amount)
+            assertEquals("2020.217-0281FGXCS25P2", order1.orderId)
+            assertEquals(true, order1.paid)
+            assertEquals(true, order1.refundable)
+            assertEquals("Chips", order1.summary)
+            assertEquals(Timestamp(1596542338000), order1.timestamp)
+
+            val order2 = it.orders[1]
+            assertEquals(Amount("TESTKUDOS", 0, 80000000), order2.amount)
+            assertEquals("2020.216-01G2ZPXSP6BYT", order2.orderId)
+            assertEquals(false, order2.paid)
+            assertEquals(false, order2.refundable)
+            assertEquals("Peanuts", order2.summary)
+            assertEquals(Timestamp(1596468174000), order2.timestamp)
+        }
+    }
+
+    @Test
+    fun testGiveRefund() = runBlocking {
+        httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId/refund") {
+            """{
+                "taler_refund_uri": "taler://refund/foo/bar"
+            }""".trimIndent()
+        }
+        val request = RefundRequest(
+            refund = Amount("TESTKUDOS", 5, 0),
+            reason = "Give me my money back now!!!"
+        )
+        api.giveRefund(merchantConfig, orderId, request).assertSuccess {
+            assertEquals("taler://refund/foo/bar", it.talerRefundUri)
         }
     }
 

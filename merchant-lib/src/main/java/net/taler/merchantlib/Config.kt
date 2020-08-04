@@ -20,6 +20,21 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ConfigResponse(
+    /**
+     * libtool-style representation of the Merchant protocol version, see
+     * https://www.gnu.org/software/libtool/manual/html_node/Versioning.html#Versioning
+     * The format is "current:revision:age".
+     */
+    val version: String,
+
+    /**
+    Currency supported by this backend.
+     */
+    val currency: String
+)
+
+@Serializable
 data class MerchantConfig(
     @SerialName("base_url")
     val baseUrl: String,

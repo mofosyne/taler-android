@@ -16,19 +16,28 @@
 
 package net.taler.merchantlib
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.taler.common.Amount
 
 @Serializable
-data class ConfigResponse(
+data class RefundRequest(
     /**
-     * libtool-style representation of the Merchant protocol version, see
-     * https://www.gnu.org/software/libtool/manual/html_node/Versioning.html#Versioning
-     * The format is "current:revision:age".
+     * Amount to be refunded
      */
-    val version: String,
+    val refund: Amount,
 
     /**
-    Currency supported by this backend.
+     * Human-readable refund justification
      */
-    val currency: String
+    val reason: String
+)
+
+@Serializable
+data class RefundResponse(
+    /**
+     * URL (handled by the backend) that the wallet should access to trigger refund processing.
+     */
+    @SerialName("taler_refund_uri")
+    val talerRefundUri: String
 )

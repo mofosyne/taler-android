@@ -72,6 +72,18 @@ class MerchantApi(private val httpClient: HttpClient) {
         } as OrderHistory
     }
 
+    suspend fun giveRefund(
+        merchantConfig: MerchantConfig,
+        orderId: String,
+        request: RefundRequest
+    ): Response<RefundResponse> = response {
+        httpClient.post(merchantConfig.urlFor("private/orders/$orderId/refund")) {
+            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+            contentType(Json)
+            body = request
+        } as RefundResponse
+    }
+
 }
 
 fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {

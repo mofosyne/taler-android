@@ -14,13 +14,12 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.merchantpos.history
+package net.taler.merchantpos.refund
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -36,11 +35,11 @@ import net.taler.common.navigate
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
-import net.taler.merchantpos.history.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
-import net.taler.merchantpos.history.RefundResult.AlreadyRefunded
-import net.taler.merchantpos.history.RefundResult.Error
-import net.taler.merchantpos.history.RefundResult.PastDeadline
-import net.taler.merchantpos.history.RefundResult.Success
+import net.taler.merchantpos.refund.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
+import net.taler.merchantpos.refund.RefundResult.AlreadyRefunded
+import net.taler.merchantpos.refund.RefundResult.Error
+import net.taler.merchantpos.refund.RefundResult.PastDeadline
+import net.taler.merchantpos.refund.RefundResult.Success
 
 class RefundFragment : Fragment() {
 
@@ -88,9 +87,9 @@ class RefundFragment : Fragment() {
     }
 
     private fun onRefundResultChanged(result: RefundResult?): Any = when (result) {
-        Error -> onError(R.string.refund_error_backend)
-        PastDeadline -> onError(R.string.refund_error_deadline)
-        AlreadyRefunded -> onError(R.string.refund_error_already_refunded)
+        is Error -> onError(result.msg)
+        PastDeadline -> onError(getString(R.string.refund_error_deadline))
+        AlreadyRefunded -> onError(getString(R.string.refund_error_already_refunded))
         is Success -> {
             progressBar.fadeOut()
             refundButton.fadeIn()
@@ -100,8 +99,8 @@ class RefundFragment : Fragment() {
         }
     }
 
-    private fun onError(@StringRes res: Int) {
-        Snackbar.make(requireView(), res, LENGTH_LONG).show()
+    private fun onError(msg: String) {
+        Snackbar.make(requireView(), msg, LENGTH_LONG).show()
         progressBar.fadeOut()
         refundButton.fadeIn()
     }

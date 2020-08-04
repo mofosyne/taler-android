@@ -21,18 +21,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import kotlinx.android.synthetic.main.fragment_categories.*
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.Category
-import net.taler.merchantpos.order.CategoryAdapter.CategoryViewHolder
 
 interface CategorySelectionListener {
     fun onCategorySelected(category: Category)
@@ -66,42 +62,6 @@ class CategoriesFragment : Fragment(), CategorySelectionListener {
 
     override fun onCategorySelected(category: Category) {
         orderManager.setCurrentCategory(category)
-    }
-
-}
-
-private class CategoryAdapter(
-    private val listener: CategorySelectionListener
-) : Adapter<CategoryViewHolder>() {
-
-    private val categories = ArrayList<Category>()
-
-    override fun getItemCount() = categories.size
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.list_item_category, parent, false)
-        return CategoryViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        holder.bind(categories[position])
-    }
-
-    fun setItems(items: List<Category>) {
-        categories.clear()
-        categories.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    private inner class CategoryViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        private val button: Button = v.findViewById(R.id.button)
-
-        fun bind(category: Category) {
-            button.text = category.localizedName
-            button.isPressed = category.selected
-            button.setOnClickListener { listener.onCategorySelected(category) }
-        }
     }
 
 }
