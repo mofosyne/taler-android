@@ -70,7 +70,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transactions_title">Transactions</string>
     <string name="transactions_empty">You don\'t have any transactions</string>
     <string name="transactions_empty_search">No transactions found. Try a different search.</string>
-    <string name="transactions_error">Could not load transactions</string>
+    <string name="transactions_error">Could not load transactions\n\n%s</string>
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Balance: %s</string>
     <string name="transactions_delete">Delete</string>

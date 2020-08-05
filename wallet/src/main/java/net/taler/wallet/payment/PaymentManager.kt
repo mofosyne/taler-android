@@ -26,6 +26,7 @@ import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.getErrorString
 import net.taler.wallet.payment.PayStatus.AlreadyPaid
 import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
@@ -71,7 +72,7 @@ class PaymentManager(
         val args = JSONObject(mapOf("talerPayUri" to url))
         walletBackendApi.sendRequest("preparePay", args) { isError, result ->
             if (isError) {
-                handleError("preparePay", result.toString(2))
+                handleError("preparePay", getErrorString(result))
                 return@sendRequest
             }
             val response: PreparePayResponse = mapper.readValue(result.toString())
@@ -84,6 +85,7 @@ class PaymentManager(
         }
     }
 
+    // TODO validate product images (or leave to wallet-core?)
     private fun getContractTerms(json: JSONObject): ContractTerms {
         val terms: ContractTerms = mapper.readValue(json.getString("contractTermsRaw"))
         // validate product images
@@ -101,7 +103,7 @@ class PaymentManager(
         val args = JSONObject(mapOf("proposalId" to proposalId))
         walletBackendApi.sendRequest("confirmPay", args) { isError, result ->
             if (isError) {
-                handleError("preparePay", result.toString())
+                handleError("preparePay", getErrorString(result))
                 return@sendRequest
             }
             mPayStatus.postValue(PayStatus.Success(currency))
@@ -124,7 +126,7 @@ class PaymentManager(
 
         walletBackendApi.sendRequest("abortProposal", args) { isError, result ->
             if (isError) {
-                handleError("abortProposal", result.toString(2))
+                handleError("abortProposal", getErrorString(result))
                 Log.e(TAG, "received error response to abortProposal")
                 return@sendRequest
             }

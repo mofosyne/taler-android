@@ -30,6 +30,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import com.google.zxing.integration.android.IntentIntegrator
+import org.json.JSONObject
 
 fun scanQrCode(activity: Activity) {
     IntentIntegrator(activity).apply {
@@ -88,6 +89,22 @@ private fun connectToWifiDeprecated(context: Context, ssid: String) {
             }
         }
     }
+}
+
+fun getErrorString(json: JSONObject): String {
+    return StringBuilder().apply {
+        append(json.getString("talerErrorCode"))
+        append(" ")
+        append(json.getString("message"))
+        json.optJSONObject("details")?.let { details ->
+            details.optJSONObject("errorResponse")?.let { errorResponse ->
+                append("\n\n")
+                append(errorResponse.optString("code"))
+                append(" ")
+                append(errorResponse.optString("hint"))
+            }
+        }
+    }.toString()
 }
 
 fun cleanExchange(exchange: String) = exchange.let {

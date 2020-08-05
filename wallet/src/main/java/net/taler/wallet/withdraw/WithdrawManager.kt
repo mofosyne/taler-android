@@ -26,6 +26,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
+import net.taler.wallet.getErrorString
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 import org.json.JSONObject
 
@@ -196,8 +197,7 @@ class WithdrawManager(
     @UiThread
     private fun handleError(operation: String, result: JSONObject) {
         Log.e(TAG, "Error $operation ${result.toString(2)}")
-        val message = if (result.has("message")) result.getString("message") else null
-        withdrawStatus.value = WithdrawStatus.Error(message)
+        withdrawStatus.value = WithdrawStatus.Error(getErrorString(result))
     }
 
 }

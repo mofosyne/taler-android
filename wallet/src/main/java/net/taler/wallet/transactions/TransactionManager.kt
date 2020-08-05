@@ -27,12 +27,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.getErrorString
 import org.json.JSONObject
 import java.util.HashMap
 import java.util.LinkedList
 
 sealed class TransactionsResult {
-    object Error : TransactionsResult()
+    class Error(val msg: String) : TransactionsResult()
     class Success(val transactions: List<Transaction>) : TransactionsResult()
 }
 
@@ -72,7 +73,7 @@ class TransactionManager(
         searchQuery?.let { request.put("search", it) }
         walletBackendApi.sendRequest("getTransactions", request) { isError, result ->
             if (isError) {
-                liveData.postValue(TransactionsResult.Error)
+                liveData.postValue(TransactionsResult.Error(getErrorString(result)))
                 mProgress.postValue(false)
             } else {
                 val currencyToUpdate = if (searchQuery == null) currency else null

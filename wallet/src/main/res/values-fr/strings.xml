@@ -26,7 +26,7 @@
     <string name="balances_inbound_label">entrant</string>
     <string name="transactions_title">Transactions</string>
     <string name="transactions_empty">Vous n\'avez aucune transaction</string>
-    <string name="transactions_error">Impossible de charger les transactions</string>
+    <string name="transactions_error">Impossible de charger les transactions\n\n%s</string>
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Solde : %s</string>
     <string name="transactions_delete">Supprimer</string>

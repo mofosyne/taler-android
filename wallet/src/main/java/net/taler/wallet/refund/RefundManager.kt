@@ -36,6 +36,7 @@ class RefundManager(private val walletBackendApi: WalletBackendApi) {
         walletBackendApi.sendRequest("applyRefund", args) { isError, result ->
             if (isError) {
                 Log.e(TAG, "Refund Error: $result")
+                // TODO show error string
                 liveData.postValue(RefundStatus.Error)
             } else {
                 Log.e(TAG, "Refund Success: $result")
