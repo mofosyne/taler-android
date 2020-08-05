@@ -17,11 +17,23 @@
 package net.taler.common
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
 /**
  * Used to support Jackson serialization along with KotlinX.
  */
 abstract class TimestampMixin(
+    @get:JsonDeserialize(using = NeverDeserializer::class)
     @get:JsonProperty("t_ms")
     val ms: Long
 )
+
+class NeverDeserializer : StdDeserializer<Long>(Long::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Long {
+        return if (p.text == "never") -1
+        else p.longValue
+    }
+}

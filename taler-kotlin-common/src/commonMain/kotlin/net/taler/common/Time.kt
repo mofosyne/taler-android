@@ -18,6 +18,12 @@ package net.taler.common
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.longOrNull
 import net.taler.common.Duration.Companion.FOREVER
 import kotlin.math.max
 
@@ -26,11 +32,12 @@ expect fun nowMillis(): Long
 @Serializable
 data class Timestamp(
     @SerialName("t_ms")
+    @Serializable(NeverSerializer::class)
     val ms: Long
 ) : Comparable<Timestamp> {
 
     companion object {
-        const val NEVER: Long = -1  // TODO or UINT64_MAX?
+        const val NEVER: Long = -1
         fun now(): Timestamp = Timestamp(nowMillis())
     }
 
@@ -73,9 +80,27 @@ data class Duration(
      * Duration in milliseconds.
      */
     @SerialName("d_ms")
+    @Serializable(ForeverSerializer::class)
     val ms: Long
 ) {
     companion object {
-        const val FOREVER: Long = -1  // TODO or UINT64_MAX?
+        const val FOREVER: Long = -1
     }
 }
+
+abstract class MinusOneSerializer(private val keyword: String) :
+    JsonTransformingSerializer<Long>(Long.serializer(), keyword) {
+
+    override fun readTransform(element: JsonElement): JsonElement {
+        return if (element.contentOrNull == keyword) return JsonPrimitive(-1)
+        else super.readTransform(element)
+    }
+
+    override fun writeTransform(element: JsonElement): JsonElement {
+        return if (element.longOrNull == -1L) return JsonPrimitive(keyword)
+        else element
+    }
+}
+
+object NeverSerializer : MinusOneSerializer("never")
+object ForeverSerializer : MinusOneSerializer("forever")

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
+import net.taler.common.Timestamp.Companion.NEVER
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -29,6 +30,7 @@ class ContractTermsTest {
         .registerModule(KotlinModule())
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .addMixIn(Amount::class.java, AmountMixin::class.java)
+        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
 
     @Test
     fun test() {
@@ -40,7 +42,7 @@ class ContractTermsTest {
               },
               "fulfillment_url":"https://shop.test.taler.net/essay/1._The_Free_Software_Definition",
               "summary":"Essay: 1. The Free Software Definition",
-              "refund_deadline":{"t_ms":1596128414000},
+              "refund_deadline":{"t_ms":"never"},
               "wire_transfer_deadline":{"t_ms":1596128564000},
               "products":[],
               "h_wire":"KV40K023N8EC1F5100TYNS23C4XN68Y1Z3PTJSWFGTMCNYD54KT4S791V2VQ91SZANN86VDAA369M4VEZ0KR6DN71EVRRZA71K681M0",
@@ -69,6 +71,7 @@ class ContractTermsTest {
         """.trimIndent()
         val contractTerms: ContractTerms = mapper.readValue(json)
         assertEquals("Essay: 1. The Free Software Definition", contractTerms.summary)
+        assertEquals(Timestamp(NEVER), contractTerms.refundDeadline)
     }
 
 }
