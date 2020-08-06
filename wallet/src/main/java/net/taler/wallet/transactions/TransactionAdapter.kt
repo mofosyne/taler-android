@@ -89,8 +89,11 @@ internal class TransactionAdapter(
             v.foreground = selectableForeground
             v.setOnClickListener { listener.onTransactionClicked(transaction) }
             v.isActivated = selected
-
-            icon.setImageResource(transaction.icon)
+            if (transaction.error == null) {
+                icon.setImageResource(transaction.icon)
+            } else {
+                icon.setImageResource(R.drawable.ic_error)
+            }
             title.text = transaction.getTitle(context)
             bindExtraInfo(transaction)
             time.text = transaction.timestamp.ms.toRelativeTime(context)

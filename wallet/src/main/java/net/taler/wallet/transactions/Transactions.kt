@@ -72,8 +72,11 @@ sealed class AmountType {
     object Neutral : AmountType()
 }
 
-class TransactionError(private val ec: Int, private val hint: String?) {
-    val text get() = if (hint == null) "$ec" else "$ec - $hint"
+data class TransactionError(
+    private val ec: Int,
+    private val hint: String?
+) {
+    val text get() = if (hint == null) "$ec" else "$ec $hint"
 }
 
 @JsonTypeName("withdrawal")
