@@ -14,7 +14,6 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-
 package net.taler.wallet.backend
 
 import android.app.Application
@@ -27,21 +26,35 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
-import android.util.SparseArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import net.taler.wallet.backend.WalletBackendService.Companion.MSG_COMMAND
+import net.taler.wallet.backend.WalletBackendService.Companion.MSG_NOTIFY
+import net.taler.wallet.backend.WalletBackendService.Companion.MSG_REPLY
+import net.taler.wallet.backend.WalletBackendService.Companion.MSG_SUBSCRIBE_NOTIFY
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.LinkedList
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class WalletBackendApi(
     private val app: Application,
-    private val onConnected: (() -> Unit),
     private val notificationHandler: ((payload: JSONObject) -> Unit)
 ) {
-
+    private val json = Json(
+        JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)
+    )
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
-    private val handlers = SparseArray<(isError: Boolean, message: JSONObject) -> Unit>()
-    private var nextRequestID = 1
+    private val handlers = ConcurrentHashMap<Int, (isError: Boolean, message: JSONObject) -> Unit>()
+    private var nextRequestID = AtomicInteger(0)
+    private val incomingMessenger = Messenger(IncomingHandler(this))
 
     private val walletBackendConn = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
@@ -54,10 +67,15 @@ class WalletBackendApi(
             val bm = Messenger(binder)
             walletBackendMessenger = bm
             pumpQueue(bm)
-            val msg = Message.obtain(null, WalletBackendService.MSG_SUBSCRIBE_NOTIFY)
+            val msg = Message.obtain(null, MSG_SUBSCRIBE_NOTIFY)
             msg.replyTo = incomingMessenger
             bm.send(msg)
-            onConnected.invoke()
+        }
+    }
+
+    init {
+        Intent(app, WalletBackendService::class.java).also { intent ->
+            app.bindService(intent, walletBackendConn, Context.BIND_AUTO_CREATE)
         }
     }
 
@@ -66,11 +84,11 @@ class WalletBackendApi(
         override fun handleMessage(msg: Message) {
             val api = weakApi.get() ?: return
             when (msg.what) {
-                WalletBackendService.MSG_REPLY -> {
+                MSG_REPLY -> {
                     val requestID = msg.data.getInt("requestID", 0)
                     val operation = msg.data.getString("operation", "??")
                     Log.i(TAG, "got reply for operation $operation ($requestID)")
-                    val h = api.handlers.get(requestID)
+                    val h = api.handlers.remove(requestID)
                     if (h == null) {
                         Log.e(TAG, "request ID not associated with a handler")
                         return
@@ -84,7 +102,7 @@ class WalletBackendApi(
                     val json = JSONObject(response)
                     h(isError, json)
                 }
-                WalletBackendService.MSG_NOTIFY -> {
+                MSG_NOTIFY -> {
                     val payloadStr = msg.data.getString("payload")
                     if (payloadStr == null) {
                         Log.e(TAG, "Notification had no payload: $msg")
@@ -97,14 +115,6 @@ class WalletBackendApi(
         }
     }
 
-    private val incomingMessenger = Messenger(IncomingHandler(this))
-
-    init {
-        Intent(app, WalletBackendService::class.java).also { intent ->
-            app.bindService(intent, walletBackendConn, Context.BIND_AUTO_CREATE)
-        }
-    }
-
     private fun pumpQueue(bm: Messenger) {
         while (true) {
             val msg = queuedMessages.pollFirst() ?: return
@@ -112,16 +122,15 @@ class WalletBackendApi(
         }
     }
 
-
     fun sendRequest(
         operation: String,
         args: JSONObject? = null,
         onResponse: (isError: Boolean, message: JSONObject) -> Unit = { _, _ -> }
     ) {
-        val requestID = nextRequestID++
+        val requestID = nextRequestID.incrementAndGet()
         Log.i(TAG, "sending request for operation $operation ($requestID)")
-        val msg = Message.obtain(null, WalletBackendService.MSG_COMMAND)
-        handlers.put(requestID, onResponse)
+        val msg = Message.obtain(null, MSG_COMMAND)
+        handlers[requestID] = onResponse
         msg.replyTo = incomingMessenger
         val data = msg.data
         data.putString("operation", operation)
@@ -134,6 +143,26 @@ class WalletBackendApi(
             bm.send(msg)
         } else {
             queuedMessages.add(msg)
+        }
+    }
+
+    suspend fun <T> request(
+        operation: String,
+        serializer: KSerializer<T>? = null,
+        args: (JSONObject.() -> JSONObject)? = null
+    ): WalletResponse<T> = withContext(Dispatchers.Default) {
+        suspendCoroutine<WalletResponse<T>> { cont ->
+            sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
+                val response = if (isError) {
+                    val error = json.parse(WalletErrorInfo.serializer(), message.toString())
+                    WalletResponse.Error<T>(error)
+                } else {
+                    @Suppress("UNCHECKED_CAST") // if serializer is null, T must be Unit
+                    val t: T = serializer?.let { json.parse(serializer, message.toString()) } ?: Unit as T
+                    WalletResponse.Success(t)
+                }
+                cont.resume(response)
+            }
         }
     }
 

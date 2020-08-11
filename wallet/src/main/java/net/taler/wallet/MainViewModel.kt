@@ -27,7 +27,8 @@ import androidx.lifecycle.viewModelScope
 import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.AmountMixin
 import net.taler.common.Event
@@ -37,6 +38,7 @@ import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
+import net.taler.wallet.balances.BalanceResponse
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
@@ -68,15 +70,19 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var merchantVersion: String? = null
         private set
 
-    private val walletBackendApi = WalletBackendApi(app, {
-        // nothing to do when we connect, balance will be requested by BalanceFragment in onStart()
-    }) { payload ->
+    private val mapper = ObjectMapper()
+        .registerModule(KotlinModule())
+        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .addMixIn(Amount::class.java, AmountMixin::class.java)
+        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
+
+    private val api = WalletBackendApi(app) { payload ->
         if (payload.optString("operation") == "init") {
             val result = payload.getJSONObject("result")
             val versions = result.getJSONObject("supported_protocol_versions")
             exchangeVersion = versions.getString("exchange")
             merchantVersion = versions.getString("merchant")
-        } else if (payload.getString("type") != "waiting-for-retry") {  // ignore ping
+        } else if (payload.getString("type") != "waiting-for-retry") { // ignore ping
             Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
             loadBalances()
             if (payload.optString("type") in transactionNotifications) {
@@ -92,20 +98,12 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .addMixIn(Amount::class.java, AmountMixin::class.java)
-        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
-
-    val withdrawManager = WithdrawManager(walletBackendApi, mapper)
-    val paymentManager = PaymentManager(walletBackendApi, mapper)
-    val pendingOperationsManager: PendingOperationsManager =
-        PendingOperationsManager(walletBackendApi)
-    val transactionManager: TransactionManager =
-        TransactionManager(walletBackendApi, viewModelScope, mapper)
-    val refundManager = RefundManager(walletBackendApi)
-    val exchangeManager: ExchangeManager = ExchangeManager(walletBackendApi, mapper)
+    val withdrawManager = WithdrawManager(api, viewModelScope)
+    val paymentManager = PaymentManager(api, mapper)
+    val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
+    val transactionManager: TransactionManager = TransactionManager(api, viewModelScope, mapper)
+    val refundManager = RefundManager(api)
+    val exchangeManager: ExchangeManager = ExchangeManager(api, mapper)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
@@ -118,20 +116,21 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val lastBackup: LiveData<Long> = mLastBackup
 
     override fun onCleared() {
-        walletBackendApi.destroy()
+        api.destroy()
         super.onCleared()
     }
 
     @UiThread
-    fun loadBalances() {
+    fun loadBalances(): Job = viewModelScope.launch {
         showProgressBar.value = true
-        walletBackendApi.sendRequest("getBalances") { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Error retrieving balances: ${result.toString(2)}")
-                return@sendRequest
-            }
-            mBalances.value = mapper.readValue(result.getString("balances"))
-            showProgressBar.value = false
+        val response = api.request("getBalances", BalanceResponse.serializer())
+        showProgressBar.value = false
+        response.onError {
+            // TODO expose in UI
+            Log.e(TAG, "Error retrieving balances: $it")
+        }
+        response.onSuccess {
+            mBalances.value = it.balances
         }
     }
 
@@ -145,22 +144,22 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     @UiThread
     fun dangerouslyReset() {
-        walletBackendApi.sendRequest("reset")
+        api.sendRequest("reset")
         withdrawManager.testWithdrawalInProgress.value = false
         mBalances.value = emptyList()
     }
 
     fun startTunnel() {
-        walletBackendApi.sendRequest("startTunnel")
+        api.sendRequest("startTunnel")
     }
 
     fun stopTunnel() {
-        walletBackendApi.sendRequest("stopTunnel")
+        api.sendRequest("stopTunnel")
     }
 
     fun tunnelResponse(resp: String) {
         val respJson = JSONObject(resp)
-        walletBackendApi.sendRequest("tunnelResponse", respJson)
+        api.sendRequest("tunnelResponse", respJson)
     }
 
 }

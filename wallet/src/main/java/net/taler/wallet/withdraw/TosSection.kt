@@ -17,6 +17,7 @@
 package net.taler.wallet.withdraw
 
 import io.noties.markwon.Markwon
+import kotlinx.serialization.Serializable
 import org.commonmark.node.Code
 import org.commonmark.node.Document
 import org.commonmark.node.Heading
@@ -73,3 +74,9 @@ private fun getNodeText(rootNode: Node): String {
     }
     return text
 }
+
+@Serializable
+data class TosResponse(
+    val tos: String,
+    val currentEtag: String
+)

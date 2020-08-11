@@ -87,7 +87,7 @@ class TransactionManager(
     @WorkerThread
     private fun onTransactionsLoaded(
         liveData: MutableLiveData<TransactionsResult>,
-        currency: String?,  // only non-null if we should update all transactions cache
+        currency: String?, // only non-null if we should update all transactions cache
         result: JSONObject
     ) {
         val transactionsArray = result.getString("transactions")

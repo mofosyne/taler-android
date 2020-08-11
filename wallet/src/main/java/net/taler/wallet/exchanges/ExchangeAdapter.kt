@@ -24,10 +24,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
+import kotlinx.serialization.Serializable
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.exchanges.ExchangeAdapter.ExchangeItemViewHolder
 
+@Serializable
 data class ExchangeItem(
     val exchangeBaseUrl: String,
     val currency: String,

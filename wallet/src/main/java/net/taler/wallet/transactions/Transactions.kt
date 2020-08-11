@@ -36,6 +36,8 @@ import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 
+data class Transactions(val transactions: List<Transaction>)
+
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
 @JsonSubTypes(
     Type(value = TransactionWithdrawal::class, name = "withdrawal"),
