@@ -23,13 +23,14 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import net.taler.common.Duration
+import net.taler.common.assertUiThread
 import net.taler.merchantlib.CheckPaymentResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.PostOrderRequest
-import net.taler.merchantlib.PostOrderResponse
 import net.taler.merchantpos.MainActivity.Companion.TAG
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigManager
@@ -50,12 +51,16 @@ class PaymentManager(
 
     private val mPayment = MutableLiveData<Payment>()
     val payment: LiveData<Payment> = mPayment
+    private var checkJob: Job? = null
 
-    private val checkTimer = object : CountDownTimer(TIMEOUT, CHECK_INTERVAL) {
+    private val checkTimer: CountDownTimer = object : CountDownTimer(TIMEOUT, CHECK_INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             val orderId = payment.value?.orderId
             if (orderId == null) cancel()
-            else checkPayment(orderId)
+            // only start new job if old one doesn't exist or is complete
+            else if (checkJob == null || checkJob?.isCompleted == true) {
+                checkJob = checkPayment(orderId)
+            }
         }
 
         override fun onFinish() {
@@ -64,44 +69,39 @@ class PaymentManager(
     }
 
     @UiThread
-    fun createPayment(order: Order) {
+    fun createPayment(order: Order) = scope.launch {
         val merchantConfig = configManager.merchantConfig!!
         mPayment.value = Payment(order, order.summary, configManager.currency!!)
-        scope.launch(Dispatchers.IO) {
-            val request = PostOrderRequest(
-                contractTerms = order.toContractTerms(),
-                refundDelay = Duration(HOURS.toMillis(1))
-            )
-            val response = api.postOrder(merchantConfig, request)
-            response.handle(::onNetworkError, ::onOrderCreated)
+        val request = PostOrderRequest(
+            contractTerms = order.toContractTerms(),
+            refundDelay = Duration(HOURS.toMillis(1))
+        )
+        api.postOrder(merchantConfig, request).handle(::onNetworkError) { orderResponse ->
+            assertUiThread()
+            mPayment.value = mPayment.value!!.copy(orderId = orderResponse.orderId)
+            checkTimer.start()
         }
     }
 
-    private fun onOrderCreated(orderResponse: PostOrderResponse) = scope.launch(Dispatchers.Main) {
-        mPayment.value = mPayment.value!!.copy(orderId = orderResponse.orderId)
-        checkTimer.start()
-    }
-
-    private fun checkPayment(orderId: String) {
+    private fun checkPayment(orderId: String) = scope.launch {
         val merchantConfig = configManager.merchantConfig!!
-        scope.launch(Dispatchers.IO) {
-            val response = api.checkOrder(merchantConfig, orderId)
-            response.handle(::onNetworkError, ::onPaymentChecked)
+        api.checkOrder(merchantConfig, orderId).handle(::onNetworkError) { response ->
+            assertUiThread()
+            if (!isActive) return@handle // don't continue if job was cancelled
+            val currentValue = requireNotNull(mPayment.value)
+            if (response.paid) {
+                mPayment.value = currentValue.copy(paid = true)
+                checkTimer.cancel()
+            } else if (currentValue.talerPayUri == null) {
+                response as CheckPaymentResponse.Unpaid
+                mPayment.value = currentValue.copy(talerPayUri = response.talerPayUri)
+            }
         }
     }
 
-    private fun onPaymentChecked(response: CheckPaymentResponse) = scope.launch(Dispatchers.Main) {
-        val currentValue = requireNotNull(mPayment.value)
-        if (response.paid) {
-            mPayment.value = currentValue.copy(paid = true)
-            checkTimer.cancel()
-        } else if (currentValue.talerPayUri == null) {
-            response as CheckPaymentResponse.Unpaid
-            mPayment.value = currentValue.copy(talerPayUri = response.talerPayUri)
-        }
-    }
-
-    private fun onNetworkError(error: String) = scope.launch(Dispatchers.Main) {
+    private fun onNetworkError(error: String) {
+        assertUiThread()
+        Log.d(TAG, "Network error: $error")
         cancelPayment(error)
     }
 
@@ -112,14 +112,14 @@ class PaymentManager(
         mPayment.value?.let { payment ->
             if (!payment.paid && payment.error != null) payment.orderId?.let { orderId ->
                 Log.d(TAG, "Deleting cancelled and unpaid order $orderId")
-                scope.launch(Dispatchers.IO) {
+                scope.launch {
                     api.deleteOrder(merchantConfig, orderId)
                 }
             }
         }
-
         mPayment.value = mPayment.value!!.copy(error = error)
         checkTimer.cancel()
+        checkJob?.isCancelled
+        checkJob = null
     }
-
 }

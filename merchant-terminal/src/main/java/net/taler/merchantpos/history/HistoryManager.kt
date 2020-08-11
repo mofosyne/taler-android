@@ -20,8 +20,8 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.common.assertUiThread
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.config.ConfigManager
@@ -44,20 +44,19 @@ class HistoryManager(
     val items: LiveData<HistoryResult> = mItems
 
     @UiThread
-    internal fun fetchHistory() {
+    internal fun fetchHistory() = scope.launch {
         mIsLoading.value = true
         val merchantConfig = configManager.merchantConfig!!
-        scope.launch(Dispatchers.IO) {
-            api.getOrderHistory(merchantConfig).handle(::onHistoryError) {
-                mIsLoading.postValue(false)
-                mItems.postValue(HistoryResult.Success(it.orders))
-            }
+        api.getOrderHistory(merchantConfig).handle(::onHistoryError) {
+            assertUiThread()
+            mIsLoading.value = false
+            mItems.value = HistoryResult.Success(it.orders)
         }
     }
 
     private fun onHistoryError(msg: String) {
-        mIsLoading.postValue(false)
-        mItems.postValue(HistoryResult.Error(msg))
+        assertUiThread()
+        mIsLoading.value = false
+        mItems.value = HistoryResult.Error(msg)
     }
-
 }

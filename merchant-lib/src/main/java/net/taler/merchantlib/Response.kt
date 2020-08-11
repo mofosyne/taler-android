@@ -25,7 +25,6 @@ import kotlinx.serialization.Serializable
 class Response<out T> private constructor(
     private val value: Any?
 ) {
-
     companion object {
         suspend fun <T> response(request: suspend () -> T): Response<T> {
             return try {
@@ -45,7 +44,7 @@ class Response<out T> private constructor(
 
     val isFailure: Boolean get() = value is Failure
 
-    suspend fun handle(onFailure: ((String) -> Any)? = null, onSuccess: ((T) -> Any)? = null) {
+    suspend fun handle(onFailure: ((String) -> Unit)? = null, onSuccess: ((T) -> Unit)? = null) {
         if (value is Failure) onFailure?.let { it(getFailureString(value)) }
         else onSuccess?.let {
             @Suppress("UNCHECKED_CAST")
@@ -86,5 +85,4 @@ class Response<out T> private constructor(
         val code: Int?,
         val hint: String?
     )
-
 }

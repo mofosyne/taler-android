@@ -27,63 +27,81 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.contentType
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import net.taler.merchantlib.Response.Companion.response
 
-class MerchantApi(private val httpClient: HttpClient) {
+class MerchantApi(
+    private val httpClient: HttpClient = getDefaultHttpClient(),
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
 
-    suspend fun getConfig(baseUrl: String): Response<ConfigResponse> = response {
-        httpClient.get("$baseUrl/config") as ConfigResponse
+    suspend fun getConfig(baseUrl: String): Response<ConfigResponse> = withContext(ioDispatcher) {
+        response {
+            httpClient.get("$baseUrl/config") as ConfigResponse
+        }
     }
 
     suspend fun postOrder(
         merchantConfig: MerchantConfig,
         orderRequest: PostOrderRequest
-    ): Response<PostOrderResponse> = response {
-        httpClient.post(merchantConfig.urlFor("private/orders")) {
-            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-            contentType(Json)
-            body = orderRequest
-        } as PostOrderResponse
+    ): Response<PostOrderResponse> = withContext(ioDispatcher) {
+        response {
+            httpClient.post(merchantConfig.urlFor("private/orders")) {
+                header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+                contentType(Json)
+                body = orderRequest
+            } as PostOrderResponse
+        }
     }
 
     suspend fun checkOrder(
         merchantConfig: MerchantConfig,
         orderId: String
-    ): Response<CheckPaymentResponse> = response {
-        httpClient.get(merchantConfig.urlFor("private/orders/$orderId")) {
-            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-        } as CheckPaymentResponse
+    ): Response<CheckPaymentResponse> = withContext(ioDispatcher) {
+        response {
+            httpClient.get(merchantConfig.urlFor("private/orders/$orderId")) {
+                header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+            } as CheckPaymentResponse
+        }
     }
 
     suspend fun deleteOrder(
         merchantConfig: MerchantConfig,
         orderId: String
-    ): Response<Unit> = response {
-        httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
-            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-        } as Unit
+    ): Response<Unit> = withContext(ioDispatcher) {
+        response {
+            httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
+                header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+            } as Unit
+        }
     }
 
-    suspend fun getOrderHistory(merchantConfig: MerchantConfig): Response<OrderHistory> = response {
-        httpClient.get(merchantConfig.urlFor("private/orders")) {
-            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-        } as OrderHistory
-    }
+    suspend fun getOrderHistory(merchantConfig: MerchantConfig): Response<OrderHistory> =
+        withContext(ioDispatcher) {
+            response {
+                httpClient.get(merchantConfig.urlFor("private/orders")) {
+                    header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+                } as OrderHistory
+            }
+        }
 
     suspend fun giveRefund(
         merchantConfig: MerchantConfig,
         orderId: String,
         request: RefundRequest
-    ): Response<RefundResponse> = response {
-        httpClient.post(merchantConfig.urlFor("private/orders/$orderId/refund")) {
-            header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-            contentType(Json)
-            body = request
-        } as RefundResponse
+    ): Response<RefundResponse> = withContext(ioDispatcher) {
+        response {
+            httpClient.post(merchantConfig.urlFor("private/orders/$orderId/refund")) {
+                header(Authorization, "ApiKey ${merchantConfig.apiKey}")
+                contentType(Json)
+                body = request
+            } as RefundResponse
+        }
     }
-
 }
 
 fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {

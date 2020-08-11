@@ -20,9 +20,9 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.common.Amount
+import net.taler.common.assertUiThread
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantlib.RefundRequest
@@ -65,27 +65,25 @@ class RefundManager(
     }
 
     @UiThread
-    internal fun refund(item: OrderHistoryEntry, amount: Amount, reason: String) {
+    internal fun refund(item: OrderHistoryEntry, amount: Amount, reason: String) = scope.launch {
         val merchantConfig = configManager.merchantConfig!!
         val request = RefundRequest(amount, reason)
-        scope.launch(Dispatchers.IO) {
-            api.giveRefund(merchantConfig, item.orderId, request).handle(::onRefundError) {
-                val result = RefundResult.Success(
-                    refundUri = it.talerRefundUri,
-                    item = item,
-                    amount = amount,
-                    reason = reason
-                )
-                mRefundResult.postValue(result)
-            }
+        api.giveRefund(merchantConfig, item.orderId, request).handle(::onRefundError) {
+            assertUiThread()
+            mRefundResult.value = RefundResult.Success(
+                refundUri = it.talerRefundUri,
+                item = item,
+                amount = amount,
+                reason = reason
+            )
         }
     }
 
     @UiThread
     private fun onRefundError(msg: String) {
+        assertUiThread()
         if (msg.contains("2602")) {
             mRefundResult.postValue(RefundResult.AlreadyRefunded)
         } else mRefundResult.postValue(RefundResult.Error(msg))
     }
-
 }

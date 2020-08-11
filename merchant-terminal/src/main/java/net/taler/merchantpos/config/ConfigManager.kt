@@ -30,6 +30,7 @@ import io.ktor.client.features.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders.Authorization
+import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -114,7 +115,7 @@ class ConfigManager(
                 Log.e(TAG, "Error retrieving merchant config", e)
                 val msg = if (e is ClientRequestException) {
                     context.getString(
-                        if (e.response.status.value == 401) R.string.config_auth_error
+                        if (e.response.status == Unauthorized) R.string.config_auth_error
                         else R.string.config_error_network
                     )
                 } else {
@@ -145,7 +146,7 @@ class ConfigManager(
                 Log.e(TAG, "Error handling configuration by ${receiver::class.java.simpleName}", e)
                 context.getString(R.string.config_error_unknown)
             }
-            if (result != null) {  // error
+            if (result != null) { // error
                 mConfigUpdateResult.postValue(ConfigUpdateResult.Error(result))
                 return
             }
@@ -178,7 +179,6 @@ class ConfigManager(
     private fun onNetworkError(msg: String) = scope.launch(Dispatchers.Main) {
         mConfigUpdateResult.value = ConfigUpdateResult.Error(msg)
     }
-
 }
 
 sealed class ConfigUpdateResult {
