@@ -19,8 +19,11 @@ package net.taler.wallet.payment
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
+import net.taler.wallet.transactions.TransactionError
 
 @JsonTypeInfo(use = NAME, property = "status")
 sealed class PreparePayResponse(open val proposalId: String) {
@@ -42,6 +45,7 @@ sealed class PreparePayResponse(open val proposalId: String) {
     @JsonTypeName("insufficient-balance")
     data class InsufficientBalanceResponse(
         override val proposalId: String,
+        val amountRaw: Amount,
         val contractTerms: ContractTerms
     ) : PreparePayResponse(proposalId)
 
@@ -52,10 +56,23 @@ sealed class PreparePayResponse(open val proposalId: String) {
          * Did the payment succeed?
          */
         val paid: Boolean,
+        val amountRaw: Amount,
+        val amountEffective: Amount,
 
         /**
          * Redirect URL for the fulfillment page, only given if paid==true.
          */
         val nextUrl: String?
     ) : PreparePayResponse(proposalId)
+}
+
+@Serializable
+sealed class ConfirmPayResult {
+    @Serializable
+    @SerialName("done")
+    data class Done(val nextUrl: String) : ConfirmPayResult()
+
+    @Serializable
+    @SerialName("pending")
+    data class Pending(val lastError: TransactionError) : ConfirmPayResult()
 }

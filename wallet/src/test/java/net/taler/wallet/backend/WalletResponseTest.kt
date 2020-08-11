@@ -16,17 +16,31 @@
 
 package net.taler.wallet.backend
 
-import junit.framework.Assert.assertEquals
-import kotlinx.serialization.UnstableDefault
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import net.taler.common.Amount
+import net.taler.common.AmountMixin
+import net.taler.common.Timestamp
+import net.taler.common.TimestampMixin
 import net.taler.wallet.balances.BalanceResponse
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
-@UnstableDefault
 class WalletResponseTest {
 
-    private val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
+    private val json = Json(
+        JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)
+    )
+
+    private val mapper = ObjectMapper()
+        .registerModule(KotlinModule())
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .addMixIn(Amount::class.java, AmountMixin::class.java)
+        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
 
     @Test
     fun testBalanceResponse() {
@@ -52,5 +66,25 @@ class WalletResponseTest {
         """.trimIndent()
         )
         assertEquals(1, response.result.balances.size)
+    }
+
+    @Test
+    fun testWalletErrorInfo() {
+        val infoJson = """
+            {
+                "talerErrorCode":7001,
+                "talerErrorHint":"Error: WALLET_UNEXPECTED_EXCEPTION",
+                "details":{
+                  "httpStatusCode": 401,
+                  "requestUrl": "https:\/\/backend.demo.taler.net\/-\/FSF\/orders\/2020.224-02XC8W52BHH3G\/claim",
+                  "requestMethod": "POST"
+                },
+                "message":"unexpected exception: Error: BUG: invariant violation (purchase status)"
+            }
+        """.trimIndent()
+        val info = json.parse(WalletErrorInfo.serializer(), infoJson)
+        val infoJackson: WalletErrorInfo = mapper.readValue(infoJson)
+        println(info.userFacingMsg)
+        assertEquals(info.userFacingMsg, infoJackson.userFacingMsg)
     }
 }

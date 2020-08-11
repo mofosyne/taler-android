@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
+import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.common.ContractMerchant
 import net.taler.common.ContractProduct
@@ -74,6 +75,7 @@ sealed class AmountType {
     object Neutral : AmountType()
 }
 
+@Serializable
 data class TransactionError(
     private val ec: Int,
     private val hint: String?

@@ -22,11 +22,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.getErrorString
+import net.taler.wallet.backend.WalletErrorInfo
 import net.taler.wallet.payment.PayStatus.AlreadyPaid
 import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
@@ -47,14 +49,20 @@ sealed class PayStatus {
         val amountEffective: Amount
     ) : PayStatus()
 
-    data class InsufficientBalance(val contractTerms: ContractTerms) : PayStatus()
+    data class InsufficientBalance(
+        val contractTerms: ContractTerms,
+        val amountRaw: Amount
+    ) : PayStatus()
+
+    // TODO bring user to fulfilment URI
     object AlreadyPaid : PayStatus()
     data class Error(val error: String) : PayStatus()
     data class Success(val currency: String) : PayStatus()
 }
 
 class PaymentManager(
-    private val walletBackendApi: WalletBackendApi,
+    private val api: WalletBackendApi,
+    private val scope: CoroutineScope,
     private val mapper: ObjectMapper
 ) {
 
@@ -65,21 +73,21 @@ class PaymentManager(
     internal val detailsShown: LiveData<Boolean> = mDetailsShown
 
     @UiThread
-    fun preparePay(url: String) {
+    fun preparePay(url: String) = scope.launch {
         mPayStatus.value = PayStatus.Loading
         mDetailsShown.value = false
-
-        val args = JSONObject(mapOf("talerPayUri" to url))
-        walletBackendApi.sendRequest("preparePay", args) { isError, result ->
-            if (isError) {
-                handleError("preparePay", getErrorString(result))
-                return@sendRequest
-            }
-            val response: PreparePayResponse = mapper.readValue(result.toString())
-            Log.e(TAG, "PreparePayResponse $response")
+        api.request<PreparePayResponse>("preparePay", mapper) {
+            put("talerPayUri", url)
+        }.onError {
+            handleError("preparePay", it)
+        }.onSuccess { response ->
+            Log.e(TAG, "PreparePayResponse $response") // TODO remove
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
-                is InsufficientBalanceResponse -> InsufficientBalance(response.contractTerms)
+                is InsufficientBalanceResponse -> InsufficientBalance(
+                    response.contractTerms,
+                    response.amountRaw
+                )
                 is AlreadyConfirmedResponse -> AlreadyPaid
             }
         }
@@ -99,13 +107,12 @@ class PaymentManager(
         return terms
     }
 
-    fun confirmPay(proposalId: String, currency: String) {
-        val args = JSONObject(mapOf("proposalId" to proposalId))
-        walletBackendApi.sendRequest("confirmPay", args) { isError, result ->
-            if (isError) {
-                handleError("preparePay", getErrorString(result))
-                return@sendRequest
-            }
+    fun confirmPay(proposalId: String, currency: String) = scope.launch {
+        api.request("confirmPay", ConfirmPayResult.serializer()) {
+            put("proposalId", proposalId)
+        }.onError {
+            handleError("confirmPay", it)
+        }.onSuccess {
             mPayStatus.postValue(PayStatus.Success(currency))
         }
     }
@@ -119,17 +126,14 @@ class PaymentManager(
         resetPayStatus()
     }
 
-    internal fun abortProposal(proposalId: String) {
-        val args = JSONObject(mapOf("proposalId" to proposalId))
-
+    internal fun abortProposal(proposalId: String) = scope.launch {
         Log.i(TAG, "aborting proposal")
-
-        walletBackendApi.sendRequest("abortProposal", args) { isError, result ->
-            if (isError) {
-                handleError("abortProposal", getErrorString(result))
-                Log.e(TAG, "received error response to abortProposal")
-                return@sendRequest
-            }
+        api.request<String>("abortProposal", mapper) {
+            put("proposalId", proposalId)
+        }.onError {
+            Log.e(TAG, "received error response to abortProposal")
+            handleError("abortProposal", it)
+        }.onSuccess {
             mPayStatus.postValue(PayStatus.None)
         }
     }
@@ -145,9 +149,9 @@ class PaymentManager(
         mPayStatus.value = PayStatus.None
     }
 
-    private fun handleError(operation: String, msg: String) {
-        Log.e(TAG, "got $operation error result $msg")
-        mPayStatus.value = PayStatus.Error(msg)
+    private fun handleError(operation: String, error: WalletErrorInfo) {
+        Log.e(TAG, "got $operation error result $error")
+        mPayStatus.value = PayStatus.Error(error.userFacingMsg)
     }
 
 }

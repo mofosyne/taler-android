@@ -26,6 +26,8 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
@@ -159,6 +161,25 @@ class WalletBackendApi(
                 } else {
                     @Suppress("UNCHECKED_CAST") // if serializer is null, T must be Unit
                     val t: T = serializer?.let { json.parse(serializer, message.toString()) } ?: Unit as T
+                    WalletResponse.Success(t)
+                }
+                cont.resume(response)
+            }
+        }
+    }
+
+    suspend inline fun <reified T> request(
+        operation: String,
+        mapper: ObjectMapper,
+        noinline args: (JSONObject.() -> JSONObject)? = null
+    ): WalletResponse<T> = withContext(Dispatchers.Default) {
+        suspendCoroutine<WalletResponse<T>> { cont ->
+            sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
+                val response = if (isError) {
+                    val error: WalletErrorInfo = mapper.readValue(message.toString())
+                    WalletResponse.Error<T>(error)
+                } else {
+                    val t: T = mapper.readValue(message.toString())
                     WalletResponse.Success(t)
                 }
                 cont.resume(response)

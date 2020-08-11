@@ -99,7 +99,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     val withdrawManager = WithdrawManager(api, viewModelScope)
-    val paymentManager = PaymentManager(api, mapper)
+    val paymentManager = PaymentManager(api, viewModelScope, mapper)
     val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope, mapper)
     val refundManager = RefundManager(api)

@@ -16,9 +16,22 @@
 
 package net.taler.wallet.backend
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.PrimitiveDescriptor
+import kotlinx.serialization.PrimitiveKind.STRING
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonInput
+import kotlinx.serialization.json.JsonObject
 import org.json.JSONObject
+
 
 @Serializable
 sealed class WalletResponse<T> {
@@ -58,9 +71,10 @@ data class WalletErrorInfo(
     // for the instance of the error.
     val message: String,
 
-    // Error details, type depends
-    // on talerErrorCode
-    val details: String?
+    // Error details, type depends on talerErrorCode
+    @Serializable(JSONObjectDeserializer::class)
+    @JsonDeserialize(using = JsonObjectDeserializer::class)
+    val details: JSONObject?
 ) {
     val userFacingMsg: String
         get() {
@@ -68,8 +82,7 @@ data class WalletErrorInfo(
                 append(talerErrorCode)
                 append(" ")
                 append(message)
-                details?.let { it ->
-                    val details = JSONObject(it)
+                details?.let { details ->
                     details.optJSONObject("errorResponse")?.let { errorResponse ->
                         append("\n\n")
                         append(errorResponse.optString("code"))
@@ -79,4 +92,26 @@ data class WalletErrorInfo(
                 }
             }.toString()
         }
+}
+
+class JSONObjectDeserializer : KSerializer<JSONObject> {
+
+    override val descriptor = PrimitiveDescriptor("JSONObjectDeserializer", STRING)
+
+    override fun deserialize(decoder: Decoder): JSONObject {
+        val input = decoder as JsonInput
+        val tree = input.decodeJson() as JsonObject
+        return JSONObject(tree.toString())
+    }
+
+    override fun serialize(encoder: Encoder, value: JSONObject) {
+        error("not supported")
+    }
+}
+
+class JsonObjectDeserializer : StdDeserializer<JSONObject>(JSONObject::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): JSONObject {
+        val node: JsonNode = p.codec.readTree(p)
+        return JSONObject(node.toString())
+    }
 }
