@@ -36,8 +36,9 @@ import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
+import java.util.LinkedList
 
-data class Transactions(val transactions: List<Transaction>)
+data class Transactions(val transactions: LinkedList<Transaction>)
 
 @JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
 @JsonSubTypes(

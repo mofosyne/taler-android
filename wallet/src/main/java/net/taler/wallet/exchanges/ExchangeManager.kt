@@ -19,17 +19,22 @@ package net.taler.wallet.exchanges
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import org.json.JSONObject
+
+@Serializable
+data class ExchangeListResponse(
+    val exchanges: List<ExchangeItem>
+)
 
 class ExchangeManager(
-    private val walletBackendApi: WalletBackendApi,
-    private val mapper: ObjectMapper
+    private val api: WalletBackendApi,
+    private val scope: CoroutineScope
 ) {
 
     private val mProgress = MutableLiveData<Boolean>()
@@ -45,31 +50,31 @@ class ExchangeManager(
 
     private fun list(): LiveData<List<ExchangeItem>> {
         mProgress.value = true
-        walletBackendApi.sendRequest("listExchanges") { isError, result ->
-            if (isError) {
+        scope.launch {
+            val response = api.request("listExchanges", ExchangeListResponse.serializer())
+            response.onError {
                 throw AssertionError("Wallet core failed to return exchanges!")
-            } else {
-                val exchanges: List<ExchangeItem> = mapper.readValue(result.getString("exchanges"))
-                Log.d(TAG, "Exchange list: $exchanges")
+            }.onSuccess {
+                Log.d(TAG, "Exchange list: ${it.exchanges}")
                 mProgress.value = false
-                mExchanges.value = exchanges
+                mExchanges.value = it.exchanges
             }
         }
         return mExchanges
     }
 
-    fun add(exchangeUrl: String) {
+    fun add(exchangeUrl: String) = scope.launch {
         mProgress.value = true
-        val args = JSONObject().apply { put("exchangeBaseUrl", exchangeUrl) }
-        walletBackendApi.sendRequest("addExchange", args) { isError, result ->
+        api.request<Unit>("addExchange") {
+            put("exchangeBaseUrl", exchangeUrl)
+        }.onError {
             mProgress.value = false
-            if (isError) {
-                Log.e(TAG, "$result")
-                mAddError.value = true.toEvent()
-            } else {
-                Log.d(TAG, "Exchange $exchangeUrl added")
-                list()
-            }
+            Log.e(TAG, "Error adding exchange: $it")
+            mAddError.value = true.toEvent()
+        }.onSuccess {
+            mProgress.value = false
+            Log.d(TAG, "Exchange $exchangeUrl added")
+            list()
         }
     }
 

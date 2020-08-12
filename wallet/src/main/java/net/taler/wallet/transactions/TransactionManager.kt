@@ -17,20 +17,14 @@
 package net.taler.wallet.transactions
 
 import androidx.annotation.UiThread
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.getErrorString
-import org.json.JSONObject
 import java.util.HashMap
-import java.util.LinkedList
 
 sealed class TransactionsResult {
     class Error(val msg: String) : TransactionsResult()
@@ -38,7 +32,7 @@ sealed class TransactionsResult {
 }
 
 class TransactionManager(
-    private val walletBackendApi: WalletBackendApi,
+    private val api: WalletBackendApi,
     private val scope: CoroutineScope,
     private val mapper: ObjectMapper
 ) {
@@ -62,44 +56,36 @@ class TransactionManager(
         }
 
     @UiThread
-    fun loadTransactions(searchQuery: String? = null) {
-        val currency = selectedCurrency ?: return
+    fun loadTransactions(searchQuery: String? = null) = scope.launch {
+        val currency = selectedCurrency ?: return@launch
         val liveData = mTransactions.getOrPut(currency) { MutableLiveData() }
         if (searchQuery == null && allTransactions.containsKey(currency)) {
             liveData.value = TransactionsResult.Success(allTransactions[currency]!!)
         }
         if (liveData.value == null) mProgress.value = true
-        val request = JSONObject(mapOf("currency" to currency))
-        searchQuery?.let { request.put("search", it) }
-        walletBackendApi.sendRequest("getTransactions", request) { isError, result ->
-            if (isError) {
-                liveData.postValue(TransactionsResult.Error(getErrorString(result)))
-                mProgress.postValue(false)
-            } else {
-                val currencyToUpdate = if (searchQuery == null) currency else null
-                scope.launch(Dispatchers.Default) {
-                    onTransactionsLoaded(liveData, currencyToUpdate, result)
-                }
-            }
-        }
-    }
 
-    @WorkerThread
-    private fun onTransactionsLoaded(
-        liveData: MutableLiveData<TransactionsResult>,
-        currency: String?, // only non-null if we should update all transactions cache
-        result: JSONObject
-    ) {
-        val transactionsArray = result.getString("transactions")
-        val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
-        // TODO remove when fixed in wallet-core
-        transactions.sortWith(compareBy({ it.pending }, { it.timestamp.ms }, { it.transactionId }))
-        transactions.reverse() // show latest first
-        mProgress.postValue(false)
-        liveData.postValue(TransactionsResult.Success(transactions))
-        // update all transactions on UiThread if there was a currency
-        currency?.let {
-            scope.launch(Dispatchers.Main) { allTransactions[currency] = transactions }
+        api.request<Transactions>("getTransactions", mapper) {
+            if (searchQuery != null) put("search", searchQuery)
+            put("currency", currency)
+        }.onError {
+            liveData.postValue(TransactionsResult.Error(it.userFacingMsg))
+            mProgress.postValue(false)
+        }.onSuccess { result ->
+            val transactions = result.transactions
+            // TODO remove when fixed in wallet-core
+            val comparator = compareBy<Transaction>(
+                { it.pending },
+                { it.timestamp.ms },
+                { it.transactionId }
+            )
+            transactions.sortWith(comparator)
+            transactions.reverse() // show latest first
+
+            mProgress.value = false
+            liveData.value = TransactionsResult.Success(transactions)
+
+            // update all transactions on UiThread if there was a currency
+            if (searchQuery == null) allTransactions[currency] = transactions
         }
     }
 

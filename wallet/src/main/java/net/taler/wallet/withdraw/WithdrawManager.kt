@@ -78,9 +78,11 @@ class WithdrawManager(
     var exchangeFees: ExchangeFees? = null
         private set
 
-    fun withdrawTestkudos() {
+    fun withdrawTestkudos() = scope.launch {
         testWithdrawalInProgress.value = true
-        api.sendRequest("withdrawTestkudos") { _, _ ->
+        api.request<Unit>("withdrawTestkudos").onError {
+            testWithdrawalInProgress.postValue(false)
+        }.onSuccess {
             testWithdrawalInProgress.postValue(false)
         }
     }
