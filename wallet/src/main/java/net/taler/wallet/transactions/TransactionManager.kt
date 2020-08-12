@@ -94,7 +94,7 @@ class TransactionManager(
         val transactions: LinkedList<Transaction> = mapper.readValue(transactionsArray)
         // TODO remove when fixed in wallet-core
         transactions.sortWith(compareBy({ it.pending }, { it.timestamp.ms }, { it.transactionId }))
-        transactions.reverse()  // show latest first
+        transactions.reverse() // show latest first
         mProgress.postValue(false)
         liveData.postValue(TransactionsResult.Success(transactions))
         // update all transactions on UiThread if there was a currency

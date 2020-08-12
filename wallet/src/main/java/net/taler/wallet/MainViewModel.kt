@@ -102,7 +102,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val paymentManager = PaymentManager(api, viewModelScope, mapper)
     val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope, mapper)
-    val refundManager = RefundManager(api)
+    val refundManager = RefundManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, mapper)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()

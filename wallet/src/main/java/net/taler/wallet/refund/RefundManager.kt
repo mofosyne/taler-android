@@ -19,28 +19,43 @@ package net.taler.wallet.refund
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import net.taler.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import org.json.JSONObject
 
 sealed class RefundStatus {
     object Error : RefundStatus()
-    object Success : RefundStatus()
+    data class Success(val response: RefundResponse) : RefundStatus()
 }
 
-class RefundManager(private val walletBackendApi: WalletBackendApi) {
+@Serializable
+data class RefundResponse(
+    val amountEffectivePaid: Amount,
+    val amountRefundGranted: Amount,
+    val amountRefundGone: Amount,
+    val pendingAtExchange: Boolean
+)
+
+class RefundManager(
+    private val api: WalletBackendApi,
+    private val scope: CoroutineScope
+) {
 
     fun refund(refundUri: String): LiveData<RefundStatus> {
         val liveData = MutableLiveData<RefundStatus>()
-        val args = JSONObject().also { it.put("talerRefundUri", refundUri) }
-        walletBackendApi.sendRequest("applyRefund", args) { isError, result ->
-            if (isError) {
-                Log.e(TAG, "Refund Error: $result")
+        scope.launch {
+            api.request("applyRefund", RefundResponse.serializer()) {
+                put("talerRefundUri", refundUri)
+            }.onError {
+                Log.e(TAG, "Refund Error: $it")
                 // TODO show error string
                 liveData.postValue(RefundStatus.Error)
-            } else {
-                Log.e(TAG, "Refund Success: $result")
-                liveData.postValue(RefundStatus.Success)
+            }.onSuccess {
+                Log.e(TAG, "Refund Success: $it")
+                liveData.postValue(RefundStatus.Success(it))
             }
         }
         return liveData

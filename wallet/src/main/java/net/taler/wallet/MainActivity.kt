@@ -163,15 +163,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
             url.toLowerCase(ROOT).startsWith("taler://refund/") -> {
                 model.showProgressBar.value = true
-                model.refundManager.refund(url).observe(this, Observer { status ->
-                    model.showProgressBar.value = false
-                    val res = when (status) {
-                        is RefundStatus.Error -> R.string.refund_error
-                        // TODO once wallet-core exposes currency, navigate to its transaction list
-                        is RefundStatus.Success -> R.string.refund_success
-                    }
-                    Snackbar.make(nav_view, res, LENGTH_LONG).show()
-                })
+                model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
             }
             else -> {
                 Snackbar.make(
@@ -179,6 +171,21 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     "URL from $from doesn't contain a supported Taler Uri.",
                     LENGTH_SHORT
                 ).show()
+            }
+        }
+    }
+
+    private fun onRefundResponse(status: RefundStatus) {
+        model.showProgressBar.value = false
+        when (status) {
+            is RefundStatus.Error -> {
+                Snackbar.make(nav_view, R.string.refund_error, LENGTH_LONG).show()
+            }
+            is RefundStatus.Success -> {
+                val amount = status.response.amountRefundGranted
+                model.showTransactions(amount.currency)
+                val str = getString(R.string.refund_success, amount.amountStr)
+                Snackbar.make(nav_view, str, LENGTH_LONG).show()
             }
         }
     }

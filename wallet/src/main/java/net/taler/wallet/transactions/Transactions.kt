@@ -188,9 +188,14 @@ class TransactionRefund(
     pending: Boolean,
     val refundedTransactionId: String,
     val info: TransactionInfo,
-    val amountInvalid: Amount,
+    /**
+     * Part of the refund that couldn't be applied because the refund permissions were expired
+     */
+    val amountInvalid: Amount? = null,
     error: TransactionError? = null,
+    @JsonProperty("amountEffective") // TODO remove when fixed in wallet-core
     amountRaw: Amount,
+    @JsonProperty("amountRaw") // TODO remove when fixed in wallet-core
     amountEffective: Amount
 ) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
     override val icon = R.drawable.transaction_refund

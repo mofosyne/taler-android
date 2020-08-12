@@ -55,7 +55,8 @@ class TransactionDetailFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(transaction.detailPageLayout, container, false)
@@ -96,7 +97,9 @@ class TransactionDetailFragment : Fragment() {
     private fun bind(t: TransactionWithdrawal) {
         effectiveAmountLabel.text = getString(R.string.withdraw_total)
         effectiveAmountView.text = t.amountEffective.toString()
-        if (t.pending && t.withdrawalDetails is TalerBankIntegrationApi && !t.confirmed && t.withdrawalDetails.bankConfirmationUrl != null) {
+        if (t.pending && t.withdrawalDetails is TalerBankIntegrationApi &&
+            !t.confirmed && t.withdrawalDetails.bankConfirmationUrl != null
+        ) {
             val i = Intent().apply {
                 data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
             }
