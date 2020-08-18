@@ -10,5 +10,5 @@ if ! git --version >/dev/null; then
   exit 1
 fi
 
-git submodule update --init
-
+git submodule sync --recursive
+git submodule update --init --recursive

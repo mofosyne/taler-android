@@ -9,6 +9,9 @@ stages:
   - test
   - deploy
 
+before_script:
+  - ./bootstrap
+
 include:
   - local: 'cashier/.gitlab-ci.yml'
   - local: 'merchant-lib/.gitlab-ci.yml'
