@@ -34,11 +34,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.withdraw.WithdrawManager
-import net.taler.common.AmountParserException
 import net.taler.common.SignedAmount
-import net.taler.common.Version
 import net.taler.common.getIncompatibleStringOrNull
 import net.taler.common.isOnline
+import net.taler.lib.common.AmountParserException
+import net.taler.lib.common.Version
 
 private val TAG = MainViewModel::class.java.simpleName
 

@@ -20,7 +20,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.common.Timestamp.Companion.NEVER
+import net.taler.lib.common.Amount
+import net.taler.lib.common.AmountMixin
+import net.taler.lib.common.Timestamp
+import net.taler.lib.common.Timestamp.Companion.NEVER
+import net.taler.lib.common.TimestampMixin
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -31,7 +31,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
 import kotlinx.android.synthetic.main.fragment_authentication.*
-import net.taler.common.Amount
+import net.taler.lib.common.Amount
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
 
@@ -42,7 +42,8 @@ class AuthenticationFragment : Fragment() {
     private var price: Amount = Amount.zero("KUDOS")
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_authentication, container, false)

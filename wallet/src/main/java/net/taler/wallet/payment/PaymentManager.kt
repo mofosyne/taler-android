@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import net.taler.common.Amount
+import net.taler.lib.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi

@@ -28,7 +28,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import kotlinx.android.synthetic.main.fragment_select_exchange.*
-import net.taler.common.Amount
+import net.taler.lib.common.Amount
 import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
 import net.taler.wallet.MainViewModel

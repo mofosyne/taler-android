@@ -21,8 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.taler.common.Amount
 import net.taler.common.ContractTerms
+import net.taler.lib.common.Amount
 import net.taler.wallet.transactions.TransactionError
 
 @JsonTypeInfo(use = NAME, property = "status")

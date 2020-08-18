@@ -26,8 +26,8 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import kotlinx.android.synthetic.main.fragment_manual_withdraw.*
-import net.taler.common.Amount
 import net.taler.common.hideKeyboard
+import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.scanQrCode

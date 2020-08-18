@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    api project(":taler-kotlin-common")
+    api project(":wallet-kotlin:common")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'

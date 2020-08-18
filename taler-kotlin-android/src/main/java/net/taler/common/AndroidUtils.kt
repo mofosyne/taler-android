@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import net.taler.lib.common.Version
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
     if (visibility == VISIBLE && alpha == 1f) return

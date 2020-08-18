@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.TalerUtils.getLocalizedString
+import net.taler.lib.common.Amount
+import net.taler.lib.common.Timestamp
 
 @Serializable
 data class ContractTerms(

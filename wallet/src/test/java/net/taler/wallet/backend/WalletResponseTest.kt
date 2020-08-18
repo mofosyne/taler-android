@@ -22,10 +22,10 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import net.taler.common.Amount
-import net.taler.common.AmountMixin
-import net.taler.common.Timestamp
-import net.taler.common.TimestampMixin
+import net.taler.lib.common.Amount
+import net.taler.lib.common.AmountMixin
+import net.taler.lib.common.Timestamp
+import net.taler.lib.common.TimestampMixin
 import net.taler.wallet.balances.BalanceResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test

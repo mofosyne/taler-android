@@ -34,8 +34,8 @@ import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.taler.common.Version
 import net.taler.common.getIncompatibleStringOrNull
+import net.taler.lib.common.Version
 import net.taler.merchantlib.ConfigResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.MerchantConfig

@@ -26,8 +26,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import net.taler.common.Duration
 import net.taler.common.assertUiThread
+import net.taler.lib.common.Duration
 import net.taler.merchantlib.CheckPaymentResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.PostOrderRequest

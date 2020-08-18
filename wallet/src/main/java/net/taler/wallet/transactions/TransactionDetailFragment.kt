@@ -35,9 +35,9 @@ import kotlinx.android.synthetic.main.fragment_transaction_payment.*
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.*
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.feeView
 import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.timeView
-import net.taler.common.Amount
 import net.taler.common.isSafe
 import net.taler.common.toAbsoluteTime
+import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange

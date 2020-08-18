@@ -28,10 +28,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 import com.fasterxml.jackson.annotation.JsonTypeName
 import kotlinx.serialization.Serializable
-import net.taler.common.Amount
+import net.taler.lib.common.Amount
 import net.taler.common.ContractMerchant
 import net.taler.common.ContractProduct
-import net.taler.common.Timestamp
+import net.taler.lib.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer

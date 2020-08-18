@@ -27,11 +27,11 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_refund.*
-import net.taler.common.Amount
-import net.taler.common.AmountParserException
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
+import net.taler.lib.common.Amount
+import net.taler.lib.common.AmountParserException
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R

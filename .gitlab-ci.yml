@@ -13,7 +13,6 @@ include:
   - local: 'cashier/.gitlab-ci.yml'
   - local: 'merchant-lib/.gitlab-ci.yml'
   - local: 'merchant-terminal/.gitlab-ci.yml'
-  - local: 'taler-kotlin-common/.gitlab-ci.yml'
   - local: 'taler-kotlin-android/.gitlab-ci.yml'
   - local: 'wallet/.gitlab-ci.yml'
 

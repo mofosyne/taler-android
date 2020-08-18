@@ -1,7 +1,0 @@
-taler_kotlin_common_test:
-  stage: test
-  only:
-    changes:
-      - taler-kotlin-common/**/*
-      - build.gradle
-  script: ./gradlew :taler-kotlin-common:jvmTest

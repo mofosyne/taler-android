@@ -29,13 +29,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.taler.common.Amount
-import net.taler.common.AmountMixin
 import net.taler.common.Event
-import net.taler.common.Timestamp
-import net.taler.common.TimestampMixin
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
+import net.taler.lib.common.Amount
+import net.taler.lib.common.AmountMixin
+import net.taler.lib.common.Timestamp
+import net.taler.lib.common.TimestampMixin
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse

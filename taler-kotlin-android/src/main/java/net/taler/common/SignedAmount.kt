@@ -17,6 +17,8 @@
 package net.taler.common
 
 import android.annotation.SuppressLint
+import net.taler.lib.common.Amount
+import net.taler.lib.common.AmountParserException
 
 data class SignedAmount(
     val positive: Boolean,
