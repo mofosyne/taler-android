@@ -35,5 +35,11 @@
     public static final com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility *;
 }
 
+-keep class * extends com.fasterxml.** { *; }
+-keep class * implements com.fasterxml.** { *; }
+
+# KotlinX serialization
+- keep @kotlinx.serialization.Serializable class * { *; }
+
 # General
 -keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses

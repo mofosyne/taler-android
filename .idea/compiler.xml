@@ -12,6 +12,8 @@
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
     <bytecodeTargetLevel>
+      <module name="common_jvmMain" target="1.6" />
+      <module name="common_jvmTest" target="1.6" />
       <module name="taler-kotlin-common_jvmMain" target="1.6" />
       <module name="taler-kotlin-common_jvmTest" target="1.6" />
     </bytecodeTargetLevel>
