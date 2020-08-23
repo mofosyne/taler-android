@@ -38,8 +38,21 @@
 -keep class * extends com.fasterxml.** { *; }
 -keep class * implements com.fasterxml.** { *; }
 
+-keep class *  {
+    @com.fasterxml.** *;
+}
+
 # KotlinX serialization
-- keep @kotlinx.serialization.Serializable class * { *; }
+-keep @kotlinx.serialization.Serializable class * { *; }
+
+# Kotlin reflection
+-dontwarn kotlin.reflect.**
+-keep class kotlin.** { *; }
+-keep class org.jetbrains.annotations.** { *; }
+
 
 # General
 -keepattributes SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature,Exceptions,InnerClasses
+-dontobfuscate
+-dontoptimize
+-dontshrink
