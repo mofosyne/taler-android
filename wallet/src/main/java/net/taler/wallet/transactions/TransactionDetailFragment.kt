@@ -145,7 +145,7 @@ class TransactionDetailFragment : Fragment() {
         orderAmountView.text = raw.toString()
         feeView.text = getString(R.string.amount_negative, fee.toString())
         orderSummaryView.text = info.summary
-        if (info.fulfillmentUrl.startsWith("http")) {
+        if (info.fulfillmentUrl?.startsWith("http") == true) {
             val i = Intent().apply {
                 data = Uri.parse(info.fulfillmentUrl)
             }

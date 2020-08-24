@@ -86,6 +86,7 @@ class TransactionWithdrawal(
 ) : Transaction() {
     override val icon = R.drawable.transaction_withdrawal
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
@@ -142,6 +143,7 @@ class TransactionPayment(
 ) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageLayout = R.layout.fragment_transaction_payment
+
     @Transient
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context) = info.merchant.name
@@ -156,7 +158,16 @@ class TransactionInfo(
     @SerialName("summary_i18n")
     val summaryI18n: Map<String, String>? = null,
     val products: List<ContractProduct>,
-    val fulfillmentUrl: String
+    val fulfillmentUrl: String? = null,
+    /**
+     * Message shown to the user after the payment is complete.
+     * TODO actually show this
+     */
+    val fulfillmentMessage: String? = null,
+    /**
+     * Map from IETF BCP 47 language tags to localized fulfillment messages
+     */
+    val fulfillmentMessage_i18n: Map<String, String>? = null,
 )
 
 @Serializable
@@ -194,6 +205,7 @@ class TransactionRefund(
 ) : Transaction() {
     override val icon = R.drawable.transaction_refund
     override val detailPageLayout = R.layout.fragment_transaction_payment
+
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
@@ -218,6 +230,7 @@ class TransactionTip(
 ) : Transaction() {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
     override val detailPageLayout = R.layout.fragment_transaction_payment
+
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
@@ -240,6 +253,7 @@ class TransactionRefresh(
 ) : Transaction() {
     override val icon = R.drawable.transaction_refresh
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+
     @Transient
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context): String {

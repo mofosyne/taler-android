@@ -63,11 +63,7 @@ sealed class PreparePayResponse {
         val paid: Boolean,
         val amountRaw: Amount,
         val amountEffective: Amount,
-
-        /**
-         * Redirect URL for the fulfillment page, only given if paid==true.
-         */
-        val nextUrl: String?,
+        val contractTerms: ContractTerms,
     ) : PreparePayResponse()
 }
 
@@ -75,7 +71,7 @@ sealed class PreparePayResponse {
 sealed class ConfirmPayResult {
     @Serializable
     @SerialName("done")
-    data class Done(val nextUrl: String) : ConfirmPayResult()
+    data class Done(val contractTerms: ContractTerms) : ConfirmPayResult()
 
     @Serializable
     @SerialName("pending")
