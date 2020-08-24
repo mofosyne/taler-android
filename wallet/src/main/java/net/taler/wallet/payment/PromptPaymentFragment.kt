@@ -58,7 +58,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        paymentManager.payStatus.observe(viewLifecycleOwner, this::onPaymentStatusChanged)
+        paymentManager.payStatus.observe(viewLifecycleOwner, ::onPaymentStatusChanged)
         paymentManager.detailsShown.observe(viewLifecycleOwner, Observer { shown ->
             beginDelayedTransition(view as ViewGroup)
             val res = if (shown) R.string.payment_hide_details else R.string.payment_show_details
@@ -91,7 +91,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         }
     }
 
-    private fun onPaymentStatusChanged(payStatus: PayStatus) {
+    private fun onPaymentStatusChanged(payStatus: PayStatus?) {
         when (payStatus) {
             is PayStatus.Prepared -> {
                 showLoading(false)

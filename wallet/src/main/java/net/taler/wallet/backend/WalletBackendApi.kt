@@ -32,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_COMMAND
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_NOTIFY
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_REPLY
@@ -49,9 +48,9 @@ class WalletBackendApi(
     private val app: Application,
     private val notificationHandler: ((payload: JSONObject) -> Unit)
 ) {
-    private val json = Json(
-        JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)
-    )
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
     private val handlers = ConcurrentHashMap<Int, (isError: Boolean, message: JSONObject) -> Unit>()
@@ -153,14 +152,14 @@ class WalletBackendApi(
         serializer: KSerializer<T>? = null,
         args: (JSONObject.() -> JSONObject)? = null
     ): WalletResponse<T> = withContext(Dispatchers.Default) {
-        suspendCoroutine<WalletResponse<T>> { cont ->
+        suspendCoroutine { cont ->
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
                 val response = if (isError) {
-                    val error = json.parse(WalletErrorInfo.serializer(), message.toString())
-                    WalletResponse.Error<T>(error)
+                    val error = json.decodeFromString(WalletErrorInfo.serializer(), message.toString())
+                    WalletResponse.Error(error)
                 } else {
                     @Suppress("UNCHECKED_CAST") // if serializer is null, T must be Unit
-                    val t: T = serializer?.let { json.parse(serializer, message.toString()) } ?: Unit as T
+                    val t: T = serializer?.let { json.decodeFromString(serializer, message.toString()) } ?: Unit as T
                     WalletResponse.Success(t)
                 }
                 cont.resume(response)
@@ -173,11 +172,11 @@ class WalletBackendApi(
         mapper: ObjectMapper,
         noinline args: (JSONObject.() -> JSONObject)? = null
     ): WalletResponse<T> = withContext(Dispatchers.Default) {
-        suspendCoroutine<WalletResponse<T>> { cont ->
+        suspendCoroutine { cont ->
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
                 val response = if (isError) {
                     val error: WalletErrorInfo = mapper.readValue(message.toString())
-                    WalletResponse.Error<T>(error)
+                    WalletResponse.Error(error)
                 } else {
                     val t: T = mapper.readValue(message.toString())
                     WalletResponse.Success(t)

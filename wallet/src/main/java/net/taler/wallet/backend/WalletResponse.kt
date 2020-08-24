@@ -21,17 +21,16 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.PrimitiveDescriptor
-import kotlinx.serialization.PrimitiveKind.STRING
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonInput
+import kotlinx.serialization.descriptors.PrimitiveKind.STRING
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonObject
 import org.json.JSONObject
-
 
 @Serializable
 sealed class WalletResponse<T> {
@@ -96,11 +95,11 @@ data class WalletErrorInfo(
 
 class JSONObjectDeserializer : KSerializer<JSONObject> {
 
-    override val descriptor = PrimitiveDescriptor("JSONObjectDeserializer", STRING)
+    override val descriptor = PrimitiveSerialDescriptor("JSONObjectDeserializer", STRING)
 
     override fun deserialize(decoder: Decoder): JSONObject {
-        val input = decoder as JsonInput
-        val tree = input.decodeJson() as JsonObject
+        val input = decoder as JsonDecoder
+        val tree = input.decodeJsonElement() as JsonObject
         return JSONObject(tree.toString())
     }
 

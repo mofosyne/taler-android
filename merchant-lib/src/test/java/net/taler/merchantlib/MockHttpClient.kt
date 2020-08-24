@@ -32,6 +32,7 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.fullPath
 import io.ktor.http.headersOf
 import io.ktor.http.hostWithPort
+import kotlinx.serialization.json.Json.Default.parseToJsonElement
 import org.junit.Assert.assertEquals
 
 object MockHttpClient {
@@ -75,8 +76,8 @@ object MockHttpClient {
     private val Url.fullUrl: String get() = "${protocol.name}://$hostWithPortIfRequired$fullPath"
 
     private fun assertJsonEquals(json1: String, json2: String) {
-        val parsed1 = kotlinx.serialization.json.Json.parseJson(json1)
-        val parsed2 = kotlinx.serialization.json.Json.parseJson(json2)
+        val parsed1 = parseToJsonElement(json1)
+        val parsed2 = parseToJsonElement(json2)
         assertEquals(parsed1, parsed2)
     }
 

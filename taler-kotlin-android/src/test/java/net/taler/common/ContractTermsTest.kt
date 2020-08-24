@@ -23,7 +23,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import net.taler.lib.common.Amount
 import net.taler.lib.common.AmountMixin
 import net.taler.lib.common.Timestamp
-import net.taler.lib.common.Timestamp.Companion.NEVER
 import net.taler.lib.common.TimestampMixin
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -75,7 +74,7 @@ class ContractTermsTest {
         """.trimIndent()
         val contractTerms: ContractTerms = mapper.readValue(json)
         assertEquals("Essay: 1. The Free Software Definition", contractTerms.summary)
-        assertEquals(Timestamp(NEVER), contractTerms.refundDeadline)
+        assertEquals(Timestamp.never(), contractTerms.refundDeadline)
     }
 
 }

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.taler.lib.common.Amount
 import net.taler.lib.common.AmountMixin
 import net.taler.lib.common.Timestamp
@@ -32,9 +31,9 @@ import org.junit.Test
 
 class WalletResponseTest {
 
-    private val json = Json(
-        JsonConfiguration.Stable.copy(ignoreUnknownKeys = true)
-    )
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     private val mapper = ObjectMapper()
         .registerModule(KotlinModule())
@@ -45,7 +44,7 @@ class WalletResponseTest {
     @Test
     fun testBalanceResponse() {
         val serializer = WalletResponse.Success.serializer(BalanceResponse.serializer())
-        val response = json.parse(
+        val response = json.decodeFromString(
             serializer, """
             {
               "type": "response",
@@ -82,7 +81,7 @@ class WalletResponseTest {
                 "message":"unexpected exception: Error: BUG: invariant violation (purchase status)"
             }
         """.trimIndent()
-        val info = json.parse(WalletErrorInfo.serializer(), infoJson)
+        val info = json.decodeFromString(WalletErrorInfo.serializer(), infoJson)
         val infoJackson: WalletErrorInfo = mapper.readValue(infoJson)
         println(info.userFacingMsg)
         assertEquals(info.userFacingMsg, infoJackson.userFacingMsg)

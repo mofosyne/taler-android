@@ -31,7 +31,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.taler.merchantlib.Response.Companion.response
 
 class MerchantApi(
@@ -116,10 +115,8 @@ fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
 }
 
 fun getSerializer() = KotlinxSerializer(
-    Json(
-        JsonConfiguration(
-            encodeDefaults = false,
-            ignoreUnknownKeys = true
-        )
-    )
+    Json {
+        encodeDefaults = false
+        ignoreUnknownKeys = true
+    }
 )
