@@ -1,4 +1,4 @@
-include ':wallet-kotlin:common'
+include ':multiplatform:common'
 include ':cashier', ':merchant-terminal', ':wallet'
 include ':taler-kotlin-android'
 include ':merchant-lib'

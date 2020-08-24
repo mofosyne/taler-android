@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    api project(":wallet-kotlin:common")
+    api project(":multiplatform:common")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -73,5 +73,5 @@ dependencies {
     lintPublish 'com.github.thirdegg:lint-rules:0.0.4-alpha'
 
     testImplementation 'junit:junit:4.13'
-    testImplementation 'org.json:json:20190722'
+    testImplementation 'org.json:json:20200518'
 }
