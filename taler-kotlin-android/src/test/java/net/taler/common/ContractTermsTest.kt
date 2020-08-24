@@ -16,28 +16,21 @@
 
 package net.taler.common
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import net.taler.lib.common.Amount
-import net.taler.lib.common.AmountMixin
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import net.taler.lib.common.Timestamp
-import net.taler.lib.common.TimestampMixin
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ContractTermsTest {
 
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .addMixIn(Amount::class.java, AmountMixin::class.java)
-        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     @Test
     fun test() {
-        val json = """
+        val jsonStr = """
             {
               "amount":"TESTKUDOS:0.5",
               "extra":{
@@ -72,7 +65,7 @@ class ContractTermsTest {
                 "nonce":"FK8ZKJRV6VX6YFAG4CDSC6W0DWD084Q09DP81ANF30GRFQYM2KPG"
               }
         """.trimIndent()
-        val contractTerms: ContractTerms = mapper.readValue(json)
+        val contractTerms: ContractTerms = json.decodeFromString(jsonStr)
         assertEquals("Essay: 1. The Free Software Definition", contractTerms.summary)
         assertEquals(Timestamp.never(), contractTerms.refundDeadline)
     }

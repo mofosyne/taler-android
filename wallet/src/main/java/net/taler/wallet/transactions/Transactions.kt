@@ -20,42 +20,30 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
-import com.fasterxml.jackson.annotation.JsonTypeName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.taler.lib.common.Amount
+import kotlinx.serialization.Transient
 import net.taler.common.ContractMerchant
 import net.taler.common.ContractProduct
+import net.taler.lib.common.Amount
 import net.taler.lib.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
-import java.util.LinkedList
 
-data class Transactions(val transactions: LinkedList<Transaction>)
+@Serializable
+data class Transactions(val transactions: List<Transaction>)
 
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
-@JsonSubTypes(
-    Type(value = TransactionWithdrawal::class, name = "withdrawal"),
-    Type(value = TransactionPayment::class, name = "payment"),
-    Type(value = TransactionRefund::class, name = "refund"),
-    Type(value = TransactionTip::class, name = "tip"),
-    Type(value = TransactionRefresh::class, name = "refresh")
-)
-abstract class Transaction(
-    val transactionId: String,
-    val timestamp: Timestamp,
-    val pending: Boolean,
-    val error: TransactionError? = null,
-    val amountRaw: Amount,
-    val amountEffective: Amount
-) {
+@Serializable
+sealed class Transaction {
+    abstract val transactionId: String
+    abstract val timestamp: Timestamp
+    abstract val pending: Boolean
+    abstract val error: TransactionError?
+    abstract val amountRaw: Amount
+    abstract val amountEffective: Amount
+
     @get:DrawableRes
     abstract val icon: Int
 
@@ -79,24 +67,26 @@ sealed class AmountType {
 @Serializable
 data class TransactionError(
     private val ec: Int,
-    private val hint: String?
+    private val hint: String? = null,
 ) {
     val text get() = if (hint == null) "$ec" else "$ec $hint"
 }
 
-@JsonTypeName("withdrawal")
+@Serializable
+@SerialName("withdrawal")
 class TransactionWithdrawal(
-    transactionId: String,
-    timestamp: Timestamp,
-    pending: Boolean,
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
     val exchangeBaseUrl: String,
     val withdrawalDetails: WithdrawalDetails,
-    error: TransactionError? = null,
-    amountRaw: Amount,
-    amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
+    override val error: TransactionError? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount
+) : Transaction() {
     override val icon = R.drawable.transaction_withdrawal
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+    @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
     override val generalTitleRes = R.string.withdraw_title
@@ -107,13 +97,10 @@ class TransactionWithdrawal(
                 )
 }
 
-@JsonTypeInfo(use = NAME, include = PROPERTY, property = "type")
-@JsonSubTypes(
-    Type(value = TalerBankIntegrationApi::class, name = "taler-bank-integration-api"),
-    Type(value = ManualTransfer::class, name = "manual-transfer")
-)
+@Serializable
 sealed class WithdrawalDetails {
-    @JsonTypeName("manual-transfer")
+    @Serializable
+    @SerialName("manual-transfer")
     class ManualTransfer(
         /**
          * Payto URIs that the exchange supports.
@@ -123,7 +110,8 @@ sealed class WithdrawalDetails {
         val exchangePaytoUris: List<String>
     ) : WithdrawalDetails()
 
-    @JsonTypeName("taler-bank-integration-api")
+    @Serializable
+    @SerialName("taler-bank-integration-api")
     class TalerBankIntegrationApi(
         /**
          * Set to true if the bank has confirmed the withdrawal, false if not.
@@ -136,71 +124,77 @@ sealed class WithdrawalDetails {
         /**
          * If the withdrawal is unconfirmed, this can include a URL for user-initiated confirmation.
          */
-        val bankConfirmationUrl: String?
+        val bankConfirmationUrl: String? = null,
     ) : WithdrawalDetails()
 }
 
-@JsonTypeName("payment")
+@Serializable
+@SerialName("payment")
 class TransactionPayment(
-    transactionId: String,
-    timestamp: Timestamp,
-    pending: Boolean,
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
     val info: TransactionInfo,
     val status: PaymentStatus,
-    error: TransactionError? = null,
-    amountRaw: Amount,
-    amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
+    override val error: TransactionError? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount
+) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageLayout = R.layout.fragment_transaction_payment
+    @Transient
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context) = info.merchant.name
     override val generalTitleRes = R.string.payment_title
 }
 
+@Serializable
 class TransactionInfo(
     val orderId: String,
     val merchant: ContractMerchant,
     val summary: String,
-    @get:JsonProperty("summary_i18n")
-    val summaryI18n: Map<String, String>?,
+    @SerialName("summary_i18n")
+    val summaryI18n: Map<String, String>? = null,
     val products: List<ContractProduct>,
     val fulfillmentUrl: String
 )
 
+@Serializable
 enum class PaymentStatus {
-    @JsonProperty("aborted")
+    @SerialName("aborted")
     Aborted,
 
-    @JsonProperty("failed")
+    @SerialName("failed")
     Failed,
 
-    @JsonProperty("paid")
+    @SerialName("paid")
     Paid,
 
-    @JsonProperty("accepted")
+    @SerialName("accepted")
     Accepted
 }
 
-@JsonTypeName("refund")
+@Serializable
+@SerialName("refund")
 class TransactionRefund(
-    transactionId: String,
-    timestamp: Timestamp,
-    pending: Boolean,
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
     val refundedTransactionId: String,
     val info: TransactionInfo,
     /**
      * Part of the refund that couldn't be applied because the refund permissions were expired
      */
     val amountInvalid: Amount? = null,
-    error: TransactionError? = null,
-    @JsonProperty("amountEffective") // TODO remove when fixed in wallet-core
-    amountRaw: Amount,
-    @JsonProperty("amountRaw") // TODO remove when fixed in wallet-core
-    amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
+    override val error: TransactionError? = null,
+    @SerialName("amountEffective") // TODO remove when fixed in wallet-core
+    override val amountRaw: Amount,
+    @SerialName("amountRaw") // TODO remove when fixed in wallet-core
+    override val amountEffective: Amount
+) : Transaction() {
     override val icon = R.drawable.transaction_refund
     override val detailPageLayout = R.layout.fragment_transaction_payment
+    @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refund_from, info.merchant.name)
@@ -209,20 +203,22 @@ class TransactionRefund(
     override val generalTitleRes = R.string.refund_title
 }
 
-@JsonTypeName("tip")
+@Serializable
+@SerialName("tip")
 class TransactionTip(
-    transactionId: String,
-    timestamp: Timestamp,
-    pending: Boolean,
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
     // TODO status: TipStatus,
     val exchangeBaseUrl: String,
     val merchant: ContractMerchant,
-    error: TransactionError? = null,
-    amountRaw: Amount,
-    amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
+    override val error: TransactionError? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount
+) : Transaction() {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
     override val detailPageLayout = R.layout.fragment_transaction_payment
+    @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_tip_from, merchant.name)
@@ -231,18 +227,20 @@ class TransactionTip(
     override val generalTitleRes = R.string.tip_title
 }
 
-@JsonTypeName("refresh")
+@Serializable
+@SerialName("refresh")
 class TransactionRefresh(
-    transactionId: String,
-    timestamp: Timestamp,
-    pending: Boolean,
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
     val exchangeBaseUrl: String,
-    error: TransactionError? = null,
-    amountRaw: Amount,
-    amountEffective: Amount
-) : Transaction(transactionId, timestamp, pending, error, amountRaw, amountEffective) {
+    override val error: TransactionError? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount
+) : Transaction() {
     override val icon = R.drawable.transaction_refresh
     override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+    @Transient
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_refresh)

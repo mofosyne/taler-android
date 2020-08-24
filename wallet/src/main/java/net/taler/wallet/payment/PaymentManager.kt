@@ -20,12 +20,10 @@ import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import net.taler.lib.common.Amount
 import net.taler.common.ContractTerms
+import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletErrorInfo
@@ -34,8 +32,6 @@ import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
 import net.taler.wallet.payment.PreparePayResponse.InsufficientBalanceResponse
 import net.taler.wallet.payment.PreparePayResponse.PaymentPossibleResponse
-import org.json.JSONObject
-import java.net.MalformedURLException
 
 val REGEX_PRODUCT_IMAGE = Regex("^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$")
 
@@ -63,7 +59,6 @@ sealed class PayStatus {
 class PaymentManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
-    private val mapper: ObjectMapper
 ) {
 
     private val mPayStatus = MutableLiveData<PayStatus>(PayStatus.None)
@@ -76,7 +71,7 @@ class PaymentManager(
     fun preparePay(url: String) = scope.launch {
         mPayStatus.value = PayStatus.Loading
         mDetailsShown.value = false
-        api.request<PreparePayResponse>("preparePay", mapper) {
+        api.request("preparePay", PreparePayResponse.serializer()) {
             put("talerPayUri", url)
         }.onError {
             handleError("preparePay", it)
@@ -91,20 +86,6 @@ class PaymentManager(
                 is AlreadyConfirmedResponse -> AlreadyPaid
             }
         }
-    }
-
-    // TODO validate product images (or leave to wallet-core?)
-    private fun getContractTerms(json: JSONObject): ContractTerms {
-        val terms: ContractTerms = mapper.readValue(json.getString("contractTermsRaw"))
-        // validate product images
-        terms.products.forEach { product ->
-            product.image?.let { image ->
-                if (REGEX_PRODUCT_IMAGE.matchEntire(image) == null) {
-                    throw MalformedURLException("Invalid image data URL for ${product.description}")
-                }
-            }
-        }
-        return terms
     }
 
     fun confirmPay(proposalId: String, currency: String) = scope.launch {
@@ -128,7 +109,7 @@ class PaymentManager(
 
     internal fun abortProposal(proposalId: String) = scope.launch {
         Log.i(TAG, "aborting proposal")
-        api.request<String>("abortProposal", mapper) {
+        api.request<Unit>("abortProposal") {
             put("proposalId", proposalId)
         }.onError {
             Log.e(TAG, "received error response to abortProposal")

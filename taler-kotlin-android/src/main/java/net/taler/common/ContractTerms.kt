@@ -17,10 +17,6 @@
 package net.taler.common
 
 import androidx.annotation.RequiresApi
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
-import com.fasterxml.jackson.annotation.JsonProperty
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.TalerUtils.getLocalizedString
@@ -31,36 +27,24 @@ import net.taler.lib.common.Timestamp
 data class ContractTerms(
     val summary: String,
     @SerialName("summary_i18n")
-    @get:JsonProperty("summary_i18n")
     val summaryI18n: Map<String, String>? = null,
     val amount: Amount,
     @SerialName("fulfillment_url")
-    @get:JsonProperty("fulfillment_url")
     val fulfillmentUrl: String,
     val products: List<ContractProduct>,
     @SerialName("wire_transfer_deadline")
-    @get:JsonProperty("wire_transfer_deadline")
     val wireTransferDeadline: Timestamp? = null,
     @SerialName("refund_deadline")
-    @get:JsonProperty("refund_deadline")
     val refundDeadline: Timestamp? = null
 )
 
-@JsonInclude(NON_NULL)
 abstract class Product {
-    @get:JsonProperty("product_id")
     abstract val productId: String?
     abstract val description: String
-
-    @get:JsonProperty("description_i18n")
     abstract val descriptionI18n: Map<String, String>?
     abstract val price: Amount
-
-    @get:JsonProperty("delivery_location")
     abstract val location: String?
     abstract val image: String?
-
-    @get:JsonIgnore
     val localizedDescription: String
         @RequiresApi(26)
         get() = getLocalizedString(descriptionI18n, description)
@@ -79,12 +63,12 @@ data class ContractProduct(
     override val image: String? = null,
     val quantity: Int
 ) : Product() {
-    @get:JsonIgnore
     val totalPrice: Amount by lazy {
         price * quantity
     }
 }
 
+@Serializable
 data class ContractMerchant(
     val name: String
 )

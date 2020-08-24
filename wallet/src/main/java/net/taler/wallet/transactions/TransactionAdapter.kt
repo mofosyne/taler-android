@@ -104,7 +104,7 @@ internal class TransactionAdapter(
         private fun bindExtraInfo(transaction: Transaction) {
             if (transaction.error != null) {
                 extraInfoView.text =
-                    context.getString(R.string.payment_error, transaction.error.text)
+                    context.getString(R.string.payment_error, transaction.error!!.text)
                 extraInfoView.setTextColor(red)
                 extraInfoView.visibility = VISIBLE
             } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {

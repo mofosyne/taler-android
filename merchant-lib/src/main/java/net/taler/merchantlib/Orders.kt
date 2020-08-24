@@ -16,17 +16,10 @@
 
 package net.taler.merchantlib
 
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.jsonPrimitive
 import net.taler.common.ContractTerms
+import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.lib.common.Duration
 
 @Serializable
@@ -44,33 +37,12 @@ data class PostOrderResponse(
 )
 
 @Serializable
-sealed class CheckPaymentResponse {
+sealed class CheckPaymentResponse: CustomClassDiscriminator {
+    override val discriminator: String = "order_status"
     abstract val paid: Boolean
 
-    @Suppress("EXPERIMENTAL_API_USAGE")
-    @Serializer(forClass = CheckPaymentResponse::class)
-    companion object : KSerializer<CheckPaymentResponse> {
-        override fun deserialize(decoder: Decoder): CheckPaymentResponse {
-            val input = decoder as JsonDecoder
-            val tree = input.decodeJsonElement() as JsonObject
-            val orderStatus = tree.getValue("order_status").jsonPrimitive.content
-//            return if (orderStatus == "paid") decoder.json.decodeFromJsonElement(Paid.serializer(), tree)
-//            else decoder.json.decodeFromJsonElement(Unpaid.serializer(), tree)
-            // manual parsing due to https://github.com/Kotlin/kotlinx.serialization/issues/576
-            return if (orderStatus == "paid") Paid(
-                refunded = tree.getValue("refunded").jsonPrimitive.boolean
-            ) else Unpaid(
-                talerPayUri = tree.getValue("taler_pay_uri").jsonPrimitive.content
-            )
-        }
-
-        override fun serialize(encoder: Encoder, value: CheckPaymentResponse) = when (value) {
-            is Unpaid -> Unpaid.serializer().serialize(encoder, value)
-            is Paid -> Paid.serializer().serialize(encoder, value)
-        }
-    }
-
     @Serializable
+    @SerialName("unpaid")
     data class Unpaid(
         override val paid: Boolean = false,
         @SerialName("taler_pay_uri")
@@ -80,6 +52,7 @@ sealed class CheckPaymentResponse {
     ) : CheckPaymentResponse()
 
     @Serializable
+    @SerialName("paid")
     data class Paid(
         override val paid: Boolean = true,
         val refunded: Boolean

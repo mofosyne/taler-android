@@ -20,11 +20,11 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.taler.wallet.backend.WalletBackendApi
 import java.util.HashMap
+import java.util.LinkedList
 
 sealed class TransactionsResult {
     class Error(val msg: String) : TransactionsResult()
@@ -33,8 +33,7 @@ sealed class TransactionsResult {
 
 class TransactionManager(
     private val api: WalletBackendApi,
-    private val scope: CoroutineScope,
-    private val mapper: ObjectMapper
+    private val scope: CoroutineScope
 ) {
 
     private val mProgress = MutableLiveData<Boolean>()
@@ -64,14 +63,14 @@ class TransactionManager(
         }
         if (liveData.value == null) mProgress.value = true
 
-        api.request<Transactions>("getTransactions", mapper) {
+        api.request("getTransactions", Transactions.serializer()) {
             if (searchQuery != null) put("search", searchQuery)
             put("currency", currency)
         }.onError {
             liveData.postValue(TransactionsResult.Error(it.userFacingMsg))
             mProgress.postValue(false)
         }.onSuccess { result ->
-            val transactions = result.transactions
+            val transactions = LinkedList(result.transactions)
             // TODO remove when fixed in wallet-core
             val comparator = compareBy<Transaction>(
                 { it.pending },

@@ -24,18 +24,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
-import com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
-import net.taler.lib.common.Amount
-import net.taler.lib.common.AmountMixin
-import net.taler.lib.common.Timestamp
-import net.taler.lib.common.TimestampMixin
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse
@@ -70,12 +63,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var merchantVersion: String? = null
         private set
 
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .addMixIn(Amount::class.java, AmountMixin::class.java)
-        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
-
     private val api = WalletBackendApi(app) { payload ->
         if (payload.optString("operation") == "init") {
             val result = payload.getJSONObject("result")
@@ -99,9 +86,9 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     val withdrawManager = WithdrawManager(api, viewModelScope)
-    val paymentManager = PaymentManager(api, viewModelScope, mapper)
+    val paymentManager = PaymentManager(api, viewModelScope)
     val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
-    val transactionManager: TransactionManager = TransactionManager(api, viewModelScope, mapper)
+    val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
 

@@ -26,12 +26,11 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_COMMAND
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_NOTIFY
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_REPLY
@@ -43,14 +42,12 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.reflect.full.companionObjectInstance
 
 class WalletBackendApi(
     private val app: Application,
     private val notificationHandler: ((payload: JSONObject) -> Unit)
 ) {
-    private val json = Json {
-        ignoreUnknownKeys = true
-    }
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
     private val handlers = ConcurrentHashMap<Int, (isError: Boolean, message: JSONObject) -> Unit>()
@@ -147,12 +144,18 @@ class WalletBackendApi(
         }
     }
 
-    suspend fun <T> request(
+    suspend inline fun <reified T> request(
         operation: String,
         serializer: KSerializer<T>? = null,
-        args: (JSONObject.() -> JSONObject)? = null
+        noinline args: (JSONObject.() -> JSONObject)? = null
     ): WalletResponse<T> = withContext(Dispatchers.Default) {
         suspendCoroutine { cont ->
+            val json = Json {
+                ignoreUnknownKeys = true
+                (T::class.companionObjectInstance as? CustomClassDiscriminator)?.let {
+                    classDiscriminator = it.discriminator
+                }
+            }
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
                 val response = if (isError) {
                     val error = json.decodeFromString(WalletErrorInfo.serializer(), message.toString())
@@ -160,25 +163,6 @@ class WalletBackendApi(
                 } else {
                     @Suppress("UNCHECKED_CAST") // if serializer is null, T must be Unit
                     val t: T = serializer?.let { json.decodeFromString(serializer, message.toString()) } ?: Unit as T
-                    WalletResponse.Success(t)
-                }
-                cont.resume(response)
-            }
-        }
-    }
-
-    suspend inline fun <reified T> request(
-        operation: String,
-        mapper: ObjectMapper,
-        noinline args: (JSONObject.() -> JSONObject)? = null
-    ): WalletResponse<T> = withContext(Dispatchers.Default) {
-        suspendCoroutine { cont ->
-            sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
-                val response = if (isError) {
-                    val error: WalletErrorInfo = mapper.readValue(message.toString())
-                    WalletResponse.Error(error)
-                } else {
-                    val t: T = mapper.readValue(message.toString())
                     WalletResponse.Success(t)
                 }
                 cont.resume(response)

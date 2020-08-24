@@ -16,15 +16,7 @@
 
 package net.taler.wallet.backend
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.serialization.json.Json
-import net.taler.lib.common.Amount
-import net.taler.lib.common.AmountMixin
-import net.taler.lib.common.Timestamp
-import net.taler.lib.common.TimestampMixin
 import net.taler.wallet.balances.BalanceResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -34,12 +26,6 @@ class WalletResponseTest {
     private val json = Json {
         ignoreUnknownKeys = true
     }
-
-    private val mapper = ObjectMapper()
-        .registerModule(KotlinModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .addMixIn(Amount::class.java, AmountMixin::class.java)
-        .addMixIn(Timestamp::class.java, TimestampMixin::class.java)
 
     @Test
     fun testBalanceResponse() {
@@ -82,8 +68,6 @@ class WalletResponseTest {
             }
         """.trimIndent()
         val info = json.decodeFromString(WalletErrorInfo.serializer(), infoJson)
-        val infoJackson: WalletErrorInfo = mapper.readValue(infoJson)
         println(info.userFacingMsg)
-        assertEquals(info.userFacingMsg, infoJackson.userFacingMsg)
     }
 }

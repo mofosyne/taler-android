@@ -16,11 +16,6 @@
 
 package net.taler.wallet.backend
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -72,7 +67,6 @@ data class WalletErrorInfo(
 
     // Error details, type depends on talerErrorCode
     @Serializable(JSONObjectDeserializer::class)
-    @JsonDeserialize(using = JsonObjectDeserializer::class)
     val details: JSONObject?
 ) {
     val userFacingMsg: String
@@ -105,12 +99,5 @@ class JSONObjectDeserializer : KSerializer<JSONObject> {
 
     override fun serialize(encoder: Encoder, value: JSONObject) {
         error("not supported")
-    }
-}
-
-class JsonObjectDeserializer : StdDeserializer<JSONObject>(JSONObject::class.java) {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): JSONObject {
-        val node: JsonNode = p.codec.readTree(p)
-        return JSONObject(node.toString())
     }
 }

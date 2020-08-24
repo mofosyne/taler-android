@@ -102,6 +102,8 @@ dependencies {
     implementation project(":anastasis-ui")
     implementation 'net.taler:akono:0.1'
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'com.google.android.material:material:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
@@ -128,9 +130,6 @@ dependencies {
     implementation "io.noties.markwon:core:$markwon_version"
     implementation "io.noties.markwon:ext-tables:$markwon_version"
     implementation "io.noties.markwon:recycler:$markwon_version"
-
-    // JSON parsing and serialization
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.10.2'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.json:json:20200518'

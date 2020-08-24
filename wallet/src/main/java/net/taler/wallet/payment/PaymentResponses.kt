@@ -16,42 +16,47 @@
 
 package net.taler.wallet.payment
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
-import com.fasterxml.jackson.annotation.JsonTypeName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.ContractTerms
+import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.lib.common.Amount
 import net.taler.wallet.transactions.TransactionError
 
-@JsonTypeInfo(use = NAME, property = "status")
-sealed class PreparePayResponse(open val proposalId: String) {
-    @JsonTypeName("payment-possible")
+@Serializable
+sealed class PreparePayResponse {
+    companion object : CustomClassDiscriminator {
+        override val discriminator: String = "status"
+    }
+
+    @Serializable
+    @SerialName("payment-possible")
     data class PaymentPossibleResponse(
-        override val proposalId: String,
+        val proposalId: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
-        val contractTerms: ContractTerms
-    ) : PreparePayResponse(proposalId) {
+        val contractTerms: ContractTerms,
+    ) : PreparePayResponse() {
         fun toPayStatusPrepared() = PayStatus.Prepared(
             contractTerms = contractTerms,
             proposalId = proposalId,
             amountRaw = amountRaw,
-            amountEffective = amountEffective
+            amountEffective = amountEffective,
         )
     }
 
-    @JsonTypeName("insufficient-balance")
+    @Serializable
+    @SerialName("insufficient-balance")
     data class InsufficientBalanceResponse(
-        override val proposalId: String,
+        val proposalId: String,
         val amountRaw: Amount,
-        val contractTerms: ContractTerms
-    ) : PreparePayResponse(proposalId)
+        val contractTerms: ContractTerms,
+    ) : PreparePayResponse()
 
-    @JsonTypeName("already-confirmed")
+    @Serializable
+    @SerialName("already-confirmed")
     data class AlreadyConfirmedResponse(
-        override val proposalId: String,
+        val proposalId: String,
         /**
          * Did the payment succeed?
          */
@@ -62,8 +67,8 @@ sealed class PreparePayResponse(open val proposalId: String) {
         /**
          * Redirect URL for the fulfillment page, only given if paid==true.
          */
-        val nextUrl: String?
-    ) : PreparePayResponse(proposalId)
+        val nextUrl: String?,
+    ) : PreparePayResponse()
 }
 
 @Serializable

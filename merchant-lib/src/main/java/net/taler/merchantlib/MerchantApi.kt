@@ -118,5 +118,6 @@ fun getSerializer() = KotlinxSerializer(
     Json {
         encodeDefaults = false
         ignoreUnknownKeys = true
+        classDiscriminator = "order_status"
     }
 )
