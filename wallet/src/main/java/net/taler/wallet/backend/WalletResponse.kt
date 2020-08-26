@@ -76,12 +76,11 @@ data class WalletErrorInfo(
                 append(" ")
                 append(message)
                 details?.let { details ->
+                    append("\n\n")
                     details.optJSONObject("errorResponse")?.let { errorResponse ->
-                        append("\n\n")
-                        append(errorResponse.optString("code"))
-                        append(" ")
+                        append(errorResponse.optString("code")).append(" ")
                         append(errorResponse.optString("hint"))
-                    }
+                    } ?: append(details.toString(2))
                 }
             }.toString()
         }
