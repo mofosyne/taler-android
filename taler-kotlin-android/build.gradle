@@ -68,7 +68,7 @@ dependencies {
     // JSON parsing and serialization
     api "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
-    lintPublish 'com.github.thirdegg:lint-rules:0.0.4-alpha'
+    lintPublish 'com.github.thirdegg:lint-rules:0.0.5-alpha'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.json:json:20200518'

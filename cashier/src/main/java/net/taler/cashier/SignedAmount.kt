@@ -14,26 +14,14 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.common
+package net.taler.cashier
 
-import android.annotation.SuppressLint
 import net.taler.lib.common.Amount
-import net.taler.lib.common.AmountParserException
 
 data class SignedAmount(
     val positive: Boolean,
     val amount: Amount
 ) {
-
-    companion object {
-        @Throws(AmountParserException::class)
-        @SuppressLint("CheckedExceptions")
-        fun fromJSONString(str: String): SignedAmount = when (str.substring(0, 1)) {
-            "-" -> SignedAmount(false, Amount.fromJSONString(str.substring(1)))
-            "+" -> SignedAmount(true, Amount.fromJSONString(str.substring(1)))
-            else -> SignedAmount(true, Amount.fromJSONString(str))
-        }
-    }
 
     override fun toString(): String {
         return if (positive) "$amount" else "-$amount"

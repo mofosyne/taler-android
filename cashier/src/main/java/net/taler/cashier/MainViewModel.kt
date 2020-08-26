@@ -34,9 +34,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.withdraw.WithdrawManager
-import net.taler.common.SignedAmount
 import net.taler.common.getIncompatibleStringOrNull
 import net.taler.common.isOnline
+import net.taler.lib.common.Amount
 import net.taler.lib.common.AmountParserException
 import net.taler.lib.common.Version
 
@@ -94,8 +94,7 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             val result = when (val response = makeJsonGetRequest(url, config)) {
                 is HttpJsonResult.Success -> {
                     // check if bank's version is compatible with app
-                    // TODO use real version response when fixed in bank
-                    val version = "0:0:0" // response.json.getString("version")
+                    val version = response.json.getString("version")
                     val versionIncompatible = VERSION_BANK.getIncompatibleStringOrNull(app, version)
                     if (versionIncompatible != null) {
                         ConfigResult.Error(false, versionIncompatible)
@@ -141,11 +140,18 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         Log.d(TAG, "Checking balance at $url")
         val result = when (val response = makeJsonGetRequest(url, config)) {
             is HttpJsonResult.Success -> {
-                val balance = response.json.getString("balance")
                 try {
-                    BalanceResult.Success(SignedAmount.fromJSONString(balance))
-                } catch (e: AmountParserException) {
-                    BalanceResult.Error("invalid amount: $balance")
+                    val balance = response.json.getString("balance")
+                    val positive = when (val creditDebitIndicator =
+                        response.json.getString("credit_debit_indicator")) {
+                        "credit" -> true
+                        "debit" -> false
+                        else -> throw AmountParserException("Unexpected credit_debit_indicator: $creditDebitIndicator")
+                    }
+                    BalanceResult.Success(SignedAmount(positive, Amount.fromJSONString(balance)))
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error parsing balance", e)
+                    BalanceResult.Error("Invalid amount:\n${response.json.toString(2)}")
                 }
             }
             is HttpJsonResult.Error -> {
