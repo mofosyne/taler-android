@@ -54,10 +54,10 @@ class WithdrawManager(
         get() = viewModel.viewModelScope
 
     private val config
-        get() = viewModel.config
+        get() = viewModel.configManager.config
 
     private val currency: String?
-        get() = viewModel.currency.value
+        get() = viewModel.configManager.currency.value
 
     private var withdrawStatusCheck: Job? = null
 
@@ -93,13 +93,17 @@ class WithdrawManager(
             val body = JSONObject(map)
             val result = when (val response = makeJsonPostRequest(url, body, config)) {
                 is Success -> {
-                    val talerUri = response.json.getString("taler_withdraw_uri")
-                    val withdrawResult = WithdrawResult.Success(
-                        id = response.json.getString("withdrawal_id"),
-                        talerUri = talerUri,
-                        qrCode = makeQrCode(talerUri)
-                    )
-                    withdrawResult
+                    try {
+                        val talerUri = response.json.getString("taler_withdraw_uri")
+                        val withdrawResult = WithdrawResult.Success(
+                            id = response.json.getString("withdrawal_id"),
+                            talerUri = talerUri,
+                            qrCode = makeQrCode(talerUri)
+                        )
+                        withdrawResult
+                    } catch (e: Exception) {
+                        WithdrawResult.Error(e.toString())
+                    }
                 }
                 is Error -> {
                     if (response.statusCode > 0 && app.isOnline()) {
@@ -147,25 +151,29 @@ class WithdrawManager(
         val response = makeJsonGetRequest(url, config)
         if (response !is Success) return@launch  // ignore errors and continue trying
         val oldStatus = mWithdrawStatus.value
-        when {
-            response.json.getBoolean("aborted") -> {
-                cancelWithdrawStatusCheck()
-                mWithdrawStatus.postValue(WithdrawStatus.Aborted)
-            }
-            response.json.getBoolean("confirmation_done") -> {
-                if (oldStatus !is WithdrawStatus.Success) {
+        try {
+            when {
+                response.json.getBoolean("aborted") -> {
                     cancelWithdrawStatusCheck()
-                    mWithdrawStatus.postValue(WithdrawStatus.Success)
-                    viewModel.getBalance()
+                    mWithdrawStatus.postValue(WithdrawStatus.Aborted)
+                }
+                response.json.getBoolean("confirmation_done") -> {
+                    if (oldStatus !is WithdrawStatus.Success) {
+                        cancelWithdrawStatusCheck()
+                        mWithdrawStatus.postValue(WithdrawStatus.Success)
+                        viewModel.getBalance()
+                    }
+                }
+                response.json.getBoolean("selection_done") -> {
+                    // only update status, if there's none, yet
+                    // so we don't re-notify or overwrite newer status info
+                    if (oldStatus == null) {
+                        mWithdrawStatus.postValue(WithdrawStatus.SelectionDone(withdrawalId))
+                    }
                 }
             }
-            response.json.getBoolean("selection_done") -> {
-                // only update status, if there's none, yet
-                // so we don't re-notify or overwrite newer status info
-                if (oldStatus == null) {
-                    mWithdrawStatus.postValue(WithdrawStatus.SelectionDone(withdrawalId))
-                }
-            }
+        } catch (e: Exception) {
+            mWithdrawStatus.postValue(WithdrawStatus.Error(e.toString()))
         }
     }
 

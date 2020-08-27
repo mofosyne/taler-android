@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val configManager by lazy { viewModel.configManager}
     private lateinit var nav: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +44,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (!viewModel.hasConfig()) {
-            nav.navigate(viewModel.configDestination)
+        if (!configManager.hasConfig()) {
+            nav.navigate(configManager.configDestination)
         }
     }
 
     override fun onBackPressed() {
-        if (!viewModel.hasConfig() && nav.currentDestination?.id == R.id.configFragment) {
+        if (!configManager.hasConfig() && nav.currentDestination?.id == R.id.configFragment) {
             // we are in the configuration screen and need a config to continue
             val intent = Intent(ACTION_MAIN).apply {
                 addCategory(CATEGORY_HOME)

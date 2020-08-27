@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier
+package net.taler.cashier.config
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -34,6 +34,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_config.*
+import net.taler.cashier.MainViewModel
+import net.taler.cashier.R
 import net.taler.common.exhaustive
 
 private const val URL_BANK_TEST = "https://bank.test.taler.net"
@@ -42,6 +44,7 @@ private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
 class ConfigFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
+    private val configManager by lazy { viewModel.configManager}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,13 +56,13 @@ class ConfigFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            if (viewModel.config.bankUrl.isBlank()) {
+            if (configManager.config.bankUrl.isBlank()) {
                 urlView.editText!!.setText(URL_BANK_TEST)
             } else {
-                urlView.editText!!.setText(viewModel.config.bankUrl)
+                urlView.editText!!.setText(configManager.config.bankUrl)
             }
-            usernameView.editText!!.setText(viewModel.config.username)
-            passwordView.editText!!.setText(viewModel.config.password)
+            usernameView.editText!!.setText(configManager.config.username)
+            passwordView.editText!!.setText(configManager.config.password)
         } else {
             urlView.editText!!.setText(savedInstanceState.getCharSequence("urlView"))
             usernameView.editText!!.setText(savedInstanceState.getCharSequence("usernameView"))
@@ -76,8 +79,8 @@ class ConfigFragment : Fragment() {
                 saveButton.visibility = INVISIBLE
                 progressBar.visibility = VISIBLE
                 // kick off check and observe result
-                viewModel.checkAndSaveConfig(config)
-                viewModel.configResult.observe(viewLifecycleOwner, onConfigResult)
+                configManager.checkAndSaveConfig(config)
+                configManager.configResult.observe(viewLifecycleOwner, onConfigResult)
                 // hide keyboard
                 val inputMethodManager =
                     getSystemService(requireContext(), InputMethodManager::class.java)!!
@@ -145,7 +148,7 @@ class ConfigFragment : Fragment() {
         }.exhaustive
         saveButton.visibility = VISIBLE
         progressBar.visibility = INVISIBLE
-        viewModel.configResult.removeObservers(viewLifecycleOwner)
+        configManager.configResult.removeObservers(viewLifecycleOwner)
     }
 
 }

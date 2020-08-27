@@ -14,10 +14,13 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'androidx.navigation.safeargs.kotlin'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-android-extensions"
+    id "kotlinx-serialization"
+    id "androidx.navigation.safeargs.kotlin"
+}
 
 android {
     compileSdkVersion 29
@@ -66,8 +69,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
-    // https://github.com/square/okhttp/releases
-    implementation "com.squareup.okhttp3:okhttp:3.12.12"
+    implementation "io.ktor:ktor-client:$ktor_version"
+    implementation "io.ktor:ktor-client-okhttp:$ktor_version"
+    implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
 
     testImplementation 'junit:junit:4.13'
 

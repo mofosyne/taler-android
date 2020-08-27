@@ -47,6 +47,7 @@ sealed class BalanceResult {
 class BalanceFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
+    private val configManager by lazy { viewModel.configManager}
     private val withdrawManager by lazy { viewModel.withdrawManager }
 
     override fun onCreateView(
@@ -78,7 +79,7 @@ class BalanceFragment : Fragment() {
                 true
             } else false
         }
-        viewModel.currency.observe(viewLifecycleOwner, Observer { currency ->
+        configManager.currency.observe(viewLifecycleOwner, Observer { currency ->
             currencyView.text = currency
         })
         confirmWithdrawalButton.setOnClickListener { onAmountConfirmed(getAmountFromView()) }
@@ -87,7 +88,7 @@ class BalanceFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         // update balance if there's a config
-        if (viewModel.hasConfig()) {
+        if (configManager.hasConfig()) {
             viewModel.getBalance()
         }
     }
@@ -107,12 +108,12 @@ class BalanceFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_reconfigure -> {
-            findNavController().navigate(viewModel.configDestination)
+            findNavController().navigate(configManager.configDestination)
             true
         }
         R.id.action_lock -> {
             viewModel.lock()
-            findNavController().navigate(viewModel.configDestination)
+            findNavController().navigate(configManager.configDestination)
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -148,7 +149,7 @@ class BalanceFragment : Fragment() {
 
     private fun getAmountFromView(): Amount {
         val str = amountView.editText!!.text.toString()
-        val currency = viewModel.currency.value!!
+        val currency = configManager.currency.value!!
         if (str.isBlank()) return Amount.zero(currency)
         return Amount.fromString(currency, str)
     }

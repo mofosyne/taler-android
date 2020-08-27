@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/configFragment"
-        android:name="net.taler.cashier.ConfigFragment"
+        android:name="net.taler.cashier.config.ConfigFragment"
         android:label="ConfigFragment"
         tools:layout="@layout/fragment_config">
         <action
