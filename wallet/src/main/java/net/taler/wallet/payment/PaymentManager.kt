@@ -76,7 +76,6 @@ class PaymentManager(
         }.onError {
             handleError("preparePay", it)
         }.onSuccess { response ->
-            Log.e(TAG, "PreparePayResponse $response") // TODO remove
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
                 is InsufficientBalanceResponse -> InsufficientBalance(

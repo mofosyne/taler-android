@@ -154,7 +154,6 @@ class TransactionInfo(
     val fulfillmentUrl: String? = null,
     /**
      * Message shown to the user after the payment is complete.
-     * TODO actually show this
      */
     val fulfillmentMessage: String? = null,
     /**
