@@ -55,7 +55,7 @@ class Response<out T> private constructor(
         }
     }
 
-    private val isFailure: Boolean get() = value is Failure
+    val isFailure: Boolean get() = value is Failure
 
     suspend fun onSuccess(block: suspend (result: T) -> Unit): Response<T> {
         @Suppress("UNCHECKED_CAST")

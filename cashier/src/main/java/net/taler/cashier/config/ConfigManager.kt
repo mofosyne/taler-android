@@ -24,7 +24,10 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV
+import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
 import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKeys.AES256_GCM_SPEC
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -56,11 +59,9 @@ class ConfigManager(
 
     val configDestination = ConfigFragmentDirections.actionGlobalConfigFragment()
 
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+    private val masterKeyAlias = MasterKeys.getOrCreate(AES256_GCM_SPEC)
     private val prefs = EncryptedSharedPreferences.create(
-        PREF_NAME, masterKeyAlias, app,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        PREF_NAME, masterKeyAlias, app, AES256_SIV, AES256_GCM
     )
 
     internal var config = Config(
@@ -111,17 +112,29 @@ class ConfigManager(
         }
     }
 
-    private suspend fun checkConfig(config: Config): Response<ConfigResponse> =
-        withContext(Dispatchers.IO) {
-            val url = "${config.bankUrl}/config"
-            Log.d(TAG, "Checking config: $url")
-            response {
-                httpClient.get(url) {
-                    // TODO why does that not fail already?
-                    header(Authorization, config.basicAuth)
-                } as ConfigResponse
-            }
+    private suspend fun checkConfig(config: Config) = withContext(Dispatchers.IO) {
+        val url = "${config.bankUrl}/config"
+        Log.d(TAG, "Checking config: $url")
+        val configResponse = response {
+            httpClient.get(url) as ConfigResponse
         }
+        if (configResponse.isFailure) {
+            configResponse
+        } else {
+            // we need to check an endpoint that requires authentication as well
+            // to see if the credentials are valid
+            val balanceResponse = response {
+                val authUrl = "${config.bankUrl}/accounts/${config.username}/balance"
+                Log.d(TAG, "Checking auth: $authUrl")
+                httpClient.get<Unit>(authUrl) {
+                    header(Authorization, config.basicAuth)
+                }
+            }
+            @Suppress("UNCHECKED_CAST")  // The type doesn't matter for failures
+            if (balanceResponse.isFailure) balanceResponse as Response<ConfigResponse>
+            else configResponse
+        }
+    }
 
     @WorkerThread
     @SuppressLint("ApplySharedPref")
