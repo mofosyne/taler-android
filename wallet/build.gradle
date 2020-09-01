@@ -24,7 +24,7 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.7.1-dev.22"
+def walletCoreVersion = "v0.7.1-dev.23"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -48,13 +48,17 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 6
-        versionName "0.7.1.dev.22"
+        versionName "0.7.1.dev.23"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
     buildTypes {
         release {
             minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled minify_debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

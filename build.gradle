@@ -7,6 +7,8 @@ buildscript {
     ext.constraintlayout_version = "2.0.1"
     // check https://android-rebuilds.beuc.net/ for availability of free build tools
     ext.build_tools_version = "29.0.2"
+    // should debug build types be minified with D8 as well?
+    ext.minify_debug = false
     repositories {
         google()
         jcenter()

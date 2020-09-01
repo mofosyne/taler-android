@@ -67,7 +67,7 @@ class WalletResponseTest {
                 "message":"unexpected exception: Error: BUG: invariant violation (purchase status)"
             }
         """.trimIndent()
-        val info = json.decodeFromString(WalletErrorInfo.serializer(), infoJson)
+        val info = json.decodeFromString(TalerErrorInfo.serializer(), infoJson)
         println(info.userFacingMsg)
     }
 }

@@ -25,7 +25,7 @@ import kotlinx.serialization.Serializable
 import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.backend.WalletErrorInfo
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
@@ -201,7 +201,7 @@ class WithdrawManager(
     }
 
     @UiThread
-    private fun handleError(operation: String, error: WalletErrorInfo) {
+    private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "Error $operation $error")
         withdrawStatus.value = WithdrawStatus.Error(error.userFacingMsg)
     }

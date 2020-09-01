@@ -28,6 +28,7 @@ import net.taler.common.ContractProduct
 import net.taler.lib.common.Amount
 import net.taler.lib.common.Timestamp
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
@@ -40,7 +41,7 @@ sealed class Transaction {
     abstract val transactionId: String
     abstract val timestamp: Timestamp
     abstract val pending: Boolean
-    abstract val error: TransactionError?
+    abstract val error: TalerErrorInfo?
     abstract val amountRaw: Amount
     abstract val amountEffective: Amount
 
@@ -65,14 +66,6 @@ sealed class AmountType {
 }
 
 @Serializable
-data class TransactionError(
-    private val ec: Int,
-    private val hint: String? = null,
-) {
-    val text get() = if (hint == null) "$ec" else "$ec $hint"
-}
-
-@Serializable
 @SerialName("withdrawal")
 class TransactionWithdrawal(
     override val transactionId: String,
@@ -80,7 +73,7 @@ class TransactionWithdrawal(
     override val pending: Boolean,
     val exchangeBaseUrl: String,
     val withdrawalDetails: WithdrawalDetails,
-    override val error: TransactionError? = null,
+    override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount
 ) : Transaction() {
@@ -137,7 +130,7 @@ class TransactionPayment(
     override val pending: Boolean,
     val info: TransactionInfo,
     val status: PaymentStatus,
-    override val error: TransactionError? = null,
+    override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount
 ) : Transaction() {
@@ -197,7 +190,7 @@ class TransactionRefund(
      * Part of the refund that couldn't be applied because the refund permissions were expired
      */
     val amountInvalid: Amount? = null,
-    override val error: TransactionError? = null,
+    override val error: TalerErrorInfo? = null,
     @SerialName("amountEffective") // TODO remove when fixed in wallet-core
     override val amountRaw: Amount,
     @SerialName("amountRaw") // TODO remove when fixed in wallet-core
@@ -224,7 +217,7 @@ class TransactionTip(
     // TODO status: TipStatus,
     val exchangeBaseUrl: String,
     val merchant: ContractMerchant,
-    override val error: TransactionError? = null,
+    override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount
 ) : Transaction() {
@@ -247,7 +240,7 @@ class TransactionRefresh(
     override val timestamp: Timestamp,
     override val pending: Boolean,
     val exchangeBaseUrl: String,
-    override val error: TransactionError? = null,
+    override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount
 ) : Transaction() {

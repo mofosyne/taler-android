@@ -157,20 +157,20 @@ class WalletBackendApi(
                 }
             }
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
-                val response = if (isError) {
-                    val error =
-                        json.decodeFromString(WalletErrorInfo.serializer(), message.toString())
-                    WalletResponse.Error(error)
-                } else {
-                    try {
+                val response = try {
+                    if (isError) {
+                        val error =
+                            json.decodeFromString(TalerErrorInfo.serializer(), message.toString())
+                        WalletResponse.Error(error)
+                    } else {
                         val t: T = serializer?.let {
                             json.decodeFromString(serializer, message.toString())
                         } ?: Unit as T
                         WalletResponse.Success(t)
-                    } catch (e: Exception) {
-                        val info = WalletErrorInfo(0, "", e.toString(), null)
-                        WalletResponse.Error(info)
                     }
+                } catch (e: Exception) {
+                    val info = TalerErrorInfo(0, "", e.toString(), null)
+                    WalletResponse.Error(info)
                 }
                 cont.resume(response)
             }

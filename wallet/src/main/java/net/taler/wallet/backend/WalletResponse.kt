@@ -38,7 +38,7 @@ sealed class WalletResponse<T> {
     @Serializable
     @SerialName("error")
     data class Error<T>(
-        val error: WalletErrorInfo
+        val error: TalerErrorInfo
     ) : WalletResponse<T>()
 
     fun onSuccess(block: (result: T) -> Unit): WalletResponse<T> {
@@ -46,35 +46,34 @@ sealed class WalletResponse<T> {
         return this
     }
 
-    fun onError(block: (result: WalletErrorInfo) -> Unit): WalletResponse<T> {
+    fun onError(block: (result: TalerErrorInfo) -> Unit): WalletResponse<T> {
         if (this is Error) block(this.error)
         return this
     }
 }
 
 @Serializable
-data class WalletErrorInfo(
+data class TalerErrorInfo(
     // Numeric error code defined defined in the
     // GANA gnu-taler-error-codes registry.
-    val talerErrorCode: Int,
+    val code: Int,
 
     // English description of the error code.
-    val talerErrorHint: String,
+    val hint: String?,
 
     // English diagnostic message that can give details
     // for the instance of the error.
-    val message: String,
+    val message: String?,
 
-    // Error details, type depends on talerErrorCode
+    // Error details
     @Serializable(JSONObjectDeserializer::class)
     val details: JSONObject?
 ) {
     val userFacingMsg: String
         get() {
             return StringBuilder().apply {
-                append(talerErrorCode)
-                append(" ")
-                append(message)
+                append(code)
+                message?.let { append(" ").append(it) }
                 details?.let { details ->
                     append("\n\n")
                     details.optJSONObject("errorResponse")?.let { errorResponse ->

@@ -184,13 +184,16 @@ class WalletBackendService : Service() {
 
     private fun handleAkonoMessage(messageStr: String) {
         val message = JSONObject(messageStr)
-        Log.v(TAG, "got back message: ${message.toString(2)}")
         when (val type = message.getString("type")) {
             "notification" -> {
-                sendNotify(message.getString("payload"))
+                val payload = message.getJSONObject("payload")
+                if (payload.optString("type") != "waiting-for-retry") {
+                    Log.v(TAG, "got back notification: ${message.toString(2)}")
+                }
+                sendNotify(payload.toString())
             }
             "tunnelHttp" -> {
-                Log.v(TAG, "got http tunnel request!")
+                Log.v(TAG, "got http tunnel request! ${message.toString(2)}")
                 Intent().also { intent ->
                     intent.action = HostCardEmulatorService.HTTP_TUNNEL_REQUEST
                     intent.putExtra("tunnelMessage", messageStr)
@@ -204,15 +207,18 @@ class WalletBackendService : Service() {
                         sendNotify(message.toString(2))
                     }
                     "reset" -> {
+                        Log.v(TAG, "got back message: ${message.toString(2)}")
                         exitProcess(1)
                     }
                     else -> {
+                        Log.v(TAG, "got back response: ${message.toString(2)}")
                         val payload = message.getJSONObject("result").toString(2)
                         handleResponse(false, message, payload)
                     }
                 }
             }
             "error" -> {
+                Log.v(TAG, "got back error: ${message.toString(2)}")
                 val payload = message.getJSONObject("error").toString(2)
                 handleResponse(true, message, payload)
             }

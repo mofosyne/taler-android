@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 import net.taler.common.ContractTerms
 import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.lib.common.Amount
-import net.taler.wallet.transactions.TransactionError
+import net.taler.wallet.backend.TalerErrorInfo
 
 @Serializable
 sealed class PreparePayResponse {
@@ -75,5 +75,5 @@ sealed class ConfirmPayResult {
 
     @Serializable
     @SerialName("pending")
-    data class Pending(val lastError: TransactionError) : ConfirmPayResult()
+    data class Pending(val lastError: TalerErrorInfo) : ConfirmPayResult()
 }

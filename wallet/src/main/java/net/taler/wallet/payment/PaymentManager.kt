@@ -26,7 +26,7 @@ import net.taler.common.ContractTerms
 import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.backend.WalletErrorInfo
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.payment.PayStatus.AlreadyPaid
 import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
@@ -130,7 +130,7 @@ class PaymentManager(
         mPayStatus.value = PayStatus.None
     }
 
-    private fun handleError(operation: String, error: WalletErrorInfo) {
+    private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
         mPayStatus.value = PayStatus.Error(error.userFacingMsg)
     }
