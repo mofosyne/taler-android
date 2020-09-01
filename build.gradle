@@ -2,7 +2,9 @@ buildscript {
     ext.kotlin_version = '1.4.0'
     ext.ktor_version = "1.4.0"
     ext.nav_version = "2.3.0"
+    ext.material_version = "1.2.0"
     ext.lifecycle_version = "2.2.0"
+    ext.constraintlayout_version = "2.0.1"
     // check https://android-rebuilds.beuc.net/ for availability of free build tools
     ext.build_tools_version = "29.0.2"
     repositories {

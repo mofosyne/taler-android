@@ -62,9 +62,9 @@ android {
 
 dependencies {
     implementation project(":taler-kotlin-android")
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
     implementation 'androidx.security:security-crypto:1.0.0-rc03'
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation "com.google.android.material:material:$material_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
@@ -75,6 +75,6 @@ dependencies {
 
     testImplementation 'junit:junit:4.13'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

@@ -158,12 +158,19 @@ class WalletBackendApi(
             }
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
                 val response = if (isError) {
-                    val error = json.decodeFromString(WalletErrorInfo.serializer(), message.toString())
+                    val error =
+                        json.decodeFromString(WalletErrorInfo.serializer(), message.toString())
                     WalletResponse.Error(error)
                 } else {
-                    @Suppress("UNCHECKED_CAST") // if serializer is null, T must be Unit
-                    val t: T = serializer?.let { json.decodeFromString(serializer, message.toString()) } ?: Unit as T
-                    WalletResponse.Success(t)
+                    try {
+                        val t: T = serializer?.let {
+                            json.decodeFromString(serializer, message.toString())
+                        } ?: Unit as T
+                        WalletResponse.Success(t)
+                    } catch (e: Exception) {
+                        val info = WalletErrorInfo(0, "", e.toString(), null)
+                        WalletResponse.Error(info)
+                    }
                 }
                 cont.resume(response)
             }

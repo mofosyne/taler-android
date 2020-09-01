@@ -57,7 +57,6 @@ class PaymentResponsesTest {
             "max_wire_fee": "CHF:0.1",
             "max_fee": "CHF:0.1",
             "wire_fee_amortization": 10,
-            "merchant_base_url": "https:\/\/backend.chf.taler.net\/instances\/department\/",
             "merchant": {
               "name": "BFH Department Technik und Informatik",
               "instance": "department"
