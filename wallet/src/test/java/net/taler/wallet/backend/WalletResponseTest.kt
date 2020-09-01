@@ -57,8 +57,8 @@ class WalletResponseTest {
     fun testWalletErrorInfo() {
         val infoJson = """
             {
-                "talerErrorCode":7001,
-                "talerErrorHint":"Error: WALLET_UNEXPECTED_EXCEPTION",
+                "code":7001,
+                "hint":"Error: WALLET_UNEXPECTED_EXCEPTION",
                 "details":{
                   "httpStatusCode": 401,
                   "requestUrl": "https:\/\/backend.demo.taler.net\/-\/FSF\/orders\/2020.224-02XC8W52BHH3G\/claim",
