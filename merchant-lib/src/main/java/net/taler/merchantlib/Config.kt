@@ -38,15 +38,12 @@ data class ConfigResponse(
 data class MerchantConfig(
     @SerialName("base_url")
     val baseUrl: String,
-    // TODO remove instance when it is part of baseURL
-    val instance: String? = null,
     @SerialName("api_key")
     val apiKey: String
 ) {
     fun urlFor(endpoint: String): String {
         val sb = StringBuilder(baseUrl)
         if (sb.last() != '/') sb.append('/')
-        instance?.let { sb.append("instances/$it/") }
         sb.append(endpoint)
         return sb.toString()
     }

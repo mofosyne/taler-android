@@ -23,6 +23,7 @@ import net.taler.common.ContractProduct
 import net.taler.common.Product
 import net.taler.common.TalerUtils
 import net.taler.lib.common.Amount
+import net.taler.merchantlib.MerchantConfig
 import java.util.UUID
 
 data class Config(
@@ -37,7 +38,7 @@ data class Config(
 @Serializable
 data class PosConfig(
     @SerialName("config")
-    val merchantConfig: net.taler.merchantlib.MerchantConfig,
+    val merchantConfig: MerchantConfig,
     val categories: List<Category>,
     val products: List<ConfigProduct>
 )

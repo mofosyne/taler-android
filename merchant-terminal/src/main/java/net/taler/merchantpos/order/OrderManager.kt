@@ -88,12 +88,10 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
             this.currency = currency
             mCategories.postValue(posConfig.categories)
             mProducts.postValue(productsByCategory[posConfig.categories[0]])
-            // Initialize first empty order, note this won't work when updating config mid-flight
-            if (orders.isEmpty()) {
-                val id = orderCounter++
-                orders[id] = MutableLiveOrder(id, currency, productsByCategory)
-                mCurrentOrderId.postValue(id)
-            }
+            orders.clear()
+            orderCounter = 0
+            orders[0] = MutableLiveOrder(0, currency, productsByCategory)
+            mCurrentOrderId.postValue(0)
             null // success, no error string
         } else context.getString(R.string.config_error_product_zero)
     }
@@ -116,7 +114,7 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
             if (orderId == currentId) foundCurrentOrder = true
         }
         if (nextId == null) {
-            nextId = orderCounter++
+            nextId = ++orderCounter
             orders[nextId] = MutableLiveOrder(nextId, currency, productsByCategory)
         }
         val currentOrder = order(currentId)
