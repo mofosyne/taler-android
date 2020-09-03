@@ -64,19 +64,20 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     fun getBalance() = viewModelScope.launch(Dispatchers.IO) {
         check(configManager.hasConfig()) { "No config to get balance" }
         val config = configManager.config
-        val url = "${config.bankUrl}/accounts/${config.username}/balance"
+        val url = "${config.bankUrl}/accounts/${config.username}"
         Log.d(TAG, "Checking balance at $url")
         val result = when (val response = makeJsonGetRequest(url, config)) {
             is HttpJsonResult.Success -> {
                 try {
-                    val balance = response.json.getString("amount")
+                    val balanceObj = response.json.getJSONObject("balance");
+                    val balanceAmount = balanceObj.getString("amount")
                     val positive = when (val creditDebitIndicator =
-                        response.json.getString("credit_debit_indicator")) {
+                        balanceObj.getString("credit_debit_indicator")) {
                         "credit" -> true
                         "debit" -> false
                         else -> throw AmountParserException("Unexpected credit_debit_indicator: $creditDebitIndicator")
                     }
-                    BalanceResult.Success(SignedAmount(positive, Amount.fromJSONString(balance)))
+                    BalanceResult.Success(SignedAmount(positive, Amount.fromJSONString(balanceAmount)))
                 } catch (e: Exception) {
                     Log.e(TAG, "Error parsing balance", e)
                     BalanceResult.Error("Invalid amount:\n${response.json.toString(2)}")
