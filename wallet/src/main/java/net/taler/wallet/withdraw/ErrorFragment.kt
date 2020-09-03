@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import net.taler.common.isOnline
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentErrorBinding
@@ -48,7 +49,11 @@ class ErrorFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         ui.errorTitle.setText(R.string.withdraw_error_title)
-        ui.errorMessage.setText(R.string.withdraw_error_message)
+        if (requireContext().isOnline()) {
+            ui.errorMessage.setText(R.string.withdraw_error_message)
+        } else {
+            ui.errorMessage.setText(R.string.offline)
+        }
 
         // show dev error message if dev mode is on
         val status = withdrawManager.withdrawStatus.value
