@@ -190,9 +190,7 @@ class TransactionRefund(
      */
     val amountInvalid: Amount? = null,
     override val error: TalerErrorInfo? = null,
-    @SerialName("amountEffective") // TODO remove when fixed in wallet-core
     override val amountRaw: Amount,
-    @SerialName("amountRaw") // TODO remove when fixed in wallet-core
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.transaction_refund

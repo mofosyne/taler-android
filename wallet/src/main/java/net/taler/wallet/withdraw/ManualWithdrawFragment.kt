@@ -55,13 +55,20 @@ class ManualWithdrawFragment : Fragment() {
         }.joinToString(separator = "\n", prefix = "• ")
         paymentOptionsLabel.text =
             getString(R.string.withdraw_manual_payment_options, exchangeItem.name, paymentOptions)
-        checkFeesButton.setOnClickListener {
-            val value = amountView.text.toString().toLong()
-            val amount = Amount(exchangeItem.currency, value, 0)
-            amountView.hideKeyboard()
-            Toast.makeText(view.context, "Not implemented: $amount", LENGTH_SHORT).show()
-            withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
+        checkFeesButton.setOnClickListener { onCheckFees() }
+    }
+
+    private fun onCheckFees() {
+        if (amountView.text?.isEmpty() ?: true) {
+            amountLayout.setError(getString(R.string.withdraw_amount_error))
+            return
         }
+        amountLayout.setError(null)
+        val value = amountView.text.toString().toLong()
+        val amount = Amount(exchangeItem.currency, value, 0)
+        amountView.hideKeyboard()
+        Toast.makeText(requireContext(), "Not implemented: $amount", LENGTH_SHORT).show()
+        withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
     }
 
 }

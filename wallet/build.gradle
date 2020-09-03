@@ -24,7 +24,7 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.7.1-dev.23"
+def walletCoreVersion = "v0.7.1-dev.25"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -48,7 +48,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 6
-        versionName "0.7.1.dev.23"
+        versionName "0.7.1.dev.25"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }

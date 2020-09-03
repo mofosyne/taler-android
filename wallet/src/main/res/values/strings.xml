@@ -113,6 +113,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_waiting_confirm">Waiting for confirmation</string>
     <string name="withdraw_manual_title">Make a manual transfer to the exchange</string>
     <string name="withdraw_amount">How much to withdraw?</string>
+    <string name="withdraw_amount_error">Enter valid amount</string>
     <string name="withdraw_manual_payment_options">Payment options supported by %1$s:\n\n%2$s</string>
     <string name="withdraw_manual_check_fees">Check fees</string>
     <string name="withdraw_error_title">Withdrawal Error</string>
