@@ -24,14 +24,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import kotlinx.android.synthetic.main.fragment_products.*
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigProduct
+import net.taler.merchantpos.databinding.FragmentProductsBinding
 import net.taler.merchantpos.order.ProductAdapter.ProductViewHolder
 
 interface ProductSelectionListener {
@@ -44,27 +43,30 @@ class ProductsFragment : Fragment(), ProductSelectionListener {
     private val orderManager by lazy { viewModel.orderManager }
     private val adapter = ProductAdapter(this)
 
+    private lateinit var ui: FragmentProductsBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_products, container, false)
+        ui = FragmentProductsBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        productsList.apply {
+        ui.productsList.apply {
             adapter = this@ProductsFragment.adapter
             layoutManager = GridLayoutManager(requireContext(), 3)
         }
 
-        orderManager.products.observe(viewLifecycleOwner, Observer { products ->
+        orderManager.products.observe(viewLifecycleOwner, { products ->
             if (products == null) {
                 adapter.setItems(emptyList())
             } else {
                 adapter.setItems(products)
             }
-            progressBar.visibility = INVISIBLE
+            ui.progressBar.visibility = INVISIBLE
         })
     }
 

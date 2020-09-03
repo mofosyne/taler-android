@@ -22,21 +22,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_payment_success.*
-import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentPaymentSuccessBinding
 
 class PaymentSuccessFragment : Fragment() {
+
+    private lateinit var ui: FragmentPaymentSuccessBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_payment_success, container, false)
+        ui = FragmentPaymentSuccessBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        paymentButton.setOnClickListener {
+        ui.paymentButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }

@@ -23,22 +23,25 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_refund_uri.*
 import net.taler.common.NfcManager.Companion.hasNfc
 import net.taler.common.QrCodeManager.makeQrCode
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentRefundUriBinding
 
 class RefundUriFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val refundManager by lazy { model.refundManager }
 
+    private lateinit var ui: FragmentRefundUriBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_refund_uri, container, false)
+        ui = FragmentRefundUriBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,19 +49,19 @@ class RefundUriFragment : Fragment() {
         val result = refundManager.refundResult.value
         if (result !is RefundResult.Success) throw IllegalStateException()
 
-        refundQrcodeView.setImageBitmap(makeQrCode(result.refundUri))
+        ui.refundQrcodeView.setImageBitmap(makeQrCode(result.refundUri))
 
         val introRes =
             if (hasNfc(requireContext())) R.string.refund_intro_nfc else R.string.refund_intro
-        refundIntroView.setText(introRes)
+        ui.refundIntroView.setText(introRes)
 
-        refundAmountView.text = result.amount.toString()
+        ui.refundAmountView.text = result.amount.toString()
 
-        refundRefView.text =
+        ui.refundRefView.text =
             getString(R.string.refund_order_ref, result.item.orderId, result.reason)
 
-        cancelRefundButton.setOnClickListener { findNavController().navigateUp() }
-        completeButton.setOnClickListener { findNavController().navigateUp() }
+        ui.cancelRefundButton.setOnClickListener { findNavController().navigateUp() }
+        ui.completeButton.setOnClickListener { findNavController().navigateUp() }
     }
 
     override fun onDestroy() {

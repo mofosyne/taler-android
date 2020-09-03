@@ -22,16 +22,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_order_state.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentOrderStateBinding
 import net.taler.merchantpos.order.OrderAdapter.OrderLineLookup
 
 class OrderStateFragment : Fragment() {
@@ -39,6 +38,8 @@ class OrderStateFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private val orderManager by lazy { viewModel.orderManager }
     private val liveOrder by lazy { orderManager.getOrder(orderManager.currentOrderId.value!!) }
+
+    private lateinit var ui: FragmentOrderStateBinding
     private val adapter = OrderAdapter()
     private var tracker: SelectionTracker<String>? = null
 
@@ -47,18 +48,19 @@ class OrderStateFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_order_state, container, false)
+        ui = FragmentOrderStateBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        orderList.apply {
+        ui.orderList.apply {
             adapter = this@OrderStateFragment.adapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-        val detailsLookup = OrderLineLookup(orderList)
+        val detailsLookup = OrderLineLookup(ui.orderList)
         val tracker = SelectionTracker.Builder(
             "order-selection-id",
-            orderList,
+            ui.orderList,
             adapter.keyProvider,
             detailsLookup,
             StorageStrategy.createStringStorage()
@@ -80,16 +82,16 @@ class OrderStateFragment : Fragment() {
                 liveOrder.selectOrderLine(item)
             }
         })
-        liveOrder.order.observe(viewLifecycleOwner, Observer { order ->
+        liveOrder.order.observe(viewLifecycleOwner, { order ->
             onOrderChanged(order, tracker)
         })
-        liveOrder.orderTotal.observe(viewLifecycleOwner, Observer { orderTotal ->
+        liveOrder.orderTotal.observe(viewLifecycleOwner, { orderTotal ->
             if (orderTotal.isZero()) {
-                totalView.fadeOut()
-                totalView.text = null
+                ui.totalView.fadeOut()
+                ui.totalView.text = null
             } else {
-                totalView.text = getString(R.string.order_total, orderTotal)
-                totalView.fadeIn()
+                ui.totalView.text = getString(R.string.order_total, orderTotal)
+                ui.totalView.fadeIn()
             }
         })
     }
@@ -104,9 +106,8 @@ class OrderStateFragment : Fragment() {
             liveOrder.lastAddedProduct?.let {
                 val position = adapter.findPosition(it)
                 if (position >= 0) {
-                    // orderList can be null m(
-                    orderList?.scrollToPosition(position)
-                    orderList?.post { this.tracker?.select(it.id) }
+                    ui.orderList.scrollToPosition(position)
+                    ui.orderList.post { this.tracker?.select(it.id) }
                 }
             }
             // workaround for bug: SelectionObserver doesn't update when removing selected item

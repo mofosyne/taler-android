@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlinx-serialization'
     id 'androidx.navigation.safeargs.kotlin'
 }
@@ -13,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "net.taler.merchantpos"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -38,6 +37,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     testOptions {

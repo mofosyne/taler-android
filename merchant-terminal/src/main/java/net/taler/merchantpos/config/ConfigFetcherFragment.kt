@@ -27,20 +27,23 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
-import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigFetcherFragmentDirections.Companion.actionConfigFetcherToMerchantSettings
 import net.taler.merchantpos.config.ConfigFetcherFragmentDirections.Companion.actionConfigFetcherToOrder
+import net.taler.merchantpos.databinding.FragmentConfigFetcherBinding
 
 class ConfigFetcherFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val configManager by lazy { model.configManager }
 
+    private lateinit var ui: FragmentConfigFetcherBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_config_fetcher, container, false)
+        ui = FragmentConfigFetcherBinding.inflate(inflater)
+        return ui.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

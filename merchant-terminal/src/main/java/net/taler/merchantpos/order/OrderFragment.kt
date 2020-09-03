@@ -22,12 +22,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.transition.TransitionManager.beginDelayedTransition
-import kotlinx.android.synthetic.main.fragment_order.*
 import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentOrderBinding
 import net.taler.merchantpos.order.OrderFragmentDirections.Companion.actionGlobalConfigFetcher
 import net.taler.merchantpos.order.OrderFragmentDirections.Companion.actionOrderToMerchantSettings
 import net.taler.merchantpos.order.OrderFragmentDirections.Companion.actionOrderToProcessPayment
@@ -40,17 +39,20 @@ class OrderFragment : Fragment() {
     private val orderManager by lazy { viewModel.orderManager }
     private val paymentManager by lazy { viewModel.paymentManager }
 
+    private lateinit var ui: FragmentOrderBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_order, container, false)
+        ui = FragmentOrderBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        orderManager.currentOrderId.observe(viewLifecycleOwner, Observer { orderId ->
+        orderManager.currentOrderId.observe(viewLifecycleOwner, { orderId ->
             val liveOrder = orderManager.getOrder(orderId)
             onOrderSwitched(orderId, liveOrder)
             // add a new OrderStateFragment for each order
@@ -72,39 +74,39 @@ class OrderFragment : Fragment() {
 
     private fun onOrderSwitched(orderId: Int, liveOrder: LiveOrder) {
         // order title
-        liveOrder.order.observe(viewLifecycleOwner, Observer { order ->
+        liveOrder.order.observe(viewLifecycleOwner, { order ->
             activity?.title = getString(R.string.order_label_title, order.title)
         })
         // restart button
-        restartButton.setOnClickListener { liveOrder.restartOrUndo() }
-        liveOrder.restartState.observe(viewLifecycleOwner, Observer { state ->
+        ui.restartButton.setOnClickListener { liveOrder.restartOrUndo() }
+        liveOrder.restartState.observe(viewLifecycleOwner, { state ->
             beginDelayedTransition(view as ViewGroup)
             if (state == UNDO) {
-                restartButton.setText(R.string.order_undo)
-                restartButton.isEnabled = true
-                completeButton.isEnabled = false
+                ui.restartButton.setText(R.string.order_undo)
+                ui.restartButton.isEnabled = true
+                ui.completeButton.isEnabled = false
             } else {
-                restartButton.setText(R.string.order_restart)
-                restartButton.isEnabled = state == ENABLED
-                completeButton.isEnabled = state == ENABLED
+                ui.restartButton.setText(R.string.order_restart)
+                ui.restartButton.isEnabled = state == ENABLED
+                ui.completeButton.isEnabled = state == ENABLED
             }
         })
         // -1 and +1 buttons
-        liveOrder.modifyOrderAllowed.observe(viewLifecycleOwner, Observer { allowed ->
-            minusButton.isEnabled = allowed
-            plusButton.isEnabled = allowed
+        liveOrder.modifyOrderAllowed.observe(viewLifecycleOwner, { allowed ->
+            ui.minusButton.isEnabled = allowed
+            ui.plusButton.isEnabled = allowed
         })
-        minusButton.setOnClickListener { liveOrder.decreaseSelectedOrderLine() }
-        plusButton.setOnClickListener { liveOrder.increaseSelectedOrderLine() }
+        ui.minusButton.setOnClickListener { liveOrder.decreaseSelectedOrderLine() }
+        ui.plusButton.setOnClickListener { liveOrder.increaseSelectedOrderLine() }
         // previous and next button
-        prevButton.isEnabled = orderManager.hasPreviousOrder(orderId)
-        orderManager.hasNextOrder(orderId).observe(viewLifecycleOwner, Observer { hasNextOrder ->
-            nextButton.isEnabled = hasNextOrder
+        ui.prevButton.isEnabled = orderManager.hasPreviousOrder(orderId)
+        orderManager.hasNextOrder(orderId).observe(viewLifecycleOwner, { hasNextOrder ->
+            ui.nextButton.isEnabled = hasNextOrder
         })
-        prevButton.setOnClickListener { orderManager.previousOrder() }
-        nextButton.setOnClickListener { orderManager.nextOrder() }
+        ui.prevButton.setOnClickListener { orderManager.previousOrder() }
+        ui.nextButton.setOnClickListener { orderManager.nextOrder() }
         // complete button
-        completeButton.setOnClickListener {
+        ui.completeButton.setOnClickListener {
             val order = liveOrder.order.value ?: return@setOnClickListener
             paymentManager.createPayment(order)
             navigate(actionOrderToProcessPayment())

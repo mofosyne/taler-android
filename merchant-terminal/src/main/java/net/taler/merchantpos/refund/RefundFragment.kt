@@ -22,11 +22,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_refund.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
@@ -35,6 +33,7 @@ import net.taler.lib.common.AmountParserException
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentRefundBinding
 import net.taler.merchantpos.refund.RefundFragmentDirections.Companion.actionRefundFragmentToRefundUriFragment
 import net.taler.merchantpos.refund.RefundResult.AlreadyRefunded
 import net.taler.merchantpos.refund.RefundResult.Error
@@ -46,44 +45,47 @@ class RefundFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val refundManager by lazy { model.refundManager }
 
+    private lateinit var ui: FragmentRefundBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_refund, container, false)
+        ui = FragmentRefundBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val item = refundManager.toBeRefunded ?: throw IllegalStateException()
-        amountInputView.setText(item.amount.amountStr)
-        currencyView.text = item.amount.currency
-        abortButton.setOnClickListener { findNavController().navigateUp() }
-        refundButton.setOnClickListener { onRefundButtonClicked(item) }
+        ui.amountInputView.setText(item.amount.amountStr)
+        ui.currencyView.text = item.amount.currency
+        ui.abortButton.setOnClickListener { findNavController().navigateUp() }
+        ui.refundButton.setOnClickListener { onRefundButtonClicked(item) }
 
-        refundManager.refundResult.observe(viewLifecycleOwner, Observer { result ->
+        refundManager.refundResult.observe(viewLifecycleOwner, { result ->
             onRefundResultChanged(result)
         })
     }
 
     private fun onRefundButtonClicked(item: OrderHistoryEntry) {
         val inputAmount = try {
-            Amount.fromString(item.amount.currency, amountInputView.text.toString())
+            Amount.fromString(item.amount.currency, ui.amountInputView.text.toString())
         } catch (e: AmountParserException) {
-            amountView.error = getString(R.string.refund_error_invalid_amount)
+            ui.amountView.error = getString(R.string.refund_error_invalid_amount)
             return
         }
         if (inputAmount > item.amount) {
-            amountView.error = getString(R.string.refund_error_max_amount, item.amount.amountStr)
+            ui.amountView.error = getString(R.string.refund_error_max_amount, item.amount.amountStr)
             return
         }
         if (inputAmount.isZero()) {
-            amountView.error = getString(R.string.refund_error_zero)
+            ui.amountView.error = getString(R.string.refund_error_zero)
             return
         }
-        amountView.error = null
-        refundButton.fadeOut()
-        progressBar.fadeIn()
-        refundManager.refund(item, inputAmount, reasonInputView.text.toString())
+        ui.amountView.error = null
+        ui.refundButton.fadeOut()
+        ui.progressBar.fadeIn()
+        refundManager.refund(item, inputAmount, ui.reasonInputView.text.toString())
     }
 
     private fun onRefundResultChanged(result: RefundResult?): Any = when (result) {
@@ -91,8 +93,8 @@ class RefundFragment : Fragment() {
         PastDeadline -> onError(getString(R.string.refund_error_deadline))
         AlreadyRefunded -> onError(getString(R.string.refund_error_already_refunded))
         is Success -> {
-            progressBar.fadeOut()
-            refundButton.fadeIn()
+            ui.progressBar.fadeOut()
+            ui.refundButton.fadeIn()
             navigate(actionRefundFragmentToRefundUriFragment())
         }
         null -> { // no-op
@@ -101,8 +103,8 @@ class RefundFragment : Fragment() {
 
     private fun onError(msg: String) {
         Snackbar.make(requireView(), msg, LENGTH_LONG).show()
-        progressBar.fadeOut()
-        refundButton.fadeIn()
+        ui.progressBar.fadeOut()
+        ui.refundButton.fadeIn()
     }
 
 }

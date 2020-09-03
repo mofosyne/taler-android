@@ -22,10 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
-import kotlinx.android.synthetic.main.fragment_process_payment.*
 import net.taler.common.NfcManager.Companion.hasNfc
 import net.taler.common.QrCodeManager.makeQrCode
 import net.taler.common.fadeIn
@@ -33,6 +31,7 @@ import net.taler.common.fadeOut
 import net.taler.common.navigate
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentProcessPaymentBinding
 import net.taler.merchantpos.payment.ProcessPaymentFragmentDirections.Companion.actionProcessPaymentToPaymentSuccess
 import net.taler.merchantpos.topSnackbar
 
@@ -41,21 +40,24 @@ class ProcessPaymentFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
 
+    private lateinit var ui: FragmentProcessPaymentBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_process_payment, container, false)
+        ui = FragmentProcessPaymentBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val introRes =
             if (hasNfc(requireContext())) R.string.payment_intro_nfc else R.string.payment_intro
-        payIntroView.setText(introRes)
-        paymentManager.payment.observe(viewLifecycleOwner, Observer { payment ->
+        ui.payIntroView.setText(introRes)
+        paymentManager.payment.observe(viewLifecycleOwner, { payment ->
             onPaymentStateChanged(payment)
         })
-        cancelPaymentButton.setOnClickListener {
+        ui.cancelPaymentButton.setOnClickListener {
             onPaymentCancel()
         }
     }
@@ -76,17 +78,17 @@ class ProcessPaymentFragment : Fragment() {
             navigate(actionProcessPaymentToPaymentSuccess())
             return
         }
-        payIntroView.fadeIn()
-        amountView.text = payment.order.total.toString()
+        ui.payIntroView.fadeIn()
+        ui.amountView.text = payment.order.total.toString()
         payment.orderId?.let {
-            orderRefView.text = getString(R.string.payment_order_id, it)
-            orderRefView.fadeIn()
+            ui.orderRefView.text = getString(R.string.payment_order_id, it)
+            ui.orderRefView.fadeIn()
         }
         payment.talerPayUri?.let {
             val qrcodeBitmap = makeQrCode(it)
-            qrcodeView.setImageBitmap(qrcodeBitmap)
-            qrcodeView.fadeIn()
-            progressBar.fadeOut()
+            ui.qrcodeView.setImageBitmap(qrcodeBitmap)
+            ui.qrcodeView.fadeIn()
+            ui.progressBar.fadeOut()
         }
     }
 

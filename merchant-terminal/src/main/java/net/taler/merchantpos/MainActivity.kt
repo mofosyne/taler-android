@@ -28,21 +28,20 @@ import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat.START
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import net.taler.common.NfcManager
+import net.taler.merchantpos.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     private val model: MainViewModel by viewModels()
     private val nfcManager = NfcManager()
 
+    private lateinit var ui: ActivityMainBinding
     private lateinit var nav: NavController
 
     private var reallyExit = false
@@ -53,9 +52,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        ui = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
-        model.paymentManager.payment.observe(this, Observer { payment ->
+        model.paymentManager.payment.observe(this, { payment ->
             payment?.talerPayUri?.let {
                 nfcManager.setTagString(it)
             }
@@ -65,12 +65,12 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         nav = navHostFragment.navController
 
-        nav_view.setupWithNavController(nav)
-        nav_view.setNavigationItemSelectedListener(this)
+        ui.navView.setupWithNavController(nav)
+        ui.navView.setNavigationItemSelectedListener(this)
 
-        setSupportActionBar(toolbar)
-        val appBarConfiguration = AppBarConfiguration(nav.graph, drawer_layout)
-        toolbar.setupWithNavController(nav, appBarConfiguration)
+        setSupportActionBar(ui.main.toolbar)
+        val appBarConfiguration = AppBarConfiguration(nav.graph, ui.drawerLayout)
+        ui.main.toolbar.setupWithNavController(nav, appBarConfiguration)
     }
 
     override fun onStart() {
@@ -99,14 +99,14 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
             R.id.nav_history -> nav.navigate(R.id.action_global_merchantHistory)
             R.id.nav_settings -> nav.navigate(R.id.action_global_merchantSettings)
         }
-        drawer_layout.closeDrawer(START)
+        ui.drawerLayout.closeDrawer(START)
         return true
     }
 
     override fun onBackPressed() {
         val currentDestination = nav.currentDestination?.id
-        if (drawer_layout.isDrawerOpen(START)) {
-            drawer_layout.closeDrawer(START)
+        if (ui.drawerLayout.isDrawerOpen(START)) {
+            ui.drawerLayout.closeDrawer(START)
         } else if (currentDestination == R.id.nav_settings && !model.configManager.config.isValid()) {
             // we are in the configuration screen and need a config to continue
             val intent = Intent(ACTION_MAIN).apply {

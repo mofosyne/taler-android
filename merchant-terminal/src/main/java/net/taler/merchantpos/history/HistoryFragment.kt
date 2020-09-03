@@ -23,18 +23,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_merchant_history.*
 import net.taler.common.exhaustive
 import net.taler.common.navigate
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
-import net.taler.merchantpos.R
+import net.taler.merchantpos.databinding.FragmentMerchantHistoryBinding
 import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionGlobalMerchantSettings
 import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
 
@@ -55,31 +53,33 @@ class HistoryFragment : Fragment(), RefundClickListener {
     private val historyManager by lazy { model.historyManager }
     private val refundManager by lazy { model.refundManager }
 
+    private lateinit var ui: FragmentMerchantHistoryBinding
     private val historyListAdapter = HistoryItemAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_merchant_history, container, false)
+        ui = FragmentMerchantHistoryBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        list_history.apply {
+        ui.listHistory.apply {
             layoutManager = LinearLayoutManager(requireContext())
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
             adapter = historyListAdapter
         }
 
-        swipeRefresh.setOnRefreshListener {
+        ui.swipeRefresh.setOnRefreshListener {
             Log.v(TAG, "refreshing!")
             historyManager.fetchHistory()
         }
-        historyManager.isLoading.observe(viewLifecycleOwner, Observer { loading ->
+        historyManager.isLoading.observe(viewLifecycleOwner, { loading ->
             Log.v(TAG, "setting refreshing to $loading")
-            swipeRefresh.isRefreshing = loading
+            ui.swipeRefresh.isRefreshing = loading
         })
-        historyManager.items.observe(viewLifecycleOwner, Observer { result ->
+        historyManager.items.observe(viewLifecycleOwner, { result ->
             when (result) {
                 is HistoryResult.Error -> onError(result.msg)
                 is HistoryResult.Success -> historyListAdapter.setData(result.items)
