@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.TalerErrorInfo
+import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
@@ -89,14 +89,11 @@ class WithdrawManager(
 
     fun getWithdrawalDetails(uri: String) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
-        val response =
-            api.request("getWithdrawalDetailsForUri", WithdrawalDetailsForUri.serializer()) {
-                put("talerWithdrawUri", uri)
-            }
-        response.onError { error ->
+        api.request("getWithdrawalDetailsForUri", WithdrawalDetailsForUri.serializer()) {
+            put("talerWithdrawUri", uri)
+        }.onError { error ->
             handleError("getWithdrawalDetailsForUri", error)
-        }
-        response.onSuccess { details ->
+        }.onSuccess { details ->
             if (details.defaultExchangeBaseUrl == null) {
                 // TODO go to exchange selection screen instead
                 val chosenExchange = details.possibleExchanges[0].exchangeBaseUrl
@@ -113,15 +110,12 @@ class WithdrawManager(
         uri: String? = null
     ) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
-        val response =
-            api.request("getWithdrawalDetailsForAmount", WithdrawalDetails.serializer()) {
-                put("exchangeBaseUrl", exchangeBaseUrl)
-                put("amount", amount.toJSONString())
-            }
-        response.onError { error ->
+        api.request("getWithdrawalDetailsForAmount", WithdrawalDetails.serializer()) {
+            put("exchangeBaseUrl", exchangeBaseUrl)
+            put("amount", amount.toJSONString())
+        }.onError { error ->
             handleError("getWithdrawalDetailsForAmount", error)
-        }
-        response.onSuccess { details ->
+        }.onSuccess { details ->
             if (details.tosAccepted) {
                 withdrawStatus.value = ReceivedDetails(
                     talerWithdrawUri = uri,
@@ -138,13 +132,11 @@ class WithdrawManager(
         details: WithdrawalDetails,
         uri: String?
     ) = scope.launch {
-        val response = api.request("getExchangeTos", TosResponse.serializer()) {
+        api.request("getExchangeTos", TosResponse.serializer()) {
             put("exchangeBaseUrl", exchangeBaseUrl)
-        }
-        response.onError {
+        }.onError {
             handleError("getExchangeTos", it)
-        }
-        response.onSuccess {
+        }.onSuccess {
             withdrawStatus.value = WithdrawStatus.TosReviewRequired(
                 talerWithdrawUri = uri,
                 exchangeBaseUrl = exchangeBaseUrl,

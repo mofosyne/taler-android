@@ -30,18 +30,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import kotlinx.android.synthetic.main.fragment_transactions.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentTransactionsBinding
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -52,6 +51,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
 
+    private lateinit var ui: FragmentTransactionsBinding
     private val transactionAdapter by lazy { TransactionAdapter(this) }
     private val currency by lazy { transactionManager.selectedCurrency!! }
     private var tracker: SelectionTracker<String>? = null
@@ -66,19 +66,20 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_transactions, container, false)
+        ui = FragmentTransactionsBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        list.apply {
+        ui.list.apply {
             adapter = transactionAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
         val tracker = SelectionTracker.Builder(
             "transaction-selection-id",
-            list,
+            ui.list,
             transactionAdapter.keyProvider,
-            TransactionLookup(list, transactionAdapter),
+            TransactionLookup(ui.list, transactionAdapter),
             StorageStrategy.createStringStorage()
         ).withSelectionPredicate(
             SelectionPredicates.createSelectAnything()
@@ -101,17 +102,17 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             }
         })
 
-        transactionManager.progress.observe(viewLifecycleOwner, Observer { show ->
-            if (show) progressBar.fadeIn() else progressBar.fadeOut()
+        transactionManager.progress.observe(viewLifecycleOwner, { show ->
+            if (show) ui.progressBar.fadeIn() else ui.progressBar.fadeOut()
         })
-        transactionManager.transactions.observe(viewLifecycleOwner, Observer { result ->
+        transactionManager.transactions.observe(viewLifecycleOwner, { result ->
             onTransactionsResult(result)
         })
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.balances.observe(viewLifecycleOwner, Observer { balances ->
+        model.balances.observe(viewLifecycleOwner, { balances ->
             balances.find { it.currency == currency }?.available?.let { amount ->
                 requireActivity().title =
                     getString(R.string.transactions_detail_title_balance, amount)
@@ -153,35 +154,35 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     override fun onTransactionClicked(transaction: Transaction) {
         if (actionMode != null) return // don't react on clicks while in action mode
-        if (transaction.detailPageLayout != 0) {
+        if (transaction.detailPageNav != 0) {
             transactionManager.selectedTransaction = transaction
-            findNavController().navigate(R.id.action_nav_transaction_detail)
+            findNavController().navigate(transaction.detailPageNav)
         }
     }
 
     private fun onTransactionsResult(result: TransactionsResult) = when (result) {
         is TransactionsResult.Error -> {
-            list.fadeOut()
-            emptyState.text = getString(R.string.transactions_error, result.msg)
-            emptyState.fadeIn()
+            ui.list.fadeOut()
+            ui.emptyState.text = getString(R.string.transactions_error, result.msg)
+            ui.emptyState.fadeIn()
         }
         is TransactionsResult.Success -> {
             if (result.transactions.isEmpty()) {
                 val isSearch = transactionManager.searchQuery.value != null
-                emptyState.setText(if (isSearch) R.string.transactions_empty_search else R.string.transactions_empty)
-                emptyState.fadeIn()
-                list.fadeOut()
+                ui.emptyState.setText(if (isSearch) R.string.transactions_empty_search else R.string.transactions_empty)
+                ui.emptyState.fadeIn()
+                ui.list.fadeOut()
             } else {
-                emptyState.fadeOut()
+                ui.emptyState.fadeOut()
                 transactionAdapter.update(result.transactions)
-                list.fadeIn()
+                ui.list.fadeIn()
             }
         }
     }
 
     private fun onSearch(query: String) {
-        list.fadeOut()
-        progressBar.fadeIn()
+        ui.list.fadeOut()
+        ui.progressBar.fadeIn()
         transactionManager.searchQuery.value = query
     }
 

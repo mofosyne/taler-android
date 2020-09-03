@@ -22,8 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_already_paid.*
-import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentAlreadyPaidBinding
 
 /**
  * Display the message that the user already paid for the order
@@ -31,15 +30,18 @@ import net.taler.wallet.R
  */
 class AlreadyPaidFragment : Fragment() {
 
+    private lateinit var ui: FragmentAlreadyPaidBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_already_paid, container, false)
+        ui = FragmentAlreadyPaidBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        backButton.setOnClickListener {
+        ui.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }

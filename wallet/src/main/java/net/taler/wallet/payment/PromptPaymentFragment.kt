@@ -32,14 +32,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager.beginDelayedTransition
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-import kotlinx.android.synthetic.main.payment_bottom_bar.*
-import kotlinx.android.synthetic.main.payment_details.*
 import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentPromptPaymentBinding
 
 /**
  * Show a payment and ask the user to accept/decline.
@@ -48,13 +47,16 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
     private val model: MainViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
+
+    private lateinit var ui: FragmentPromptPaymentBinding
     private val adapter = ProductAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_prompt_payment, container, false)
+        ui = FragmentPromptPaymentBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,14 +64,14 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         paymentManager.detailsShown.observe(viewLifecycleOwner, Observer { shown ->
             beginDelayedTransition(view as ViewGroup)
             val res = if (shown) R.string.payment_hide_details else R.string.payment_show_details
-            detailsButton.setText(res)
-            productsList.visibility = if (shown) VISIBLE else GONE
+            ui.details.detailsButton.setText(res)
+            ui.details.productsList.visibility = if (shown) VISIBLE else GONE
         })
 
-        detailsButton.setOnClickListener {
+        ui.details.detailsButton.setOnClickListener {
             paymentManager.toggleDetailsShown()
         }
-        productsList.apply {
+        ui.details.productsList.apply {
             adapter = this@PromptPaymentFragment.adapter
             layoutManager = LinearLayoutManager(requireContext())
         }
@@ -85,9 +87,9 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     private fun showLoading(show: Boolean) {
         model.showProgressBar.value = show
         if (show) {
-            progressBar.fadeIn()
+            ui.details.progressBar.fadeIn()
         } else {
-            progressBar.fadeOut()
+            ui.details.progressBar.fadeOut()
         }
     }
 
@@ -97,22 +99,22 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
                 showLoading(false)
                 val fees = payStatus.amountEffective - payStatus.amountRaw
                 showOrder(payStatus.contractTerms, payStatus.amountRaw, fees)
-                confirmButton.isEnabled = true
-                confirmButton.setOnClickListener {
+                ui.bottom.confirmButton.isEnabled = true
+                ui.bottom.confirmButton.setOnClickListener {
                     model.showProgressBar.value = true
                     paymentManager.confirmPay(
                         payStatus.proposalId,
                         payStatus.contractTerms.amount.currency
                     )
-                    confirmButton.fadeOut()
-                    confirmProgressBar.fadeIn()
+                    ui.bottom.confirmButton.fadeOut()
+                    ui.bottom.confirmProgressBar.fadeIn()
                 }
             }
             is PayStatus.InsufficientBalance -> {
                 showLoading(false)
                 showOrder(payStatus.contractTerms, payStatus.amountRaw)
-                errorView.setText(R.string.payment_balance_insufficient)
-                errorView.fadeIn()
+                ui.details.errorView.setText(R.string.payment_balance_insufficient)
+                ui.details.errorView.fadeIn()
             }
             is PayStatus.Success -> {
                 showLoading(false)
@@ -128,8 +130,8 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             }
             is PayStatus.Error -> {
                 showLoading(false)
-                errorView.text = getString(R.string.payment_error, payStatus.error)
-                errorView.fadeIn()
+                ui.details.errorView.text = getString(R.string.payment_error, payStatus.error)
+                ui.details.errorView.fadeIn()
             }
             is PayStatus.None -> {
                 // No payment active.
@@ -143,21 +145,21 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     }
 
     private fun showOrder(contractTerms: ContractTerms, amount:Amount, totalFees: Amount? = null) {
-        orderView.text = contractTerms.summary
+        ui.details.orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
         if (contractTerms.products.size == 1) paymentManager.toggleDetailsShown()
-        totalView.text = amount.toString()
+        ui.bottom.totalView.text = amount.toString()
         if (totalFees != null && !totalFees.isZero()) {
-            feeView.text = getString(R.string.payment_fee, totalFees)
-            feeView.fadeIn()
+            ui.bottom.feeView.text = getString(R.string.payment_fee, totalFees)
+            ui.bottom.feeView.fadeIn()
         } else {
-            feeView.visibility = GONE
+            ui.bottom.feeView.visibility = GONE
         }
-        orderLabelView.fadeIn()
-        orderView.fadeIn()
-        if (contractTerms.products.size > 1) detailsButton.fadeIn()
-        totalLabelView.fadeIn()
-        totalView.fadeIn()
+        ui.details.orderLabelView.fadeIn()
+        ui.details.orderView.fadeIn()
+        if (contractTerms.products.size > 1) ui.details.detailsButton.fadeIn()
+        ui.bottom.totalLabelView.fadeIn()
+        ui.bottom.totalView.fadeIn()
     }
 
     override fun onImageClick(image: Bitmap) {

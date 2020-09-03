@@ -25,38 +25,41 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_error.*
-import net.taler.wallet.R
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentErrorBinding
 
 class ErrorFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private lateinit var ui: FragmentErrorBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_error, container, false)
+        ui = FragmentErrorBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        errorTitle.setText(R.string.withdraw_error_title)
-        errorMessage.setText(R.string.withdraw_error_message)
+        ui.errorTitle.setText(R.string.withdraw_error_title)
+        ui.errorMessage.setText(R.string.withdraw_error_message)
 
         // show dev error message if dev mode is on
         val status = withdrawManager.withdrawStatus.value
         if (model.devMode.value == true && status is WithdrawStatus.Error) {
-            errorDevMessage.visibility = VISIBLE
-            errorDevMessage.text = status.message
+            ui.errorDevMessage.visibility = VISIBLE
+            ui.errorDevMessage.text = status.message
         } else {
-            errorDevMessage.visibility = GONE
+            ui.errorDevMessage.visibility = GONE
         }
 
-        backButton.setOnClickListener {
+        ui.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
     }

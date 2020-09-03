@@ -22,23 +22,23 @@
     tools:context=".payment.PromptPaymentFragment">
 
     <include
-        android:id="@+id/scrollView"
+        android:id="@+id/details"
         layout="@layout/payment_details"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomView"
+        app:layout_constraintBottom_toTopOf="@+id/bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/bottomView"
+        android:id="@+id/bottom"
         layout="@layout/payment_bottom_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView" />
+        app:layout_constraintTop_toBottomOf="@+id/details" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,7 @@ package net.taler.wallet.transactions
 
 import android.content.Context
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
+import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -48,8 +48,8 @@ sealed class Transaction {
     @get:DrawableRes
     abstract val icon: Int
 
-    @get:LayoutRes
-    abstract val detailPageLayout: Int
+    @get:IdRes
+    abstract val detailPageNav: Int
 
     abstract val amountType: AmountType
 
@@ -78,7 +78,8 @@ class TransactionWithdrawal(
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.transaction_withdrawal
-    override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+
+    override val detailPageNav = R.id.action_nav_transactions_detail_withdrawal
 
     @Transient
     override val amountType = AmountType.Positive
@@ -135,7 +136,7 @@ class TransactionPayment(
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline
-    override val detailPageLayout = R.layout.fragment_transaction_payment
+    override val detailPageNav = R.id.action_nav_transactions_detail_payment
 
     @Transient
     override val amountType = AmountType.Negative
@@ -194,7 +195,7 @@ class TransactionRefund(
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.transaction_refund
-    override val detailPageLayout = R.layout.fragment_transaction_payment
+    override val detailPageNav = R.id.action_nav_transactions_detail_refund
 
     @Transient
     override val amountType = AmountType.Positive
@@ -219,7 +220,7 @@ class TransactionTip(
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
-    override val detailPageLayout = R.layout.fragment_transaction_payment
+    override val detailPageNav = 0
 
     @Transient
     override val amountType = AmountType.Positive
@@ -242,7 +243,7 @@ class TransactionRefresh(
     override val amountEffective: Amount
 ) : Transaction() {
     override val icon = R.drawable.transaction_refresh
-    override val detailPageLayout = R.layout.fragment_transaction_withdrawal
+    override val detailPageNav = R.id.action_nav_transactions_detail_refresh
 
     @Transient
     override val amountType = AmountType.Negative

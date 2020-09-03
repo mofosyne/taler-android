@@ -19,7 +19,6 @@ import com.android.build.gradle.tasks.MergeResources
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "kotlin-android-extensions"
     id "kotlinx-serialization"
     id "de.undercouch.download"
 }
@@ -86,6 +85,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     packagingOptions {

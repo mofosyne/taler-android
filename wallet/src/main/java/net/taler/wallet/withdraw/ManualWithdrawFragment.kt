@@ -25,11 +25,11 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_manual_withdraw.*
 import net.taler.common.hideKeyboard
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentManualWithdrawBinding
 import net.taler.wallet.scanQrCode
 import java.util.Locale
 
@@ -40,33 +40,36 @@ class ManualWithdrawFragment : Fragment() {
     private val exchangeItem by lazy { requireNotNull(exchangeManager.withdrawalExchange) }
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private lateinit var ui: FragmentManualWithdrawBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_manual_withdraw, container, false)
+        ui = FragmentManualWithdrawBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        qrCodeButton.setOnClickListener { scanQrCode(requireActivity()) }
-        currencyView.text = exchangeItem.currency
+        ui.qrCodeButton.setOnClickListener { scanQrCode(requireActivity()) }
+        ui.currencyView.text = exchangeItem.currency
         val paymentOptions = exchangeItem.paytoUris.mapNotNull {paytoUri ->
             Uri.parse(paytoUri).authority?.toUpperCase(Locale.getDefault())
         }.joinToString(separator = "\n", prefix = "• ")
-        paymentOptionsLabel.text =
+        ui.paymentOptionsLabel.text =
             getString(R.string.withdraw_manual_payment_options, exchangeItem.name, paymentOptions)
-        checkFeesButton.setOnClickListener { onCheckFees() }
+        ui.checkFeesButton.setOnClickListener { onCheckFees() }
     }
 
     private fun onCheckFees() {
-        if (amountView.text?.isEmpty() ?: true) {
-            amountLayout.setError(getString(R.string.withdraw_amount_error))
+        if (ui.amountView.text?.isEmpty() != false) {
+            ui.amountLayout.error = getString(R.string.withdraw_amount_error)
             return
         }
-        amountLayout.setError(null)
-        val value = amountView.text.toString().toLong()
+        ui.amountLayout.error = null
+        val value = ui.amountView.text.toString().toLong()
         val amount = Amount(exchangeItem.currency, value, 0)
-        amountView.hideKeyboard()
+        ui.amountView.hideKeyboard()
         Toast.makeText(requireContext(), "Not implemented: $amount", LENGTH_SHORT).show()
         withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
     }

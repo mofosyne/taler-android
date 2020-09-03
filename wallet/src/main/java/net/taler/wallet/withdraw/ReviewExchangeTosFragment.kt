@@ -25,17 +25,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import io.noties.markwon.Markwon
-import kotlinx.android.synthetic.main.fragment_review_exchange_tos.*
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentReviewExchangeTosBinding
 import java.text.ParseException
 
 class ReviewExchangeTosFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
+
+    private lateinit var ui: FragmentReviewExchangeTosBinding
     private val markwon by lazy { Markwon.builder(requireContext()).build() }
     private val adapter by lazy { TosAdapter(markwon) }
 
@@ -44,13 +46,14 @@ class ReviewExchangeTosFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_review_exchange_tos, container, false)
+        ui = FragmentReviewExchangeTosBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        acceptTosCheckBox.isChecked = false
-        acceptTosCheckBox.setOnCheckedChangeListener { _, _ ->
+        ui.acceptTosCheckBox.isChecked = false
+        ui.acceptTosCheckBox.setOnCheckedChangeListener { _, _ ->
             withdrawManager.acceptCurrentTermsOfService()
         }
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
@@ -65,11 +68,11 @@ class ReviewExchangeTosFragment : Fragment() {
                         return@Observer
                     }
                     adapter.setSections(sections)
-                    tosList.adapter = adapter
-                    tosList.fadeIn()
+                    ui.tosList.adapter = adapter
+                    ui.tosList.fadeIn()
 
-                    acceptTosCheckBox.fadeIn()
-                    progressBar.fadeOut()
+                    ui.acceptTosCheckBox.fadeIn()
+                    ui.progressBar.fadeOut()
                 }
                 is WithdrawStatus.Loading -> {
                     findNavController().navigate(R.id.action_reviewExchangeTOS_to_promptWithdraw)
@@ -82,11 +85,11 @@ class ReviewExchangeTosFragment : Fragment() {
     }
 
     private fun onTosError(msg: String) {
-        tosList.fadeIn()
-        progressBar.fadeOut()
-        buttonCard.fadeOut()
-        errorView.text = getString(R.string.exchange_tos_error, "\n\n$msg")
-        errorView.fadeIn()
+        ui.tosList.fadeIn()
+        ui.progressBar.fadeOut()
+        ui.buttonCard.fadeOut()
+        ui.errorView.text = getString(R.string.exchange_tos_error, "\n\n$msg")
+        ui.errorView.fadeIn()
     }
 
 }

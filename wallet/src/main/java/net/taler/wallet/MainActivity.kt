@@ -47,8 +47,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import net.taler.common.isOnline
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
@@ -56,6 +54,7 @@ import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_CONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
+import net.taler.wallet.databinding.ActivityMainBinding
 import net.taler.wallet.refund.RefundStatus
 import java.util.Locale.ROOT
 
@@ -64,35 +63,37 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
     private val model: MainViewModel by viewModels()
 
+    private lateinit var ui: ActivityMainBinding
     private lateinit var nav: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        ui = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         nav = navHostFragment.navController
-        nav_view.setupWithNavController(nav)
-        nav_view.setNavigationItemSelectedListener(this)
+        ui.navView.setupWithNavController(nav)
+        ui.navView.setNavigationItemSelectedListener(this)
         if (savedInstanceState == null) {
-            nav_view.menu.getItem(0).isChecked = true
+            ui.navView.menu.getItem(0).isChecked = true
         }
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(ui.content.toolbar)
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.nav_main, R.id.nav_settings, R.id.nav_pending_operations),
-            drawer_layout
+            ui.drawerLayout
         )
-        toolbar.setupWithNavController(nav, appBarConfiguration)
+        ui.content.toolbar.setupWithNavController(nav, appBarConfiguration)
 
-        model.showProgressBar.observe(this, Observer { show ->
-            progress_bar.visibility = if (show) VISIBLE else INVISIBLE
+        model.showProgressBar.observe(this, { show ->
+            ui.content.progressBar.visibility = if (show) VISIBLE else INVISIBLE
         })
 
-        val versionView: TextView = nav_view.getHeaderView(0).findViewById(R.id.versionView)
-        model.devMode.observe(this, Observer { enabled ->
-            nav_view.menu.findItem(R.id.nav_dev).isVisible = enabled
+        val versionView: TextView = ui.navView.getHeaderView(0).findViewById(R.id.versionView)
+        model.devMode.observe(this, { enabled ->
+            ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
             if (enabled) {
                 @SuppressLint("SetTextI18n")
                 versionView.text = "$VERSION_NAME ($VERSION_CODE)"
@@ -113,7 +114,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(START)) drawer_layout.closeDrawer(START)
+        if (ui.drawerLayout.isDrawerOpen(START)) ui.drawerLayout.closeDrawer(START)
         else super.onBackPressed()
     }
 
@@ -123,7 +124,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             R.id.nav_settings -> nav.navigate(R.id.nav_settings)
             R.id.nav_pending_operations -> nav.navigate(R.id.nav_pending_operations)
         }
-        drawer_layout.closeDrawer(START)
+        ui.drawerLayout.closeDrawer(START)
         return true
     }
 
@@ -167,7 +168,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
             else -> {
                 Snackbar.make(
-                    nav_view,
+                    ui.navView,
                     "URL from $from doesn't contain a supported Taler Uri.",
                     LENGTH_SHORT
                 ).show()
@@ -179,13 +180,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         model.showProgressBar.value = false
         when (status) {
             is RefundStatus.Error -> {
-                Snackbar.make(nav_view, R.string.refund_error, LENGTH_LONG).show()
+                Snackbar.make(ui.navView, R.string.refund_error, LENGTH_LONG).show()
             }
             is RefundStatus.Success -> {
                 val amount = status.response.amountRefundGranted
                 model.showTransactions(amount.currency)
                 val str = getString(R.string.refund_success, amount.amountStr)
-                Snackbar.make(nav_view, str, LENGTH_LONG).show()
+                Snackbar.make(ui.navView, str, LENGTH_LONG).show()
             }
         }
     }

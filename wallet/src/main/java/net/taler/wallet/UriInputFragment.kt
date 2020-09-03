@@ -27,40 +27,43 @@ import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_uri_input.*
+import net.taler.wallet.databinding.FragmentUriInputBinding
 
 class UriInputFragment : Fragment() {
+
+    private lateinit var ui: FragmentUriInputBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_uri_input, container, false)
+        ui = FragmentUriInputBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val clipboard = requireContext().getSystemService(ClipboardManager::class.java)!!
 
-        pasteButton.setOnClickListener {
+        ui.pasteButton.setOnClickListener {
             val item = clipboard.primaryClip?.getItemAt(0)
             if (item?.text != null) {
-                uriView.setText(item.text)
+                ui.uriView.setText(item.text)
             } else {
                 if (item?.uri != null) {
-                    uriView.setText(item.uri.toString())
+                    ui.uriView.setText(item.uri.toString())
                 } else {
                     Toast.makeText(requireContext(), R.string.paste_invalid, LENGTH_LONG).show()
                 }
             }
         }
-        okButton.setOnClickListener {
-            if (uriView.text?.startsWith("taler://") == true) {
-                uriLayout.error = null
-                val i = Intent(ACTION_VIEW, Uri.parse(uriView.text.toString()))
+        ui.okButton.setOnClickListener {
+            if (ui.uriView.text?.startsWith("taler://") == true) {
+                ui.uriLayout.error = null
+                val i = Intent(ACTION_VIEW, Uri.parse(ui.uriView.text.toString()))
                 startActivity(i)
             } else {
-                uriLayout.error = getString(R.string.uri_invalid)
+                ui.uriLayout.error = getString(R.string.uri_invalid)
             }
         }
     }

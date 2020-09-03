@@ -19,68 +19,34 @@ package net.taler.wallet.transactions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.View
-import android.view.View.GONE
-import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
-import androidx.core.content.ContextCompat.getColor
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.android.synthetic.main.fragment_transaction_payment.*
-import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.*
-import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.feeView
-import kotlinx.android.synthetic.main.fragment_transaction_withdrawal.timeView
 import net.taler.common.isSafe
-import net.taler.common.toAbsoluteTime
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.cleanExchange
-import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 
-class TransactionDetailFragment : Fragment() {
+abstract class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
-    private val transaction by lazy { requireNotNull(transactionManager.selectedTransaction) }
+    protected val transaction: Transaction? get() = transactionManager.selectedTransaction
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(model.devMode.value == true)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(transaction.detailPageLayout, container, false)
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().apply {
-            title = getString(transaction.generalTitleRes)
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        timeView.text = transaction.timestamp.ms.toAbsoluteTime(requireContext())
-        when (val e = transaction) {
-            is TransactionWithdrawal -> bind(e)
-            is TransactionPayment -> bind(e)
-            is TransactionRefund -> bind(e)
-            is TransactionRefresh -> bind(e)
-            else -> Toast.makeText(
-                requireContext(),
-                "Transaction ${e.javaClass.simpleName} not implemented.",
-                LENGTH_LONG
-            ).show()
+            transaction?.generalTitleRes?.let {
+                title = getString(it)
+            }
         }
     }
 
@@ -94,54 +60,15 @@ class TransactionDetailFragment : Fragment() {
         }
     }
 
-    private fun bind(t: TransactionWithdrawal) {
-        effectiveAmountLabel.text = getString(R.string.withdraw_total)
-        effectiveAmountView.text = t.amountEffective.toString()
-        if (t.pending && t.withdrawalDetails is TalerBankIntegrationApi &&
-            !t.confirmed && t.withdrawalDetails.bankConfirmationUrl != null
-        ) {
-            val i = Intent().apply {
-                data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
-            }
-            if (i.isSafe(requireContext())) {
-                confirmWithdrawalButton.setOnClickListener { startActivity(i) }
-            }
-        } else confirmWithdrawalButton.visibility = GONE
-        chosenAmountLabel.text = getString(R.string.amount_chosen)
-        chosenAmountView.text =
-            getString(R.string.amount_positive, t.amountRaw.toString())
-        val fee = t.amountRaw - t.amountEffective
-        feeView.text = getString(R.string.amount_negative, fee.toString())
-        exchangeView.text = cleanExchange(t.exchangeBaseUrl)
-    }
-
-    private fun bind(t: TransactionPayment) {
-        amountPaidWithFeesView.text = t.amountEffective.toString()
-        val fee = t.amountEffective - t.amountRaw
-        bindOrderAndFee(t.info, t.amountRaw, fee)
-    }
-
-    private fun bind(t: TransactionRefund) {
-        amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
-        amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
-        amountPaidWithFeesView.text =
-            getString(R.string.amount_positive, t.amountEffective.toString())
-        val fee = t.amountRaw - t.amountEffective
-        bindOrderAndFee(t.info, t.amountRaw, fee)
-    }
-
-    private fun bind(t: TransactionRefresh) {
-        effectiveAmountLabel.visibility = GONE
-        effectiveAmountView.visibility = GONE
-        confirmWithdrawalButton.visibility = GONE
-        chosenAmountLabel.visibility = GONE
-        chosenAmountView.visibility = GONE
-        val fee = t.amountEffective
-        feeView.text = getString(R.string.amount_negative, fee.toString())
-        exchangeView.text = cleanExchange(t.exchangeBaseUrl)
-    }
-
-    private fun bindOrderAndFee(info: TransactionInfo, raw: Amount, fee: Amount) {
+    protected fun bindOrderAndFee(
+        orderSummaryView: TextView,
+        orderAmountView: TextView,
+        orderIdView: TextView,
+        feeView: TextView,
+        info: TransactionInfo,
+        raw: Amount,
+        fee: Amount
+    ) {
         orderAmountView.text = raw.toString()
         feeView.text = getString(R.string.amount_negative, fee.toString())
         orderSummaryView.text = if (info.fulfillmentMessage == null) {

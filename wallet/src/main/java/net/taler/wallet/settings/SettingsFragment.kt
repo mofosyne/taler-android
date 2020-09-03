@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -75,12 +74,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.lastBackup.observe(viewLifecycleOwner, Observer {
+        model.lastBackup.observe(viewLifecycleOwner, {
             val time = it.toRelativeTime(requireContext())
             prefBackup.summary = getString(R.string.backup_last, time)
         })
 
-        model.devMode.observe(viewLifecycleOwner, Observer { enabled ->
+        model.devMode.observe(viewLifecycleOwner, { enabled ->
             prefDevMode.isChecked = enabled
             if (enabled) {
                 prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
@@ -95,7 +94,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, Observer { loading ->
+        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, { loading ->
             prefWithdrawTest.isEnabled = !loading
             model.showProgressBar.value = loading
         })

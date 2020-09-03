@@ -26,13 +26,11 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import kotlinx.android.synthetic.main.fragment_balances.*
 import net.taler.common.fadeIn
 import net.taler.wallet.MainViewModel
-import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentBalancesBinding
 
 interface BalanceClickListener {
     fun onBalanceClick(currency: String)
@@ -43,6 +41,7 @@ class BalancesFragment : Fragment(),
 
     private val model: MainViewModel by activityViewModels()
 
+    private lateinit var ui: FragmentBalancesBinding
     private val balancesAdapter = BalanceAdapter(this)
 
     override fun onCreateView(
@@ -50,16 +49,17 @@ class BalancesFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_balances, container, false)
+        ui = FragmentBalancesBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mainList.apply {
+        ui.mainList.apply {
             adapter = balancesAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.balances.observe(viewLifecycleOwner, Observer {
+        model.balances.observe(viewLifecycleOwner, {
             onBalancesChanged(it)
         })
     }
@@ -67,12 +67,12 @@ class BalancesFragment : Fragment(),
     private fun onBalancesChanged(balances: List<BalanceItem>) {
         beginDelayedTransition(view as ViewGroup)
         if (balances.isEmpty()) {
-            mainEmptyState.visibility = VISIBLE
-            mainList.visibility = GONE
+            ui.mainEmptyState.visibility = VISIBLE
+            ui.mainList.visibility = GONE
         } else {
             balancesAdapter.setItems(balances)
-            mainEmptyState.visibility = INVISIBLE
-            mainList.fadeIn()
+            ui.mainEmptyState.visibility = INVISIBLE
+            ui.mainList.fadeIn()
         }
     }
 

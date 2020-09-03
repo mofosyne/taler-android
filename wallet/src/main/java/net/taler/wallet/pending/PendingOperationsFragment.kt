@@ -30,16 +30,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
-import kotlinx.android.synthetic.main.fragment_pending_operations.*
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
+import net.taler.wallet.databinding.FragmentPendingOperationsBinding
 import org.json.JSONObject
 
 interface PendingOperationClickListener {
@@ -52,6 +51,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
     private val model: MainViewModel by activityViewModels()
     private val pendingOperationsManager by lazy { model.pendingOperationsManager }
 
+    private lateinit var ui: FragmentPendingOperationsBinding
     private val pendingAdapter = PendingOperationsAdapter(emptyList(), this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,13 +64,14 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_pending_operations, container, false)
+        ui = FragmentPendingOperationsBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        list_pending.apply {
+        ui.listPending.apply {
             val myLayoutManager = LinearLayoutManager(requireContext())
             val myItemDecoration =
                 DividerItemDecoration(requireContext(), myLayoutManager.orientation)
@@ -79,7 +80,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
             addItemDecoration(myItemDecoration)
         }
 
-        pendingOperationsManager.pendingOperations.observe(viewLifecycleOwner, Observer {
+        pendingOperationsManager.pendingOperations.observe(viewLifecycleOwner, {
             updatePending(it)
         })
     }

@@ -89,8 +89,26 @@
         tools:layout="@layout/fragment_transactions" />
 
     <fragment
-        android:id="@+id/nav_transactions_detail"
-        android:name="net.taler.wallet.transactions.TransactionDetailFragment"
+        android:id="@+id/nav_transactions_detail_withdrawal"
+        android:name="net.taler.wallet.transactions.TransactionWithdrawalFragment"
+        android:label="@string/transactions_detail_title"
+        tools:layout="@layout/fragment_transaction_withdrawal" />
+
+    <fragment
+        android:id="@+id/nav_transactions_detail_payment"
+        android:name="net.taler.wallet.transactions.TransactionPaymentFragment"
+        android:label="@string/transactions_detail_title"
+        tools:layout="@layout/fragment_transaction_payment" />
+
+    <fragment
+        android:id="@+id/nav_transactions_detail_refund"
+        android:name="net.taler.wallet.transactions.TransactionRefundFragment"
+        android:label="@string/transactions_detail_title"
+        tools:layout="@layout/fragment_transaction_payment" />
+
+    <fragment
+        android:id="@+id/nav_transactions_detail_refresh"
+        android:name="net.taler.wallet.transactions.TransactionRefreshFragment"
         android:label="@string/transactions_detail_title"
         tools:layout="@layout/fragment_transaction_withdrawal" />
 
@@ -168,7 +186,19 @@
         app:destination="@id/nav_pending_operations" />
 
     <action
-        android:id="@+id/action_nav_transaction_detail"
-        app:destination="@id/nav_transactions_detail" />
+        android:id="@+id/action_nav_transactions_detail_withdrawal"
+        app:destination="@id/nav_transactions_detail_withdrawal" />
+
+    <action
+        android:id="@+id/action_nav_transactions_detail_payment"
+        app:destination="@id/nav_transactions_detail_payment" />
+
+    <action
+        android:id="@+id/action_nav_transactions_detail_refund"
+        app:destination="@id/nav_transactions_detail_refund" />
+
+    <action
+        android:id="@+id/action_nav_transactions_detail_refresh"
+        app:destination="@id/nav_transactions_detail_refresh" />
 
 </navigation>

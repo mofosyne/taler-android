@@ -27,12 +27,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import kotlinx.android.synthetic.main.fragment_select_exchange.*
-import net.taler.lib.common.Amount
 import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
+import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentSelectExchangeBinding
 import net.taler.wallet.exchanges.CoinFeeAdapter.CoinFeeViewHolder
 import net.taler.wallet.exchanges.WireFeeAdapter.WireFeeViewHolder
 
@@ -41,28 +41,29 @@ class SelectExchangeFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private lateinit var ui: FragmentSelectExchangeBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_select_exchange, container, false)
+        ui = FragmentSelectExchangeBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val fees = withdrawManager.exchangeFees ?: throw IllegalStateException()
         if (fees.withdrawFee.isZero()) {
-            withdrawFeeLabel.visibility = GONE
-            withdrawFeeView.visibility = GONE
-        } else withdrawFeeView.setAmount(fees.withdrawFee)
+            ui.withdrawFeeLabel.visibility = GONE
+            ui.withdrawFeeView.visibility = GONE
+        } else ui.withdrawFeeView.setAmount(fees.withdrawFee)
         if (fees.overhead.isZero()) {
-            overheadLabel.visibility = GONE
-            overheadView.visibility = GONE
-        } else overheadView.setAmount(fees.overhead)
-        expirationView.text = fees.earliestDepositExpiration.ms.toRelativeTime(requireContext())
-        coinFeesList.adapter =
-            CoinFeeAdapter(fees.coinFees)
-        wireFeesList.adapter =
-            WireFeeAdapter(fees.wireFees)
+            ui.overheadLabel.visibility = GONE
+            ui.overheadView.visibility = GONE
+        } else ui.overheadView.setAmount(fees.overhead)
+        ui.expirationView.text = fees.earliestDepositExpiration.ms.toRelativeTime(requireContext())
+        ui.coinFeesList.adapter = CoinFeeAdapter(fees.coinFees)
+        ui.wireFeesList.adapter = WireFeeAdapter(fees.wireFees)
     }
 
     private fun TextView.setAmount(amount: Amount) {

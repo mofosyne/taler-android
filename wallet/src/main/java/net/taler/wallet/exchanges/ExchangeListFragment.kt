@@ -24,43 +24,45 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
-import kotlinx.android.synthetic.main.fragment_exchange_list.*
 import net.taler.common.EventObserver
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.databinding.FragmentExchangeListBinding
 
 class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager by lazy { model.exchangeManager }
+
+    private lateinit var ui: FragmentExchangeListBinding
     private val exchangeAdapter by lazy { ExchangeAdapter(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_exchange_list, container, false)
+        ui = FragmentExchangeListBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        list.apply {
+        ui.list.apply {
             adapter = exchangeAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
-        addExchangeFab.setOnClickListener {
+        ui.addExchangeFab.setOnClickListener {
             AddExchangeDialogFragment().show(parentFragmentManager, "ADD_EXCHANGE")
         }
 
-        exchangeManager.progress.observe(viewLifecycleOwner, Observer { show ->
-            if (show) progressBar.fadeIn() else progressBar.fadeOut()
+        exchangeManager.progress.observe(viewLifecycleOwner, { show ->
+            if (show) ui.progressBar.fadeIn() else ui.progressBar.fadeOut()
         })
-        exchangeManager.exchanges.observe(viewLifecycleOwner, Observer { exchanges ->
+        exchangeManager.exchanges.observe(viewLifecycleOwner, { exchanges ->
             onExchangeUpdate(exchanges)
         })
         exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
@@ -71,11 +73,11 @@ class ExchangeListFragment : Fragment(), ExchangeClickListener {
     private fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
         exchangeAdapter.update(exchanges)
         if (exchanges.isEmpty()) {
-            emptyState.fadeIn()
-            list.fadeOut()
+            ui.emptyState.fadeIn()
+            ui.list.fadeOut()
         } else {
-            emptyState.fadeOut()
-            list.fadeIn()
+            ui.emptyState.fadeOut()
+            ui.list.fadeIn()
         }
     }
 

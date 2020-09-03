@@ -14,41 +14,43 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.payment
+package net.taler.wallet.transactions
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
-import net.taler.wallet.databinding.FragmentProductImageBinding
+import net.taler.common.toAbsoluteTime
+import net.taler.wallet.databinding.FragmentTransactionPaymentBinding
 
-class ProductImageFragment private constructor() : DialogFragment() {
+class TransactionPaymentFragment : TransactionDetailFragment() {
 
-    private lateinit var ui: FragmentProductImageBinding
-
-    companion object {
-        private const val IMAGE = "image"
-
-        fun new(image: Bitmap) = ProductImageFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(IMAGE, image)
-            }
-        }
-    }
+    private lateinit var ui: FragmentTransactionPaymentBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        ui = FragmentProductImageBinding.inflate(inflater, container, false)
+        ui = FragmentTransactionPaymentBinding.inflate(inflater, container, false)
         return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val bitmap = requireArguments().getParcelable<Bitmap>(IMAGE)
-        ui.productImageView.setImageBitmap(bitmap)
+        val t = transaction as TransactionPayment
+        ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
+
+        ui.amountPaidWithFeesView.text = t.amountEffective.toString()
+        val fee = t.amountEffective - t.amountRaw
+        bindOrderAndFee(
+            ui.orderSummaryView,
+            ui.orderAmountView,
+            ui.orderIdView,
+            ui.feeView,
+            t.info,
+            t.amountRaw,
+            fee
+        )
     }
 
 }

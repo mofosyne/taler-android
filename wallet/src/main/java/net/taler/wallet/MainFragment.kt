@@ -22,14 +22,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_main.*
 import net.taler.common.EventObserver
 import net.taler.wallet.CurrencyMode.MULTI
 import net.taler.wallet.CurrencyMode.SINGLE
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalancesFragment
+import net.taler.wallet.databinding.FragmentMainBinding
 import net.taler.wallet.transactions.TransactionsFragment
 
 enum class CurrencyMode { SINGLE, MULTI }
@@ -39,16 +38,19 @@ class MainFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private var currencyMode: CurrencyMode? = null
 
+    private lateinit var ui: FragmentMainBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        ui = FragmentMainBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        model.balances.observe(viewLifecycleOwner, Observer {
+        model.balances.observe(viewLifecycleOwner, {
             onBalancesChanged(it)
         })
         model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
@@ -59,10 +61,10 @@ class MainFragment : Fragment() {
             }
         })
 
-        mainFab.setOnClickListener {
+        ui.mainFab.setOnClickListener {
             scanQrCode(requireActivity())
         }
-        mainFab.setOnLongClickListener {
+        ui.mainFab.setOnLongClickListener {
             findNavController().navigate(R.id.action_nav_main_to_nav_uri_input)
             true
         }
