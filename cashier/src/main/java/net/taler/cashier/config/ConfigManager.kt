@@ -124,7 +124,7 @@ class ConfigManager(
             // we need to check an endpoint that requires authentication as well
             // to see if the credentials are valid
             val balanceResponse = response {
-                val authUrl = "${config.bankUrl}/accounts/${config.username}/balance"
+                val authUrl = "${config.bankUrl}/accounts/${config.username}"
                 Log.d(TAG, "Checking auth: $authUrl")
                 httpClient.get<Unit>(authUrl) {
                     header(Authorization, config.basicAuth)
