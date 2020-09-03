@@ -16,6 +16,7 @@
 
 package net.taler.merchantpos.config
 
+import android.os.Build.VERSION.SDK_INT
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.ContractProduct
@@ -49,7 +50,8 @@ data class Category(
     val nameI18n: Map<String, String>? = null
 ) {
     var selected: Boolean = false
-    val localizedName: String get() = TalerUtils.getLocalizedString(nameI18n, name)
+    val localizedName: String
+        get() = if (SDK_INT >= 26) TalerUtils.getLocalizedString(nameI18n, name) else name
 }
 
 @Serializable

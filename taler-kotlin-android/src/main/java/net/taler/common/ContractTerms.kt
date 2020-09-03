@@ -16,7 +16,7 @@
 
 package net.taler.common
 
-import androidx.annotation.RequiresApi
+import android.os.Build
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.TalerUtils.getLocalizedString
@@ -48,8 +48,11 @@ abstract class Product {
     abstract val location: String?
     abstract val image: String?
     val localizedDescription: String
-        @RequiresApi(26)
-        get() = getLocalizedString(descriptionI18n, description)
+        get() = if (Build.VERSION.SDK_INT >= 26) {
+            getLocalizedString(descriptionI18n, description)
+        } else {
+            description
+        }
 }
 
 @Serializable
