@@ -35,8 +35,7 @@ class MerchantApiTest {
 
     private val api = MerchantApi(httpClient, TestCoroutineDispatcher())
     private val merchantConfig = MerchantConfig(
-        baseUrl = "http://example.net/",
-        instance = "testInstance",
+        baseUrl = "http://example.net/instances/testInstance",
         apiKey = "apiKeyFooBar"
     )
     private val orderId = "orderIdFoo"
