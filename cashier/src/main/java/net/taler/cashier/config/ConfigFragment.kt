@@ -33,9 +33,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_config.*
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
+import net.taler.cashier.databinding.FragmentConfigBinding
 import net.taler.common.exhaustive
 
 private const val URL_BANK_TEST = "https://bank.test.taler.net"
@@ -46,38 +46,41 @@ class ConfigFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private val configManager by lazy { viewModel.configManager}
 
+    private lateinit var ui: FragmentConfigBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_config, container, false)
+        ui = FragmentConfigBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             if (configManager.config.bankUrl.isBlank()) {
-                urlView.editText!!.setText(URL_BANK_TEST)
+                ui.urlView.editText!!.setText(URL_BANK_TEST)
             } else {
-                urlView.editText!!.setText(configManager.config.bankUrl)
+                ui.urlView.editText!!.setText(configManager.config.bankUrl)
             }
-            usernameView.editText!!.setText(configManager.config.username)
-            passwordView.editText!!.setText(configManager.config.password)
+            ui.usernameView.editText!!.setText(configManager.config.username)
+            ui.passwordView.editText!!.setText(configManager.config.password)
         } else {
-            urlView.editText!!.setText(savedInstanceState.getCharSequence("urlView"))
-            usernameView.editText!!.setText(savedInstanceState.getCharSequence("usernameView"))
-            passwordView.editText!!.setText(savedInstanceState.getCharSequence("passwordView"))
+            ui.urlView.editText!!.setText(savedInstanceState.getCharSequence("urlView"))
+            ui.usernameView.editText!!.setText(savedInstanceState.getCharSequence("usernameView"))
+            ui.passwordView.editText!!.setText(savedInstanceState.getCharSequence("passwordView"))
         }
-        saveButton.setOnClickListener {
+        ui.saveButton.setOnClickListener {
             val config = Config(
-                bankUrl = urlView.editText!!.text.toString(),
-                username = usernameView.editText!!.text.toString(),
-                password = passwordView.editText!!.text.toString()
+                bankUrl = ui.urlView.editText!!.text.toString(),
+                username = ui.usernameView.editText!!.text.toString(),
+                password = ui.passwordView.editText!!.text.toString()
             )
             if (checkConfig(config)) {
                 // show progress
-                saveButton.visibility = INVISIBLE
-                progressBar.visibility = VISIBLE
+                ui.saveButton.visibility = INVISIBLE
+                ui.progressBar.visibility = VISIBLE
                 // kick off check and observe result
                 configManager.checkAndSaveConfig(config)
                 configManager.configResult.observe(viewLifecycleOwner, onConfigResult)
@@ -87,43 +90,43 @@ class ConfigFragment : Fragment() {
                 inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
             }
         }
-        demoView.text = HtmlCompat.fromHtml(
+        ui.demoView.text = HtmlCompat.fromHtml(
             getString(R.string.config_demo_hint, URL_BANK_TEST_REGISTER), FROM_HTML_MODE_LEGACY
         )
-        demoView.movementMethod = LinkMovementMethod.getInstance()
+        ui.demoView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onStart() {
         super.onStart()
         // focus on password if it is the only missing value (like after locking)
-        if (urlView.editText!!.text.isNotBlank()
-            && usernameView.editText!!.text.isNotBlank()
-            && passwordView.editText!!.text.isBlank()
+        if (ui.urlView.editText!!.text.isNotBlank()
+            && ui.usernameView.editText!!.text.isNotBlank()
+            && ui.passwordView.editText!!.text.isBlank()
         ) {
-            passwordView.editText!!.requestFocus()
+            ui.passwordView.editText!!.requestFocus()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // for some reason automatic restore isn't working at the moment!?
-        outState.putCharSequence("urlView", urlView.editText?.text)
-        outState.putCharSequence("usernameView", usernameView.editText?.text)
-        outState.putCharSequence("passwordView", passwordView.editText?.text)
+        outState.putCharSequence("urlView", ui.urlView.editText?.text)
+        outState.putCharSequence("usernameView", ui.usernameView.editText?.text)
+        outState.putCharSequence("passwordView", ui.passwordView.editText?.text)
     }
 
     private fun checkConfig(config: Config): Boolean {
         if (!config.bankUrl.startsWith("https://")) {
-            urlView.error = getString(R.string.config_bank_url_error)
-            urlView.requestFocus()
+            ui.urlView.error = getString(R.string.config_bank_url_error)
+            ui.urlView.requestFocus()
             return false
         }
         if (config.username.isBlank()) {
-            usernameView.error = getString(R.string.config_username_error)
-            usernameView.requestFocus()
+            ui.usernameView.error = getString(R.string.config_username_error)
+            ui.usernameView.requestFocus()
             return false
         }
-        urlView.isErrorEnabled = false
+        ui.urlView.isErrorEnabled = false
         return true
     }
 
@@ -146,8 +149,8 @@ class ConfigFragment : Fragment() {
                 }
             }
         }.exhaustive
-        saveButton.visibility = VISIBLE
-        progressBar.visibility = INVISIBLE
+        ui.saveButton.visibility = VISIBLE
+        ui.progressBar.visibility = INVISIBLE
         configManager.configResult.removeObservers(viewLifecycleOwner)
     }
 

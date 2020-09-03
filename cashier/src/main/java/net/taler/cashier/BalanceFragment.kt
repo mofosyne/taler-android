@@ -29,8 +29,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_balance.*
 import net.taler.cashier.BalanceFragmentDirections.Companion.actionBalanceFragmentToTransactionFragment
+import net.taler.cashier.databinding.FragmentBalanceBinding
 import net.taler.cashier.withdraw.LastTransaction
 import net.taler.cashier.withdraw.WithdrawStatus
 import net.taler.common.exhaustive
@@ -50,12 +50,15 @@ class BalanceFragment : Fragment() {
     private val configManager by lazy { viewModel.configManager}
     private val withdrawManager by lazy { viewModel.withdrawManager }
 
+    private lateinit var ui: FragmentBalanceBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_balance, container, false)
+        ui = FragmentBalanceBinding.inflate(layoutInflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,24 +68,24 @@ class BalanceFragment : Fragment() {
         viewModel.balance.observe(viewLifecycleOwner, Observer { result ->
             onBalanceUpdated(result)
         })
-        button5.setOnClickListener { onAmountButtonPressed(5) }
-        button10.setOnClickListener { onAmountButtonPressed(10) }
-        button20.setOnClickListener { onAmountButtonPressed(20) }
-        button50.setOnClickListener { onAmountButtonPressed(50) }
+        ui.button5.setOnClickListener { onAmountButtonPressed(5) }
+        ui.button10.setOnClickListener { onAmountButtonPressed(10) }
+        ui.button20.setOnClickListener { onAmountButtonPressed(20) }
+        ui.button50.setOnClickListener { onAmountButtonPressed(50) }
 
         if (savedInstanceState != null) {
-            amountView.editText!!.setText(savedInstanceState.getCharSequence("amountView"))
+            ui.amountView.editText!!.setText(savedInstanceState.getCharSequence("amountView"))
         }
-        amountView.editText!!.setOnEditorActionListener { _, actionId, _ ->
+        ui.amountView.editText!!.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 onAmountConfirmed(getAmountFromView())
                 true
             } else false
         }
         configManager.currency.observe(viewLifecycleOwner, Observer { currency ->
-            currencyView.text = currency
+            ui.currencyView.text = currency
         })
-        confirmWithdrawalButton.setOnClickListener { onAmountConfirmed(getAmountFromView()) }
+        ui.confirmWithdrawalButton.setOnClickListener { onAmountConfirmed(getAmountFromView()) }
     }
 
     override fun onStart() {
@@ -96,7 +99,7 @@ class BalanceFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // for some reason automatic restore isn't working at the moment!?
-        amountView?.editText?.text.let {
+        ui.amountView.editText?.text.let {
             outState.putCharSequence("amountView", it)
         }
     }
@@ -121,34 +124,34 @@ class BalanceFragment : Fragment() {
 
     private fun onBalanceUpdated(result: BalanceResult) {
         val uiList = listOf(
-            introView,
-            button5, button10, button20, button50,
-            amountView, currencyView, confirmWithdrawalButton
+            ui.introView,
+            ui.button5, ui.button10, ui.button20, ui.button50,
+            ui.amountView, ui.currencyView, ui.confirmWithdrawalButton
         )
         when (result) {
             is BalanceResult.Success -> {
-                balanceView.text = result.amount.toString()
+                ui.balanceView.text = result.amount.toString()
                 uiList.forEach { it.fadeIn() }
             }
             is BalanceResult.Error -> {
-                balanceView.text = getString(R.string.balance_error, result.msg)
+                ui.balanceView.text = getString(R.string.balance_error, result.msg)
                 uiList.forEach { it.fadeOut() }
             }
             BalanceResult.Offline -> {
-                balanceView.text = getString(R.string.balance_offline)
+                ui.balanceView.text = getString(R.string.balance_offline)
                 uiList.forEach { it.fadeOut() }
             }
         }.exhaustive
-        progressBar.fadeOut()
+        ui.progressBar.fadeOut()
     }
 
     private fun onAmountButtonPressed(amount: Int) {
-        amountView.editText!!.setText(amount.toString())
-        amountView.error = null
+        ui.amountView.editText!!.setText(amount.toString())
+        ui.amountView.error = null
     }
 
     private fun getAmountFromView(): Amount {
-        val str = amountView.editText!!.text.toString()
+        val str = ui.amountView.editText!!.text.toString()
         val currency = configManager.currency.value!!
         if (str.isBlank()) return Amount.zero(currency)
         return Amount.fromString(currency, str)
@@ -156,11 +159,11 @@ class BalanceFragment : Fragment() {
 
     private fun onAmountConfirmed(amount: Amount) {
         if (amount.isZero()) {
-            amountView.error = getString(R.string.withdraw_error_zero)
+            ui.amountView.error = getString(R.string.withdraw_error_zero)
         } else if (!withdrawManager.hasSufficientBalance(amount)) {
-            amountView.error = getString(R.string.withdraw_error_insufficient_balance)
+            ui.amountView.error = getString(R.string.withdraw_error_insufficient_balance)
         } else {
-            amountView.error = null
+            ui.amountView.error = null
             withdrawManager.withdraw(amount)
             actionBalanceFragmentToTransactionFragment().let {
                 findNavController().navigate(it)
@@ -177,13 +180,13 @@ class BalanceFragment : Fragment() {
             is WithdrawStatus.Aborted -> getString(R.string.transaction_last_aborted)
             else -> getString(R.string.transaction_last_error)
         }
-        lastTransactionView.text = text
+        ui.lastTransactionView.text = text
         val drawable = if (status == WithdrawStatus.Success)
             R.drawable.ic_check_circle
         else
             R.drawable.ic_error
-        lastTransactionView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
-        lastTransactionView.visibility = VISIBLE
+        ui.lastTransactionView.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, 0, 0, 0)
+        ui.lastTransactionView.visibility = VISIBLE
     }
 
 }

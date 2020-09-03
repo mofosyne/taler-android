@@ -25,11 +25,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_transaction.*
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
+import net.taler.cashier.databinding.FragmentTransactionBinding
 import net.taler.cashier.withdraw.TransactionFragmentDirections.Companion.actionTransactionFragmentToBalanceFragment
 import net.taler.cashier.withdraw.TransactionFragmentDirections.Companion.actionTransactionFragmentToErrorFragment
 import net.taler.cashier.withdraw.WithdrawResult.Error
@@ -46,30 +45,33 @@ class TransactionFragment : Fragment() {
     private val withdrawManager by lazy { viewModel.withdrawManager }
     private val nfcManager = NfcManager()
 
+    private lateinit var ui: FragmentTransactionBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_transaction, container, false)
+        ui = FragmentTransactionBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        withdrawManager.withdrawAmount.observe(viewLifecycleOwner, Observer { amount ->
-            amountView.text = amount?.toString()
+        withdrawManager.withdrawAmount.observe(viewLifecycleOwner, { amount ->
+            ui.amountView.text = amount?.toString()
         })
-        withdrawManager.withdrawResult.observe(viewLifecycleOwner, Observer { result ->
+        withdrawManager.withdrawResult.observe(viewLifecycleOwner, { result ->
             onWithdrawResultReceived(result)
         })
-        withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer { status ->
+        withdrawManager.withdrawStatus.observe(viewLifecycleOwner, { status ->
             onWithdrawStatusChanged(status)
         })
 
         // change intro text depending on whether NFC is available or not
         val hasNfc = NfcManager.hasNfc(requireContext())
         val intro = if (hasNfc) R.string.transaction_intro_nfc else R.string.transaction_intro
-        introView.setText(intro)
+        ui.introView.setText(intro)
 
-        cancelButton.setOnClickListener {
+        ui.cancelButton.setOnClickListener {
             findNavController().popBackStack()
         }
     }
@@ -95,9 +97,9 @@ class TransactionFragment : Fragment() {
 
     private fun onWithdrawResultReceived(result: WithdrawResult?) {
         if (result != null) {
-            progressBar.animate()
+            ui.progressBar.animate()
                 .alpha(0f)
-                .withEndAction { progressBar?.visibility = INVISIBLE }
+                .withEndAction { ui.progressBar.visibility = INVISIBLE }
                 .setDuration(750)
                 .start()
         }
@@ -113,12 +115,12 @@ class TransactionFragment : Fragment() {
                     nfcManager
                 )
                 // show QR code
-                qrCodeView.alpha = 0f
-                qrCodeView.animate()
+                ui.qrCodeView.alpha = 0f
+                ui.qrCodeView.animate()
                     .alpha(1f)
                     .withStartAction {
-                        qrCodeView.visibility = VISIBLE
-                        qrCodeView.setImageBitmap(result.qrCode)
+                        ui.qrCodeView.visibility = VISIBLE
+                        ui.qrCodeView.setImageBitmap(result.qrCode)
                     }
                     .setDuration(750)
                     .start()
@@ -129,30 +131,30 @@ class TransactionFragment : Fragment() {
 
     private fun setErrorMsg(str: String) {
         val c = getColor(requireContext(), R.color.design_default_color_error)
-        introView.setTextColor(c)
-        introView.text = str
+        ui.introView.setTextColor(c)
+        ui.introView.text = str
     }
 
     private fun onWithdrawStatusChanged(status: WithdrawStatus?): Any = when (status) {
         is WithdrawStatus.SelectionDone -> {
-            qrCodeView.fadeOut {
-                qrCodeView?.setImageResource(R.drawable.ic_arrow)
-                qrCodeView?.fadeIn()
+            ui.qrCodeView.fadeOut {
+                ui.qrCodeView.setImageResource(R.drawable.ic_arrow)
+                ui.qrCodeView.fadeIn()
             }
-            introView.fadeOut {
-                introView?.text = getString(R.string.transaction_intro_scanned)
-                introView?.fadeIn {
-                    confirmButton?.isEnabled = true
-                    confirmButton?.setOnClickListener {
+            ui.introView.fadeOut {
+                ui.introView.text = getString(R.string.transaction_intro_scanned)
+                ui.introView.fadeIn {
+                    ui.confirmButton.isEnabled = true
+                    ui.confirmButton.setOnClickListener {
                         withdrawManager.confirm(status.withdrawalId)
                     }
                 }
             }
         }
         is WithdrawStatus.Confirming -> {
-            confirmButton.isEnabled = false
-            qrCodeView.fadeOut()
-            progressBar.fadeIn()
+            ui.confirmButton.isEnabled = false
+            ui.qrCodeView.fadeOut()
+            ui.progressBar.fadeIn()
         }
         is WithdrawStatus.Success -> {
             withdrawManager.completeTransaction()

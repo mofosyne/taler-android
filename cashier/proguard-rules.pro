@@ -20,6 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-keep class net.taler.cashier.** {*;}
+
 # androidx.security:security-crypto
 # https://github.com/google/tink/issues/361
 -keep class * extends com.google.crypto.tink.shaded.protobuf.GeneratedMessageLite { *; }

@@ -25,18 +25,21 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import kotlinx.android.synthetic.main.activity_main.*
+import net.taler.cashier.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private val configManager by lazy { viewModel.configManager}
+
+    private lateinit var ui: ActivityMainBinding
     private lateinit var nav: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        ui = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(ui.root)
+        setSupportActionBar(ui.toolbar)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         nav = navHostFragment.navController

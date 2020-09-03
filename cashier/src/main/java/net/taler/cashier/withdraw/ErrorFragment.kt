@@ -24,33 +24,36 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_error.*
 import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
+import net.taler.cashier.databinding.FragmentErrorBinding
 
 class ErrorFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { viewModel.withdrawManager }
 
+    private lateinit var ui: FragmentErrorBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_error, container, false)
+        ui = FragmentErrorBinding.inflate(inflater, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer { status ->
             if (status == null) return@Observer
             if (status is WithdrawStatus.Aborted) {
-                textView.setText(R.string.transaction_aborted)
+                ui.textView.setText(R.string.transaction_aborted)
             } else if (status is WithdrawStatus.Error) {
-                textView.text = status.msg
+                ui.textView.text = status.msg
             }
             withdrawManager.completeTransaction()
         })
-        backButton.setOnClickListener {
+        ui.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
     }

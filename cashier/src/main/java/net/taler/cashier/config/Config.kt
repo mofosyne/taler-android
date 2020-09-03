@@ -17,7 +17,6 @@
 package net.taler.cashier.config
 
 import kotlinx.serialization.Serializable
-import net.taler.lib.common.Version
 import okhttp3.Credentials
 
 data class Config(
