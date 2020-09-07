@@ -25,6 +25,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
+import net.taler.common.showLogViewer
 import net.taler.common.toRelativeTime
 import net.taler.wallet.BuildConfig.FLAVOR
 import net.taler.wallet.BuildConfig.VERSION_CODE
@@ -42,6 +43,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefBackup: Preference
     private lateinit var prefDevMode: SwitchPreferenceCompat
     private lateinit var prefWithdrawTest: Preference
+    private lateinit var prefLogcat: Preference
     private lateinit var prefVersionApp: Preference
     private lateinit var prefVersionCore: Preference
     private lateinit var prefVersionExchange: Preference
@@ -51,6 +53,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         listOf(
             prefBackup,
             prefWithdrawTest,
+            prefLogcat,
             prefVersionApp,
             prefVersionCore,
             prefVersionExchange,
@@ -64,6 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         prefBackup = findPreference("pref_backup")!!
         prefDevMode = findPreference("pref_dev_mode")!!
         prefWithdrawTest = findPreference("pref_testkudos")!!
+        prefLogcat = findPreference("pref_logcat")!!
         prefVersionApp = findPreference("pref_version_app")!!
         prefVersionCore = findPreference("pref_version_core")!!
         prefVersionExchange = findPreference("pref_version_protocol_exchange")!!
@@ -100,6 +104,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         })
         prefWithdrawTest.setOnPreferenceClickListener {
             withdrawManager.withdrawTestkudos()
+            true
+        }
+
+        prefLogcat.setOnPreferenceClickListener {
+            requireContext().showLogViewer()
             true
         }
 

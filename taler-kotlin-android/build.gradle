@@ -69,6 +69,13 @@ dependencies {
     // QR codes
     implementation 'com.google.zxing:core:3.4.0'  // needs minSdkVersion 24+
 
+    // Logcat viewer
+    implementation('com.github.pedrovgs:lynx:1.1.0') {
+        exclude group: 'com.android.support'
+        exclude group: 'com.squareup'
+    }
+    implementation 'com.github.pedrovgs:renderers:4.0.0'
+
     // JSON parsing and serialization
     api "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 

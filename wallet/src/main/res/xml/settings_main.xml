@@ -47,6 +47,14 @@
         tools:isPreferenceVisible="true" />
 
     <Preference
+        app:icon="@drawable/ic_bug_report"
+        app:isPreferenceVisible="false"
+        app:key="pref_logcat"
+        app:summary="@string/settings_logcat_summary"
+        app:title="@string/settings_logcat"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
         app:icon="@drawable/ic_account_balance_wallet"
         app:isPreferenceVisible="false"
         app:key="pref_version_app"

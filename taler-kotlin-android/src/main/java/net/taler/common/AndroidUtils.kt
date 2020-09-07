@@ -43,6 +43,9 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import com.github.pedrovgs.lynx.LynxActivity
+import com.github.pedrovgs.lynx.LynxConfig
+import com.github.pedrovgs.lynx.model.TraceLevel
 import net.taler.lib.common.Version
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
@@ -88,6 +91,13 @@ fun Context.isOnline(): Boolean {
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
         capabilities.hasCapability(NET_CAPABILITY_INTERNET)
     }
+}
+
+fun Context.showLogViewer() {
+    val lynxActivityIntent = LynxActivity.getIntent(this, LynxConfig().apply {
+        maxNumberOfTracesToShow = 1500 // higher numbers seem to break share functionality
+    })
+    startActivity(lynxActivityIntent)
 }
 
 fun Intent.isSafe(context: Context): Boolean {
