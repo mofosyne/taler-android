@@ -18,15 +18,13 @@ package net.taler.merchantpos
 
 import android.view.View
 import androidx.annotation.StringRes
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.BaseTransientBottomBar.ANIMATION_MODE_FADE
 import com.google.android.material.snackbar.BaseTransientBottomBar.Duration
 import com.google.android.material.snackbar.Snackbar.make
 
 fun topSnackbar(view: View, text: CharSequence, @Duration duration: Int) {
-    make(view, text, duration)
-        .setAnimationMode(ANIMATION_MODE_FADE)
-        .setAnchorView(R.id.navHostFragment)
-        .show()
+    make(view, text, duration).show()
 }
 
 fun topSnackbar(view: View, @StringRes resId: Int, @Duration duration: Int) {

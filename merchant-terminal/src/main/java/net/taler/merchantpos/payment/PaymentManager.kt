@@ -117,7 +117,9 @@ class PaymentManager(
                 }
             }
         }
-        mPayment.value = mPayment.value!!.copy(error = error)
+        mPayment.value?.copy(error = error)?.let {
+            mPayment.value = it
+        }
         checkTimer.cancel()
         checkJob?.isCancelled
         checkJob = null
