@@ -21,15 +21,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.TransitionManager.beginDelayedTransition
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import net.taler.common.ContractTerms
@@ -61,16 +58,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         paymentManager.payStatus.observe(viewLifecycleOwner, ::onPaymentStatusChanged)
-        paymentManager.detailsShown.observe(viewLifecycleOwner, Observer { shown ->
-            beginDelayedTransition(view as ViewGroup)
-            val res = if (shown) R.string.payment_hide_details else R.string.payment_show_details
-            ui.details.detailsButton.setText(res)
-            ui.details.productsList.visibility = if (shown) VISIBLE else GONE
-        })
 
-        ui.details.detailsButton.setOnClickListener {
-            paymentManager.toggleDetailsShown()
-        }
         ui.details.productsList.apply {
             adapter = this@PromptPaymentFragment.adapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -147,7 +135,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     private fun showOrder(contractTerms: ContractTerms, amount:Amount, totalFees: Amount? = null) {
         ui.details.orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
-        if (contractTerms.products.size == 1) paymentManager.toggleDetailsShown()
+        ui.details.productsList.fadeIn()
         ui.bottom.totalView.text = amount.toString()
         if (totalFees != null && !totalFees.isZero()) {
             ui.bottom.feeView.text = getString(R.string.payment_fee, totalFees)
@@ -157,7 +145,6 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         }
         ui.details.orderLabelView.fadeIn()
         ui.details.orderView.fadeIn()
-        if (contractTerms.products.size > 1) ui.details.detailsButton.fadeIn()
         ui.bottom.totalLabelView.fadeIn()
         ui.bottom.totalView.fadeIn()
     }

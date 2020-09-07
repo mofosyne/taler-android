@@ -43,14 +43,9 @@ internal class ProductAdapter(private val listener: ProductImageClickListener) :
 
     override fun getItemCount() = items.size
 
-    override fun getItemViewType(position: Int): Int {
-        return if (itemCount == 1) 1 else 0
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val res =
-            if (viewType == 1) R.layout.list_item_product_single else R.layout.list_item_product
-        val view = LayoutInflater.from(parent.context).inflate(res, parent, false)
+        val inflater = LayoutInflater.from(parent.context)
+        val view = inflater.inflate(R.layout.list_item_product, parent, false)
         return ProductViewHolder(view)
     }
 
@@ -81,7 +76,7 @@ internal class ProductAdapter(private val listener: ProductImageClickListener) :
                 val decodedString = Base64.decode(match.groups[2]!!.value, Base64.DEFAULT)
                 val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
                 image.setImageBitmap(bitmap)
-                if (itemCount > 1) image.setOnClickListener {
+                image.setOnClickListener {
                     listener.onImageClick(bitmap)
                 }
             }

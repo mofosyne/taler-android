@@ -69,23 +69,11 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:textSize="25sp"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/detailsButton"
+            app:layout_constraintBottom_toTopOf="@+id/productsList"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/orderLabelView"
             tools:text="2 x Cappuccino, 1 x Hot Meals, 1 x Dessert"
-            tools:visibility="visible" />
-
-        <Button
-            android:id="@+id/detailsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/payment_show_details"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/productsList"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderView"
             tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -97,7 +85,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detailsButton"
+            app:layout_constraintTop_toBottomOf="@+id/orderView"
             tools:listitem="@layout/list_item_product"
             tools:visibility="visible" />
 

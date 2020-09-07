@@ -64,13 +64,9 @@ class PaymentManager(
     private val mPayStatus = MutableLiveData<PayStatus>(PayStatus.None)
     internal val payStatus: LiveData<PayStatus> = mPayStatus
 
-    private val mDetailsShown = MutableLiveData<Boolean>()
-    internal val detailsShown: LiveData<Boolean> = mDetailsShown
-
     @UiThread
     fun preparePay(url: String) = scope.launch {
         mPayStatus.value = PayStatus.Loading
-        mDetailsShown.value = false
         api.request("preparePay", PreparePayResponse.serializer()) {
             put("talerPayUri", url)
         }.onError {
@@ -116,12 +112,6 @@ class PaymentManager(
         }.onSuccess {
             mPayStatus.postValue(PayStatus.None)
         }
-    }
-
-    @UiThread
-    fun toggleDetailsShown() {
-        val oldValue = mDetailsShown.value ?: false
-        mDetailsShown.value = !oldValue
     }
 
     @UiThread
