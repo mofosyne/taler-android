@@ -25,8 +25,25 @@ platform :android do
 
   desc "Deploy a new version to the Google Play beta track"
   lane :deploy do
-    gradle(task: "clean assembleRelease", gradle_path: '../gradlew')
-    upload_to_play_store(track: 'beta', skip_upload_images: 'true', skip_upload_screenshots: 'true', validate_only: 'true')
+    gradle(
+        task: "bundle",
+        build_type: "Release",
+        flavor: "google",
+        gradle_path: '../gradlew',
+        properties: {
+            "android.injected.signing.store.file" => ENV["TALER_KEYSTORE_PATH"],
+            "android.injected.signing.store.password" => ENV["TALER_KEYSTORE_PASS"],
+            "android.injected.signing.key.alias" => ENV["TALER_KEYSTORE_WALLET_ALIAS"],
+            "android.injected.signing.key.password" => ENV["TALER_KEYSTORE_WALLET_PASS"],
+        }
+    )
+    upload_to_play_store(
+        track: 'beta',
+        skip_upload_images: 'true',
+        skip_upload_screenshots: 'true',
+        skip_upload_apk: 'true', # This is an app bundle, so APK is not possible
+        validate_only: 'true'
+    )
   end
 end
 
