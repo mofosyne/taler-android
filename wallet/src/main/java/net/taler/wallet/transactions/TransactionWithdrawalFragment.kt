@@ -22,7 +22,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import net.taler.common.isSafe
+import net.taler.common.startActivitySafe
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
@@ -53,9 +53,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
             val i = Intent().apply {
                 data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
             }
-            if (i.isSafe(requireContext())) {
-                ui.confirmWithdrawalButton.setOnClickListener { startActivity(i) }
-            }
+            ui.confirmWithdrawalButton.setOnClickListener { startActivitySafe(i) }
         } else ui.confirmWithdrawalButton.visibility = View.GONE
         ui.chosenAmountLabel.text = getString(R.string.amount_chosen)
         ui.chosenAmountView.text =

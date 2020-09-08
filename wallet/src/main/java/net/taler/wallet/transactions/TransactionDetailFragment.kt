@@ -25,7 +25,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import net.taler.common.isSafe
+import net.taler.common.startActivitySafe
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
@@ -80,9 +80,7 @@ abstract class TransactionDetailFragment : Fragment() {
             val i = Intent().apply {
                 data = Uri.parse(info.fulfillmentUrl)
             }
-            if (i.isSafe(requireContext())) {
-                orderSummaryView.setOnClickListener { startActivity(i) }
-            }
+            orderSummaryView.setOnClickListener { startActivitySafe(i) }
         }
         orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
     }

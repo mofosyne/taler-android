@@ -16,6 +16,7 @@
 
 package net.taler.common
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.content.Intent
@@ -35,6 +36,7 @@ import android.text.format.DateUtils.FORMAT_SHOW_YEAR
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.formatDateTime
 import android.text.format.DateUtils.getRelativeTimeSpanString
+import android.util.Log
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -100,8 +102,12 @@ fun Context.showLogViewer() {
     startActivity(lynxActivityIntent)
 }
 
-fun Intent.isSafe(context: Context): Boolean {
-    return context.packageManager.queryIntentActivities(this, MATCH_DEFAULT_ONLY).isNotEmpty()
+fun Fragment.startActivitySafe(intent: Intent) {
+    try {
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Log.e("taler-kotlin-android", "Error starting $intent", e)
+    }
 }
 
 fun Fragment.navigate(directions: NavDirections) = findNavController().navigate(directions)
