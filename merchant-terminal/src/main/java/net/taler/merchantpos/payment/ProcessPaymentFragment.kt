@@ -24,16 +24,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar
 import net.taler.common.NfcManager.Companion.hasNfc
 import net.taler.common.QrCodeManager.makeQrCode
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
+import net.taler.common.showError
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.databinding.FragmentProcessPaymentBinding
 import net.taler.merchantpos.payment.ProcessPaymentFragmentDirections.Companion.actionProcessPaymentToPaymentSuccess
-import net.taler.merchantpos.topSnackbar
 
 class ProcessPaymentFragment : Fragment() {
 
@@ -69,7 +70,7 @@ class ProcessPaymentFragment : Fragment() {
 
     private fun onPaymentStateChanged(payment: Payment) {
         if (payment.error != null) {
-            topSnackbar(requireView(), payment.error, LENGTH_LONG)
+            requireActivity().showError(R.string.error_payment, payment.error)
             findNavController().navigateUp()
             return
         }
@@ -95,7 +96,7 @@ class ProcessPaymentFragment : Fragment() {
     private fun onPaymentCancel() {
         paymentManager.cancelPayment(getString(R.string.error_cancelled))
         findNavController().navigateUp()
-        topSnackbar(requireView(), R.string.payment_canceled, LENGTH_LONG)
+        Snackbar.make(requireView(), R.string.payment_canceled, LENGTH_LONG).show()
     }
 
 }

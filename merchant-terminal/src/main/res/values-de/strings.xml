@@ -40,7 +40,6 @@
     <string name="refund_error_deadline">Die Rückerstattungsfrist ist abgelaufen</string>
     <string name="refund_intro">Bitte scannen Sie den QR-Code, um eine Rückerstattung zu erhalten</string>
     <string name="refund_order_ref">Bestellreferenz: %1$s\n\n%2$s</string>
-    <string name="error_network">Netzwerkfehler</string>
     <string name="toast_back_to_exit">Klicken Sie zum Beenden erneut auf «zurück»</string>
     <string name="app_name">Taler Merchant Kassenterminal</string>
     <string name="config_label">Händlereinstellungen</string>

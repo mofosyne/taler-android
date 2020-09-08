@@ -15,10 +15,13 @@
   -->
 
 <resources>
-    <string name="version_invalid">Invalid version. Please try again later!</string>
-    <string name="version_too_old">App too old. Please upgrade!</string>
-    <string name="version_too_new">Service outdated. Please wait until it gets upgraded.</string>
 
-    <string name="close">Close</string>
-    <string name="share">Share</string>
+    <style name="ErrorBottomSheet" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="behavior_peekHeight">@dimen/bottom_sheet_peek_height</item>
+    </style>
+
+    <style name="ErrorBottomSheetTheme" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ErrorBottomSheet</item>
+    </style>
+
 </resources>

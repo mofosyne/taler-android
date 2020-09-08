@@ -27,7 +27,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.navigate
@@ -35,7 +34,6 @@ import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigFragmentDirections.Companion.actionSettingsToOrder
 import net.taler.merchantpos.databinding.FragmentMerchantConfigBinding
-import net.taler.merchantpos.topSnackbar
 
 /**
  * Fragment that displays merchant settings.
@@ -76,7 +74,7 @@ class ConfigFragment : Fragment() {
                 password = ui.passwordView.editText!!.text.toString()
             )
             configManager.fetchConfig(config, true, ui.savePasswordCheckBox.isChecked)
-            configManager.configUpdateResult.observe(viewLifecycleOwner, Observer { result ->
+            configManager.configUpdateResult.observe(viewLifecycleOwner, { result ->
                 if (onConfigUpdate(result)) {
                     configManager.configUpdateResult.removeObservers(viewLifecycleOwner)
                 }
@@ -150,7 +148,7 @@ class ConfigFragment : Fragment() {
     private fun onConfigReceived(currency: String) {
         onResultReceived()
         updateView()
-        topSnackbar(requireView(), getString(R.string.config_changed, currency), LENGTH_LONG)
+        Snackbar.make(requireView(), getString(R.string.config_changed, currency), LENGTH_LONG).show()
         navigate(actionSettingsToOrder())
     }
 

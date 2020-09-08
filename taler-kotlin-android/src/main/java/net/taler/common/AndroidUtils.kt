@@ -20,7 +20,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.content.Intent
-import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Build.VERSION.SDK_INT
@@ -41,13 +40,15 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.github.pedrovgs.lynx.LynxActivity
 import com.github.pedrovgs.lynx.LynxConfig
-import com.github.pedrovgs.lynx.model.TraceLevel
+import net.taler.lib.android.ErrorBottomSheet
 import net.taler.lib.common.Version
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
@@ -100,6 +101,14 @@ fun Context.showLogViewer() {
         maxNumberOfTracesToShow = 1500 // higher numbers seem to break share functionality
     })
     startActivity(lynxActivityIntent)
+}
+
+fun FragmentActivity.showError(mainText: String, detailText: String = "") = ErrorBottomSheet
+        .newInstance(mainText, detailText)
+        .show(supportFragmentManager, "ERROR_BOTTOM_SHEET")
+
+fun FragmentActivity.showError(@StringRes mainId: Int, detailText: String = "") {
+    showError(getString(mainId), detailText)
 }
 
 fun Fragment.startActivitySafe(intent: Intent) {

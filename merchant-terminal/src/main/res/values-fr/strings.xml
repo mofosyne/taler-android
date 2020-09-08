@@ -58,6 +58,5 @@
     <string name="refund_order_ref">Référence d\'achat : %1$s
 \n
 \n%2$s</string>
-    <string name="error_network">Erreur réseau</string>
     <string name="toast_back_to_exit">Cliquez à nouveau sur «retour» pour quitter</string>
 </resources>
