@@ -43,11 +43,11 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
 import net.taler.common.isOnline
+import net.taler.common.showError
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.HostCardEmulatorService.Companion.HTTP_TUNNEL_RESPONSE
@@ -167,11 +167,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
             }
             else -> {
-                Snackbar.make(
-                    ui.navView,
-                    "URL from $from doesn't contain a supported Taler Uri.",
-                    LENGTH_SHORT
-                ).show()
+                showError(R.string.error_unsupported_uri, "From: $from\nURI: $url")
             }
         }
     }
@@ -180,7 +176,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         model.showProgressBar.value = false
         when (status) {
             is RefundStatus.Error -> {
-                Snackbar.make(ui.navView, R.string.refund_error, LENGTH_LONG).show()
+                showError(R.string.refund_error, status.msg)
             }
             is RefundStatus.Success -> {
                 val amount = status.response.amountRefundGranted

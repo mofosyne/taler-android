@@ -33,8 +33,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
@@ -110,7 +109,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
     }
 
     override fun onPendingOperationClick(type: String, detail: JSONObject) {
-        Snackbar.make(requireView(), "No detail view for $type implemented yet.", LENGTH_SHORT).show()
+        requireActivity().showError("No detail view for $type implemented yet.")
     }
 
     override fun onPendingOperationActionClick(type: String, detail: JSONObject) {

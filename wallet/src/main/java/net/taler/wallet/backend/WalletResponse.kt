@@ -73,13 +73,16 @@ data class TalerErrorInfo(
         get() {
             return StringBuilder().apply {
                 append(code)
+                hint?.let { append(" (").append(it).append(")") }
                 message?.let { append(" ").append(it) }
                 details?.let { details ->
-                    append("\n\n")
-                    details.optJSONObject("errorResponse")?.let { errorResponse ->
-                        append(errorResponse.optString("code")).append(" ")
-                        append(errorResponse.optString("hint"))
-                    } ?: append(details.toString(2))
+                    if (details.length() > 0) {
+                        append("\n\n")
+                        details.optJSONObject("errorResponse")?.let { errorResponse ->
+                            append(errorResponse.optString("code")).append(" ")
+                            append(errorResponse.optString("hint"))
+                        } ?: append(details.toString(2))
+                    }
                 }
             }.toString()
         }

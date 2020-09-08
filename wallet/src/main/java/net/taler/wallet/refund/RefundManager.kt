@@ -16,18 +16,16 @@
 
 package net.taler.wallet.refund
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.lib.common.Amount
-import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 
 sealed class RefundStatus {
-    object Error : RefundStatus()
+    data class Error(val msg: String) : RefundStatus()
     data class Success(val response: RefundResponse) : RefundStatus()
 }
 
@@ -50,11 +48,8 @@ class RefundManager(
             api.request("applyRefund", RefundResponse.serializer()) {
                 put("talerRefundUri", refundUri)
             }.onError {
-                Log.e(TAG, "Refund Error: $it")
-                // TODO show error string
-                liveData.postValue(RefundStatus.Error)
+                liveData.postValue(RefundStatus.Error(it.userFacingMsg))
             }.onSuccess {
-                Log.e(TAG, "Refund Success: $it")
                 liveData.postValue(RefundStatus.Success(it))
             }
         }
