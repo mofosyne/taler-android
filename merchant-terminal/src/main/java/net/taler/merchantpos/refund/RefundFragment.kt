@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.navigate
+import net.taler.common.showError
 import net.taler.lib.common.Amount
 import net.taler.lib.common.AmountParserException
 import net.taler.merchantlib.OrderHistoryEntry
@@ -89,9 +91,9 @@ class RefundFragment : Fragment() {
     }
 
     private fun onRefundResultChanged(result: RefundResult?): Any = when (result) {
-        is Error -> onError(result.msg)
-        PastDeadline -> onError(getString(R.string.refund_error_deadline))
-        AlreadyRefunded -> onError(getString(R.string.refund_error_already_refunded))
+        is Error -> onError(R.string.refund_error_backend, result.msg)
+        PastDeadline -> onError(R.string.refund_error_deadline)
+        AlreadyRefunded -> onError(R.string.refund_error_already_refunded)
         is Success -> {
             ui.progressBar.fadeOut()
             ui.refundButton.fadeIn()
@@ -101,8 +103,8 @@ class RefundFragment : Fragment() {
         }
     }
 
-    private fun onError(msg: String) {
-        Snackbar.make(requireView(), msg, LENGTH_LONG).show()
+    private fun onError(@StringRes main: Int, details: String = "") {
+        requireActivity().showError(main, details)
         ui.progressBar.fadeOut()
         ui.refundButton.fadeIn()
     }

@@ -69,7 +69,7 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         val result = when (val response = makeJsonGetRequest(url, config)) {
             is HttpJsonResult.Success -> {
                 try {
-                    val balanceObj = response.json.getJSONObject("balance");
+                    val balanceObj = response.json.getJSONObject("balance")
                     val balanceAmount = balanceObj.getString("amount")
                     val positive = when (val creditDebitIndicator =
                         balanceObj.getString("credit_debit_indicator")) {

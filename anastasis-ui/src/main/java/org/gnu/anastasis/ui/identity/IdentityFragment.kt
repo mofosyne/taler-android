@@ -52,7 +52,7 @@ class AnastasisIdentityFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.currentCountry.observe(viewLifecycleOwner, Observer { country ->
+        model.currentCountry.observe(viewLifecycleOwner, { country ->
             countryView.text = country.name
             if (stub != null) {
                 stub.layoutResource = country.layoutRes

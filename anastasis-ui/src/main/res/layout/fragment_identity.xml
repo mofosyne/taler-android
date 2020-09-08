@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Change"
-            android:textColor="@color/colorAccent"
+            android:textColor="?attr/colorAccent"
             app:layout_constraintBaseline_toBaselineOf="@+id/countryView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -144,9 +144,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:backgroundTint="@color/green"
-            android:drawableLeft="@drawable/ic_baseline_lock"
-            android:drawableTint="?attr/colorOnPrimarySurface"
+            android:drawableStart="@drawable/ic_baseline_lock"
             android:text="Encrypt Identity"
+            app:drawableTint="?attr/colorOnPrimarySurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

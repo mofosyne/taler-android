@@ -97,8 +97,8 @@ class SmsFragment : Fragment() {
     private fun fillPhoneNumber() {
         val telephonyService = requireContext().getSystemService(TelephonyManager::class.java)
         telephonyService?.line1Number?.let { phoneNumber ->
-            smsView?.editText?.setText(phoneNumber)
-            smsView?.editText?.setSelection(phoneNumber.length)
+            smsView.editText?.setText(phoneNumber)
+            smsView.editText?.setSelection(phoneNumber.length)
         }
     }
 

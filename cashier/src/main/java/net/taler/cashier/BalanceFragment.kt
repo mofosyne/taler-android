@@ -62,10 +62,10 @@ class BalanceFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        withdrawManager.lastTransaction.observe(viewLifecycleOwner, Observer { lastTransaction ->
+        withdrawManager.lastTransaction.observe(viewLifecycleOwner, { lastTransaction ->
             onLastTransaction(lastTransaction)
         })
-        viewModel.balance.observe(viewLifecycleOwner, Observer { result ->
+        viewModel.balance.observe(viewLifecycleOwner, { result ->
             onBalanceUpdated(result)
         })
         ui.button5.setOnClickListener { onAmountButtonPressed(5) }
@@ -82,7 +82,7 @@ class BalanceFragment : Fragment() {
                 true
             } else false
         }
-        configManager.currency.observe(viewLifecycleOwner, Observer { currency ->
+        configManager.currency.observe(viewLifecycleOwner, { currency ->
             ui.currencyView.text = currency
         })
         ui.confirmWithdrawalButton.setOnClickListener { onAmountConfirmed(getAmountFromView()) }

@@ -27,8 +27,6 @@ import kotlinx.android.synthetic.main.fragment_intro.*
 
 class IntroFragment : Fragment() {
 
-    private val model: MainViewModel by activityViewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

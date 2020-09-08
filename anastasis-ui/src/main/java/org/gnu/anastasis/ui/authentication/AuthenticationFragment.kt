@@ -79,17 +79,17 @@ class AuthenticationFragment : Fragment() {
             )
         }
 
-        viewModel.securityQuestionChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.securityQuestionChecked.observe(viewLifecycleOwner, { checked ->
             passwordCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:0.5"))
             updateNextButtonState()
         })
-        viewModel.smsChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.smsChecked.observe(viewLifecycleOwner, { checked ->
             smsCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:1.0"))
             updateNextButtonState()
         })
-        viewModel.videoChecked.observe(viewLifecycleOwner, Observer { checked ->
+        viewModel.videoChecked.observe(viewLifecycleOwner, { checked ->
             videoCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:2.25"))
             updateNextButtonState()

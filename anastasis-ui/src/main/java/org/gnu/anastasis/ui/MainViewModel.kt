@@ -21,7 +21,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import org.gnu.anastasis.ui.identity.LOCATIONS
 
-class MainViewModel(private val app: Application) : AndroidViewModel(app) {
+class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     val currentCountry = MutableLiveData(LOCATIONS[0])
 

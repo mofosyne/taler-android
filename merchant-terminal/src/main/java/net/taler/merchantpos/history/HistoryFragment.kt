@@ -26,10 +26,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
-import com.google.android.material.snackbar.Snackbar
 import net.taler.common.exhaustive
 import net.taler.common.navigate
+import net.taler.common.showError
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
 import net.taler.merchantpos.databinding.FragmentMerchantHistoryBinding
@@ -81,7 +80,7 @@ class HistoryFragment : Fragment(), RefundClickListener {
         })
         historyManager.items.observe(viewLifecycleOwner, { result ->
             when (result) {
-                is HistoryResult.Error -> onError(result.msg)
+                is HistoryResult.Error -> requireActivity().showError(result.msg)
                 is HistoryResult.Success -> historyListAdapter.setData(result.items)
             }.exhaustive
         })
@@ -94,10 +93,6 @@ class HistoryFragment : Fragment(), RefundClickListener {
         } else {
             historyManager.fetchHistory()
         }
-    }
-
-    private fun onError(msg: String) {
-        Snackbar.make(requireView(), msg, LENGTH_LONG).show()
     }
 
     override fun onRefundClicked(item: OrderHistoryEntry) {
