@@ -17,6 +17,7 @@
 package net.taler.wallet.transactions
 
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -50,7 +51,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         if (t.pending && t.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
             !t.confirmed && t.withdrawalDetails.bankConfirmationUrl != null
         ) {
-            val i = Intent().apply {
+            val i = Intent(ACTION_VIEW).apply {
                 data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
             }
             ui.confirmWithdrawalButton.setOnClickListener { startActivitySafe(i) }
