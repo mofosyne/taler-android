@@ -96,9 +96,11 @@ fun Context.isOnline(): Boolean {
     }
 }
 
-fun Context.showLogViewer() {
+fun Context.showLogViewer(logFilter: String? = null) {
     val lynxActivityIntent = LynxActivity.getIntent(this, LynxConfig().apply {
         maxNumberOfTracesToShow = 1500 // higher numbers seem to break share functionality
+        samplingRate = Int.MAX_VALUE // no updates please
+        logFilter?.let { filter = it }
     })
     startActivity(lynxActivityIntent)
 }

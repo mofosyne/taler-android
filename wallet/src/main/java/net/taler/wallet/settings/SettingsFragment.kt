@@ -108,7 +108,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         prefLogcat.setOnPreferenceClickListener {
-            requireContext().showLogViewer()
+            requireContext().showLogViewer("taler-wallet")
             true
         }
 
