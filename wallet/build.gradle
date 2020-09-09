@@ -47,7 +47,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 8
-        versionName "0.7.1.dev.28"
+        versionName "v0.8.0-rc.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
