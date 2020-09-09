@@ -31,6 +31,7 @@ import net.taler.common.navigate
 import net.taler.common.showError
 import net.taler.merchantlib.OrderHistoryEntry
 import net.taler.merchantpos.MainViewModel
+import net.taler.merchantpos.R
 import net.taler.merchantpos.databinding.FragmentMerchantHistoryBinding
 import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionGlobalMerchantSettings
 import net.taler.merchantpos.history.HistoryFragmentDirections.Companion.actionNavHistoryToRefundFragment
@@ -80,7 +81,7 @@ class HistoryFragment : Fragment(), RefundClickListener {
         })
         historyManager.items.observe(viewLifecycleOwner, { result ->
             when (result) {
-                is HistoryResult.Error -> requireActivity().showError(result.msg)
+                is HistoryResult.Error -> requireActivity().showError(R.string.error_history, result.msg)
                 is HistoryResult.Success -> historyListAdapter.setData(result.items)
             }.exhaustive
         })

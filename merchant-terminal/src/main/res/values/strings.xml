@@ -67,6 +67,7 @@
     <string name="error_payment">Error: No payment received</string>
     <string name="error_timeout">No payment made within payment period, please try again!</string>
     <string name="error_cancelled">Payment cancelled</string>
+    <string name="error_history">Error fetching the order history</string>
 
     <string name="toast_back_to_exit">Click «back» again to exit</string>
 
