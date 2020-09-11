@@ -24,6 +24,7 @@ plugins {
 }
 
 def walletCoreVersion = "v0.8.0-rc.2"
+def walletCoreSha256 = "838035331c6103e2a0e911d2a0c6f0e9af92ddd77e8091d11fb4a246486edd22"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -47,7 +48,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 8
-        versionName "v0.8.0-rc.2"
+        versionName "v0.8.0-rc.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
@@ -145,9 +146,10 @@ dependencies {
 }
 
 def walletLibraryDir = "src/main/assets"
-task downloadWalletLibrary(type: Download) {
+def walletDestFile = "${walletLibraryDir}/taler-wallet-android-${walletCoreVersion}.js"
+task downloadWalletLibrary(type: Download, dependsOn: preBuild) {
     src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-android.js?h=prebuilt"
-    dest "${walletLibraryDir}/taler-wallet-android-${walletCoreVersion}.js"
+    dest walletDestFile
     onlyIfModified true
     overwrite false
     doFirst {
@@ -159,7 +161,12 @@ task downloadWalletLibrary(type: Download) {
         }
     }
 }
+task verifyWalletLibrary(type: Verify, dependsOn: downloadWalletLibrary) {
+    src walletDestFile
+    algorithm 'SHA-256'
+    checksum walletCoreSha256
+}
 tasks.withType(MergeResources) {
     inputs.dir walletLibraryDir
-    dependsOn downloadWalletLibrary
+    dependsOn verifyWalletLibrary
 }
