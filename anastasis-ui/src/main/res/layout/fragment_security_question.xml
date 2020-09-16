@@ -16,6 +16,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -80,11 +81,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:background="?attr/selectableItemBackground"
-        android:drawableTint="?attr/colorOnPrimarySurface"
         android:src="@drawable/ic_add_circle"
         android:text="Save"
+        app:drawableTint="?attr/colorOnPrimarySurface"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/questionCard" />
+        app:layout_constraintTop_toBottomOf="@+id/questionCard"
+        tools:ignore="ContentDescription" />
 
     <Button
         android:id="@+id/saveQuestionButton"
@@ -92,8 +94,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:backgroundTint="@color/green"
-        android:drawableTint="?attr/colorOnPrimarySurface"
         android:text="Save"
+        app:drawableTint="?attr/colorOnPrimarySurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

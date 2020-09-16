@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import net.taler.common.toRelativeTime
@@ -73,7 +74,7 @@ internal class HistoryItemAdapter(private val listener: RefundClickListener) :
                 orderIdView.setTextColor(orderIdColor)
             } else {
                 orderIdView.text = v.context.getString(R.string.history_unpaid)
-                orderIdView.setTextColor(v.context.getColor(R.color.red))
+                orderIdView.setTextColor(getColor(v.context, R.color.red))
             }
             if (item.refundable) {
                 refundButton.visibility = View.VISIBLE

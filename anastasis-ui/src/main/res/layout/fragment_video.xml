@@ -47,12 +47,12 @@
         android:layout_margin="16dp"
         android:scaleType="fitCenter"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/saveVideoButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/videoIntro"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/takePhotoButton"
@@ -80,9 +80,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:backgroundTint="@color/green"
-        android:drawableTint="?attr/colorOnPrimarySurface"
         android:enabled="false"
         android:text="Save"
+        app:drawableTint="?attr/colorOnPrimarySurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

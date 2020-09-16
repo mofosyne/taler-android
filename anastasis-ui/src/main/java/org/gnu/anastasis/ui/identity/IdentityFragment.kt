@@ -18,15 +18,18 @@ package org.gnu.anastasis.ui.identity
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.text.format.DateFormat.getDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_identity.*
 import org.gnu.anastasis.ui.MainViewModel
@@ -63,17 +66,22 @@ class AnastasisIdentityFragment : Fragment() {
             findNavController().navigate(R.id.action_nav_anastasis_identity_to_nav_change_location)
         }
         birthDateInput.editText?.setOnClickListener {
-            val picker = DatePickerDialog(requireContext())
-            picker.datePicker.maxDate = System.currentTimeMillis() - DAYS.toMillis(365) * MIN_AGE
-            picker.setOnDateSetListener { _, year, month, dayOfMonth ->
-                val calender = Calendar.getInstance().apply {
-                    set(year, month, dayOfMonth)
+            if (SDK_INT >= 24) {
+                val picker = DatePickerDialog(requireContext())
+                picker.datePicker.maxDate =
+                    System.currentTimeMillis() - DAYS.toMillis(365) * MIN_AGE
+                picker.setOnDateSetListener { _, year, month, dayOfMonth ->
+                    val calender = Calendar.getInstance().apply {
+                        set(year, month, dayOfMonth)
+                    }
+                    val date = Date(calender.timeInMillis)
+                    val dateStr = getDateFormat(requireContext()).format(date)
+                    birthDateInput.editText?.setText(dateStr)
                 }
-                val date = Date(calender.timeInMillis)
-                val dateStr = getDateFormat(requireContext()).format(date)
-                birthDateInput.editText?.setText(dateStr)
+                picker.show()
+            } else {
+                Toast.makeText(requireContext(), "Needs newer phone", LENGTH_LONG).show()
             }
-            picker.show()
         }
         createIdentifierButton.setOnClickListener {
             findNavController().navigate(R.id.action_nav_anastasis_intro_to_nav_anastasis_authentication)
@@ -82,7 +90,7 @@ class AnastasisIdentityFragment : Fragment() {
 
     @Suppress("unused")
     private fun getCountryName(): String {
-        val tm = requireContext().getSystemService(TelephonyManager::class.java)!!
+        val tm = requireContext().getSystemService<TelephonyManager>()!!
         val countryIso = if (tm.networkCountryIso.isNullOrEmpty()) {
             if (tm.simCountryIso.isNullOrEmpty()) {
                 if (Locale.getDefault().country.isNullOrEmpty()) "unknown"

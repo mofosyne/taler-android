@@ -25,6 +25,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
@@ -80,13 +81,11 @@ internal class TransactionAdapter(
         private val amount: TextView = v.findViewById(R.id.amount)
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
-        private val selectableForeground = v.foreground
         private val amountColor = amount.currentTextColor
-        private val red = context.getColor(R.color.red)
-        private val green = context.getColor(R.color.green)
+        private val red = getColor(context, R.color.red)
+        private val green = getColor(context, R.color.green)
 
         fun bind(transaction: Transaction, selected: Boolean) {
-            v.foreground = selectableForeground
             v.setOnClickListener { listener.onTransactionClicked(transaction) }
             v.isActivated = selected
             if (transaction.error == null) {

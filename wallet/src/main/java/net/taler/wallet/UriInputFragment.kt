@@ -26,6 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import net.taler.wallet.databinding.FragmentUriInputBinding
 
@@ -43,10 +44,10 @@ class UriInputFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val clipboard = requireContext().getSystemService(ClipboardManager::class.java)!!
+        val clipboard = requireContext().getSystemService<ClipboardManager>()
 
         ui.pasteButton.setOnClickListener {
-            val item = clipboard.primaryClip?.getItemAt(0)
+            val item = clipboard?.primaryClip?.getItemAt(0)
             if (item?.text != null) {
                 ui.uriView.setText(item.text)
             } else {

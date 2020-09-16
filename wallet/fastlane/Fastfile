@@ -42,7 +42,7 @@ platform :android do
         skip_upload_images: 'true',
         skip_upload_screenshots: 'true',
         skip_upload_apk: 'true', # This is an app bundle, so APK is not possible
-        validate_only: 'true'
+        validate_only: 'false'
     )
   end
 end

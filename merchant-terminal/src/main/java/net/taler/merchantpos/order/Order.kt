@@ -84,7 +84,7 @@ data class Order(val id: Int, val currency: String, val availableCategories: Map
      * Returns a map of i18n summaries for each locale present in *all* given [Category]s
      * or null if there's no locale that fulfills this criteria.
      */
-    val summaryI18n: Map<String, String>?
+    private val summaryI18n: Map<String, String>?
         get() {
             if (products.size == 1) return products[0].descriptionI18n
             val categoryQuantities = getCategoryQuantities()

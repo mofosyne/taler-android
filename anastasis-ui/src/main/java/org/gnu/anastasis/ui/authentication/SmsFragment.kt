@@ -26,6 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -95,7 +96,7 @@ class SmsFragment : Fragment() {
     @SuppressLint("HardwareIds")
     @RequiresPermission(PERMISSION)
     private fun fillPhoneNumber() {
-        val telephonyService = requireContext().getSystemService(TelephonyManager::class.java)
+        val telephonyService = requireContext().getSystemService<TelephonyManager>()
         telephonyService?.line1Number?.let { phoneNumber ->
             smsView.editText?.setText(phoneNumber)
             smsView.editText?.setSelection(phoneNumber.length)

@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId "net.taler.cashier"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "0.1"
@@ -70,7 +70,7 @@ android {
 dependencies {
     implementation project(":taler-kotlin-android")
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-    implementation 'androidx.security:security-crypto:1.0.0-rc03'
+    implementation 'androidx.security:security-crypto:1.0.0-rc03' // requires minSdk 23
     implementation "com.google.android.material:material:$material_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

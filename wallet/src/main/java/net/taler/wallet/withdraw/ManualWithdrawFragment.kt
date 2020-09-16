@@ -53,7 +53,7 @@ class ManualWithdrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ui.qrCodeButton.setOnClickListener { scanQrCode(requireActivity()) }
         ui.currencyView.text = exchangeItem.currency
-        val paymentOptions = exchangeItem.paytoUris.mapNotNull {paytoUri ->
+        val paymentOptions = exchangeItem.paytoUris.mapNotNull { paytoUri ->
             Uri.parse(paytoUri).authority?.toUpperCase(Locale.getDefault())
         }.joinToString(separator = "\n", prefix = "• ")
         ui.paymentOptionsLabel.text =

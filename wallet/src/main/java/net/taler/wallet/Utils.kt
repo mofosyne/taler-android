@@ -29,8 +29,8 @@ import android.os.Build.VERSION.SDK_INT
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
+import androidx.core.content.getSystemService
 import com.google.zxing.integration.android.IntentIntegrator
-import org.json.JSONObject
 
 fun scanQrCode(activity: Activity) {
     IntentIntegrator(activity).apply {
@@ -69,7 +69,7 @@ private fun connectToWifi29(context: Context, ssid: String) {
 
 @Suppress("DEPRECATION")
 private fun connectToWifiDeprecated(context: Context, ssid: String) {
-    context.getSystemService(WifiManager::class.java)?.apply {
+    context.getSystemService<WifiManager>()?.apply {
         if (!isWifiEnabled) {
             val enabledResult = setWifiEnabled(true)
             while (enabledResult && !isWifiEnabled) Thread.sleep(25)
@@ -89,22 +89,6 @@ private fun connectToWifiDeprecated(context: Context, ssid: String) {
             }
         }
     }
-}
-
-fun getErrorString(json: JSONObject): String {
-    return StringBuilder().apply {
-        append(json.getString("talerErrorCode"))
-        append(" ")
-        append(json.getString("message"))
-        json.optJSONObject("details")?.let { details ->
-            details.optJSONObject("errorResponse")?.let { errorResponse ->
-                append("\n\n")
-                append(errorResponse.optString("code"))
-                append(" ")
-                append(errorResponse.optString("hint"))
-            }
-        }
-    }.toString()
 }
 
 fun cleanExchange(exchange: String) = exchange.let {

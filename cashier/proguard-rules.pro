@@ -20,6 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+#noinspection ShrinkerUnresolvedReference
 -keep class net.taler.cashier.** {*;}
 
 # androidx.security:security-crypto

@@ -24,7 +24,7 @@ android {
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "0.1"

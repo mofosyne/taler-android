@@ -22,4 +22,5 @@
 
 -keep class akono.AkonoJni {*;}
 
+#noinspection ShrinkerUnresolvedReference
 -keep class net.taler.wallet.** {*;}

@@ -43,8 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:backgroundTint="@color/green"
-        android:drawableTint="?attr/colorOnPrimarySurface"
         android:text="Save"
+        app:drawableTint="?attr/colorOnPrimarySurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
