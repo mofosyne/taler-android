@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ This file is part of GNU Taler
   ~ (C) 2020 Taler Systems S.A.
   ~
@@ -15,7 +15,5 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#3047a3</color>
-    <color name="colorPrimaryDark">#152238</color>
-    <color name="colorAccent">#BB1D24</color>
+    <string name="app_name">Taler Wallet Debug</string>
 </resources>
