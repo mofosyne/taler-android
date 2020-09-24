@@ -15,8 +15,12 @@
     <string name="balance_current_label">Current balance</string>
     <string name="balance_error">ERROR: %s</string>
     <string name="balance_offline">Offline. Please connect to the Internet.</string>
+
+    <string name="ok">OK</string>
+
     <string name="action_reconfigure">Reconfigure</string>
     <string name="action_lock">Lock</string>
+    <string name="action_about">About</string>
 
     <string name="withdraw_input_amount">Amount</string>
     <string name="withdraw_into">How much e-cash should be withdrawn?</string>
@@ -39,5 +43,13 @@
     <string name="transaction_last_success">Last Transaction: %s withdrawn</string>
     <string name="transaction_last_aborted">Last Transaction: Aborted</string>
     <string name="transaction_last_error">Last Transaction: Failed</string>
+
+    <string name="about_title">GNU Taler Cashier</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_license">License: %s</string>
+    <string name="about_license_content" translatable="false">GPL-3.0-or-later</string>
+    <string name="about_copyright">Copyright: %s</string>
+    <string name="about_copyright_holder" translatable="false">Taler Systems S.A.</string>
+    <string name="about_supported_bank_api">Bank API Version: %s</string>
 
 </resources>

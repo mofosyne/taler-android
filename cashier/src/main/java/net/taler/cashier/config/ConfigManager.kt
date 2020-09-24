@@ -42,7 +42,7 @@ import net.taler.cashier.Response.Companion.response
 import net.taler.common.getIncompatibleStringOrNull
 import net.taler.lib.common.Version
 
-private val VERSION_BANK = Version(0, 0, 0)
+val VERSION_BANK = Version(0, 0, 0)
 private const val PREF_NAME = "net.taler.cashier.prefs"
 private const val PREF_KEY_BANK_URL = "bankUrl"
 private const val PREF_KEY_USERNAME = "username"

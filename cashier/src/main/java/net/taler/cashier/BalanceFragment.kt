@@ -46,7 +46,7 @@ sealed class BalanceResult {
 class BalanceFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val configManager by lazy { viewModel.configManager}
+    private val configManager by lazy { viewModel.configManager }
     private val withdrawManager by lazy { viewModel.withdrawManager }
 
     private lateinit var ui: FragmentBalanceBinding
@@ -116,6 +116,10 @@ class BalanceFragment : Fragment() {
         R.id.action_lock -> {
             viewModel.lock()
             findNavController().navigate(configManager.configDestination)
+            true
+        }
+        R.id.action_about -> {
+            AboutDialogFragment().show(parentFragmentManager, "ABOUT")
             true
         }
         else -> super.onOptionsItemSelected(item)
