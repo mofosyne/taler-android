@@ -21,10 +21,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import net.taler.common.hideKeyboard
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
@@ -44,7 +43,7 @@ class ManualWithdrawFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         ui = FragmentManualWithdrawBinding.inflate(inflater, container, false)
         return ui.root
@@ -70,8 +69,9 @@ class ManualWithdrawFragment : Fragment() {
         val value = ui.amountView.text.toString().toLong()
         val amount = Amount(exchangeItem.currency, value, 0)
         ui.amountView.hideKeyboard()
-        Toast.makeText(requireContext(), "Not implemented: $amount", LENGTH_SHORT).show()
+
         withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
+        findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_to_promptWithdraw)
     }
 
 }
