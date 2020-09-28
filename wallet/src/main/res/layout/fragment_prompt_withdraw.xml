@@ -169,7 +169,7 @@
         android:contentDescription="@string/nav_exchange_fees"
         android:src="@drawable/ic_edit"
         android:tint="?attr/colorOnPrimary"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/withdrawExchangeUrl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/withdrawExchangeUrl"

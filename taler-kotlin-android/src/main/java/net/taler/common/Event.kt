@@ -34,6 +34,10 @@ open class Event<out T>(private val content: T) {
         return if (isConsumed.compareAndSet(false, true)) content else null
     }
 
+    fun getEvenIfConsumedAlready(): T {
+        return content
+    }
+
 }
 
 fun <T> T.toEvent() = Event(this)

@@ -34,17 +34,19 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentExchangeListBinding
 
-class ExchangeListFragment : Fragment(), ExchangeClickListener {
+open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
-    private val model: MainViewModel by activityViewModels()
+    protected val model: MainViewModel by activityViewModels()
     private val exchangeManager by lazy { model.exchangeManager }
 
-    private lateinit var ui: FragmentExchangeListBinding
-    private val exchangeAdapter by lazy { ExchangeAdapter(this) }
+    protected lateinit var ui: FragmentExchangeListBinding
+    protected open val isSelectOnly = false
+    private val exchangeAdapter by lazy { ExchangeAdapter(isSelectOnly, this) }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         ui = FragmentExchangeListBinding.inflate(inflater, container, false)
         return ui.root
@@ -70,7 +72,7 @@ class ExchangeListFragment : Fragment(), ExchangeClickListener {
         })
     }
 
-    private fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
+    protected open fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
         exchangeAdapter.update(exchanges)
         if (exchanges.isEmpty()) {
             ui.emptyState.fadeIn()
@@ -83,6 +85,10 @@ class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     private fun onAddExchangeFailed() {
         Toast.makeText(requireContext(), R.string.exchange_add_error, LENGTH_LONG).show()
+    }
+
+    override fun onExchangeSelected(item: ExchangeItem) {
+        throw AssertionError("must not get triggered here")
     }
 
     override fun onManualWithdraw(item: ExchangeItem) {

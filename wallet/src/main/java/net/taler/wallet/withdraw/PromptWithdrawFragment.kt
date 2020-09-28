@@ -20,13 +20,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import net.taler.common.EventObserver
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.lib.common.Amount
@@ -35,6 +34,7 @@ import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentPromptWithdrawBinding
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
+import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 import net.taler.wallet.withdraw.WithdrawStatus.TosReviewRequired
 import net.taler.wallet.withdraw.WithdrawStatus.Withdrawing
 
@@ -46,8 +46,9 @@ class PromptWithdrawFragment : Fragment() {
     private lateinit var ui: FragmentPromptWithdrawBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
         ui = FragmentPromptWithdrawBinding.inflate(inflater, container, false)
         return ui.root
@@ -59,21 +60,26 @@ class PromptWithdrawFragment : Fragment() {
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner, {
             showWithdrawStatus(it)
         })
+        withdrawManager.exchangeSelection.observe(viewLifecycleOwner, EventObserver {
+            findNavController().navigate(R.id.action_promptWithdraw_to_selectExchangeFragment)
+        })
     }
 
     private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
-        is WithdrawStatus.ReceivedDetails -> {
-            showContent(status.amountRaw, status.amountEffective, status.exchangeBaseUrl)
-            ui.confirmWithdrawButton.apply {
-                text = getString(R.string.withdraw_button_confirm)
-                setOnClickListener {
-                    it.fadeOut()
-                    ui.confirmProgressBar.fadeIn()
-                    withdrawManager.acceptWithdrawal()
-                }
-                isEnabled = true
+        null -> model.showProgressBar.value = false
+        is Loading -> model.showProgressBar.value = true
+        is WithdrawStatus.NeedsExchange -> {
+            model.showProgressBar.value = false
+            val exchangeSelection = status.exchangeSelection.getIfNotConsumed()
+            if (exchangeSelection == null) { // already consumed
+                findNavController().popBackStack()
+            } else {
+                withdrawManager.selectExchange(exchangeSelection)
             }
         }
+        is TosReviewRequired -> onTosReviewRequired(status)
+        is ReceivedDetails -> onReceivedDetails(status)
+        is Withdrawing -> model.showProgressBar.value = true
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null
@@ -81,14 +87,18 @@ class PromptWithdrawFragment : Fragment() {
             model.showTransactions(status.currency)
             Snackbar.make(requireView(), R.string.withdraw_initiated, LENGTH_LONG).show()
         }
-        is Loading -> {
-            model.showProgressBar.value = true
+        is WithdrawStatus.Error -> {
+            model.showProgressBar.value = false
+            findNavController().navigate(R.id.action_promptWithdraw_to_errorFragment)
         }
-        is Withdrawing -> {
-            model.showProgressBar.value = true
-        }
-        is TosReviewRequired -> {
-            showContent(status.amountRaw, status.amountEffective, status.exchangeBaseUrl)
+    }
+
+    private fun onTosReviewRequired(s: TosReviewRequired) {
+        model.showProgressBar.value = false
+        if (s.showImmediately.getIfNotConsumed() == true) {
+            findNavController().navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
+        } else {
+            showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri)
             ui.confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_tos)
                 setOnClickListener {
@@ -97,14 +107,27 @@ class PromptWithdrawFragment : Fragment() {
                 isEnabled = true
             }
         }
-        is WithdrawStatus.Error -> {
-            model.showProgressBar.value = false
-            findNavController().navigate(R.id.action_promptWithdraw_to_errorFragment)
-        }
-        null -> model.showProgressBar.value = false
     }
 
-    private fun showContent(amountRaw: Amount, amountEffective: Amount, exchange: String) {
+    private fun onReceivedDetails(s: ReceivedDetails) {
+        showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri)
+        ui.confirmWithdrawButton.apply {
+            text = getString(R.string.withdraw_button_confirm)
+            setOnClickListener {
+                it.fadeOut()
+                ui.confirmProgressBar.fadeIn()
+                withdrawManager.acceptWithdrawal()
+            }
+            isEnabled = true
+        }
+    }
+
+    private fun showContent(
+        amountRaw: Amount,
+        amountEffective: Amount,
+        exchange: String,
+        uri: String?,
+    ) {
         model.showProgressBar.value = false
         ui.progressBar.fadeOut()
 
@@ -117,15 +140,20 @@ class PromptWithdrawFragment : Fragment() {
         ui.chosenAmountView.fadeIn()
 
         ui.feeLabel.fadeIn()
-        ui.feeView.text = getString(R.string.amount_negative, (amountRaw - amountEffective).toString())
+        ui.feeView.text =
+            getString(R.string.amount_negative, (amountRaw - amountEffective).toString())
         ui.feeView.fadeIn()
 
         ui.exchangeIntroView.fadeIn()
         ui.withdrawExchangeUrl.text = cleanExchange(exchange)
         ui.withdrawExchangeUrl.fadeIn()
-        ui.selectExchangeButton.fadeIn()
-        ui.selectExchangeButton.setOnClickListener {
-            Toast.makeText(context, "Not yet implemented", LENGTH_SHORT).show()
+
+        if (uri != null) {  // no Uri for manual withdrawals
+            ui.selectExchangeButton.fadeIn()
+            ui.selectExchangeButton.setOnClickListener {
+                val exchangeSelection = ExchangeSelection(amountRaw, uri)
+                withdrawManager.selectExchange(exchangeSelection)
+            }
         }
 
         ui.withdrawCard.fadeIn()

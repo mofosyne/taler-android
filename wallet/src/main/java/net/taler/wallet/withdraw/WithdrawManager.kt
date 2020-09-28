@@ -18,10 +18,13 @@ package net.taler.wallet.withdraw
 
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import net.taler.common.Event
+import net.taler.common.toEvent
 import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
@@ -32,20 +35,23 @@ import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 
 sealed class WithdrawStatus {
     data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
+    data class NeedsExchange(val exchangeSelection: Event<ExchangeSelection>) : WithdrawStatus()
+
     data class TosReviewRequired(
         val talerWithdrawUri: String? = null,
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
         val tosText: String,
-        val tosEtag: String
+        val tosEtag: String,
+        val showImmediately: Event<Boolean>,
     ) : WithdrawStatus()
 
     data class ReceivedDetails(
         val talerWithdrawUri: String? = null,
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
-        val amountEffective: Amount
+        val amountEffective: Amount,
     ) : WithdrawStatus()
 
     object Withdrawing : WithdrawStatus()
@@ -57,24 +63,31 @@ sealed class WithdrawStatus {
 data class WithdrawalDetailsForUri(
     val amount: Amount,
     val defaultExchangeBaseUrl: String?,
-    val possibleExchanges: List<ExchangeItem>
+    val possibleExchanges: List<ExchangeItem>,
 )
 
 @Serializable
 data class WithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
-    val amountEffective: Amount
+    val amountEffective: Amount,
+)
+
+data class ExchangeSelection(
+    val amount: Amount,
+    val talerWithdrawUri: String,
 )
 
 class WithdrawManager(
     private val api: WalletBackendApi,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     val withdrawStatus = MutableLiveData<WithdrawStatus>()
     val testWithdrawalInProgress = MutableLiveData(false)
 
+    private val _exchangeSelection = MutableLiveData<Event<ExchangeSelection>>()
+    val exchangeSelection: LiveData<Event<ExchangeSelection>> = _exchangeSelection
     var exchangeFees: ExchangeFees? = null
         private set
 
@@ -87,6 +100,11 @@ class WithdrawManager(
         }
     }
 
+    @UiThread
+    fun selectExchange(selection: ExchangeSelection) {
+        _exchangeSelection.value = selection.toEvent()
+    }
+
     fun getWithdrawalDetails(uri: String) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
         api.request("getWithdrawalDetailsForUri", WithdrawalDetailsForUri.serializer()) {
@@ -95,11 +113,10 @@ class WithdrawManager(
             handleError("getWithdrawalDetailsForUri", error)
         }.onSuccess { details ->
             if (details.defaultExchangeBaseUrl == null) {
-                // TODO go to exchange selection screen instead
-                val chosenExchange = details.possibleExchanges[0].exchangeBaseUrl
-                getWithdrawalDetails(chosenExchange, details.amount, uri)
+                val exchangeSelection = ExchangeSelection(details.amount, uri)
+                withdrawStatus.value = WithdrawStatus.NeedsExchange(exchangeSelection.toEvent())
             } else {
-                getWithdrawalDetails(details.defaultExchangeBaseUrl, details.amount, uri)
+                getWithdrawalDetails(details.defaultExchangeBaseUrl, details.amount, false, uri)
             }
         }
     }
@@ -107,7 +124,8 @@ class WithdrawManager(
     fun getWithdrawalDetails(
         exchangeBaseUrl: String,
         amount: Amount,
-        uri: String? = null
+        showTosImmediately: Boolean = false,
+        uri: String? = null,
     ) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
         api.request("getWithdrawalDetailsForAmount", WithdrawalDetails.serializer()) {
@@ -121,16 +139,17 @@ class WithdrawManager(
                     talerWithdrawUri = uri,
                     exchangeBaseUrl = exchangeBaseUrl,
                     amountRaw = details.amountRaw,
-                    amountEffective = details.amountEffective
+                    amountEffective = details.amountEffective,
                 )
-            } else getExchangeTos(exchangeBaseUrl, details, uri)
+            } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
         }
     }
 
     private fun getExchangeTos(
         exchangeBaseUrl: String,
         details: WithdrawalDetails,
-        uri: String?
+        showImmediately: Boolean,
+        uri: String?,
     ) = scope.launch {
         api.request("getExchangeTos", TosResponse.serializer()) {
             put("exchangeBaseUrl", exchangeBaseUrl)
@@ -143,7 +162,8 @@ class WithdrawManager(
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
                 tosText = it.tos,
-                tosEtag = it.currentEtag
+                tosEtag = it.currentEtag,
+                showImmediately = showImmediately.toEvent(),
             )
         }
     }
@@ -163,7 +183,7 @@ class WithdrawManager(
                 talerWithdrawUri = s.talerWithdrawUri,
                 exchangeBaseUrl = s.exchangeBaseUrl,
                 amountRaw = s.amountRaw,
-                amountEffective = s.amountEffective
+                amountEffective = s.amountEffective,
             )
         }
     }
@@ -181,7 +201,7 @@ class WithdrawManager(
         api.request<Unit>(operation) {
             put("exchangeBaseUrl", status.exchangeBaseUrl)
             if (status.talerWithdrawUri == null) {
-                put("amount", status.amountRaw)
+                put("amount", status.amountRaw.toJSONString())
             } else {
                 put("talerWithdrawUri", status.talerWithdrawUri)
             }

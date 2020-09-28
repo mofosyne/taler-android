@@ -152,8 +152,8 @@
     <fragment
         android:id="@+id/selectExchangeFragment"
         android:name="net.taler.wallet.exchanges.SelectExchangeFragment"
-        android:label="@string/nav_exchange_fees"
-        tools:layout="@layout/fragment_select_exchange" />
+        android:label="@string/nav_exchange_select"
+        tools:layout="@layout/fragment_exchange_list" />
 
     <fragment
         android:id="@+id/nav_pending_operations"

@@ -18,6 +18,8 @@ package net.taler.wallet.exchanges
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
@@ -39,11 +41,14 @@ data class ExchangeItem(
 }
 
 interface ExchangeClickListener {
+    fun onExchangeSelected(item: ExchangeItem)
     fun onManualWithdraw(item: ExchangeItem)
 }
 
-internal class ExchangeAdapter(private val listener: ExchangeClickListener) :
-    Adapter<ExchangeItemViewHolder>() {
+internal class ExchangeAdapter(
+    private val selectOnly: Boolean,
+    private val listener: ExchangeClickListener,
+) : Adapter<ExchangeItemViewHolder>() {
 
     private val items = ArrayList<ExchangeItem>()
 
@@ -74,6 +79,14 @@ internal class ExchangeAdapter(private val listener: ExchangeClickListener) :
         fun bind(item: ExchangeItem) {
             urlView.text = item.name
             currencyView.text = context.getString(R.string.exchange_list_currency, item.currency)
+            if (selectOnly) {
+                itemView.setOnClickListener { listener.onExchangeSelected(item) }
+                overflowIcon.visibility = GONE
+            } else {
+                itemView.setOnClickListener(null)
+                itemView.isClickable = false
+                overflowIcon.visibility = VISIBLE
+            }
             overflowIcon.setOnClickListener { openMenu(overflowIcon, item) }
         }
 
