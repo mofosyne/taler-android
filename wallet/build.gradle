@@ -121,7 +121,7 @@ dependencies {
 
     // Lists and Selection
     implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc02"
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc03"
 
     // Navigation Library
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
