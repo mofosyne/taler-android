@@ -25,6 +25,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
+import net.taler.common.showError
 import net.taler.common.showLogViewer
 import net.taler.common.toRelativeTime
 import net.taler.wallet.BuildConfig.FLAVOR
@@ -33,6 +34,7 @@ import net.taler.wallet.BuildConfig.VERSION_NAME
 import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.withdraw.WithdrawTestStatus
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -98,9 +100,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        withdrawManager.testWithdrawalInProgress.observe(viewLifecycleOwner, { loading ->
+        withdrawManager.testWithdrawalStatus.observe(viewLifecycleOwner, { status ->
+            if (status == null) return@observe
+            val loading = status is WithdrawTestStatus.Withdrawing
             prefWithdrawTest.isEnabled = !loading
             model.showProgressBar.value = loading
+            if (status is WithdrawTestStatus.Error) {
+                requireActivity().showError(R.string.withdraw_error_test, status.message)
+            }
+            withdrawManager.testWithdrawalStatus.value = null
         })
         prefWithdrawTest.setOnPreferenceClickListener {
             withdrawManager.withdrawTestkudos()

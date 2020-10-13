@@ -59,6 +59,12 @@ sealed class WithdrawStatus {
     data class Error(val message: String?) : WithdrawStatus()
 }
 
+sealed class WithdrawTestStatus {
+    object Withdrawing : WithdrawTestStatus()
+    object Success : WithdrawTestStatus()
+    data class Error(val message: String) : WithdrawTestStatus()
+}
+
 @Serializable
 data class WithdrawalDetailsForUri(
     val amount: Amount,
@@ -84,7 +90,7 @@ class WithdrawManager(
 ) {
 
     val withdrawStatus = MutableLiveData<WithdrawStatus>()
-    val testWithdrawalInProgress = MutableLiveData(false)
+    val testWithdrawalStatus = MutableLiveData<WithdrawTestStatus>()
 
     private val _exchangeSelection = MutableLiveData<Event<ExchangeSelection>>()
     val exchangeSelection: LiveData<Event<ExchangeSelection>> = _exchangeSelection
@@ -92,11 +98,11 @@ class WithdrawManager(
         private set
 
     fun withdrawTestkudos() = scope.launch {
-        testWithdrawalInProgress.value = true
+        testWithdrawalStatus.value = WithdrawTestStatus.Withdrawing
         api.request<Unit>("withdrawTestkudos").onError {
-            testWithdrawalInProgress.postValue(false)
+            testWithdrawalStatus.value = WithdrawTestStatus.Error(it.userFacingMsg)
         }.onSuccess {
-            testWithdrawalInProgress.postValue(false)
+            testWithdrawalStatus.value = WithdrawTestStatus.Success
         }
     }
 

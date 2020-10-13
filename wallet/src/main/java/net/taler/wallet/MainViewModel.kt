@@ -132,7 +132,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     @UiThread
     fun dangerouslyReset() {
         api.sendRequest("reset")
-        withdrawManager.testWithdrawalInProgress.value = false
+        withdrawManager.testWithdrawalStatus.value = null
         mBalances.value = emptyList()
     }
 
