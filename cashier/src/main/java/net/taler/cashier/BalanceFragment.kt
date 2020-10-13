@@ -53,7 +53,7 @@ class BalanceFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         setHasOptionsMenu(true)
         ui = FragmentBalanceBinding.inflate(layoutInflater, container, false)
@@ -97,8 +97,9 @@ class BalanceFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // for some reason automatic restore isn't working at the moment!?
-        ui.amountView.editText?.text.let {
+        // automatic restore isn't working, maybe because of the different layout in landscape mode
+        // the ui won't be available after onDestroyView()
+        if (view != null) ui.amountView.editText?.text.let {
             outState.putCharSequence("amountView", it)
         }
     }
