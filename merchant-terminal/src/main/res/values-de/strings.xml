@@ -56,4 +56,10 @@
     <string name="refund_complete">Erhalten</string>
     <string name="refund_error_invalid_amount">Ungültiger Betrag</string>
     <string name="refund_error_already_refunded">Bereits erstattet</string>
+    <string name="payment_order_id">Beleg #%s</string>
+    <string name="history_unpaid">Unbezahlt</string>
+    <string name="error_cancelled">Zahlvorgang abgebrochen</string>
+    <string name="error_payment">Fehler: Keine Zahlung erhalten</string>
+    <string name="error_timeout">Keine Zahlung innerhalb des Zahlungszeitraums, bitte versuchen Sie es erneut!</string>
+    <string name="error_history">Fehler beim Abrufen des Bestellverlaufs</string>
 </resources>
