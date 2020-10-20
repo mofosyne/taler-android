@@ -34,4 +34,9 @@
     <string name="withdraw_error_timeout">Niemand hat versucht E-Cash abzuheben. Bitte versuchen Sie es erneut.</string>
     <string name="action_about">Über</string>
     <string name="ok">OK</string>
+    <string name="about_title">GNU Taler Kassierer</string>
+    <string name="about_license">Lizenz: %s</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_copyright">Copyright: %s</string>
+    <string name="about_supported_bank_api">Bank API Version:% s</string>
 </resources>
