@@ -1,2 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="project_name">GNU Taler</string>
+    <string name="menu_order">Pedidos</string>
+    <string name="menu_history">Histórico</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="order_label_title">Pedido #%s</string>
+    <string name="order_total">Total: %s</string>
+    <string name="order_restart">Reiniciar</string>
+    <string name="order_undo">Deshacer</string>
+    <string name="order_previous">Ant</string>
+    <string name="order_next">Sig</string>
+    <string name="order_complete">Completa</string>
+    <string name="config_label">Ajustes comerciante</string>
+    <string name="config_username">Nombre de usuario</string>
+    <string name="config_password">Contraseña</string>
+    <string name="config_ok">Obtener configuración</string>
+    <string name="config_auth_error">Error: Usuario o contraseña inválido</string>
+    <string name="config_error_category">Error: No se encontró ninguna categoría de producto válida</string>
+    <string name="config_error_malformed">Error: La configuración JSON está malformada</string>
+    <string name="config_error_product_category_id">Error: Producto %1$s referencia categoría desconocida ID %2$d</string>
+    <string name="config_error_product_zero">Error: No se pudieron encontrar productos válidos</string>
+    <string name="config_error_unknown">Error: Configuración inválida</string>
+    <string name="config_fetching">Recogiendo configuración…</string>
+    <string name="config_save_password">Recordar contraseña</string>
+    <string name="config_forget_password">Olvidar</string>
+    <string name="config_fetching_label">Recogiendo configuración</string>
+    <string name="payment_intro_nfc">Por favor permite al cliente escanear el código QR o usar NFC para pagar.</string>
+    <string name="payment_intro">Por favor permite al cliente escanear el código QR para pagar.</string>
+    <string name="payment_cancel">Cancelar pago</string>
+    <string name="payment_received">Pago recibido</string>
+    <string name="payment_back_button">Continuar</string>
+    <string name="payment_order_id">Recibo #%s</string>
+    <string name="payment_process_label">Pago requerido</string>
+    <string name="payment_canceled">Pago cancelado</string>
+    <string name="history_label">Historial de pagos</string>
+    <string name="history_unpaid">Impagado</string>
+    <string name="history_refund">Reembolso</string>
+    <string name="refund_amount">Cantidad</string>
+    <string name="refund_reason">Razón de reembolso</string>
+    <string name="refund_abort">Abortar</string>
+    <string name="refund_complete">Recibido</string>
+    <string name="refund_confirm">Aprobar reembolso</string>
+    <string name="refund_error_invalid_amount">Cantidad inválida</string>
+    <string name="refund_error_zero">Necesita ser una cantidad positiva</string>
+    <string name="refund_error_backend">Error procesando el reembolso</string>
+    <string name="refund_error_deadline">La fecha límite del reembolso ha pasado</string>
+    <string name="refund_error_already_refunded">Ya reembolsado</string>
+    <string name="refund_intro">Por favor permite al cliente escanear código QR para ofrecer reembolso</string>
+    <string name="refund_order_ref">Referencia de compra : %1$s
+\n
+\n%2$s</string>
+    <string name="error_payment">Error: Pago no recibido</string>
+    <string name="error_timeout">No se ha realizado ningún pago dentro del periodo de pago, ¡inténtalo de nuevo!</string>
+    <string name="error_cancelled">Pago cancelado</string>
+    <string name="error_history">Error recogiendo el historial de pedidos</string>
+    <string name="toast_back_to_exit">Haz clic en «atrás» de nuevo para salir</string>
+    <string name="app_name">GNU Taler Punto de Venta</string>
+    <string name="app_name_short">Terminal de comercio</string>
+    <string name="config_url">Configuración URL</string>
+    <string name="config_error_network">Error: No se pudo conectar al servidor de configuración</string>
+    <string name="config_error_currency">Error: Producto %1$s tiene una divisa %2$s, pero %3$s esperada</string>
+    <string name="config_changed">Cambiado al nuevo comercio usando %s</string>
+    <string name="config_docs">Por favor refiérete &lt;a href=\"https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats\"&gt;a la documentación&lt;/a&gt; para la configuración del formato.<a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">the documentation</a> for the configuration format.</string>
+    <string name="refund_error_max_amount">Mayor que la cantidad del pedido de %s</string>
+    <string name="refund_intro_nfc">Por favor permite al cliente escanear el código QR o usar NFC para ofrecer reembolso</string>
+</resources>
