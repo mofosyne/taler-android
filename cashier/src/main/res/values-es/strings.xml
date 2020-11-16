@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="config_username">Nombre de usuario</string>
+    <string name="config_password">Contraseña</string>
+    <string name="app_name">Cajero Taler</string>
+</resources>
