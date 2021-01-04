@@ -35,7 +35,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Wallet</string>
-    <string name="nav_header_desc">Navigation header</string>
 
     <string name="nav_prompt_withdraw">Withdraw Digital Cash</string>
     <string name="nav_exchange_tos">Exchange\'s Terms of Service</string>
@@ -61,8 +60,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="menu_settings">Settings</string>
     <string name="menu_retry_pending_operations">Retry Pending Operations</string>
 
-    <string name="servicedesc">my service</string>
-    <string name="aiddescription">my aid</string>
+    <string name="host_apdu_service_desc">Taler NFC Payments</string>
 
     <string name="balances_title">Balances</string>
     <string name="amount_positive">+ %s</string>

@@ -43,7 +43,6 @@
     <string name="amount_negative">- %s</string>
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Portefeuille</string>
-    <string name="nav_header_desc">En-tête de navigation</string>
     <string name="nav_prompt_withdraw">Retirer de l\'argent électronique</string>
     <string name="nav_exchange_tos">Conditions générale d\'utilisation du change</string>
     <string name="nav_error">Erreur</string>
