@@ -33,7 +33,6 @@
     <string name="error_unsupported_uri">誤り：この通貨URIはサポートされていません。</string>
     <string name="menu_settings">設定</string>
     <string name="menu_retry_pending_operations">再実行</string>
-    <string name="servicedesc">私のサービス</string>
     <string name="balances_title">残高</string>
     <string name="amount_positive">+ %s</string>
     <string name="amount_negative">- %s</string>

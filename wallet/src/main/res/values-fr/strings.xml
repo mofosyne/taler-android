@@ -18,8 +18,6 @@
     <string name="google_play_title" tools:keep="@string/google_play_title">Portefeuille Taler (expérimental)</string>
     <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler facilite et accélère les transactions en ligne respectueuses de la vie privée.</string>
     <string name="button_scan_qr_code">Scanner le QR code Taler</string>
-    <string name="servicedesc">mon service</string>
-    <string name="aiddescription">mon aide</string>
     <string name="balances_title">Soldes</string>
     <string name="amount_positive">+ %s</string>
     <string name="amount_chosen">Montant choisi</string>

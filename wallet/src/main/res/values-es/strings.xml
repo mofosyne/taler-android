@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="google_play_title" tools:keep="@string/google_play_title">Cartera Taler (experimental)</string>
-    <string name="nav_header_desc">Cabecera de navegación</string>
     <string name="nav_prompt_withdraw">Retirar Efectivo Digital</string>
     <string name="nav_exchange_tos">Términos de servicio del Exchange</string>
     <string name="nav_exchange_select">Seleccionar Exchange</string>
@@ -16,8 +15,6 @@
     <string name="or">o</string>
     <string name="error_unsupported_uri">Error: Esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="servicedesc">mi servicio</string>
-    <string name="aiddescription">mi ayuda</string>
     <string name="balances_title">Balances</string>
     <string name="amount_positive">+ %s</string>
     <string name="amount_chosen">Elegir Cantidad</string>
