@@ -1,2 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="project_name">GNU Taler</string>
+    <string name="menu_order">Beställningar</string>
+    <string name="menu_history">Historia</string>
+    <string name="menu_settings">Inställningar</string>
+    <string name="order_label_title">Beställning #%s</string>
+    <string name="order_total">Totalt: %s</string>
+    <string name="order_restart">Omstart</string>
+    <string name="order_undo">Ångra</string>
+    <string name="order_previous">Föregående</string>
+    <string name="order_next">Nästa</string>
+    <string name="order_complete">Klart</string>
+    <string name="config_url">Konfigurations-URL</string>
+    <string name="config_username">Användarnamn</string>
+    <string name="config_password">Lösenord</string>
+    <string name="config_ok">Hämta konfiguration</string>
+    <string name="config_error_network">Fel: Det gick inte att ansluta till konfigurationsservern</string>
+    <string name="config_error_category">Fel: Ingen giltig produktkategori hittades</string>
+    <string name="config_error_malformed">Fel: JSON-konfigurationen är felaktig</string>
+    <string name="config_error_product_category_id">Fel: Produkt %1$s refererar till okänd kategori ID %2$d</string>
+    <string name="config_error_product_zero">Fel: Inga giltiga produkter hittades</string>
+    <string name="config_error_unknown">Fel: Ogiltig konfiguration</string>
+    <string name="config_fetching">Hämtar konfiguration …</string>
+    <string name="config_forget_password">Glöm</string>
+    <string name="config_changed">Byt till ny säljare med %s</string>
+    <string name="payment_intro_nfc">Låt kunden skanna QR-kod eller använd NFC för att betala.</string>
+    <string name="payment_intro">Låt kunden skanna QR-kod för att betala.</string>
+    <string name="payment_cancel">Avbryt betalning</string>
+    <string name="payment_received">Betalning mottagen</string>
+    <string name="payment_back_button">Fortsätt</string>
+    <string name="payment_order_id">Kvitto #%s</string>
+    <string name="payment_process_label">Betalning krävs</string>
+    <string name="payment_canceled">Betalning avbruten</string>
+    <string name="history_label">Betalningshistorik</string>
+    <string name="history_unpaid">Obetald</string>
+    <string name="history_refund">Återbetalning</string>
+    <string name="refund_amount">Belopp</string>
+    <string name="refund_reason">Återbetalningsskäl</string>
+    <string name="refund_abort">Avbryt</string>
+    <string name="refund_complete">Mottagen</string>
+    <string name="refund_confirm">Godkänn återbetalning</string>
+    <string name="refund_error_max_amount">Större än orderbelopp på %s</string>
+    <string name="refund_error_invalid_amount">Ogiltigt belopp</string>
+    <string name="refund_error_backend">Fel vid bearbetning av återbetalning</string>
+    <string name="refund_error_deadline">Återbetalningstiden har passerats</string>
+    <string name="refund_error_already_refunded">Redan återbetalad</string>
+    <string name="config_save_password">Kom ihåg lösenord</string>
+    <string name="error_payment">Fel: Ingen betalning mottagen</string>
+    <string name="error_timeout">Ingen betalning har gjorts i tid, försök igen!</string>
+    <string name="error_cancelled">Betalning Avbruten</string>
+    <string name="error_history">Det gick inte att hämta orderhistoriken</string>
+    <string name="toast_back_to_exit">Klicka på «tillbaka» igen för att avsluta</string>
+    <string name="app_name">GNU Taler försäljningsställe</string>
+    <string name="app_name_short">Säljarens terminal</string>
+    <string name="config_label">Säljar-inställningar</string>
+    <string name="config_auth_error">Fel: Ogiltigt användarnamn eller lösenord</string>
+    <string name="config_error_currency">Fel: Produkten %1$s har valutan %2$s, men %3$s förväntas</string>
+    <string name="config_fetching_label">Hämtar konfiguration</string>
+    <string name="config_docs">Se <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">dokumentationen</a> för konfigurationsformat.</string>
+    <string name="refund_error_zero">Måste vara positivt</string>
+    <string name="refund_intro_nfc">Låt kunden skanna QR-kod eller använd NFC för att erbjuda återbetalning</string>
+    <string name="refund_intro">Låt kunden skanna QR-koden för att erbjuda återbetalning</string>
+    <string name="refund_order_ref">Inköpsreferens: %1$s
+\n
+\n%2$s</string>
+</resources>
