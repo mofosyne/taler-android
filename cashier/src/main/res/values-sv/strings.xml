@@ -1,2 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="config_bank_url">Bankens API-adress</string>
+    <string name="config_username">Användarnamn</string>
+    <string name="config_password">Lösenord</string>
+    <string name="config_button_save">Spara</string>
+    <string name="config_username_error">Vänligen ange ditt användarnamn!</string>
+    <string name="config_error">Fel vid hämtning av konfiguration: %s</string>
+    <string name="config_error_auth">Ogiltigt användarnamn eller lösenord!</string>
+    <string name="balance_current_label">Nuvarande saldo</string>
+    <string name="balance_error">FEL: %s</string>
+    <string name="balance_offline">Offline. Vänligen anslut till Internet.</string>
+    <string name="ok">OK</string>
+    <string name="action_reconfigure">Konfigurera om</string>
+    <string name="action_lock">Lås</string>
+    <string name="action_about">Om</string>
+    <string name="withdraw_input_amount">Belopp</string>
+    <string name="withdraw_into">Hur mycket e-kontanter ska tas ut\?</string>
+    <string name="withdraw_error_zero">Ange positivt belopp!</string>
+    <string name="withdraw_error_insufficient_balance">Otillräckligt saldo</string>
+    <string name="withdraw_error_timeout">Ingen plånbok för uttag. Var god försök igen.</string>
+    <string name="withdraw_button_confirm">Uttag</string>
+    <string name="transaction_intro">Skanna kod med Taler-plånbok-appen för att ta ut:</string>
+    <string name="transaction_intro_nfc">Skanna kod eller använd NFC med Taler-plånbok-appen för att ta ut:</string>
+    <string name="transaction_intro_scanned">Vänligen bekräfta transaktionen!</string>
+    <string name="transaction_confirm">Bekräfta</string>
+    <string name="transaction_abort">Avbryt</string>
+    <string name="transaction_aborted">Transaktionen avbröts</string>
+    <string name="transaction_button_back">Gå tillbaka</string>
+    <string name="transaction_last_success">Senaste transaktionen: %s uttaget</string>
+    <string name="transaction_last_aborted">Senaste transaktionen: Avbruten</string>
+    <string name="transaction_last_error">Senaste transaktionen: Felaktig</string>
+    <string name="about_title">GNU Taler Kassör</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_license">Licens: %s</string>
+    <string name="about_copyright">Copyright: %s</string>
+    <string name="about_supported_bank_api">Bank API Version: %s</string>
+    <string name="app_name">Taler Kassör</string>
+    <string name="config_bank_url_error">Adressen är ogiltig.</string>
+    <string name="config_demo_hint">För testning kan du &lt;a href=%s&gt;skapa ett testkonto i demobanken&lt;/a&gt; .</string>
+    <string name="withdraw_error_fetch">Fel vid kommunikation med bank: %s</string>
+</resources>
