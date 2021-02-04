@@ -11,11 +11,15 @@
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="common_commonMain" target="1.6" />
       <module name="common_commonTest" target="1.6" />
       <module name="common_jvmMain" target="1.6" />
       <module name="common_jvmTest" target="1.6" />
+      <module name="taler-android.multiplatform.common.commonMain" target="1.6" />
+      <module name="taler-android.multiplatform.common.commonTest" target="1.6" />
+      <module name="taler-android.multiplatform.common.jvmMain" target="1.6" />
+      <module name="taler-android.multiplatform.common.jvmTest" target="1.6" />
       <module name="taler-kotlin-common_jvmMain" target="1.6" />
       <module name="taler-kotlin-common_jvmTest" target="1.6" />
     </bytecodeTargetLevel>

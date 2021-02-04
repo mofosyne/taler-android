@@ -1,12 +1,13 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.4.21'
     ext.ktor_version = "1.4.0"
-    ext.nav_version = "2.3.0"
+    ext.nav_version = "2.3.3"
     ext.material_version = "1.2.1"
     ext.lifecycle_version = "2.2.0"
-    ext.constraintlayout_version = "2.0.2"
+    ext.constraintlayout_version = "2.0.4"
+    ext.junit_version = "4.13.1"
     // check https://android-rebuilds.beuc.net/ for availability of free build tools
-    ext.build_tools_version = "29.0.3"
+    ext.build_tools_version = "30.0.3"
     // should debug build types be minified with D8 as well?
     ext.minify_debug = false
     repositories {
@@ -14,7 +15,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"

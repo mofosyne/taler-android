@@ -22,14 +22,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         applicationId "net.taler.cashier"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -70,7 +70,7 @@ android {
 dependencies {
     implementation project(":taler-kotlin-android")
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-    implementation 'androidx.security:security-crypto:1.0.0-rc03' // requires minSdk 23
+    implementation 'androidx.security:security-crypto:1.0.0-rc04' // requires minSdk 23
     implementation "com.google.android.material:material:$material_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -80,7 +80,7 @@ dependencies {
     implementation "io.ktor:ktor-client-okhttp:$ktor_version"
     implementation "io.ktor:ktor-client-serialization-jvm:$ktor_version"
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation "junit:junit:$junit_version"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

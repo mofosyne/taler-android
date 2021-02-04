@@ -17,18 +17,17 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlinx-serialization'
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "0.1"
 
@@ -84,8 +83,8 @@ dependencies {
     // JSON parsing and serialization
     api "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
-    lintPublish 'com.github.thirdegg:lint-rules:0.0.5-alpha'
+    lintPublish 'com.github.thirdegg:lint-rules:0.0.6-alpha'
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20200518'
 }
