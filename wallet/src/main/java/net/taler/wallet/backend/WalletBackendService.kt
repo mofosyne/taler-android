@@ -64,7 +64,7 @@ class WalletBackendService : Service() {
 
         Log.i(TAG, "onCreate in wallet backend service")
         akono = AkonoJni()
-        akono.putModuleCode("taler-wallet-android", talerWalletAndroidCode)
+        akono.putModuleCode("@gnu-taler/taler-wallet-android", talerWalletAndroidCode)
         akono.setMessageHandler(object : AkonoJni.MessageHandler {
             override fun handleMessage(message: String) {
                 this@WalletBackendService.handleAkonoMessage(message)
@@ -72,7 +72,7 @@ class WalletBackendService : Service() {
         })
         //akono.evalNodeCode("require('source-map-support').install();")
         akono.evalNodeCode("require('akono');")
-        akono.evalNodeCode("tw = require('taler-wallet-android');")
+        akono.evalNodeCode("tw = require('@gnu-taler/taler-wallet-android');")
         akono.evalNodeCode("tw.installAndroidWalletListener();")
         sendInitMessage()
         initialized = true
