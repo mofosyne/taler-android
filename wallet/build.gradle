@@ -23,8 +23,8 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.8.0-rc.2"
-def walletCoreSha256 = "838035331c6103e2a0e911d2a0c6f0e9af92ddd77e8091d11fb4a246486edd22"
+def walletCoreVersion = "v0.8.0"
+def walletCoreSha256 = "46b0ec59e95f2621c8483f975dac9e288851c1e5809f386b49c491e52f41a190"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -47,8 +47,8 @@ android {
         applicationId "net.taler.wallet"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 8
-        versionName "v0.8.0-rc.3"
+        versionCode 9
+        versionName "v0.8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
