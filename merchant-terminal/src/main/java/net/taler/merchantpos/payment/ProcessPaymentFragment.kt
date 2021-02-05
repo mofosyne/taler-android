@@ -45,8 +45,8 @@ class ProcessPaymentFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentProcessPaymentBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -79,17 +79,21 @@ class ProcessPaymentFragment : Fragment() {
             navigate(actionProcessPaymentToPaymentSuccess())
             return
         }
+        if (payment.claimed) {
+            ui.qrcodeView.fadeOut()
+            ui.payIntroView.setText(R.string.payment_claimed)
+        } else {
+            payment.talerPayUri?.let {
+                ui.qrcodeView.setImageBitmap(makeQrCode(it))
+                ui.qrcodeView.fadeIn()
+                ui.progressBar.fadeOut()
+            }
+        }
         ui.payIntroView.fadeIn()
         ui.amountView.text = payment.order.total.toString()
         payment.orderId?.let {
             ui.orderRefView.text = getString(R.string.payment_order_id, it)
             ui.orderRefView.fadeIn()
-        }
-        payment.talerPayUri?.let {
-            val qrcodeBitmap = makeQrCode(it)
-            ui.qrcodeView.setImageBitmap(qrcodeBitmap)
-            ui.qrcodeView.fadeIn()
-            ui.progressBar.fadeOut()
         }
     }
 

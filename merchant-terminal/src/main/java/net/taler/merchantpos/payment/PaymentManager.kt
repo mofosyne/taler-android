@@ -46,7 +46,7 @@ class PaymentManager(
     private val context: Context,
     private val configManager: ConfigManager,
     private val scope: CoroutineScope,
-    private val api: MerchantApi
+    private val api: MerchantApi,
 ) {
 
     private val mPayment = MutableLiveData<Payment>()
@@ -89,12 +89,17 @@ class PaymentManager(
             assertUiThread()
             if (!isActive) return@handle // don't continue if job was cancelled
             val currentValue = requireNotNull(mPayment.value)
-            if (response.paid) {
-                mPayment.value = currentValue.copy(paid = true)
-                checkTimer.cancel()
-            } else if (currentValue.talerPayUri == null) {
-                response as CheckPaymentResponse.Unpaid
-                mPayment.value = currentValue.copy(talerPayUri = response.talerPayUri)
+            when (response) {
+                is CheckPaymentResponse.Unpaid -> {
+                    mPayment.value = currentValue.copy(talerPayUri = response.talerPayUri)
+                }
+                is CheckPaymentResponse.Claimed -> {
+                    mPayment.value = currentValue.copy(claimed = true)
+                }
+                is CheckPaymentResponse.Paid -> {
+                    mPayment.value = currentValue.copy(paid = true)
+                    checkTimer.cancel()
+                }
             }
         }
     }

@@ -38,6 +38,7 @@
 
     <string name="payment_intro_nfc">Please let customer scan QR Code or use NFC to pay.</string>
     <string name="payment_intro">Please let customer scan QR Code to pay.</string>
+    <string name="payment_claimed">Waiting for customer to confirm payment…</string>
     <string name="payment_cancel">Cancel payment</string>
     <string name="payment_received">Payment received</string>
     <string name="payment_back_button">Continue</string>

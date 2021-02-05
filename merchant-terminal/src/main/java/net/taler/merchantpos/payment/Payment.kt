@@ -24,6 +24,7 @@ data class Payment(
     val currency: String,
     val orderId: String? = null,
     val talerPayUri: String? = null,
+    val claimed: Boolean = false,
     val paid: Boolean = false,
     val error: String? = null
 )
