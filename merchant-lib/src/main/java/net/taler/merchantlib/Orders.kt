@@ -52,6 +52,12 @@ sealed class CheckPaymentResponse: CustomClassDiscriminator {
     ) : CheckPaymentResponse()
 
     @Serializable
+    @SerialName("claimed")
+    data class Claimed(
+        override val paid: Boolean = false,
+    ) : CheckPaymentResponse()
+
+    @Serializable
     @SerialName("paid")
     data class Paid(
         override val paid: Boolean = true,
