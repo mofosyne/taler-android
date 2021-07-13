@@ -23,8 +23,8 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.8.0"
-def walletCoreSha256 = "46b0ec59e95f2621c8483f975dac9e288851c1e5809f386b49c491e52f41a190"
+def walletCoreVersion = "v0.8.1"
+def walletCoreSha256 = "23bf89b663f0fd0e84a3d7e54a19766766c7306e5704e43a25df57da72056fa7"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -48,7 +48,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 9
-        versionName "v0.8.0"
+        versionName "v0.8.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
@@ -151,9 +151,9 @@ dependencies {
 }
 
 def walletLibraryDir = "src/main/assets"
-def walletDestFile = "${walletLibraryDir}/taler-wallet-android-${walletCoreVersion}.js"
+def walletDestFile = "${walletLibraryDir}/taler-wallet-embedded-${walletCoreVersion}.js"
 task downloadWalletLibrary(type: Download, dependsOn: preBuild) {
-    src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-android.js?h=prebuilt"
+    src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-embedded.js?h=prebuilt"
     dest walletDestFile
     onlyIfModified true
     overwrite false
@@ -161,7 +161,7 @@ task downloadWalletLibrary(type: Download, dependsOn: preBuild) {
         new File(walletLibraryDir).mkdirs()
         if (!file(dest).exists()) {  // delete old versions before fetching new one
             delete fileTree(walletLibraryDir) {
-                include 'taler-wallet-android-*.js'
+                include 'taler-wallet-embedded-*.js'
             }
         }
     }
