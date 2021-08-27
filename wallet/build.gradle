@@ -120,7 +120,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
 
     // Lists and Selection
-    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
 
     // Navigation Library
@@ -133,7 +133,7 @@ dependencies {
     // QR codes
     implementation 'com.journeyapps:zxing-android-embedded:4.0.2@aar'
     // needed to support zxing library in taler-kotlin-android on API < 24
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
     // Nicer ProgressBar
     implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
@@ -146,8 +146,8 @@ dependencies {
 
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20200518'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
 def walletLibraryDir = "src/main/assets"

@@ -168,12 +168,12 @@
         android:backgroundTint="@color/colorPrimary"
         android:contentDescription="@string/nav_exchange_fees"
         android:src="@drawable/ic_edit"
-        android:tint="?attr/colorOnPrimary"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/withdrawExchangeUrl"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/withdrawExchangeUrl"
         app:layout_constraintTop_toTopOf="@+id/withdrawExchangeUrl"
+        app:tint="?attr/colorOnPrimary"
         tools:visibility="visible" />
 
     <ProgressBar

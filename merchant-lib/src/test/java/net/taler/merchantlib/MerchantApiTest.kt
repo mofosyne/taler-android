@@ -18,8 +18,8 @@ package net.taler.merchantlib
 
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runBlockingTest
 import net.taler.common.ContractProduct
 import net.taler.common.ContractTerms
 import net.taler.lib.common.Amount
@@ -41,7 +41,7 @@ class MerchantApiTest {
     private val orderId = "orderIdFoo"
 
     @Test
-    fun testGetConfig() = runBlockingTest {
+    fun testGetConfig() = runBlocking {
         httpClient.giveJsonResponse("https://backend.int.taler.net/config") {
             """
             {
@@ -56,7 +56,7 @@ class MerchantApiTest {
     }
 
     @Test
-    fun testPostOrder() = runBlockingTest {
+    fun testPostOrder() = runBlocking {
         val product = ContractProduct(
             productId = "foo",
             description = "bar",
@@ -113,7 +113,7 @@ class MerchantApiTest {
     }
 
     @Test
-    fun testCheckOrder() = runBlockingTest {
+    fun testCheckOrder() = runBlocking {
         val unpaidResponse = CheckPaymentResponse.Unpaid(false, "http://taler.net/foo")
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
             """{
@@ -142,7 +142,7 @@ class MerchantApiTest {
     }
 
     @Test
-    fun testDeleteOrder() = runBlockingTest {
+    fun testDeleteOrder() = runBlocking {
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId") {
             "{}"
         }
@@ -165,7 +165,7 @@ class MerchantApiTest {
     }
 
     @Test
-    fun testGetOrderHistory() = runBlockingTest {
+    fun testGetOrderHistory() = runBlocking {
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders") {
             """{  "orders": [
                     {
@@ -215,7 +215,7 @@ class MerchantApiTest {
     }
 
     @Test
-    fun testGiveRefund() = runBlockingTest {
+    fun testGiveRefund() = runBlocking {
         httpClient.giveJsonResponse("http://example.net/instances/testInstance/private/orders/$orderId/refund") {
             """{
                 "taler_refund_uri": "taler://refund/foo/bar"

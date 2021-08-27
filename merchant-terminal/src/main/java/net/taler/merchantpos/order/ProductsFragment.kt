@@ -100,7 +100,7 @@ private class ProductAdapter(
         notifyDataSetChanged()
     }
 
-    private inner class ProductViewHolder(private val v: View) : ViewHolder(v) {
+    inner class ProductViewHolder(private val v: View) : ViewHolder(v) {
         private val name: TextView = v.findViewById(R.id.name)
         private val price: TextView = v.findViewById(R.id.price)
 

@@ -39,12 +39,12 @@ class Response<out T> private constructor(
         }
 
         private suspend fun getFailure(e: Throwable): Failure = when (e) {
-            is ResponseException -> Failure(e, getExceptionString(e), e.response?.status)
+            is ResponseException -> Failure(e, getExceptionString(e), e.response.status)
             else -> Failure(e, e.toString())
         }
 
         private suspend fun getExceptionString(e: ResponseException): String {
-            val response = e.response ?: return e.toString()
+            val response = e.response
             return try {
                 Log.e("TEST", "TRY RECEIVE $response")
                 val error: Error = response.receive()

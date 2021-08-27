@@ -89,7 +89,7 @@ private class CoinFeeAdapter(private val items: List<CoinFee>) : Adapter<CoinFee
         holder.bind(items[position])
     }
 
-    private class CoinFeeViewHolder(private val v: View) : ViewHolder(v) {
+    class CoinFeeViewHolder(private val v: View) : ViewHolder(v) {
         private val res = v.context.resources
         private val coinView: TextView = v.findViewById(R.id.coinView)
         private val withdrawFeeView: TextView = v.findViewById(R.id.withdrawFeeView)
@@ -127,7 +127,7 @@ private class WireFeeAdapter(private val items: List<WireFee>) : Adapter<WireFee
         holder.bind(items[position])
     }
 
-    private class WireFeeViewHolder(private val v: View) : ViewHolder(v) {
+    class WireFeeViewHolder(private val v: View) : ViewHolder(v) {
         private val validityView: TextView = v.findViewById(R.id.validityView)
         private val wireFeeView: TextView = v.findViewById(R.id.wireFeeView)
         private val closingFeeView: TextView = v.findViewById(R.id.closingFeeView)

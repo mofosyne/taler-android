@@ -120,7 +120,7 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
         val currentOrder = order(currentId)
         if (currentOrder.isEmpty()) orders.remove(currentId)
         else currentOrder.lastAddedProduct = null  // not needed anymore and it would get selected
-        mCurrentOrderId.value = nextId
+        mCurrentOrderId.value = requireNotNull(nextId)
     }
 
     @UiThread
@@ -143,7 +143,7 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
         // and would get selected when navigating back instead of last selection
         if (currentOrder.isEmpty()) orders.remove(currentId)
         else currentOrder.lastAddedProduct = null
-        mCurrentOrderId.value = previousId
+        mCurrentOrderId.value = requireNotNull(previousId)
     }
 
     fun hasPreviousOrder(currentOrderId: Int): Boolean {
@@ -159,7 +159,7 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
             forEach { if (it.selected) it.selected = false }
             category.selected = true
         }
-        mCategories.postValue(newCategories)
+        mCategories.postValue(newCategories ?: emptyList())
         mProducts.postValue(productsByCategory[category])
     }
 

@@ -130,7 +130,7 @@ class ConfigFragment : Fragment() {
         return true
     }
 
-    private val onConfigResult = Observer<ConfigResult> { result ->
+    private val onConfigResult = Observer<ConfigResult?> { result ->
         if (result == null) return@Observer
         when (result) {
             is ConfigResult.Success -> {

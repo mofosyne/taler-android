@@ -61,14 +61,14 @@ class WithdrawManager(
 
     private var withdrawStatusCheck: Job? = null
 
-    private val mWithdrawAmount = MutableLiveData<Amount>()
-    val withdrawAmount: LiveData<Amount> = mWithdrawAmount
+    private val mWithdrawAmount = MutableLiveData<Amount?>()
+    val withdrawAmount: LiveData<Amount?> = mWithdrawAmount
 
-    private val mWithdrawResult = MutableLiveData<WithdrawResult>()
-    val withdrawResult: LiveData<WithdrawResult> = mWithdrawResult
+    private val mWithdrawResult = MutableLiveData<WithdrawResult?>()
+    val withdrawResult: LiveData<WithdrawResult?> = mWithdrawResult
 
-    private val mWithdrawStatus = MutableLiveData<WithdrawStatus>()
-    val withdrawStatus: LiveData<WithdrawStatus> = mWithdrawStatus
+    private val mWithdrawStatus = MutableLiveData<WithdrawStatus?>()
+    val withdrawStatus: LiveData<WithdrawStatus?> = mWithdrawStatus
 
     private val mLastTransaction = MutableLiveData<LastTransaction>()
     val lastTransaction: LiveData<LastTransaction> = mLastTransaction

@@ -70,7 +70,7 @@ class Response<out T> private constructor(
     }
 
     private suspend fun getExceptionString(e: ResponseException): String {
-        val response = e.response ?: return e.toString()
+        val response = e.response
         return try {
             val error: Error = response.receive()
             "Error ${error.code}: ${error.hint}"

@@ -75,8 +75,8 @@ class ConfigManager(
     )
     internal val currency: LiveData<String> = mCurrency
 
-    private val mConfigResult = MutableLiveData<ConfigResult>()
-    val configResult: LiveData<ConfigResult> = mConfigResult
+    private val mConfigResult = MutableLiveData<ConfigResult?>()
+    val configResult: LiveData<ConfigResult?> = mConfigResult
 
     fun hasConfig() = config.bankUrl.isNotEmpty()
             && config.username.isNotEmpty()

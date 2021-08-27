@@ -87,10 +87,10 @@
         android:layout_height="48dp"
         android:backgroundTint="?colorPrimary"
         android:contentDescription="@string/history_refund"
-        android:tint="?attr/colorOnPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_cash_refund" />
+        app:srcCompat="@drawable/ic_cash_refund"
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

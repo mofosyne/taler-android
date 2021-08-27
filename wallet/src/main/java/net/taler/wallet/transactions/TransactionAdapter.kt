@@ -154,7 +154,7 @@ internal class TransactionLookup(
     override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
         list.findChildViewUnder(e.x, e.y)?.let { view ->
             val holder = list.getChildViewHolder(view)
-            val position = holder.adapterPosition
+            val position = holder.bindingAdapterPosition
             return object : ItemDetails<String>() {
                 override fun getPosition(): Int = position
                 override fun getSelectionKey(): String = adapter.keyProvider.getKey(position)

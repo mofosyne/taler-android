@@ -35,7 +35,7 @@ import net.taler.merchantlib.Response.Companion.response
 
 class MerchantApi(
     private val httpClient: HttpClient = getDefaultHttpClient(),
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
     suspend fun getConfig(baseUrl: String): Response<ConfigResponse> = withContext(ioDispatcher) {
@@ -46,7 +46,7 @@ class MerchantApi(
 
     suspend fun postOrder(
         merchantConfig: MerchantConfig,
-        orderRequest: PostOrderRequest
+        orderRequest: PostOrderRequest,
     ): Response<PostOrderResponse> = withContext(ioDispatcher) {
         response {
             httpClient.post(merchantConfig.urlFor("private/orders")) {
@@ -59,7 +59,7 @@ class MerchantApi(
 
     suspend fun checkOrder(
         merchantConfig: MerchantConfig,
-        orderId: String
+        orderId: String,
     ): Response<CheckPaymentResponse> = withContext(ioDispatcher) {
         response {
             httpClient.get(merchantConfig.urlFor("private/orders/$orderId")) {
@@ -70,7 +70,7 @@ class MerchantApi(
 
     suspend fun deleteOrder(
         merchantConfig: MerchantConfig,
-        orderId: String
+        orderId: String,
     ): Response<Unit> = withContext(ioDispatcher) {
         response {
             httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
@@ -91,7 +91,7 @@ class MerchantApi(
     suspend fun giveRefund(
         merchantConfig: MerchantConfig,
         orderId: String,
-        request: RefundRequest
+        request: RefundRequest,
     ): Response<RefundResponse> = withContext(ioDispatcher) {
         response {
             httpClient.post(merchantConfig.urlFor("private/orders/$orderId/refund")) {

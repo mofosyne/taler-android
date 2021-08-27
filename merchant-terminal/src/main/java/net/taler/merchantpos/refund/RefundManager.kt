@@ -49,8 +49,8 @@ class RefundManager(
     var toBeRefunded: OrderHistoryEntry? = null
         private set
 
-    private val mRefundResult = MutableLiveData<RefundResult>()
-    internal val refundResult: LiveData<RefundResult> = mRefundResult
+    private val mRefundResult = MutableLiveData<RefundResult?>()
+    internal val refundResult: LiveData<RefundResult?> = mRefundResult
 
     @UiThread
     internal fun startRefund(item: OrderHistoryEntry) {

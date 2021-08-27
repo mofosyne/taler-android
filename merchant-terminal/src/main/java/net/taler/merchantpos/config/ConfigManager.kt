@@ -84,8 +84,8 @@ class ConfigManager(
     var currency: String? = null
         private set
 
-    private val mConfigUpdateResult = MutableLiveData<ConfigUpdateResult>()
-    val configUpdateResult: LiveData<ConfigUpdateResult> = mConfigUpdateResult
+    private val mConfigUpdateResult = MutableLiveData<ConfigUpdateResult?>()
+    val configUpdateResult: LiveData<ConfigUpdateResult?> = mConfigUpdateResult
 
     fun addConfigurationReceiver(receiver: ConfigurationReceiver) {
         configurationReceivers.add(receiver)
@@ -115,7 +115,7 @@ class ConfigManager(
                 Log.e(TAG, "Error retrieving merchant config", e)
                 val msg = if (e is ClientRequestException) {
                     context.getString(
-                        if (e.response?.status == Unauthorized) R.string.config_auth_error
+                        if (e.response.status == Unauthorized) R.string.config_auth_error
                         else R.string.config_error_network
                     )
                 } else {

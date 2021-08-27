@@ -54,7 +54,7 @@ internal class MutableLiveOrder(
         MutableLiveData(Order(id, currency, availableCategories))
     override val orderTotal: LiveData<Amount> = Transformations.map(order) { it.total }
     override val restartState = MutableLiveData(DISABLED)
-    private val selectedOrderLine = MutableLiveData<ConfigProduct>()
+    private val selectedOrderLine = MutableLiveData<ConfigProduct?>()
     override val selectedProductKey: String?
         get() = selectedOrderLine.value?.id
     override val modifyOrderAllowed =
