@@ -150,19 +150,29 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         if (uri.fragment != null && !isOnline()) {
             connectToWifi(this, uri.fragment!!)
         }
+        val normalizedURL = url.lowercase(ROOT)
+        val action = normalizedURL.substring(
+            if (normalizedURL.startsWith("taler://")) {
+                "taler://".length
+            } else if (normalizedURL.startsWith("taler+http://") && model.devMode.value == true) {
+                "taler+http://".length
+            } else {
+                normalizedURL.length
+            }
+        )
         when {
-            url.lowercase(ROOT).startsWith("taler://pay/") || url.lowercase(ROOT).startsWith("taler+http://pay/") -> {
+            action.startsWith("pay/") -> {
                 Log.v(TAG, "navigating!")
                 nav.navigate(R.id.action_nav_main_to_promptPayment)
                 model.paymentManager.preparePay(url)
             }
-            url.lowercase(ROOT).startsWith("taler://withdraw/") || url.lowercase(ROOT).startsWith("taler+http://withdraw/") -> {
+            action.startsWith("withdraw/") -> {
                 Log.v(TAG, "navigating!")
                 // there's more than one entry point, so use global action
                 nav.navigate(R.id.action_global_promptWithdraw)
                 model.withdrawManager.getWithdrawalDetails(url)
             }
-            url.lowercase(ROOT).startsWith("taler://refund/") || url.lowercase(ROOT).startsWith("taler+http://refund/") -> {
+            action.startsWith("refund/") -> {
                 model.showProgressBar.value = true
                 model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
             }
