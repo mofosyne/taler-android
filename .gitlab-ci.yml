@@ -1,4 +1,4 @@
-image: registry.gitlab.com/fdroid/ci-images-client:latest
+image: briar/ci-image-android:latest
 
 cache:
   paths:
