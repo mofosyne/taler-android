@@ -17,7 +17,6 @@
 
 package net.taler.wallet.backend
 
-import akono.AkonoJni
 import android.app.Service
 import android.content.Intent
 import android.os.Handler
@@ -26,6 +25,7 @@ import android.os.Message
 import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
+import net.taler.akono.AkonoJni
 import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
@@ -75,7 +75,6 @@ class WalletBackendService : Service() {
         akono.evalNodeCode("tw = require('@gnu-taler/taler-wallet-embedded');")
         akono.evalNodeCode("tw.installNativeWalletListener();")
         sendInitMessage()
-        initialized = true
         super.onCreate()
     }
 
@@ -92,13 +91,14 @@ class WalletBackendService : Service() {
      * Handler of incoming messages from clients.
      */
     class IncomingHandler(
-        service: WalletBackendService
+        service: WalletBackendService,
     ) : Handler() {
 
         private val serviceWeakRef = WeakReference(service)
 
         override fun handleMessage(msg: Message) {
             val svc = serviceWeakRef.get() ?: return
+            if (!svc.initialized) Log.w(TAG, "Warning: Not yet initialized")
             when (msg.what) {
                 MSG_COMMAND -> {
                     val data = msg.data
@@ -203,7 +203,8 @@ class WalletBackendService : Service() {
             "response" -> {
                 when (message.getString("operation")) {
                     "init" -> {
-                        Log.v(TAG, "got response for init operation: ${message.toString(2)}")
+                        Log.d(TAG, "got response for init operation: ${message.toString(2)}")
+                        initialized = true
                         sendNotify(message.toString(2))
                     }
                     "reset" -> {
