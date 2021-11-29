@@ -167,7 +167,7 @@ class WithdrawManager(
                 exchangeBaseUrl = exchangeBaseUrl,
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
-                tosText = it.tos,
+                tosText = it.content,
                 tosEtag = it.currentEtag,
                 showImmediately = showImmediately.toEvent(),
             )

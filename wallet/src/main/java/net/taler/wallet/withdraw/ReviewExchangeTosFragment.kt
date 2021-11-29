@@ -87,7 +87,8 @@ class ReviewExchangeTosFragment : Fragment() {
     private fun onTosError(msg: String) {
         ui.tosList.fadeIn()
         ui.progressBar.fadeOut()
-        ui.buttonCard.fadeOut()
+        ui.acceptTosCheckBox.fadeIn()
+        // ui.buttonCard.fadeOut()
         ui.errorView.text = getString(R.string.exchange_tos_error, "\n\n$msg")
         ui.errorView.fadeIn()
     }

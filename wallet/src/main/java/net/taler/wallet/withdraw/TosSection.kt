@@ -16,6 +16,7 @@
 
 package net.taler.wallet.withdraw
 
+import android.util.Log
 import io.noties.markwon.Markwon
 import kotlinx.serialization.Serializable
 import org.commonmark.node.Code
@@ -50,7 +51,7 @@ internal fun parseTos(markwon: Markwon, text: String): List<TosSection> {
             lastHeading = getNodeText(node)
             if (lastHeading.isBlank()) throw ParseException("Empty heading", 0)
         } else if (lastHeading == null) {
-            throw ParseException("Found text before first primary heading", 0)
+            throw ParseException("The exchange ToS does not follow the correct format", 0)
         } else {
             section.appendChild(node)
         }
@@ -77,6 +78,6 @@ private fun getNodeText(rootNode: Node): String {
 
 @Serializable
 data class TosResponse(
-    val tos: String,
+    val content: String,
     val currentEtag: String
 )
