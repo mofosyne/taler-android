@@ -23,21 +23,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import net.taler.common.startActivitySafe
 import net.taler.common.toAbsoluteTime
+import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentTransactionWithdrawalBinding
+import net.taler.wallet.withdraw.createManualTransferRequired
 
 class TransactionWithdrawalFragment : TransactionDetailFragment() {
 
+    private val model: MainViewModel by activityViewModels()
+    private val withdrawManager by lazy { model.withdrawManager }
     private lateinit var ui: FragmentTransactionWithdrawalBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentTransactionWithdrawalBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -55,6 +61,18 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
                 data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
             }
             ui.confirmWithdrawalButton.setOnClickListener { startActivitySafe(i) }
+        } else if (t.pending && !t.confirmed && t.withdrawalDetails is WithdrawalDetails.ManualTransfer) {
+            ui.confirmWithdrawalButton.setText(R.string.withdraw_manual_ready_details_intro)
+            ui.confirmWithdrawalButton.setOnClickListener {
+                val status = createManualTransferRequired(
+                    amount = t.amountRaw,
+                    exchangeBaseUrl = t.exchangeBaseUrl,
+                    // TODO what if there's more than one or no URI?
+                    uriStr = t.withdrawalDetails.exchangePaytoUris[0],
+                )
+                withdrawManager.viewManualWithdrawal(status)
+                findNavController().navigate(R.id.action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success)
+            }
         } else ui.confirmWithdrawalButton.visibility = View.GONE
         ui.chosenAmountLabel.text = getString(R.string.amount_chosen)
         ui.chosenAmountView.text =

@@ -63,7 +63,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="@string/withdraw_amount"
+        android:minWidth="128dp"
         app:boxBackgroundMode="outline"
         app:endIconDrawable="@drawable/ic_cancel"
         app:endIconMode="clear_text"
@@ -76,7 +76,6 @@
             android:id="@+id/amountView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>

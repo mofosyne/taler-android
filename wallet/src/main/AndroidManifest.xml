@@ -83,4 +83,12 @@
             android:process=":WalletBackendService" />
     </application>
 
+    <queries>
+        <intent>
+            <data
+                android:host="iban"
+                android:scheme="payto" />
+        </intent>
+    </queries>
+
 </manifest>

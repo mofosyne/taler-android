@@ -82,9 +82,19 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_exchange_manual_withdrawal_success"
+        android:name="net.taler.wallet.withdraw.ManualWithdrawSuccessFragment"
+        android:label="@string/withdraw_title">
+        <action
+            android:id="@+id/action_nav_exchange_manual_withdrawal_success_to_nav_main"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_settings_backup"
         android:name="net.taler.wallet.settings.BackupSettingsFragment"
-        android:label="@string/nav_settings_backup"/>
+        android:label="@string/nav_settings_backup" />
 
     <fragment
         android:id="@+id/nav_transactions"
@@ -96,7 +106,11 @@
         android:id="@+id/nav_transactions_detail_withdrawal"
         android:name="net.taler.wallet.transactions.TransactionWithdrawalFragment"
         android:label="@string/transactions_detail_title"
-        tools:layout="@layout/fragment_transaction_withdrawal" />
+        tools:layout="@layout/fragment_transaction_withdrawal">
+        <action
+            android:id="@+id/action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success"
+            app:destination="@id/nav_exchange_manual_withdrawal_success" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_transactions_detail_payment"
@@ -136,6 +150,10 @@
         <action
             android:id="@+id/action_promptWithdraw_to_nav_main"
             app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
+        <action
+            android:id="@+id/action_promptWithdraw_to_nav_exchange_manual_withdrawal_success"
+            app:destination="@id/nav_exchange_manual_withdrawal_success"
             app:popUpTo="@id/nav_main" />
         <action
             android:id="@+id/action_promptWithdraw_to_errorFragment"

@@ -39,7 +39,7 @@ def gitCommit = { ->
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
@@ -91,8 +91,13 @@ android {
         jvmTarget = "1.8"
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.5'
+    }
+
     buildFeatures {
-        viewBinding = true
+        viewBinding true
+        compose true
     }
 
     packagingOptions {
@@ -118,6 +123,14 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+
+    // Compose
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.compose.material:material:1.0.5'
+    implementation 'androidx.compose.animation:animation:1.0.5'
+    implementation 'androidx.compose.ui:ui-tooling:1.0.5'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation "com.google.android.material:compose-theme-adapter:1.1.1"
 
     // Lists and Selection
     implementation "androidx.recyclerview:recyclerview:1.2.1"

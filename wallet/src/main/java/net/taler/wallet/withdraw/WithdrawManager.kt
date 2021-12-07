@@ -16,6 +16,7 @@
 
 package net.taler.wallet.withdraw
 
+import android.net.Uri
 import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
@@ -56,6 +57,14 @@ sealed class WithdrawStatus {
 
     object Withdrawing : WithdrawStatus()
     data class Success(val currency: String) : WithdrawStatus()
+    data class ManualTransferRequired(
+        val exchangeBaseUrl: String,
+        val uri: Uri,
+        val iban: String,
+        val subject: String,
+        val amountRaw: Amount,
+    ) : WithdrawStatus()
+
     data class Error(val message: String?) : WithdrawStatus()
 }
 
@@ -77,6 +86,11 @@ data class WithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
     val amountEffective: Amount,
+)
+
+@Serializable
+data class AcceptManualWithdrawalResponse(
+    val exchangePaytoUris: List<String>,
 )
 
 data class ExchangeSelection(
@@ -197,24 +211,39 @@ class WithdrawManager(
     @UiThread
     fun acceptWithdrawal() = scope.launch {
         val status = withdrawStatus.value as ReceivedDetails
-        val operation = if (status.talerWithdrawUri == null) {
-            "acceptManualWithdrawal"
-        } else {
-            "acceptBankIntegratedWithdrawal"
-        }
         withdrawStatus.value = WithdrawStatus.Withdrawing
+        if (status.talerWithdrawUri == null) {
+            acceptManualWithdrawal(status)
+        } else {
+            acceptBankIntegratedWithdrawal(status)
+        }
+    }
 
-        api.request<Unit>(operation) {
+    private suspend fun acceptBankIntegratedWithdrawal(status: ReceivedDetails) {
+        api.request<Unit>("acceptBankIntegratedWithdrawal") {
             put("exchangeBaseUrl", status.exchangeBaseUrl)
-            if (status.talerWithdrawUri == null) {
-                put("amount", status.amountRaw.toJSONString())
-            } else {
-                put("talerWithdrawUri", status.talerWithdrawUri)
-            }
+            put("talerWithdrawUri", status.talerWithdrawUri)
         }.onError {
-            handleError(operation, it)
+            handleError("acceptBankIntegratedWithdrawal", it)
         }.onSuccess {
             withdrawStatus.value = WithdrawStatus.Success(status.amountRaw.currency)
+        }
+    }
+
+    private suspend fun acceptManualWithdrawal(status: ReceivedDetails) {
+        api.request("acceptManualWithdrawal", AcceptManualWithdrawalResponse.serializer()) {
+            put("exchangeBaseUrl", status.exchangeBaseUrl)
+            put("amount", status.amountRaw.toJSONString())
+        }.onError {
+            handleError("acceptManualWithdrawal", it)
+        }.onSuccess { response ->
+            withdrawStatus.value = createManualTransferRequired(
+                amount = status.amountRaw,
+                exchangeBaseUrl = status.exchangeBaseUrl,
+                // TODO what if there's more than one or no URI?
+                uriStr = "payto://iban/ASDQWEASDZXCASDQWE?amount=KUDOS%3A10&message=Taler+Withdrawal+P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG", // response.exchangePaytoUris[0],
+                // "payto://x-taler-bank/bank.demo.taler.net/Exchange?amount=KUDOS%3A10&message=Taler+Withdrawal+P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG"
+            )
         }
     }
 
@@ -224,4 +253,27 @@ class WithdrawManager(
         withdrawStatus.value = WithdrawStatus.Error(error.userFacingMsg)
     }
 
+    /**
+     * A hack to be able to view bank details for manual withdrawal with the same logic.
+     * Don't call this from ongoing withdrawal processes as it destroys state.
+     */
+    fun viewManualWithdrawal(status: WithdrawStatus.ManualTransferRequired) {
+        withdrawStatus.value = status
+    }
+
+}
+
+fun createManualTransferRequired(
+    amount: Amount,
+    exchangeBaseUrl: String,
+    uriStr: String,
+): WithdrawStatus.ManualTransferRequired {
+    val uri = Uri.parse(uriStr)
+    return WithdrawStatus.ManualTransferRequired(
+        exchangeBaseUrl = exchangeBaseUrl,
+        uri = uri,
+        iban = uri.lastPathSegment!!,
+        subject = uri.getQueryParameter("message")!!,
+        amountRaw = amount,
+    )
 }

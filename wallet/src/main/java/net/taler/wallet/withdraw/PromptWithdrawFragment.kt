@@ -49,7 +49,7 @@ class PromptWithdrawFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         ui = FragmentPromptWithdrawBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -80,6 +80,10 @@ class PromptWithdrawFragment : Fragment() {
         is TosReviewRequired -> onTosReviewRequired(status)
         is ReceivedDetails -> onReceivedDetails(status)
         is Withdrawing -> model.showProgressBar.value = true
+        is WithdrawStatus.ManualTransferRequired -> {
+            model.showProgressBar.value = false
+            findNavController().navigate(R.id.action_promptWithdraw_to_nav_exchange_manual_withdrawal_success)
+        }
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null

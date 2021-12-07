@@ -21,4 +21,7 @@
 
     <color name="green">#388E3C</color>
     <color name="red">#C62828</color>
+    <color name="notice_background">#fff3cd</color>
+    <color name="notice_border">#ffecb5</color>
+    <color name="notice_text">#664d03</color>
 </resources>
