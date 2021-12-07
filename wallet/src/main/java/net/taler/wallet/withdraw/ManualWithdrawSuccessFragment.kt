@@ -16,6 +16,9 @@
 
 package net.taler.wallet.withdraw
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -27,23 +30,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.composethemeadapter.MdcTheme
@@ -51,7 +61,6 @@ import net.taler.common.startActivitySafe
 import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.cleanExchange
 
 class ManualWithdrawSuccessFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -89,10 +98,11 @@ private fun Screen(
     status: WithdrawStatus.ManualTransferRequired,
     bankAppClick: (() -> Unit)?,
 ) {
+    val scrollState = rememberScrollState()
     Column(modifier = Modifier
-        .fillMaxWidth()
         .padding(all = 16.dp)
         .wrapContentWidth(CenterHorizontally)
+        .verticalScroll(scrollState)
     ) {
         Text(
             text = stringResource(R.string.withdraw_manual_ready_title),
@@ -111,79 +121,16 @@ private fun Screen(
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
-        Row {
-            Text(
-                text = stringResource(R.string.withdraw_manual_ready_iban),
-                style = MaterialTheme.typography.body1,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.3f)
-            )
-            Text(
-                text = status.iban,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.7f)
-            )
-        }
-        Row {
-            Text(
-                text = stringResource(R.string.withdraw_manual_ready_subject),
-                style = MaterialTheme.typography.body1,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.3f)
-            )
-            Text(
-                text = status.subject,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.7f)
-            )
-        }
-        Row {
-            Text(
-                text = stringResource(R.string.amount_chosen),
-                style = MaterialTheme.typography.body1,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.3f)
-            )
-            Text(
-                text = status.amountRaw.toString(),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.7f)
-            )
-        }
-        Row {
-            Text(
-                text = stringResource(R.string.withdraw_exchange),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.3f)
-            )
-            Text(
-                text = cleanExchange(status.exchangeBaseUrl),
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .weight(0.7f)
-                    .alpha(0.7f)
-            )
-        }
+        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), status.iban)
+        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), status.subject)
+        DetailRow(stringResource(R.string.amount_chosen), status.amountRaw.toString())
+        DetailRow(stringResource(R.string.withdraw_exchange), status.exchangeBaseUrl, false)
         Text(
             text = stringResource(R.string.withdraw_manual_ready_warning),
             style = MaterialTheme.typography.body2,
             color = colorResource(R.color.notice_text),
             modifier = Modifier
+                .align(CenterHorizontally)
                 .padding(all = 8.dp)
                 .background(colorResource(R.color.notice_background))
                 .border(BorderStroke(2.dp, colorResource(R.color.notice_border)))
@@ -202,6 +149,35 @@ private fun Screen(
     }
 }
 
+@Composable
+fun DetailRow(label: String, content: String, copy: Boolean = true) {
+    val context = LocalContext.current
+    Row {
+        Column(
+            modifier = Modifier
+                .weight(0.3f)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.body1,
+                fontWeight = if (copy) FontWeight.Bold else FontWeight.Normal,
+            )
+            if (copy) {
+                IconButton(
+                    onClick = { copyToClipBoard(context, label, content) },
+                ) { Icon(Icons.Default.ContentCopy, stringResource(R.string.copy)) }
+            }
+        }
+        Text(
+            text = content,
+            style = MaterialTheme.typography.body1,
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .weight(0.7f)
+                .then(if (copy) Modifier else Modifier.alpha(0.7f))
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewScreen() {
@@ -214,4 +190,10 @@ fun PreviewScreen() {
             amountRaw = Amount("KUDOS", 10, 0)
         )) {}
     }
+}
+
+private fun copyToClipBoard(context: Context, label: String, str: String) {
+    val clipboard = context.getSystemService<ClipboardManager>()
+    val clip = ClipData.newPlainText(label, str)
+    clipboard?.setPrimaryClip(clip)
 }

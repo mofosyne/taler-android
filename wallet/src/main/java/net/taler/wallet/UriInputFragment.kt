@@ -38,7 +38,7 @@ class UriInputFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentUriInputBinding.inflate(inflater, container, false)
         return ui.root
     }
