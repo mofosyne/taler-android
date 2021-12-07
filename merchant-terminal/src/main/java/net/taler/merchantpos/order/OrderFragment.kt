@@ -75,6 +75,7 @@ class OrderFragment : Fragment() {
     private fun onOrderSwitched(orderId: Int, liveOrder: LiveOrder) {
         // order title
         liveOrder.order.observe(viewLifecycleOwner, { order ->
+            if (order == null) return@observe
             activity?.title = getString(R.string.order_label_title, order.title)
         })
         // restart button

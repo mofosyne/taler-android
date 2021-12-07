@@ -31,7 +31,7 @@ import net.taler.merchantpos.order.RestartState.UNDO
 internal enum class RestartState { ENABLED, DISABLED, UNDO }
 
 internal interface LiveOrder {
-    val order: LiveData<Order>
+    val order: LiveData<Order?>
     val orderTotal: LiveData<Amount>
     val restartState: LiveData<RestartState>
     val modifyOrderAllowed: LiveData<Boolean>
@@ -50,9 +50,9 @@ internal class MutableLiveOrder(
 ) : LiveOrder {
     private val availableCategories: Map<Int, Category>
         get() = productsByCategory.keys.map { it.id to it }.toMap()
-    override val order: MutableLiveData<Order> =
+    override val order: MutableLiveData<Order?> =
         MutableLiveData(Order(id, currency, availableCategories))
-    override val orderTotal: LiveData<Amount> = Transformations.map(order) { it.total }
+    override val orderTotal: LiveData<Amount> = Transformations.map(order) { it?.total }
     override val restartState = MutableLiveData(DISABLED)
     private val selectedOrderLine = MutableLiveData<ConfigProduct?>()
     override val selectedProductKey: String?

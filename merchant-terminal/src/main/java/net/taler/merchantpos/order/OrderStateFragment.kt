@@ -83,6 +83,7 @@ class OrderStateFragment : Fragment() {
             }
         })
         liveOrder.order.observe(viewLifecycleOwner, { order ->
+            if (order == null) return@observe
             onOrderChanged(order, tracker)
         })
         liveOrder.orderTotal.observe(viewLifecycleOwner, { orderTotal ->
