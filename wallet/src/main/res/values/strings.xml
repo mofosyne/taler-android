@@ -122,6 +122,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_manual_ready_iban">IBAN</string>
     <string name="withdraw_manual_ready_subject">Subject</string>
     <string name="withdraw_manual_ready_bank_button">Open in banking app</string>
+    <string name="withdraw_manual_ready_cancel">Cancel withdrawal</string>
     <string name="withdraw_manual_ready_warning">Make sure to use the correct subject, otherwise the money will not arrive in this wallet.</string>
     <string name="withdraw_error_title">Withdrawal Error</string>
     <string name="withdraw_error_message">Withdrawing is currently not possible. Please try again later!</string>

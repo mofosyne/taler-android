@@ -63,6 +63,7 @@ sealed class WithdrawStatus {
         val iban: String,
         val subject: String,
         val amountRaw: Amount,
+        val transactionId: String?,
     ) : WithdrawStatus()
 
     data class Error(val message: String?) : WithdrawStatus()
@@ -241,8 +242,7 @@ class WithdrawManager(
                 amount = status.amountRaw,
                 exchangeBaseUrl = status.exchangeBaseUrl,
                 // TODO what if there's more than one or no URI?
-                uriStr = "payto://iban/ASDQWEASDZXCASDQWE?amount=KUDOS%3A10&message=Taler+Withdrawal+P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG", // response.exchangePaytoUris[0],
-                // "payto://x-taler-bank/bank.demo.taler.net/Exchange?amount=KUDOS%3A10&message=Taler+Withdrawal+P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG"
+                uriStr = response.exchangePaytoUris[0],
             )
         }
     }
@@ -258,6 +258,7 @@ class WithdrawManager(
      * Don't call this from ongoing withdrawal processes as it destroys state.
      */
     fun viewManualWithdrawal(status: WithdrawStatus.ManualTransferRequired) {
+        require(status.transactionId != null) { "No transaction ID given" }
         withdrawStatus.value = status
     }
 
@@ -267,6 +268,7 @@ fun createManualTransferRequired(
     amount: Amount,
     exchangeBaseUrl: String,
     uriStr: String,
+    transactionId: String? = null,
 ): WithdrawStatus.ManualTransferRequired {
     val uri = Uri.parse(uriStr)
     return WithdrawStatus.ManualTransferRequired(
@@ -275,5 +277,6 @@ fun createManualTransferRequired(
         iban = uri.lastPathSegment!!,
         subject = uri.getQueryParameter("message")!!,
         amountRaw = amount,
+        transactionId = transactionId,
     )
 }

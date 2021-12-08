@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -44,6 +45,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.ComposeView
@@ -56,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.startActivitySafe
 import net.taler.lib.common.Amount
@@ -64,6 +67,7 @@ import net.taler.wallet.R
 
 class ManualWithdrawSuccessFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
+    private val transactionManager by lazy { model.transactionManager }
     private val withdrawManager by lazy { model.withdrawManager }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,10 +82,16 @@ class ManualWithdrawSuccessFragment : Fragment() {
         val onBankAppClick = if (componentName == null) null else {
             { startActivitySafe(intent) }
         }
+        val onCancelClick = if (status.transactionId == null) null else {
+            {
+                transactionManager.deleteTransaction(status.transactionId)
+                findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
+            }
+        }
         setContent {
             MdcTheme {
                 Surface {
-                    Screen(status, onBankAppClick)
+                    Screen(status, onBankAppClick, onCancelClick)
                 }
             }
         }
@@ -97,6 +107,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
 private fun Screen(
     status: WithdrawStatus.ManualTransferRequired,
     bankAppClick: (() -> Unit)?,
+    onCancelClick: (() -> Unit)?,
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
@@ -146,6 +157,17 @@ private fun Screen(
                 Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
             }
         }
+        if (onCancelClick != null) {
+            Button(
+                onClick = onCancelClick,
+                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.red)),
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .align(End),
+            ) {
+                Text(text = stringResource(R.string.withdraw_manual_ready_cancel))
+            }
+        }
     }
 }
 
@@ -171,7 +193,7 @@ fun DetailRow(label: String, content: String, copy: Boolean = true) {
             text = content,
             style = MaterialTheme.typography.body1,
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(bottom = 8.dp)
                 .weight(0.7f)
                 .then(if (copy) Modifier else Modifier.alpha(0.7f))
         )
@@ -187,8 +209,9 @@ fun PreviewScreen() {
             uri = Uri.parse("https://taler.net"),
             iban = "ASDQWEASDZXCASDQWE",
             subject = "Taler Withdrawal P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG",
-            amountRaw = Amount("KUDOS", 10, 0)
-        )) {}
+            amountRaw = Amount("KUDOS", 10, 0),
+            transactionId = "",
+        ), {}) {}
     }
 }
 

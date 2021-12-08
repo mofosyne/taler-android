@@ -69,6 +69,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
                     exchangeBaseUrl = t.exchangeBaseUrl,
                     // TODO what if there's more than one or no URI?
                     uriStr = t.withdrawalDetails.exchangePaytoUris[0],
+                    transactionId = t.transactionId,
                 )
                 withdrawManager.viewManualWithdrawal(status)
                 findNavController().navigate(R.id.action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success)

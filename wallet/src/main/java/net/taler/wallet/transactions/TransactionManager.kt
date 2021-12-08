@@ -16,12 +16,14 @@
 
 package net.taler.wallet.transactions
 
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import java.util.HashMap
 import java.util.LinkedList
@@ -33,7 +35,7 @@ sealed class TransactionsResult {
 
 class TransactionManager(
     private val api: WalletBackendApi,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val mProgress = MutableLiveData<Boolean>()
@@ -85,6 +87,16 @@ class TransactionManager(
 
             // update all transactions on UiThread if there was a currency
             if (searchQuery == null) allTransactions[currency] = transactions
+        }
+    }
+
+    fun deleteTransaction(transactionId: String)  = scope.launch {
+        api.request<Unit>("deleteTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error deleteTransaction $it")
+        }.onSuccess {
+            // no op
         }
     }
 
