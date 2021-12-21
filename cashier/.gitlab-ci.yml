@@ -39,8 +39,7 @@ cashier_deploy_nightly:
     - ./gradlew :cashier:assembleRelease
     # Rename APK, so fdroid nightly accepts it (looks for *-debug.apk)
     - mv cashier/build/outputs/apk/release/*.apk cashier-debug.apk
-    # START only needed while fdroidserver and patch not accepted/released upstream
-    - apt update && apt-get -qy install --no-install-recommends fdroidserver openssh-client patch
-    - patch /usr/lib/python3/dist-packages/fdroidserver/nightly.py nightly-stats.patch
-    # END
+    # install fdroidserver and dependencies for nightly publishing
+    - apt update && apt-get -qy install --no-install-recommends fdroidserver openssh-client
+    - fdroid --version
     - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v
