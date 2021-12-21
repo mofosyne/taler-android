@@ -101,6 +101,7 @@ android {
     }
 
     packagingOptions {
+        doNotStrip '**/*.so'
         exclude("META-INF/*.kotlin_module")
     }
 

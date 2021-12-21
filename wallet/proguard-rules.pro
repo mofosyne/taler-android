@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class akono.AkonoJni {*;}
+-keep class net.taler.akono.** {*;}
 
 #noinspection ShrinkerUnresolvedReference
 -keep class net.taler.wallet.** {*;}
