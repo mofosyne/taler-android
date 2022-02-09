@@ -15,7 +15,7 @@
     <string name="or">o</string>
     <string name="error_unsupported_uri">Error: Esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="balances_title">Balances</string>
+    <string name="balances_title">Saldo</string>
     <string name="amount_positive">+ %s</string>
     <string name="amount_chosen">Elegir Cantidad</string>
     <string name="balances_inbound_label">entrada</string>
@@ -54,9 +54,9 @@
     <string name="withdraw_manual_check_fees">Comisiones por cheque</string>
     <string name="withdraw_error_title">Error en la retirada</string>
     <string name="withdraw_error_test">Error retirando TESTKUDOS</string>
-    <string name="exchange_settings_title">Exchanges</string>
+    <string name="exchange_settings_title">Intercambios</string>
     <string name="exchange_settings_summary">Gestionar la lista de exchanges conocidos en esta cartera</string>
-    <string name="exchange_list_title">Exchanges</string>
+    <string name="exchange_list_title">Intercambios</string>
     <string name="exchange_list_empty">Sin exchanges conocidos
 \n
 \nAñade uno manualmente para retirar efectivo digital!</string>
@@ -110,7 +110,7 @@
     <string name="nav_error">Error</string>
     <string name="button_scan_qr_code">Escanear código QR Taler</string>
     <string name="uri_invalid">Taler URI no válida</string>
-    <string name="offline">La operación requiere acceso a Internet. Por favor asegúrate que tú conexión a Internet funciona y prueba de nuevo.</string>
+    <string name="offline">La operación requiere acceso a Internet. Por favor asegúrate que tu conexión a Internet funcione y prueba de nuevo.</string>
     <string name="menu_retry_pending_operations">Reintentar Operaciones Pendientes</string>
     <string name="amount_negative">- %s</string>
     <string name="balances_empty_state">No hay efectivo digital en tu cartera.
@@ -129,14 +129,15 @@
     <string name="payment_initiated">Pago iniciado</string>
     <string name="withdraw_button_confirm_bank">Confirmar con el banco</string>
     <string name="withdraw_amount_error">Inserta una cantidad válida</string>
-    <string name="withdraw_manual_payment_options">"Opciones de pago soportadas por  %1$s:
+    <string name="withdraw_manual_payment_options">Opciones de pago soportadas por %1$s:
 \n
-\n%2$s"</string>
+\n%2$s</string>
     <string name="withdraw_error_message">La retirada ahora mismo no es posible. Por favor prueba de nuevo más tarde!</string>
     <string name="exchange_menu_manual_withdraw">Retirar</string>
     <plurals name="exchange_fee_coin">
         <item quantity="one">Moneda: %s (usada %d vez)</item>
         <item quantity="other">Moneda: %s (usadas %d veces)</item>
     </plurals>
-    <string name="exchange_fee_wire_fee_timespan">Intervalo de tiempo:%1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_timespan">Intervalo de tiempo: %1$s - %2$s</string>
+    <string name="host_apdu_service_desc">Pagos Taler con NFC</string>
 </resources>

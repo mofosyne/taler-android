@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">محفظة نظام Taler</string>
+    <string name="google_play_title" tools:keep="@string/google_play_title">محفظة نظام Taler (تجريبي)</string>
+    <string name="ok">موافق</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">يجعل نظام GNU Taler من معاملات الخصوصية سهلة الاستخدام عبر الإنترنت سريعة وميسرة.</string>
+    <string name="nav_header_title">نظام GNU Taler</string>
+    <string name="nav_header_subtitle">محفظة</string>
+    <string name="nav_prompt_withdraw">سحب النقود الرقمية</string>
+    <string name="nav_exchange_tos">شروط الخدمة لشركة الصرافة</string>
+    <string name="nav_exchange_select">اختر شركة الصرافة</string>
+    <string name="nav_exchange_fees">رسوم شركة الصرافة</string>
+    <string name="nav_error">خطأ</string>
+    <string name="button_back">الرجوع إلى السابق</string>
+    <string name="button_scan_qr_code">مسح رمز الاستجابة السريع لنظام Taler</string>
+    <string name="enter_uri">أدخل مُعرّف الموارد الموحد لنظام Taler</string>
+    <string name="paste">لصق</string>
+    <string name="paste_invalid">تحتوي الحافظة على نوع بيانات غير صحيحة</string>
+    <string name="uri_invalid">مُعرّف الموارد الموحد لنظام Taler غير صحيح</string>
+    <string name="cancel">إلغاء</string>
+    <string name="menu">القائمة</string>
+    <string name="search">البحث</string>
+    <string name="or">أو</string>
+    <string name="offline">تتطلب العملية الاتصال بالإنترنت. يرجى التأكد من أنّ اتصالك بالإنترنت يعمل وحاول مرة أخرى.</string>
+    <string name="error_unsupported_uri">خطأ: مُعرّف الموارد الموحد لنظام URI غير معتمد.</string>
+    <string name="menu_retry_pending_operations">إعادة العمليات المعلقة</string>
+    <string name="host_apdu_service_desc">مدفوعات الاتصال قريب المدى لنظام Taler</string>
+    <string name="balances_title">الأرصدة</string>
+    <string name="amount_positive">%s +</string>
+    <string name="amount_negative">%s -</string>
+    <string name="amount_chosen">المبلغ المختار</string>
+    <string name="balances_inbound_label">الوارد</string>
+    <string name="balances_empty_state">لا يوجد عملة رقمية في محفظتك.
+\n
+\nيمكنك فحص المال من المصرف التجريبي:
+\n
+\nhttps://bank.demo.taler.net</string>
+    <string name="transactions_title">المعاملات</string>
+    <string name="transactions_empty">ليس لديك معاملات</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">هذا التطبيق عبارة عن محفظة لنظام GNU Taler. وهو نظام تجريبي للغاية، وغير جاهز للاستخدام في بيئة الإنتاج لغاية الآن. ونظام GNU Taler هو نظام دفع يحافظ على الخصوصية. يمكن للعملاء عدم الكشف عن هويتهم، لكن لا يمكن للتجار إخفاء دخلهم من خلال المدفوعات باستخدام نظام GNU Taler. هذا يساعد على تجنب التهرب الضريبي وغسيل الأموال. حالة الاستخدام الرئيسية لنظام GNU Taler هي المدفوعات؛ لا يُقصد به أن يكون قيمة مختزنة. تُدعم المدفوعات دائمًا بعملة موجودة. يتم الدفع بعد تحويل الأموال الموجودة إلى نقود إلكترونية بمساعدة شركة الصرافة ، وهي مزود خدمة الدفع لنظام Taler. عند الدفع، يحتاج العملاء فقط إلى محفظة مشحونة. يمكن للتاجر قبول المدفوعات دون إرغام عملائه على التسجيل في موقع التاجر. كما أنّ نظام GNU Taler محصن من العديد من أنواع الاحتيال، مثل التصيد الاحتيالي لمعلومات بطاقة الائتمان أو الاحتيال في استرداد الأموال. وفي حالة الضياع أو السرقة ، قد تختفي فقط كمية محدودة من المال المتبقي في المحفظة.</string>
+    <string name="transactions_empty_search">لم يُعثر على معاملات. جرب بحثًا مختلفًا.</string>
+    <string name="transactions_error">تعذر تحميل المعاملات
+\n
+\n%s</string>
+    <string name="transactions_detail_title">معاملة</string>
+    <string name="transactions_detail_title_balance">الرصيد: %s</string>
+    <string name="transactions_delete">حذف</string>
+    <string name="transactions_select_all">تحديد الكل</string>
+    <string name="transaction_paid">مدفوع</string>
+    <string name="transaction_order_total">المجموع</string>
+    <string name="transaction_order">شراء</string>
+    <string name="transaction_order_id">إيصال #%1$s</string>
+    <string name="transaction_tip_from">إكرامية من %s</string>
+    <string name="transaction_refund">استرداد المال</string>
+    <string name="transaction_refund_from">استرداد الأموال من %s</string>
+    <string name="transaction_pending">معلق</string>
+    <string name="transaction_refresh">رسوم تغيير انتهاء صلاحية العملة</string>
+    <string name="payment_title">دفع</string>
+    <string name="payment_fee">رسوم الدفع +%s</string>
+    <string name="payment_label_order_summary">شراء</string>
+    <string name="payment_error">خطأ: %s</string>
+    <string name="payment_balance_insufficient">رصيد غير كافٍ!</string>
+    <string name="payment_aborted">ملغي</string>
+    <string name="payment_failed">إخفاق</string>
+    <string name="payment_initiated">بدء الدفع</string>
+    <string name="payment_already_paid_title">مدفوع الآن</string>
+    <string name="withdraw_initiated">لقد بدأ السحب</string>
+    <string name="withdraw_title">السحب</string>
+    <string name="withdraw_total">سحب النقود</string>
+    <string name="withdraw_fees">رسوم</string>
+    <string name="withdraw_exchange">شركة الصرافة</string>
+    <string name="withdraw_button_confirm">تأكيد السحب</string>
+    <string name="withdraw_button_confirm_bank">التأكيد مع البنك</string>
+    <string name="withdraw_button_tos">مراجعة الشروط</string>
+    <string name="withdraw_manual_title">حوّل تحويلاً يدويًا لشركة الصرافة</string>
+    <string name="withdraw_amount">ما مقدار المال الذي تريد سحبه؟</string>
+    <string name="withdraw_manual_payment_options">خياراتُ الدفع معتمدة من %1$s:
+\n
+\n%2$s</string>
+    <string name="withdraw_manual_check_fees">تحقق من الرسوم</string>
+    <string name="withdraw_error_title">خطأ في السحب</string>
+    <string name="withdraw_error_test">خطأ في سحب TESTKUDOS</string>
+    <string name="exchange_settings_title">شركات الصرافة</string>
+    <string name="exchange_settings_summary">أدر قائمة شركات الصرافة المعروفة لهذه المحفظة</string>
+    <string name="exchange_list_title">شركات الصرافة</string>
+    <string name="exchange_list_currency">العملة: %s</string>
+    <string name="exchange_list_add">أضف شركة صرافة</string>
+    <string name="exchange_add_url">أدخل عنوان شركة الصرافة</string>
+    <string name="exchange_add_error">تعذر إضافة شركة الصرافة</string>
+    <string name="exchange_menu_manual_withdraw">سحب</string>
+    <string name="exchange_fee_withdrawal_fee_label">رسوم السحب:</string>
+    <string name="exchange_fee_overhead_label">خسارة تقريب الأرقام:</string>
+    <string name="exchange_fee_coin_fees_label">رسوم العملة</string>
+    <string name="exchange_fee_wire_fees_label">رسوم الحوالة</string>
+    <string name="exchange_fee_withdraw_fee">رسوم السحب: %s</string>
+    <string name="exchange_fee_deposit_fee">رسوم الإيداع: %s</string>
+    <string name="exchange_fee_refresh_fee">رسوم التحويل: %s</string>
+    <string name="exchange_fee_refund_fee">رسوم استرداد الأموال: %s</string>
+    <string name="exchange_fee_wire_fee_timespan">الفترة الزمنية: %1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_wire_fee">رسوم الحوالة: %s</string>
+    <string name="exchange_fee_wire_fee_closing_fee">رسوم العملية المصرفية: %s</string>
+    <string name="exchange_tos_accept">الموافقة على شروط الخدمة</string>
+    <string name="pending_operations_title">عمليات معلقة</string>
+    <string name="pending_operations_refuse">رفض العرض</string>
+    <string name="pending_operations_no_action">(لا تفعل شيئًا)</string>
+    <string name="settings_dev_mode">وضع المُطوّر</string>
+    <string name="settings_withdraw_testkudos">سحب TESTKUDOS</string>
+    <string name="settings_withdraw_testkudos_summary">احصل على المال للاختبار</string>
+    <string name="settings_logcat">سجل تصحيح الأخطاء</string>
+    <string name="settings_version_app">نسخة التطبيق</string>
+    <string name="settings_version_core">النسخة الرئيسية للمحفظة</string>
+    <string name="settings_version_protocol_exchange">إصدارات شركات الصرافة المعتمدة</string>
+    <string name="settings_version_unknown">غير معروف</string>
+    <string name="settings_reset">إعادة تعيين المحفظة (خطر!)</string>
+    <string name="settings_reset_summary">يسحب أموالك</string>
+    <string name="nav_settings_backup">نسخ احتياطي</string>
+    <string name="backup_last">النسخة الاحتياطية الأخيرة: %s</string>
+    <string name="refund_title">استرداد الأموال</string>
+    <string name="refund_success">استُلم المبلغ المسترد: %s</string>
+    <string name="tip_title">نصيحة</string>
+    <string name="wifi_disabled_error">شغّل شبكة Wi-Fi للحصول على خدمة Wi-Fi مجانية</string>
+    <string name="payment_button_confirm">تأكيد الدفع</string>
+    <string name="payment_label_amount_total">المبلغ الكلي:</string>
+    <string name="payment_already_paid">لقد دفعت الآن لعملية الشراء.</string>
+    <string name="withdraw_waiting_confirm">بانتظار الموافقة</string>
+    <string name="withdraw_amount_error">أدخل مبلغًا صحيحًا</string>
+    <string name="withdraw_error_message">لا يمكن تنفيذ السحب الآن. يُرجى المحاولة فيما بعد!</string>
+    <string name="exchange_list_empty">لا توجد شركات صرافة معروفة
+\n
+\nأضف واحدة يدويًا أو اسحب العملة الرقمية!</string>
+    <string name="exchange_fee_coin_expiration_label">أقرب تاريخ انتهاء سريان العملة:</string>
+    <plurals name="exchange_fee_coin">
+        <item quantity="zero">العملة: %s (مستخدمة %d مرة)</item>
+        <item quantity="one">العملة: %s (مستخدمة %d مرة)</item>
+        <item quantity="two">العملتان: %s (المستخدمتين %d مرة)</item>
+        <item quantity="few">العملات: %s (مستخدمة %d مرات)</item>
+        <item quantity="many">العملات: %s (مستخدمة %d مرات)</item>
+        <item quantity="other">العملات: %s (مستخدمة %d مرات)</item>
+    </plurals>
+    <string name="exchange_tos_error">خطأ في عرض شروط الخدمة: %s</string>
+    <string name="settings_dev_mode_summary">يظهر المزيد من المعلومات المعدة لتصحيحها</string>
+    <string name="settings_logcat_summary">معاينة/إرسال السجل الداخلي</string>
+    <string name="settings_version_protocol_merchant">إصدارات التجار المعتمدين</string>
+    <string name="refund_error">خطأ في تنفيذ استرداد الأموال</string>
+    <string name="wifi_connect_error">تعذر الاتصال بشبكة Wi-Fi: %s</string>
+</resources>
