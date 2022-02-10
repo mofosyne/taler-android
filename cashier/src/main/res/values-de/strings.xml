@@ -2,21 +2,21 @@
 <resources>
     <string name="config_button_save">Speichern</string>
     <string name="config_bank_url_error">Die Adresse ist ungültig.</string>
-    <string name="config_username_error">Bitte geben Sie Ihren Benutzernamen ein</string>
+    <string name="config_username_error">Bitte geben Sie Ihren Benutzernamen ein!</string>
     <string name="config_error">Fehler beim Abrufen der Konfiguration: %s</string>
-    <string name="config_error_auth">Benutzername oder Passwort ungültig</string>
+    <string name="config_error_auth">Benutzername oder Passwort ungültig!</string>
     <string name="balance_current_label">Aktueller Saldo</string>
     <string name="balance_error">FEHLER: %s</string>
     <string name="balance_offline">Offline. Bitte Verbindung zum Internet herstellen.</string>
     <string name="action_reconfigure">Neukonfiguration</string>
     <string name="action_lock">Sperren</string>
     <string name="withdraw_input_amount">Betrag</string>
-    <string name="withdraw_into">Wie viel E-Cash sollte abgehoben werden\?</string>
+    <string name="withdraw_into">Welcher Betrag soll abgehoben werden\?</string>
     <string name="withdraw_error_zero">Geben Sie einen positiven Betrag ein!</string>
     <string name="withdraw_error_insufficient_balance">Unzureichendes Guthaben</string>
-    <string name="withdraw_error_fetch">Fehler bei der Kommunikation mit der Bank: %s</string>
+    <string name="withdraw_error_fetch">Fehler bei der Verbindung mit der Bank: %s</string>
     <string name="withdraw_button_confirm">Abheben</string>
-    <string name="transaction_intro_nfc">Scannen Sie mit der Taler Wallet App\nden Code oder benutzen Sie NFC.\nDann erhalten Sie</string>
+    <string name="transaction_intro_nfc">Scannen Sie zum Abheben den Code oder kontaktlos mit NFC:</string>
     <string name="config_password">Passwort</string>
     <string name="transaction_confirm">Bestätigen</string>
     <string name="transaction_abort">Abbrechen</string>
@@ -27,12 +27,12 @@
     <string name="app_name">Taler Kassierer</string>
     <string name="config_bank_url">Bank API Adresse</string>
     <string name="config_demo_hint">Zum Testen können Sie <![CDATA[<a href="%s">ein Testkonto bei der Demobank erstellen</a>]]>.</string>
-    <string name="transaction_intro">Scannen Sie den Code\nmit der Taler Wallet.\nDann erhalten Sie</string>
+    <string name="transaction_intro">Scannen Sie zum Abheben den Code mit dem Taler-Wallet:</string>
     <string name="transaction_intro_scanned">Bitte bestätigen Sie die Transaktion!</string>
     <string name="transaction_last_aborted">Letzte Transaktion: Abgebrochen</string>
     <string name="config_username">Benutzername</string>
-    <string name="withdraw_error_timeout">Es wurde noch keine Abhebung ausgelöst. Bitte versuchen Sie es erneut.</string>
-    <string name="action_about">Über</string>
+    <string name="withdraw_error_timeout">Bitte lassen Sie ein Wallet die Abhebung auslösen.</string>
+    <string name="action_about">Info</string>
     <string name="ok">OK</string>
     <string name="about_title">GNU Taler Kassierer</string>
     <string name="about_license">Lizenz: %s</string>
