@@ -11,7 +11,7 @@
     <string name="menu_settings">Einstellungen</string>
     <string name="menu_retry_pending_operations">Wiederholen Sie ausstehende Vorgänge</string>
     <string name="balances_title">Salden</string>
-    <string name="app_name">Taler Geldbörse</string>
+    <string name="app_name">Taler-Wallet</string>
     <string name="transactions_title">Transaktionen</string>
     <string name="transactions_empty">Sie haben keine Transaktionen</string>
     <string name="transactions_empty_search">Keine Transaktion gefunden. Versuchen Sie eine andere Suche.</string>
@@ -95,8 +95,8 @@
     <string name="settings_logcat_summary">Internes Protokoll anzeigen / senden</string>
     <string name="settings_version_core">Wallet Core-Version</string>
     <string name="settings_version_protocol_merchant">Unterstützte Händler-Versionen</string>
-    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler macht datenschutzfreundliche Online-Transaktionen schnell und einfach.</string>
-    <string name="google_play_title" tools:keep="@string/google_play_title">Taler Geldbörse</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler ermöglicht schnelle und einfache Online-Transaktionen mit Datenschutz.</string>
+    <string name="google_play_title" tools:keep="@string/google_play_title">Taler-Wallet (experimental)</string>
     <string name="settings_version_unknown">Unbekannt</string>
     <string name="settings_reset">Brieftasche zurücksetzen (gefährlich!)</string>
     <string name="settings_reset_summary">Wirft dein Geld weg</string>
@@ -108,11 +108,11 @@
     <string name="tip_title">Trinkgeld</string>
     <string name="wifi_disabled_error">Schalten Sie Wi-Fi ein, um kostenloses Wi-Fi zu erhalten</string>
     <string name="wifi_connect_error">Es konnte keine Verbindung zu kostenlosem WLAN hergestellt werden: %s</string>
-    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Diese App ist eine Geldbörse für GNU Taler (Wallet). Die Anwendung läuft zurzeit in experimentellem Stadium und dient nur zu Demonstrationszwecken.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Diese App ist eine Geldbörse für GNU Taler (Wallet). Die Anwendung läuft zurzeit in experimentellem Stadium und dient nur zu Demonstrationszwecken. Taler bieten allen Zahlenden ein Bezahlsystem mit Datenschutz. Die Käufer bleiben anonym. Händler müssen dagegen ihr Einkommen vor Auditoren offenlegen. Dadurch werden Steuerhinterziehung und Geldwäsche vermieden. Die Hauptfunktion von GNU Taler ist die Abwicklung von Zahlungsvorgängen; es ist kein Mittel zur Geldaufbewahrung. Alle Zahlungen werden durch eine existierende Währung gedeckt. Zahlungen werden mit Hilfe eines Taler-Exchange durchgeführt, indem die Käufer Geld an den Exchange überweisen und dieser elektronische Zahlungsmittel (Coins) in die Wallets der Käufer überträgt. Um eine Zahlung durchzuführen benötigen Kunden nur ausreichende Coin-Werte im Wallet. Verkäufer können Zahlungen akzeptieren ohne Kunden zur Registrierung auf Webseiten zu zwingen. GNU Taler ist immun gegen viele Formen von Betrug wie z.B. Phishing von Kreditkartendaten oder Betrug durch Rückbuchungen. Im Fall von Verlust oder Diebstahl von Wallets verliert man höchstens den Geldbetrag, welcher sich noch im Wallet befindet.</string>
     <string name="nav_header_title">GNU Taler</string>
-    <string name="nav_header_subtitle">Geldbörse</string>
-    <string name="nav_prompt_withdraw">Digitale Zahlungsmittel abheben</string>
-    <string name="nav_exchange_tos">Nutzungsbedingungen von Exchange</string>
+    <string name="nav_header_subtitle">Wallet</string>
+    <string name="nav_prompt_withdraw">Digitales Bargeld abheben</string>
+    <string name="nav_exchange_tos">Nutzungsbedingungen des Exchange</string>
     <string name="nav_exchange_select">Exchange auswählen</string>
     <string name="nav_exchange_fees">Exchange Gebühren</string>
     <string name="enter_uri">Geben Sie die Taler-URI ein</string>
@@ -140,4 +140,12 @@
     <string name="exchange_add_url">Adresse des Exchange eingeben</string>
     <string name="button_back">Zurück</string>
     <string name="button_scan_qr_code">Taler QR Code Einscannen</string>
+    <string name="withdraw_manual_ready_iban">IBAN</string>
+    <string name="withdraw_manual_ready_title">Der Exchange ist für den Abhebevorgang eingerichtet!</string>
+    <string name="withdraw_manual_ready_intro">Um den Abhebevorgang durchführen zu lassen, müssen Sie %s auf das Bankkonto des Exchange überweisen</string>
+    <string name="withdraw_manual_ready_details_intro">Details der Überweisung</string>
+    <string name="withdraw_manual_ready_subject">Überweisungsvermerk</string>
+    <string name="withdraw_manual_ready_bank_button">In Banking-App öffnen</string>
+    <string name="withdraw_manual_ready_cancel">Abhebevorgang abbrechen</string>
+    <string name="withdraw_manual_ready_warning">Bitte vergewissern Sie sich, dass Sie den Überweisungsvermerk richtig angeben, da sonst der überwiesene Betrag nicht im Wallet ankommt.</string>
 </resources>
