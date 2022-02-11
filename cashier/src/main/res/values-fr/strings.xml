@@ -32,4 +32,11 @@
     <string name="transaction_last_success">Dernière transaction : %s retiré</string>
     <string name="transaction_last_aborted">Dernière transaction : Annulée</string>
     <string name="transaction_last_error">Dernière transaction : Échec</string>
+    <string name="ok">OK</string>
+    <string name="action_about">À propos</string>
+    <string name="about_version">Version : %s</string>
+    <string name="about_license">Licence : %s</string>
+    <string name="about_copyright">Droits d\'auteur : %s</string>
+    <string name="about_supported_bank_api">Version Bank API : %s</string>
+    <string name="about_title">GNU Taler Cashier</string>
 </resources>
