@@ -64,4 +64,5 @@
     <string name="config_docs">Por favor refiérete &lt;a href=\"https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats\"&gt;a la documentación&lt;/a&gt; para la configuración del formato.<a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">the documentation</a> for the configuration format.</string>
     <string name="refund_error_max_amount">Mayor que la cantidad del pedido de %s</string>
     <string name="refund_intro_nfc">Por favor permite al cliente escanear el código QR o usar NFC para ofrecer reembolso</string>
+    <string name="payment_claimed">A la espera de que el cliente confirme el pago…</string>
 </resources>
