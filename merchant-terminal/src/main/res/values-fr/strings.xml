@@ -59,4 +59,10 @@
 \n
 \n%2$s</string>
     <string name="toast_back_to_exit">Cliquez à nouveau sur «retour» pour quitter</string>
+    <string name="error_payment">Erreur : Aucun paiement reçu</string>
+    <string name="history_unpaid">Non payé</string>
+    <string name="payment_claimed">En attendant que le client confirme le paiement…</string>
+    <string name="error_cancelled">Paiement annulé</string>
+    <string name="error_history">Erreur d\'accès à l\'historique des commandes</string>
+    <string name="error_timeout">Aucun paiement n\'a été effectué pendant la période de paiement, veuillez réessayer !</string>
 </resources>
