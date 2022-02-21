@@ -2,4 +2,67 @@
 <resources>
     <string name="config_username">Kullanıcı adı</string>
     <string name="config_password">Şifre</string>
+    <string name="refund_amount">Miktar</string>
+    <string name="refund_reason">Geri ödeme nedeni</string>
+    <string name="refund_abort">Durdur</string>
+    <string name="refund_complete">Alındı</string>
+    <string name="refund_error_max_amount">%s sipariş miktarından büyük</string>
+    <string name="refund_error_invalid_amount">Geçersiz miktar</string>
+    <string name="refund_error_zero">Pozitif miktar olması gerekiyor</string>
+    <string name="refund_error_backend">Geri ödeme işlenirken hata oluştu</string>
+    <string name="refund_error_already_refunded">Çoktan geri ödendi</string>
+    <string name="refund_intro">Geri ödeme sunmak için lütfen müşterinin QR Kodunu taramasına izin verin</string>
+    <string name="refund_order_ref">Satın alma referansı %1$s
+\n
+\n%2$s</string>
+    <string name="error_payment">Hata: Ödeme alınmadı</string>
+    <string name="error_timeout">Ödeme süresi içinde ödeme yapılmadı, lütfen tekrar deneyin!</string>
+    <string name="error_cancelled">Ödeme iptal edildi</string>
+    <string name="error_history">Sipariş geçmişi getirilirken hata oluştu</string>
+    <string name="config_forget_password">Unut</string>
+    <string name="config_auth_error">Hata! Geçersiz kullanıcı adı veya şifre</string>
+    <string name="config_error_malformed">Hata: JSON konfigürasyonu hatalı oluşturulmuş</string>
+    <string name="config_error_unknown">Hata: Geçersiz kurulum</string>
+    <string name="history_refund">Geri ödeme</string>
+    <string name="refund_confirm">Geri ödemeyi onayla</string>
+    <string name="refund_error_deadline">Geri ödeme süresi geçti</string>
+    <string name="refund_intro_nfc">Geri ödeme sunmak için lütfen müşterinin QR Kodunu taramasına veya NFC\'yi kullanmasına izin verin</string>
+    <string name="toast_back_to_exit">Çıkmak için tekrar «geri» yi tıklayın</string>
+    <string name="config_changed">%s kullanılarak yeni satıcı olarak değiştirildi</string>
+    <string name="config_fetching_label">Kurulum getiriliyor</string>
+    <string name="config_docs">Lütfen kurulum formatı için <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">belgelere</a> bakın.</string>
+    <string name="payment_intro_nfc">Lütfen müşterinin QR Kodunu taramasına veya ödeme yapmak için NFC\'yi kullanmasına izin verin.</string>
+    <string name="payment_intro">Lütfen müşterinin ödeme yapmak için QR Kodunu taramasına izin verin.</string>
+    <string name="payment_claimed">Müşterinin ödemeyi onaylaması bekleniyor…</string>
+    <string name="payment_cancel">Ödemeyi iptal et</string>
+    <string name="payment_received">Ödeme alındı</string>
+    <string name="payment_back_button">Devam et</string>
+    <string name="payment_order_id">Makbuz #%s</string>
+    <string name="payment_process_label">Ödeme gerekli</string>
+    <string name="payment_canceled">Ödeme iptal edildi</string>
+    <string name="history_label">Ödeme geçmişi</string>
+    <string name="history_unpaid">Ödenmemiş</string>
+    <string name="app_name">GNU Taler Satış Noktası</string>
+    <string name="app_name_short">Ticari Terminal</string>
+    <string name="project_name">GNU Taler</string>
+    <string name="menu_order">Siparişler</string>
+    <string name="menu_settings">Ayarlar</string>
+    <string name="order_label_title">Sipariş #%s</string>
+    <string name="order_total">Toplam: %s</string>
+    <string name="order_restart">Tekrar başlat</string>
+    <string name="order_undo">Geri al</string>
+    <string name="order_previous">Önceki</string>
+    <string name="order_next">Sonraki</string>
+    <string name="order_complete">Tamam</string>
+    <string name="config_label">Satıcı ayarları</string>
+    <string name="config_url">Konfigürasyon URL\'i</string>
+    <string name="config_ok">Konfigürasyonu getir</string>
+    <string name="config_error_network">Hata: Konfigürasyon sunucusuna bağlanılamadı</string>
+    <string name="config_error_category">Hata: Geçerli ürün kategorisi bulunamadı</string>
+    <string name="config_error_currency">"Hata: %1$s ürününün para birimi %2$s ama %3$s  bekleniyor"</string>
+    <string name="config_error_product_category_id">Hata: Ürün %1$s, bilinmeyen kategori kimliğine referans veriyor %2$d</string>
+    <string name="config_error_product_zero">Hata: Geçerli ürün bulunamadı</string>
+    <string name="config_fetching">Kurulum getiriliyor…</string>
+    <string name="config_save_password">Şifreyi hatırla</string>
+    <string name="menu_history">Geçmiş</string>
 </resources>
