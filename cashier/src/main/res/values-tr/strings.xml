@@ -1,2 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="config_bank_url">Banka API adresi</string>
+    <string name="config_username">Kullanıcı adı</string>
+    <string name="config_password">Şifre</string>
+    <string name="config_button_save">Kaydet</string>
+    <string name="config_bank_url_error">Bu adres geçersiz.</string>
+    <string name="config_username_error">Lütfen kullanıcı adınızı giriniz!</string>
+    <string name="app_name">Taler Kasiyer</string>
+    <string name="config_error">Konfigürasyon alınırken hata oluştu: %s</string>
+    <string name="config_error_auth">Geçersiz kullanıcı adı yada şifre!</string>
+    <string name="config_demo_hint">Test için &lt;a href=%s&gt;demo bankasında bir test hesabı oluşturabilirsiniz&lt;/a&gt;.</string>
+    <string name="balance_current_label">Mevcut bakiye</string>
+    <string name="balance_error">HATA:%s</string>
+    <string name="balance_offline">Çevrimdışı. Lütfen internete bağlanın.</string>
+    <string name="ok">Tamam</string>
+    <string name="action_reconfigure">Yeniden yapılandırın</string>
+    <string name="action_lock">Kilitle</string>
+    <string name="action_about">Hakkında</string>
+    <string name="withdraw_into">Ne kadar e-nakit çekilmelidir\?</string>
+    <string name="withdraw_error_zero">Pozitif tutarı girin!</string>
+    <string name="withdraw_input_amount">Tutar</string>
+    <string name="withdraw_error_insufficient_balance">Yetersiz bakiye</string>
+    <string name="withdraw_error_fetch">Banka ile iletişimde hata: %s</string>
+    <string name="withdraw_error_timeout">Hiçbir cüzdan para çekmeye çalışmadı. Lütfen tekrar deneyin.</string>
+    <string name="withdraw_button_confirm">Para çek</string>
+    <string name="transaction_intro">Para çekmek için Taler cüzdan uygulamasıyla kodu tarayın:</string>
+    <string name="transaction_intro_nfc">Para çekmek için Taler cüzdan uygulamasıyla kodu tarayın veya NFC\'yi kullanın:</string>
+    <string name="transaction_intro_scanned">Lütfen işlemi onaylayın!</string>
+    <string name="transaction_confirm">Onayla</string>
+    <string name="transaction_abort">Durdur</string>
+    <string name="transaction_aborted">İşlem durduruldu</string>
+    <string name="transaction_button_back">Geri git</string>
+    <string name="transaction_last_success">Son İşlem: %s çekildi</string>
+    <string name="transaction_last_aborted">Son İşlem: Durduruldu</string>
+    <string name="transaction_last_error">Son İşlem: Başarısız</string>
+    <string name="about_title">GNU Taler Kasiyer</string>
+    <string name="about_license">Lisans: %s</string>
+    <string name="about_copyright">Telif Hakkı: %s</string>
+    <string name="about_supported_bank_api">Banka API Sürümü: %s</string>
+    <string name="about_version">Sürüm: %s</string>
+</resources>
