@@ -44,9 +44,9 @@
     <string name="transaction_paid">Ödendi</string>
     <string name="transaction_order_total">Toplam</string>
     <string name="transaction_order">Satın al</string>
-    <string name="transaction_order_id">Fiş #1%1$s</string>
+    <string name="transaction_order_id">Fiş #%1$s</string>
     <string name="transaction_tip_from">%s dan İkramiye</string>
-    <string name="transaction_refund">Geri ödeme</string>
+    <string name="transaction_refund">Para iadesi</string>
     <string name="payment_title">Ödeme</string>
     <string name="payment_fee">+%s ödeme ücreti</string>
     <string name="payment_button_confirm">Ödemeyi Onayla</string>
@@ -106,7 +106,7 @@
     <string name="exchange_list_title">Exchangeler</string>
     <string name="exchange_list_currency">Para birimi: %s</string>
     <string name="exchange_list_add">Exchange ekle</string>
-    <string name="exchange_add_url">Exchange adresini gir</string>
+    <string name="exchange_add_url">Exchange adresini girin</string>
     <string name="exchange_add_error">Exchange eklenemedi</string>
     <string name="exchange_menu_manual_withdraw">Para çek</string>
     <string name="exchange_fee_withdrawal_fee_label">Para çekme ücreti:</string>
@@ -146,6 +146,6 @@
     <string name="refund_error">Para iade işleminde hata oluştu</string>
     <plurals name="exchange_fee_coin">
         <item quantity="one">Madeni para: %s (%d kez kullanıldı)</item>
-        <item quantity="other">Madeni para: %s (%d kez kullanıldı)</item>
+        <item quantity="other">Madeni paralar: %s (%d kez kullanıldılar)</item>
     </plurals>
 </resources>
