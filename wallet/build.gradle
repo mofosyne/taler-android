@@ -23,8 +23,8 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.9.0-dev.2"
-def walletCoreSha256 = "e4643927b8bc49ef1a94be2f49fb11f8a1853828cb2399470ffec37e7f8217c8"
+def walletCoreVersion = "v0.9.0-dev.10"
+def walletCoreSha256 = "3c9aa9afeb6d61091599553719ffd1010be7817b7368c2d0ace5f77d8089d513"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -48,7 +48,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 11
-        versionName "v0.9.0-dev.1"
+        versionName walletCoreVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
     }
