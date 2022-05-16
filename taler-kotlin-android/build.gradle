@@ -28,8 +28,6 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -49,10 +47,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
-
     packagingOptions {
-        exclude("META-INF/*.kotlin_module")
+        resources {
+            excludes += ['META-INF/*.kotlin_module']
+        }
     }
+
+    namespace 'net.taler.common'
 
 }
 

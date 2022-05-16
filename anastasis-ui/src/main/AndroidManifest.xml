@@ -14,8 +14,7 @@
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.gnu.anastasis.ui">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 

@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.5.31'
     ext.ktor_version = "1.6.3"
-    ext.nav_version = "2.3.5"
+    ext.nav_version = '2.4.1'
     ext.material_version = "1.4.0"
     ext.lifecycle_version = "2.4.0"
     ext.constraintlayout_version = "2.1.2"
@@ -15,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.android.tools.build:gradle:7.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"

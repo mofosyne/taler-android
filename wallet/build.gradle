@@ -99,19 +99,22 @@ android {
         viewBinding true
         compose true
     }
-
     packagingOptions {
-        doNotStrip '**/*.so'
-        exclude("META-INF/*.kotlin_module")
+        jniLibs {
+            keepDebugSymbols += ['**/*.so']
+        }
+        resources {
+            excludes += ['META-INF/*.kotlin_module']
+        }
     }
 
-    lintOptions {
+    lint {
         abortOnError true
+        ignore 'WrongConstant'
         ignoreWarnings false
-        // TODO remove once com.google.android.material fixed this
-        //      https://github.com/material-components/material-components-android/issues/504
-        ignore "WrongConstant"
     }
+    namespace 'net.taler.wallet'
+
 }
 
 dependencies {
