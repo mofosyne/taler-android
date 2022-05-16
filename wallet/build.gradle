@@ -39,14 +39,13 @@ def gitCommit = { ->
 }
 
 android {
-    compileSdkVersion 31
-    //noinspection GradleDependency
+    compileSdkVersion 32
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         applicationId "net.taler.wallet"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 11
         versionName walletCoreVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -122,20 +121,20 @@ dependencies {
     implementation project(":anastasis-ui")
     implementation 'net.taler:akono:0.2'
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
 
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
 
     // Compose
     implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation 'androidx.compose.material:material:1.0.5'
-    implementation 'androidx.compose.animation:animation:1.0.5'
-    implementation 'androidx.compose.ui:ui-tooling:1.0.5'
-    implementation 'androidx.compose.material:material-icons-extended:1.0.5'
+    implementation 'androidx.compose.material:material:1.1.1'
+    implementation 'androidx.compose.animation:animation:1.1.1'
+    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
+    implementation 'androidx.compose.material:material-icons-extended:1.1.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
-    implementation "com.google.android.material:compose-theme-adapter:1.1.1"
+    implementation 'com.google.android.material:compose-theme-adapter:1.1.9'
 
     // Lists and Selection
     implementation "androidx.recyclerview:recyclerview:1.2.1"
@@ -149,7 +148,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
 
     // QR codes
-    implementation 'com.journeyapps:zxing-android-embedded:4.0.2@aar'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0@aar'
     // needed to support zxing library in taler-kotlin-android on API < 24
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
@@ -157,13 +156,13 @@ dependencies {
     implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
 
     // Markdown rendering
-    final def markwon_version = '4.6.0'
+    final def markwon_version = '4.6.2'
     implementation "io.noties.markwon:core:$markwon_version"
     implementation "io.noties.markwon:ext-tables:$markwon_version"
     implementation "io.noties.markwon:recycler:$markwon_version"
 
     testImplementation "junit:junit:$junit_version"
-    testImplementation 'org.json:json:20200518'
+    testImplementation 'org.json:json:20220320'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

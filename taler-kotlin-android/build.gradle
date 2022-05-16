@@ -21,13 +21,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -60,8 +60,8 @@ android {
 dependencies {
     api project(":multiplatform:common")
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
 
     // Navigation
@@ -72,20 +72,20 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
 
     // QR codes
-    implementation 'com.google.zxing:core:3.4.0'  // needs minSdkVersion 24+ or desugar
+    implementation 'com.google.zxing:core:3.5.0'  // needs minSdkVersion 24+ or desugar
 
     // Logcat viewer
-    implementation('com.github.pedrovgs:lynx:1.1.0') {
+    implementation('com.github.pedrovgs:lynx:1.6') {
         exclude group: 'com.android.support'
         exclude group: 'com.squareup'
     }
-    implementation 'com.github.pedrovgs:renderers:4.0.0'
+    implementation 'com.github.pedrovgs:renderers:4.1.0'
 
     // JSON parsing and serialization
-    api "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3'
 
     lintPublish 'com.github.thirdegg:lint-rules:0.0.6-beta'
 
     testImplementation "junit:junit:$junit_version"
-    testImplementation 'org.json:json:20200518'
+    testImplementation 'org.json:json:20220320'
 }
