@@ -22,13 +22,15 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import kotlinx.android.synthetic.main.activity.*
+import org.gnu.anastasis.ui.databinding.ActivityBinding
 
 internal const val PERMISSION_REQUEST_CODE = 1
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var nav: NavController
+
+    private lateinit var binding: ActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +40,11 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         nav = navHostFragment.navController
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         val appBarConfiguration = AppBarConfiguration(
             emptySet()
         )
-        toolbar.setupWithNavController(nav, appBarConfiguration)
+        binding.toolbar.setupWithNavController(nav, appBarConfiguration)
     }
 
 }

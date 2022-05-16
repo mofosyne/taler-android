@@ -31,9 +31,9 @@ import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_identity.*
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentIdentityBinding
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -45,27 +45,40 @@ class AnastasisIdentityFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
 
+    private var _binding: FragmentIdentityBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-        return inflater.inflate(R.layout.fragment_identity, container, false)
+        _binding = FragmentIdentityBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         model.currentCountry.observe(viewLifecycleOwner, { country ->
-            countryView.text = country.name
-            if (stub != null) {
-                stub.layoutResource = country.layoutRes
-                stub.inflate()
+            binding.countryView.text = country.name
+            if (binding.stub != null) {
+                binding.stub.layoutResource = country.layoutRes
+                binding.stub.inflate()
             }
         })
-        changeCountryView.setOnClickListener {
+        binding.changeCountryView.setOnClickListener {
             findNavController().navigate(R.id.action_nav_anastasis_identity_to_nav_change_location)
         }
-        birthDateInput.editText?.setOnClickListener {
+        binding.birthDateInput.editText?.setOnClickListener {
             if (SDK_INT >= 24) {
                 val picker = DatePickerDialog(requireContext())
                 picker.datePicker.maxDate =
@@ -76,14 +89,14 @@ class AnastasisIdentityFragment : Fragment() {
                     }
                     val date = Date(calender.timeInMillis)
                     val dateStr = getDateFormat(requireContext()).format(date)
-                    birthDateInput.editText?.setText(dateStr)
+                    binding.birthDateInput.editText?.setText(dateStr)
                 }
                 picker.show()
             } else {
                 Toast.makeText(requireContext(), "Needs newer phone", LENGTH_LONG).show()
             }
         }
-        createIdentifierButton.setOnClickListener {
+        binding.createIdentifierButton.setOnClickListener {
             findNavController().navigate(R.id.action_nav_anastasis_intro_to_nav_anastasis_authentication)
         }
     }
