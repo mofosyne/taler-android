@@ -20,7 +20,7 @@ import android.app.Application
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.runBlocking
-import net.taler.lib.common.Amount
+import net.taler.common.Amount
 import net.taler.merchantlib.MerchantConfig
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.Category

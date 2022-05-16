@@ -20,11 +20,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.features.logging.SIMPLE
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
@@ -38,13 +33,6 @@ import org.junit.Assert.assertEquals
 object MockHttpClient {
 
     val httpClient = HttpClient(MockEngine) {
-        install(JsonFeature) {
-            serializer = getSerializer()
-        }
-        install(Logging) {
-            logger = Logger.SIMPLE
-            level = LogLevel.ALL
-        }
         engine {
             addHandler { error("No response handler set") }
         }

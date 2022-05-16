@@ -19,8 +19,8 @@ package net.taler.merchantlib
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.ContractTerms
+import net.taler.common.Duration
 import net.taler.lib.android.CustomClassDiscriminator
-import net.taler.lib.common.Duration
 
 @Serializable
 data class PostOrderRequest(

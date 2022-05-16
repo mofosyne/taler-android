@@ -18,8 +18,8 @@ package net.taler.merchantlib
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.taler.lib.common.Amount
-import net.taler.lib.common.Timestamp
+import net.taler.common.Amount
+import net.taler.common.Timestamp
 
 @Serializable
 data class OrderHistory(

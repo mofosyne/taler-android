@@ -26,7 +26,8 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders.Authorization
@@ -34,8 +35,8 @@ import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.common.Version
 import net.taler.common.getIncompatibleStringOrNull
-import net.taler.lib.common.Version
 import net.taler.merchantlib.ConfigResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.MerchantConfig
@@ -105,7 +106,7 @@ class ConfigManager(
                     val credentials = "${config.username}:${config.password}"
                     val auth = ("Basic ${encodeToString(credentials.toByteArray(), NO_WRAP)}")
                     header(Authorization, auth)
-                }
+                }.body()
                 val merchantConfig = posConfig.merchantConfig
                 // get config from merchant backend API
                 api.getConfig(merchantConfig.baseUrl).handleSuspend(::onNetworkError) {

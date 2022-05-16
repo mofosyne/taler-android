@@ -18,7 +18,6 @@ package net.taler.common
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import net.taler.lib.common.Timestamp
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

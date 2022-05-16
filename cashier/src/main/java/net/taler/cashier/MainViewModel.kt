@@ -24,17 +24,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.config.ConfigManager
 import net.taler.cashier.withdraw.WithdrawManager
+import net.taler.common.Amount
+import net.taler.common.AmountParserException
 import net.taler.common.isOnline
-import net.taler.lib.common.Amount
-import net.taler.lib.common.AmountParserException
 
 private val TAG = MainViewModel::class.java.simpleName
 
@@ -46,12 +45,8 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                 retryOnConnectionFailure(true)
             }
         }
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(
-                Json {
-                    ignoreUnknownKeys = true
-                }
-            )
+        install(ContentNegotiation) {
+            json()
         }
     }
     val configManager = ConfigManager(app, viewModelScope, httpClient)

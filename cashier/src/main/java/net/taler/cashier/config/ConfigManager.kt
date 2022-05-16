@@ -39,8 +39,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.taler.cashier.Response
 import net.taler.cashier.Response.Companion.response
+import net.taler.common.Version
 import net.taler.common.getIncompatibleStringOrNull
-import net.taler.lib.common.Version
 
 val VERSION_BANK = Version(0, 0, 0)
 private const val PREF_NAME = "net.taler.cashier.prefs"
@@ -126,7 +126,7 @@ class ConfigManager(
             val balanceResponse = response {
                 val authUrl = "${config.bankUrl}/accounts/${config.username}"
                 Log.d(TAG, "Checking auth: $authUrl")
-                httpClient.get<Unit>(authUrl) {
+                httpClient.get(authUrl) {
                     header(Authorization, config.basicAuth)
                 }
             }

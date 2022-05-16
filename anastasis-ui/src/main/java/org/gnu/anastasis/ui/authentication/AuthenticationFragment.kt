@@ -29,16 +29,22 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.card.MaterialCardView
-import kotlinx.android.synthetic.main.fragment_authentication.*
-import net.taler.lib.common.Amount
+import net.taler.common.Amount
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentAuthenticationBinding
 
 class AuthenticationFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
     private var price: Amount = Amount.zero("KUDOS")
+
+    private var _binding: FragmentAuthenticationBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,46 +56,46 @@ class AuthenticationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        passwordCard.setOnClickListener {
+        binding.passwordCard.setOnClickListener {
             showDialog(
                 R.id.action_nav_anastasis_authentication_to_securityQuestionFragment,
-                passwordCard,
+                binding.passwordCard,
                 "question_card"
             )
         }
-        postidentCard.setOnClickListener {
+        binding.postidentCard.setOnClickListener {
             toggleCard(
-                postidentCard,
+                binding.postidentCard,
                 Amount.fromJSONString("KUDOS:3.5")
             )
         }
-        smsCard.setOnClickListener {
+        binding.smsCard.setOnClickListener {
             showDialog(
                 R.id.action_nav_anastasis_authentication_to_smsFragment,
-                smsCard,
+                binding.smsCard,
                 "sms_card"
             )
         }
-        videoCard.setOnClickListener {
+        binding.videoCard.setOnClickListener {
             showDialog(
                 R.id.action_nav_anastasis_authentication_to_videoFragment,
-                videoCard,
+                binding.videoCard,
                 "video_card"
             )
         }
 
         viewModel.securityQuestionChecked.observe(viewLifecycleOwner, { checked ->
-            passwordCard.isChecked = checked
+            binding.passwordCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:0.5"))
             updateNextButtonState()
         })
         viewModel.smsChecked.observe(viewLifecycleOwner, { checked ->
-            smsCard.isChecked = checked
+            binding.smsCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:1.0"))
             updateNextButtonState()
         })
         viewModel.videoChecked.observe(viewLifecycleOwner, { checked ->
-            videoCard.isChecked = checked
+            binding.videoCard.isChecked = checked
             updatePrice(checked, Amount.fromJSONString("KUDOS:2.25"))
             updateNextButtonState()
         })
@@ -113,16 +119,16 @@ class AuthenticationFragment : Fragment() {
     private fun updatePrice(add: Boolean, amount: Amount) {
         if (add) price += amount
         else price -= amount
-        recoveryCostView.text = "Recovery cost: $price"
+        binding.recoveryCostView.text = "Recovery cost: $price"
     }
 
     private fun updateNextButtonState() {
         var numChecked = 0
-        numChecked += if (passwordCard.isChecked) 1 else 0
-        numChecked += if (postidentCard.isChecked) 1 else 0
-        numChecked += if (smsCard.isChecked) 1 else 0
-        numChecked += if (videoCard.isChecked) 1 else 0
-        nextAuthButton.isEnabled = numChecked >= 2
+        numChecked += if (binding.passwordCard.isChecked) 1 else 0
+        numChecked += if (binding.postidentCard.isChecked) 1 else 0
+        numChecked += if (binding.smsCard.isChecked) 1 else 0
+        numChecked += if (binding.videoCard.isChecked) 1 else 0
+        binding.nextAuthButton.isEnabled = numChecked >= 2
     }
 
 }

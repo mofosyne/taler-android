@@ -22,8 +22,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.taler.common.Amount
 import net.taler.common.ContractTerms
-import net.taler.lib.common.Amount
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.TalerErrorInfo

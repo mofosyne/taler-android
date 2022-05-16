@@ -49,7 +49,6 @@ import androidx.navigation.fragment.findNavController
 import com.github.pedrovgs.lynx.LynxActivity
 import com.github.pedrovgs.lynx.LynxConfig
 import net.taler.lib.android.ErrorBottomSheet
-import net.taler.lib.common.Version
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
     if (visibility == VISIBLE && alpha == 1f) return

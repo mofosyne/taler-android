@@ -16,10 +16,10 @@
 
 package net.taler.merchantlib
 
-import io.ktor.client.call.receive
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.features.ResponseException
-import io.ktor.client.features.ServerResponseException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
 import kotlinx.serialization.Serializable
 
 class Response<out T> private constructor(
@@ -72,7 +72,7 @@ class Response<out T> private constructor(
     private suspend fun getExceptionString(e: ResponseException): String {
         val response = e.response
         return try {
-            val error: Error = response.receive()
+            val error: Error = response.body()
             "Error ${error.code}: ${error.hint}"
         } catch (ex: Exception) {
             "Status code: ${response.status.value}"

@@ -23,30 +23,35 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
-import kotlinx.android.synthetic.main.fragment_security_question.*
 import org.gnu.anastasis.ui.MainViewModel
-import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentSecurityQuestionBinding
 
 class SecurityQuestionFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
+    private var _binding: FragmentSecurityQuestionBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        sharedElementEnterTransition = MaterialContainerTransform().apply {
-            fadeMode = FADE_MODE_CROSS
-        }
-        return inflater.inflate(R.layout.fragment_security_question, container, false).apply {
-            transitionName = "question_card"
-        }
+        _binding = FragmentSecurityQuestionBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        saveQuestionButton.setOnClickListener {
+        binding.saveQuestionButton.setOnClickListener {
             viewModel.securityQuestionChecked.value = true
             findNavController().popBackStack()
         }

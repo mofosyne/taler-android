@@ -25,8 +25,8 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import net.taler.common.Amount
 import net.taler.common.startActivitySafe
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 

@@ -18,9 +18,9 @@ package net.taler.wallet.payment
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.lib.android.CustomClassDiscriminator
-import net.taler.lib.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
 
 @Serializable

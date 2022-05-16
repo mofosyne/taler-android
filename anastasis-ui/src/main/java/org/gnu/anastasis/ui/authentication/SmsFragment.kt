@@ -32,10 +32,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
-import kotlinx.android.synthetic.main.fragment_sms.*
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.PERMISSION_REQUEST_CODE
 import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentSecurityQuestionBinding
+import org.gnu.anastasis.ui.databinding.FragmentSmsBinding
 
 private const val PERMISSION = Manifest.permission.READ_PHONE_STATE
 
@@ -43,10 +44,17 @@ class SmsFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
+    private var _binding: FragmentSmsBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentSmsBinding.inflate(inflater, container, false)
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             fadeMode = FADE_MODE_CROSS
         }
@@ -55,11 +63,16 @@ class SmsFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        smsView.editText?.setOnFocusChangeListener { _, hasFocus ->
+        binding.smsView.editText?.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) checkPerm()
         }
-        saveSmsButton.setOnClickListener {
+        binding.saveSmsButton.setOnClickListener {
             viewModel.smsChecked.value = true
             findNavController().popBackStack()
         }
@@ -98,8 +111,8 @@ class SmsFragment : Fragment() {
     private fun fillPhoneNumber() {
         val telephonyService = requireContext().getSystemService<TelephonyManager>()
         telephonyService?.line1Number?.let { phoneNumber ->
-            smsView.editText?.setText(phoneNumber)
-            smsView.editText?.setSelection(phoneNumber.length)
+            binding.smsView.editText?.setText(phoneNumber)
+            binding.smsView.editText?.setSelection(phoneNumber.length)
         }
     }
 

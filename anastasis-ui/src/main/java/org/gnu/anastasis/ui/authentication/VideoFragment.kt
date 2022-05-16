@@ -35,9 +35,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionManager.beginDelayedTransition
 import com.google.android.material.transition.MaterialContainerTransform
 import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_CROSS
-import kotlinx.android.synthetic.main.fragment_video.*
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentVideoBinding
 import java.io.FileDescriptor
 
 private const val REQUEST_IMAGE_CAPTURE = 1
@@ -47,10 +47,17 @@ class VideoFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
+    private var _binding: FragmentVideoBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentVideoBinding.inflate(inflater, container, false)
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             fadeMode = FADE_MODE_CROSS
         }
@@ -59,8 +66,13 @@ class VideoFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        takePhotoButton.setOnClickListener {
+        binding.takePhotoButton.setOnClickListener {
             val pm = requireContext().packageManager
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(pm)?.also {
@@ -70,7 +82,7 @@ class VideoFragment : Fragment() {
                 }
             }
         }
-        choosePhotoButton.setOnClickListener {
+        binding.choosePhotoButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
@@ -80,7 +92,7 @@ class VideoFragment : Fragment() {
             )
         }
 
-        saveVideoButton.setOnClickListener {
+        binding.saveVideoButton.setOnClickListener {
             viewModel.videoChecked.value = true
             findNavController().popBackStack()
         }
@@ -99,12 +111,14 @@ class VideoFragment : Fragment() {
     }
 
     private fun showImage(bitmap: Bitmap) {
-        photoView.setImageBitmap(bitmap)
-        beginDelayedTransition(view as ViewGroup)
-        photoView.visibility = VISIBLE
-        takePhotoButton.visibility = GONE
-        choosePhotoButton.visibility = GONE
-        saveVideoButton.isEnabled = true
+        with (binding) {
+            photoView.setImageBitmap(bitmap)
+            beginDelayedTransition(view as ViewGroup)
+            photoView.visibility = VISIBLE
+            takePhotoButton.visibility = GONE
+            choosePhotoButton.visibility = GONE
+            saveVideoButton.isEnabled = true
+        }
     }
 
     private fun getBitmapFromUri(uri: Uri): Bitmap {

@@ -30,7 +30,7 @@ import net.taler.cashier.BuildConfig.VERSION_NAME
 import net.taler.cashier.config.VERSION_BANK
 import net.taler.cashier.databinding.FragmentAboutDialogBinding
 import net.taler.cashier.databinding.FragmentBalanceBinding
-import net.taler.lib.common.Version
+import net.taler.common.Version
 
 class AboutDialogFragment : DialogFragment() {
 

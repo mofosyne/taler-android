@@ -20,10 +20,10 @@ import io.ktor.http.HttpStatusCode.Companion.NotFound
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import net.taler.common.Amount
 import net.taler.common.ContractProduct
 import net.taler.common.ContractTerms
-import net.taler.lib.common.Amount
-import net.taler.lib.common.Timestamp
+import net.taler.common.Timestamp
 import net.taler.merchantlib.MockHttpClient.giveJsonResponse
 import net.taler.merchantlib.MockHttpClient.httpClient
 import org.junit.Assert.assertEquals

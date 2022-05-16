@@ -17,21 +17,22 @@
 package net.taler.merchantlib
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpHeaders.Authorization
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import net.taler.merchantlib.Response.Companion.response
+import io.ktor.serialization.kotlinx.json.*
 
 class MerchantApi(
     private val httpClient: HttpClient = getDefaultHttpClient(),
@@ -52,8 +53,8 @@ class MerchantApi(
             httpClient.post(merchantConfig.urlFor("private/orders")) {
                 header(Authorization, "ApiKey ${merchantConfig.apiKey}")
                 contentType(Json)
-                body = orderRequest
-            } as PostOrderResponse
+                setBody(orderRequest)
+            }.body()
         }
     }
 
@@ -64,7 +65,7 @@ class MerchantApi(
         response {
             httpClient.get(merchantConfig.urlFor("private/orders/$orderId")) {
                 header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-            } as CheckPaymentResponse
+            }.body()
         }
     }
 
@@ -97,7 +98,7 @@ class MerchantApi(
             httpClient.post(merchantConfig.urlFor("private/orders/$orderId/refund")) {
                 header(Authorization, "ApiKey ${merchantConfig.apiKey}")
                 contentType(Json)
-                body = request
+                setBody(request)
             } as RefundResponse
         }
     }
@@ -109,15 +110,7 @@ fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
             retryOnConnectionFailure(true)
         }
     }
-    install(JsonFeature) {
-        serializer = getSerializer()
+    install(ContentNegotiation) {
+        json()
     }
 }
-
-fun getSerializer() = KotlinxSerializer(
-    Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-        classDiscriminator = "order_status"
-    }
-)

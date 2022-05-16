@@ -23,13 +23,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_change_location.*
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.R
+import org.gnu.anastasis.ui.databinding.FragmentChangeLocationBinding
 
 class ChangeLocationFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
+
+    private var _binding: FragmentChangeLocationBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,16 +46,16 @@ class ChangeLocationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        switzerlandView.setOnClickListener {
+        binding.switzerlandView.setOnClickListener {
             changeCountry(LOCATIONS[0])
         }
-        germanyView.setOnClickListener {
+        binding.germanyView.setOnClickListener {
             changeCountry(LOCATIONS[1])
         }
-        usaView.setOnClickListener {
+        binding.usaView.setOnClickListener {
             changeCountry(LOCATIONS[2])
         }
-        indiaView.setOnClickListener {
+        binding.indiaView.setOnClickListener {
             changeCountry(LOCATIONS[3])
         }
     }

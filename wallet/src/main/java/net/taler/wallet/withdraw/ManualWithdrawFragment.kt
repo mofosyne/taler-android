@@ -24,8 +24,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import net.taler.common.Amount
 import net.taler.common.hideKeyboard
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentManualWithdrawBinding

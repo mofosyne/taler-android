@@ -27,9 +27,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.common.Amount
 import net.taler.common.toRelativeTime
 import net.taler.common.toShortDate
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentExchangeFeesBinding

@@ -16,10 +16,10 @@
 
 package net.taler.merchantpos.order
 
+import net.taler.common.Amount
 import net.taler.common.ContractTerms
+import net.taler.common.Timestamp
 import net.taler.common.now
-import net.taler.lib.common.Amount
-import net.taler.lib.common.Timestamp
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
 import java.net.URLEncoder

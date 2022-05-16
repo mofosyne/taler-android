@@ -18,8 +18,9 @@ package net.taler.cashier
 
 import android.content.Context
 import android.util.Log
+import io.ktor.client.call.body
 import io.ktor.client.call.receive
-import io.ktor.client.features.ResponseException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.Serializable
 import net.taler.common.isOnline
@@ -47,7 +48,7 @@ class Response<out T> private constructor(
             val response = e.response
             return try {
                 Log.e("TEST", "TRY RECEIVE $response")
-                val error: Error = response.receive()
+                val error: Error = response.body()
                 "Error ${error.code}: ${error.hint}"
             } catch (ex: Exception) {
                 "Status code: ${response.status.value}"

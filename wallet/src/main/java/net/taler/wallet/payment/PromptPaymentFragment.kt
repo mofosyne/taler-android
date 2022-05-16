@@ -28,10 +28,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentPromptPaymentBinding
@@ -49,7 +49,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         ui = FragmentPromptPaymentBinding.inflate(inflater, container, false)
         return ui.root
@@ -131,7 +131,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         }
     }
 
-    private fun showOrder(contractTerms: ContractTerms, amount:Amount, totalFees: Amount? = null) {
+    private fun showOrder(contractTerms: ContractTerms, amount: Amount, totalFees: Amount? = null) {
         ui.details.orderView.text = contractTerms.summary
         adapter.setItems(contractTerms.products)
         ui.details.productsList.fadeIn()

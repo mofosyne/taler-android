@@ -1,3 +1,0 @@
-[submodule "wallet-kotlin"]
-	path = multiplatform
-	url = git://git.taler.net/wallet-kotlin.git

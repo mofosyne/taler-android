@@ -25,10 +25,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import net.taler.common.Amount
 import net.taler.common.EventObserver
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange

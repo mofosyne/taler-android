@@ -36,6 +36,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
@@ -112,12 +113,12 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.balances.observe(viewLifecycleOwner, { balances ->
-            balances.find { it.currency == currency }?.available?.let { amount ->
+        model.balances.observe(viewLifecycleOwner) { balances ->
+            balances.find { it.currency == currency }?.available?.let { amount: Amount ->
                 requireActivity().title =
                     getString(R.string.transactions_detail_title_balance, amount)
             }
-        })
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

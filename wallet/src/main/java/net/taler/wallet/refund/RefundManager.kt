@@ -21,7 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import net.taler.lib.common.Amount
+import net.taler.common.Amount
 import net.taler.wallet.backend.WalletBackendApi
 
 sealed class RefundStatus {

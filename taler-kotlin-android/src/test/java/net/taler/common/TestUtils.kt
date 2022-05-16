@@ -14,17 +14,27 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.cashier
+package net.taler.common
 
-import net.taler.common.Amount
+import kotlin.random.Random
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 
-data class SignedAmount(
-    val positive: Boolean,
-    val amount: Amount
+private val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+fun getRandomString(minLength: Int = 1, maxLength: Int = Random.nextInt(0, 1337)) =
+    (minLength..maxLength)
+        .map { Random.nextInt(0, charPool.size) }
+        .map(charPool::get)
+        .joinToString("")
+
+inline fun <reified T : Throwable> assertThrows(
+    msg: String? = null,
+    function: () -> Any
 ) {
-
-    override fun toString(): String {
-        return if (positive) "$amount" else "-$amount"
+    try {
+        function.invoke()
+        fail(msg)
+    } catch (e: Exception) {
+        assertTrue(e is T)
     }
-
 }

@@ -60,8 +60,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.composethemeadapter.MdcTheme
+import net.taler.common.Amount
 import net.taler.common.startActivitySafe
-import net.taler.lib.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 

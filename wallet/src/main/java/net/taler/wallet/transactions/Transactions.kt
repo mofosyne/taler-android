@@ -23,10 +23,10 @@ import androidx.annotation.StringRes
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.taler.common.Amount
 import net.taler.common.ContractMerchant
 import net.taler.common.ContractProduct
-import net.taler.lib.common.Amount
-import net.taler.lib.common.Timestamp
+import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
