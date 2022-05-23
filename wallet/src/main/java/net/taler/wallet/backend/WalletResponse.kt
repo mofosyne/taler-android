@@ -59,15 +59,15 @@ data class TalerErrorInfo(
     val code: Int,
 
     // English description of the error code.
-    val hint: String?,
+    val hint: String? = null,
 
     // English diagnostic message that can give details
     // for the instance of the error.
-    val message: String?,
+    val message: String? = null,
 
     // Error details
     @Serializable(JSONObjectDeserializer::class)
-    val details: JSONObject?
+    val details: JSONObject? = null
 ) {
     val userFacingMsg: String
         get() {
