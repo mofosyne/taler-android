@@ -20,6 +20,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
@@ -27,6 +28,8 @@ import io.ktor.http.content.TextContent
 import io.ktor.http.fullPath
 import io.ktor.http.headersOf
 import io.ktor.http.hostWithPort
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.Json.Default.parseToJsonElement
 import org.junit.Assert.assertEquals
 
@@ -36,13 +39,20 @@ object MockHttpClient {
         engine {
             addHandler { error("No response handler set") }
         }
+        expectSuccess = true
+        install(ContentNegotiation) {
+            json(Json {
+                encodeDefaults = false
+                ignoreUnknownKeys = true
+            })
+        }
     }
 
     fun HttpClient.giveJsonResponse(
         url: String,
         expectedBody: String? = null,
         statusCode: HttpStatusCode = HttpStatusCode.OK,
-        jsonProducer: () -> String
+        jsonProducer: () -> String,
     ) {
         val httpConfig = engineConfig as MockEngineConfig
         httpConfig.requestHandlers.removeAt(0)

@@ -23,8 +23,8 @@ plugins {
     id "de.undercouch.download"
 }
 
-def walletCoreVersion = "v0.9.0-dev.10"
-def walletCoreSha256 = "3c9aa9afeb6d61091599553719ffd1010be7817b7368c2d0ace5f77d8089d513"
+def walletCoreVersion = "v0.9.0-dev.11"
+def walletCoreSha256 = "0ee5eae7d0afd6f251f7d33975758055d06926ccb67ae9099d589a79d34be39d"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -188,7 +188,14 @@ task verifyWalletLibrary(type: Verify, dependsOn: downloadWalletLibrary) {
     algorithm 'SHA-256'
     checksum walletCoreSha256
 }
+
 tasks.withType(MergeResources) {
     inputs.dir walletLibraryDir
     dependsOn verifyWalletLibrary
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
 }

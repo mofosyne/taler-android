@@ -20,6 +20,7 @@ import io.ktor.http.HttpStatusCode.Companion.NotFound
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import net.taler.common.Amount
 import net.taler.common.ContractProduct
 import net.taler.common.ContractTerms
@@ -33,7 +34,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class MerchantApiTest {
 
-    private val api = MerchantApi(httpClient, TestCoroutineDispatcher())
+    private val api = MerchantApi(httpClient, UnconfinedTestDispatcher())
     private val merchantConfig = MerchantConfig(
         baseUrl = "http://example.net/instances/testInstance",
         apiKey = "apiKeyFooBar"

@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_COMMAND
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_NOTIFY
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_REPLY
@@ -42,7 +41,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import kotlin.reflect.full.companionObjectInstance
 
 class WalletBackendApi(
     private val app: Application,
@@ -152,9 +150,6 @@ class WalletBackendApi(
         suspendCoroutine { cont ->
             val json = Json {
                 ignoreUnknownKeys = true
-                (T::class.companionObjectInstance as? CustomClassDiscriminator)?.let {
-                    classDiscriminator = it.discriminator
-                }
             }
             sendRequest(operation, args?.invoke(JSONObject())) { isError, message ->
                 val response = try {

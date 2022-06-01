@@ -32,13 +32,13 @@ sealed class WalletResponse<T> {
     @Serializable
     @SerialName("response")
     data class Success<T>(
-        val result: T
+        val result: T,
     ) : WalletResponse<T>()
 
     @Serializable
     @SerialName("error")
     data class Error<T>(
-        val error: TalerErrorInfo
+        val error: TalerErrorInfo,
     ) : WalletResponse<T>()
 
     fun onSuccess(block: (result: T) -> Unit): WalletResponse<T> {
@@ -67,7 +67,7 @@ data class TalerErrorInfo(
 
     // Error details
     @Serializable(JSONObjectDeserializer::class)
-    val details: JSONObject? = null
+    val details: JSONObject? = null,
 ) {
     val userFacingMsg: String
         get() {

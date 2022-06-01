@@ -65,3 +65,9 @@ dependencies {
     testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_version"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1'
 }
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}

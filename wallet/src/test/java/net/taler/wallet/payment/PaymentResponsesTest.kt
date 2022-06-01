@@ -23,7 +23,6 @@ class PaymentResponsesTest {
 
     private val json = Json {
         ignoreUnknownKeys = true
-        classDiscriminator = PreparePayResponse.discriminator
     }
 
     @Test

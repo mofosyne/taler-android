@@ -18,6 +18,8 @@ package net.taler.wallet.settings
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
@@ -26,7 +28,6 @@ import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.showError
-import net.taler.common.showLogViewer
 import net.taler.common.toRelativeTime
 import net.taler.wallet.BuildConfig.FLAVOR
 import net.taler.wallet.BuildConfig.VERSION_CODE
@@ -64,6 +65,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         )
     }
 
+    val createDocumentActivity =
+        registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+
+        }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
         prefBackup = findPreference("pref_backup")!!
@@ -80,12 +86,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        model.lastBackup.observe(viewLifecycleOwner, {
+        model.lastBackup.observe(viewLifecycleOwner) {
             val time = it.toRelativeTime(requireContext())
             prefBackup.summary = getString(R.string.backup_last, time)
-        })
+        }
 
-        model.devMode.observe(viewLifecycleOwner, { enabled ->
+        model.devMode.observe(viewLifecycleOwner) { enabled ->
             prefDevMode.isChecked = enabled
             if (enabled) {
                 prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
@@ -94,13 +100,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 model.merchantVersion?.let { prefVersionMerchant.summary = it }
             }
             devPrefs.forEach { it.isVisible = enabled }
-        })
+        }
         prefDevMode.setOnPreferenceChangeListener { _, newValue ->
             model.devMode.value = newValue as Boolean
             true
         }
 
-        withdrawManager.testWithdrawalStatus.observe(viewLifecycleOwner, { status ->
+        withdrawManager.testWithdrawalStatus.observe(viewLifecycleOwner) { status ->
             if (status == null) return@observe
             val loading = status is WithdrawTestStatus.Withdrawing
             prefWithdrawTest.isEnabled = !loading
@@ -109,14 +115,37 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 requireActivity().showError(R.string.withdraw_error_test, status.message)
             }
             withdrawManager.testWithdrawalStatus.value = null
-        })
+        }
         prefWithdrawTest.setOnPreferenceClickListener {
             withdrawManager.withdrawTestkudos()
             true
         }
 
         prefLogcat.setOnPreferenceClickListener {
-            requireContext().showLogViewer("taler-wallet")
+            val toast =
+                Toast.makeText(requireActivity(), "Log export currently unavailable", Toast.LENGTH_LONG)
+            toast.show()
+
+//            val myPid = android.os.Process.myPid()
+//            val proc = Runtime.getRuntime()
+//                .exec(arrayOf("logcat", "-d", "--pid=$myPid", "*:V"))
+//            val bytes = proc.inputStream.readBytes()
+//            val f = File(requireActivity().getExternalFilesDir(null),
+//                "taler-wallet-log-${System.currentTimeMillis()}.txt")
+//            f.writeBytes(bytes)
+//            val toast = Toast.makeText(requireActivity(), "Saved to ${f.absolutePath}", Toast.LENGTH_LONG)
+//            toast.show()
+//            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+//                addCategory(Intent.CATEGORY_OPENABLE)
+//                type = "application/pdf"
+//                putExtra(Intent.EXTRA_TITLE, "invoice.pdf")
+//
+//                // Optionally, specify a URI for the directory that should be opened in
+//                // the system file picker before your app creates the document.
+//                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+//            }
+//            startActivityForResult(intent, CREATE_FILE)
+//            ActivityResultContracts.CreateDocument
             true
         }
 
@@ -138,5 +167,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             .show()
     }
-
 }

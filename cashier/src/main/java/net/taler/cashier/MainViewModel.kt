@@ -28,6 +28,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.taler.cashier.HttpHelper.makeJsonGetRequest
 import net.taler.cashier.config.ConfigManager
 import net.taler.cashier.withdraw.WithdrawManager
@@ -45,8 +46,12 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                 retryOnConnectionFailure(true)
             }
         }
+        expectSuccess = true
         install(ContentNegotiation) {
-            json()
+            json(Json {
+                encodeDefaults = false
+                ignoreUnknownKeys = true
+            })
         }
     }
     val configManager = ConfigManager(app, viewModelScope, httpClient)
@@ -72,7 +77,8 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
                         "debit" -> false
                         else -> throw AmountParserException("Unexpected credit_debit_indicator: $creditDebitIndicator")
                     }
-                    BalanceResult.Success(SignedAmount(positive, Amount.fromJSONString(balanceAmount)))
+                    BalanceResult.Success(SignedAmount(positive,
+                        Amount.fromJSONString(balanceAmount)))
                 } catch (e: Exception) {
                     Log.e(TAG, "Error parsing balance", e)
                     BalanceResult.Error("Invalid amount:\n${response.json.toString(2)}")

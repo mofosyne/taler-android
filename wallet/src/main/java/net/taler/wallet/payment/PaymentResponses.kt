@@ -16,18 +16,18 @@
 
 package net.taler.wallet.payment
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
-import net.taler.lib.android.CustomClassDiscriminator
 import net.taler.wallet.backend.TalerErrorInfo
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
+@JsonClassDiscriminator("status")
 sealed class PreparePayResponse {
-    companion object : CustomClassDiscriminator {
-        override val discriminator: String = "status"
-    }
 
     @Serializable
     @SerialName("payment-possible")

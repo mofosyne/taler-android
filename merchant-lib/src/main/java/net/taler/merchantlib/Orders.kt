@@ -16,11 +16,12 @@
 
 package net.taler.merchantlib
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 import net.taler.common.ContractTerms
 import net.taler.common.Duration
-import net.taler.lib.android.CustomClassDiscriminator
 
 @Serializable
 data class PostOrderRequest(
@@ -36,9 +37,10 @@ data class PostOrderResponse(
     val orderId: String
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
-sealed class CheckPaymentResponse: CustomClassDiscriminator {
-    override val discriminator: String = "order_status"
+@JsonClassDiscriminator("order_status")
+sealed class CheckPaymentResponse {
     abstract val paid: Boolean
 
     @Serializable

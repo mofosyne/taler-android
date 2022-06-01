@@ -33,6 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.taler.merchantlib.Response.Companion.response
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 
 class MerchantApi(
     private val httpClient: HttpClient = getDefaultHttpClient(),
@@ -41,7 +43,7 @@ class MerchantApi(
 
     suspend fun getConfig(baseUrl: String): Response<ConfigResponse> = withContext(ioDispatcher) {
         response {
-            httpClient.get("$baseUrl/config") as ConfigResponse
+            httpClient.get("$baseUrl/config").body()
         }
     }
 
@@ -76,7 +78,7 @@ class MerchantApi(
         response {
             httpClient.delete(merchantConfig.urlFor("private/orders/$orderId")) {
                 header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-            } as Unit
+            }.body()
         }
     }
 
@@ -85,7 +87,7 @@ class MerchantApi(
             response {
                 httpClient.get(merchantConfig.urlFor("private/orders")) {
                     header(Authorization, "ApiKey ${merchantConfig.apiKey}")
-                } as OrderHistory
+                }.body()
             }
         }
 
@@ -99,18 +101,22 @@ class MerchantApi(
                 header(Authorization, "ApiKey ${merchantConfig.apiKey}")
                 contentType(Json)
                 setBody(request)
-            } as RefundResponse
+            }.body()
         }
     }
 }
 
 fun getDefaultHttpClient(): HttpClient = HttpClient(OkHttp) {
+    expectSuccess = true
     engine {
         config {
             retryOnConnectionFailure(true)
         }
     }
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            encodeDefaults = false
+            ignoreUnknownKeys = true
+        })
     }
 }

@@ -29,6 +29,7 @@ import androidx.security.crypto.EncryptedSharedPreferences.PrefValueEncryptionSc
 import androidx.security.crypto.MasterKeys
 import androidx.security.crypto.MasterKeys.AES256_GCM_SPEC
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders.Authorization
@@ -116,7 +117,7 @@ class ConfigManager(
         val url = "${config.bankUrl}/config"
         Log.d(TAG, "Checking config: $url")
         val configResponse = response {
-            httpClient.get(url) as ConfigResponse
+            httpClient.get(url).body<ConfigResponse>()
         }
         if (configResponse.isFailure) {
             configResponse

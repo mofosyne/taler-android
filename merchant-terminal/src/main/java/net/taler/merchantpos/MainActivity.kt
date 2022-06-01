@@ -55,11 +55,11 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        model.paymentManager.payment.observe(this, { payment ->
+        model.paymentManager.payment.observe(this) { payment ->
             payment?.talerPayUri?.let {
                 nfcManager.setTagString(it)
             }
-        })
+        }
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment

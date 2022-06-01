@@ -46,8 +46,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
-import com.github.pedrovgs.lynx.LynxActivity
-import com.github.pedrovgs.lynx.LynxConfig
 import net.taler.lib.android.ErrorBottomSheet
 
 fun View.fadeIn(endAction: () -> Unit = {}) {
@@ -93,15 +91,6 @@ fun Context.isOnline(): Boolean {
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
         capabilities.hasCapability(NET_CAPABILITY_INTERNET)
     }
-}
-
-fun Context.showLogViewer(logFilter: String? = null) {
-    val lynxActivityIntent = LynxActivity.getIntent(this, LynxConfig().apply {
-        maxNumberOfTracesToShow = 1500 // higher numbers seem to break share functionality
-        samplingRate = Int.MAX_VALUE // no updates please
-        logFilter?.let { filter = it }
-    })
-    startActivity(lynxActivityIntent)
 }
 
 fun FragmentActivity.showError(mainText: String, detailText: String = "") = ErrorBottomSheet
