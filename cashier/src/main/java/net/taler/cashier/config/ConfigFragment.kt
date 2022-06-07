@@ -39,7 +39,7 @@ import net.taler.cashier.databinding.FragmentConfigBinding
 import net.taler.common.exhaustive
 
 // NOTE: HTTP should eventually be disabled.
-private const val URL_BANK_TEST = "http://int.taler.net/sandbox/demobanks/default"
+private const val URL_BANK_TEST = "https://int.taler.net/sandbox/demobanks/default"
 private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
 
 class ConfigFragment : Fragment() {
