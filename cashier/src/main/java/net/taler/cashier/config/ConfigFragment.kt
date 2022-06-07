@@ -38,7 +38,8 @@ import net.taler.cashier.R
 import net.taler.cashier.databinding.FragmentConfigBinding
 import net.taler.common.exhaustive
 
-private const val URL_BANK_TEST = "https://bank.test.taler.net"
+// NOTE: HTTP should eventually be disabled.
+private const val URL_BANK_TEST = "http://10.0.2.2:8080/sandbox/demobanks/default"
 private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
 
 class ConfigFragment : Fragment() {
@@ -116,7 +117,8 @@ class ConfigFragment : Fragment() {
     }
 
     private fun checkConfig(config: Config): Boolean {
-        if (!config.bankUrl.startsWith("https://")) {
+        if (!config.bankUrl.startsWith("https://") &&
+            !config.bankUrl.startsWith("http://")) {
             ui.urlView.error = getString(R.string.config_bank_url_error)
             ui.urlView.requestFocus()
             return false
