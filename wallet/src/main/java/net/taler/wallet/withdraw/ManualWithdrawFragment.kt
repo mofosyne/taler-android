@@ -66,8 +66,14 @@ class ManualWithdrawFragment : Fragment() {
             return
         }
         ui.amountLayout.error = null
-        val value = ui.amountView.text.toString().toLong()
-        val amount = Amount(exchangeItem.currency, value, 0)
+        var value = 0.0
+        try {
+            value = ui.amountView.text.toString().replace(',', '.').toDouble()
+        } catch (e: NumberFormatException) {
+            ui.amountLayout.error = getString(R.string.withdraw_amount_error)
+            return
+        }
+        val amount = Amount.fromDouble(exchangeItem.currency, value)
         ui.amountView.hideKeyboard()
 
         withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)

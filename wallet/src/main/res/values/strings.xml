@@ -119,6 +119,10 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_manual_ready_title">Exchange is ready for withdrawal!</string>
     <string name="withdraw_manual_ready_intro">To complete the process you need to wire %s to the exchange bank account</string>
     <string name="withdraw_manual_ready_details_intro">Bank transfer details</string>
+    <string name="withdraw_manual_bitcoin_ready_details_intro">Bitcoin transfer details</string>
+    <string name="withdraw_manual_bitcoin_ready_details_segwit">The exchange need a transaction with 3 output, one output is the exchange account and the other two are segwit fake address for metadata with an minimum amount.</string>
+    <string name="withdraw_manual_bitcoin_ready_details_bitcoincore">In bitcoincore wallet use \'Add Recipient\' button to add two additional recipient and copy addresses and amounts</string>
+    <string name="withdraw_manual_bitcoin_ready_details_confirm">Make sure the amount show %s, else you have to change the base unit to BTC</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
     <string name="withdraw_manual_ready_subject">Subject</string>
     <string name="withdraw_manual_ready_bank_button">Open in banking app</string>

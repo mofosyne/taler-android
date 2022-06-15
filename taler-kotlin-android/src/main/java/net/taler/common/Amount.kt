@@ -56,11 +56,18 @@ public data class Amount(
     public companion object {
 
         private const val FRACTIONAL_BASE: Int = 100000000 // 1e8
+        public val SEGWIT_MIN = Amount("BTC", 0, 294)
 
         private val REGEX_CURRENCY = Regex("""^[-_*A-Za-z0-9]{1,12}$""")
         public val MAX_VALUE: Long = 2.0.pow(52).toLong()
         private const val MAX_FRACTION_LENGTH = 8
         public const val MAX_FRACTION: Int = 99_999_999
+
+        public fun fromDouble(currency: String, value: Double): Amount {
+            val intPart = Math.floor(value).toLong()
+            val fraPart = Math.floor((value - intPart) *  FRACTIONAL_BASE).toInt()
+            return Amount(currency, intPart, fraPart)
+        }
 
         public fun zero(currency: String): Amount {
             return Amount(checkCurrency(currency), 0, 0)
@@ -139,6 +146,10 @@ public data class Amount(
         var result = this
         for (i in 1 until factor) result += this
         return result
+    }
+
+    public fun withCurrency(currency: String): Amount {
+        return Amount(checkCurrency(currency), this.value, this.fraction)
     }
 
     public operator fun minus(other: Amount): Amount {

@@ -76,7 +76,7 @@
             android:id="@+id/amountView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
