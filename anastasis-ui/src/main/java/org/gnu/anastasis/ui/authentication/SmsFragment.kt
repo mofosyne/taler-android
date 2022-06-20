@@ -25,7 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
-import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -35,7 +35,6 @@ import com.google.android.material.transition.MaterialContainerTransform.FADE_MO
 import org.gnu.anastasis.ui.MainViewModel
 import org.gnu.anastasis.ui.PERMISSION_REQUEST_CODE
 import org.gnu.anastasis.ui.R
-import org.gnu.anastasis.ui.databinding.FragmentSecurityQuestionBinding
 import org.gnu.anastasis.ui.databinding.FragmentSmsBinding
 
 private const val PERMISSION = Manifest.permission.READ_PHONE_STATE
@@ -52,7 +51,7 @@ class SmsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentSmsBinding.inflate(inflater, container, false)
         sharedElementEnterTransition = MaterialContainerTransform().apply {
@@ -79,8 +78,7 @@ class SmsFragment : Fragment() {
     }
 
     private fun checkPerm() = when {
-        ContextCompat.checkSelfPermission(requireContext(), PERMISSION)
-                == PERMISSION_GRANTED -> {
+        checkSelfPermission(requireContext(), PERMISSION) == PERMISSION_GRANTED -> {
             // You can use the API that requires the permission.
             fillPhoneNumber()
         }
@@ -99,7 +97,7 @@ class SmsFragment : Fragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() &&
             grantResults[0] == PERMISSION_GRANTED

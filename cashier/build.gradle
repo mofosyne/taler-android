@@ -22,14 +22,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         applicationId "net.taler.cashier"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 32
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

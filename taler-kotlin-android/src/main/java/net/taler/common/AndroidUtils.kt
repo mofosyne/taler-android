@@ -16,6 +16,7 @@
 
 package net.taler.common
 
+import android.Manifest.permission.ACCESS_NETWORK_STATE
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
@@ -40,6 +41,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresPermission
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
@@ -82,6 +84,7 @@ fun assertUiThread() {
 val <T> T.exhaustive: T
     get() = this
 
+@RequiresPermission(ACCESS_NETWORK_STATE)
 fun Context.isOnline(): Boolean {
     val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     return if (SDK_INT < 29) {

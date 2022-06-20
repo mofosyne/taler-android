@@ -17,19 +17,13 @@
 package net.taler.cashier
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import net.taler.cashier.BuildConfig.VERSION_NAME
 import net.taler.cashier.config.VERSION_BANK
 import net.taler.cashier.databinding.FragmentAboutDialogBinding
-import net.taler.cashier.databinding.FragmentBalanceBinding
 import net.taler.common.Version
 
 class AboutDialogFragment : DialogFragment() {
@@ -39,8 +33,8 @@ class AboutDialogFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentAboutDialogBinding.inflate(layoutInflater, container, false)
         return ui.root
     }
@@ -50,8 +44,10 @@ class AboutDialogFragment : DialogFragment() {
 
         ui.versionView.text = getString(R.string.about_version, VERSION_NAME)
         ui.bankVersionView.text = getString(R.string.about_supported_bank_api, VERSION_BANK.str())
-        ui.licenseView.text = getString(R.string.about_license, getString(R.string.about_license_content))
-        ui.copyrightView.text = getString(R.string.about_copyright, getString(R.string.about_copyright_holder))
+        ui.licenseView.text =
+            getString(R.string.about_license, getString(R.string.about_license_content))
+        ui.copyrightView.text =
+            getString(R.string.about_copyright, getString(R.string.about_copyright_holder))
 
         ui.button.setOnClickListener { dismiss() }
     }

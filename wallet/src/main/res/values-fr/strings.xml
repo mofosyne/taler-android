@@ -7,10 +7,6 @@
 \n
 \nhttps://bank.demo.taler.net</string>
     <string name="withdraw_error_message">Pour l\'instant il n\'est pas possible de retirer. Veuillez réessayer plus tard !</string>
-    <plurals name="exchange_fee_coin">
-        <item quantity="one">Monnaie : %s (utilisée %d fois)</item>
-        <item quantity="other">Monnaie : %s (utilisée %d fois)</item>
-    </plurals>
     <string name="settings_dev_mode">Mode développeur</string>
     <string name="menu_settings">Réglages</string>
     <string name="settings_reset">Réinitialiser le portefeuille (dangereux!)</string>
