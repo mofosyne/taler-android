@@ -29,8 +29,8 @@ object TalerUtils {
         // create a priority list of language ranges from system locales
         val locales = LocaleListCompat.getDefault()
         val priorityList = ArrayList<Locale.LanguageRange>(locales.size())
-        for (i in 0 until locales.size()) {
-            priorityList.add(Locale.LanguageRange(locales[i].toLanguageTag()))
+        for (i in 0 until locales.size()) locales[i]?.let { locale ->
+            priorityList.add(Locale.LanguageRange(locale.toLanguageTag()))
         }
         // create a list of locales available in the given map
         val availableLocales = map.keys.mapNotNull {
