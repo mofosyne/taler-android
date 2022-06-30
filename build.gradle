@@ -1,15 +1,18 @@
 buildscript {
-    ext.kotlin_version = '1.6.10'
-    ext.ktor_version = '2.0.1'
-    ext.nav_version = '2.5.0'
-    ext.material_version = '1.6.1'
-    ext.lifecycle_version = '2.4.1'
-    ext.constraintlayout_version = '2.1.4'
-    ext.junit_version = "4.13.2"
-    // check https://android-rebuilds.beuc.net/ for availability of free build tools
-    ext.build_tools_version = "30.0.3"
-    // should debug build types be minified with D8 as well?
-    ext.minify_debug = false
+    ext {
+        kotlin_version = '1.6.21'
+        ktor_version = '2.0.1'
+        nav_version = '2.5.0'
+        material_version = '1.6.1'
+        lifecycle_version = '2.4.1'
+        constraintlayout_version = '2.1.4'
+        compose_version = '1.2.0-rc02'
+        junit_version = "4.13.2"
+        // check https://android-rebuilds.beuc.net/ for availability of free build tools
+        build_tools_version = "30.0.3"
+        // should debug build types be minified with D8 as well? good for catching issues early
+        minify_debug = true
+    }
     repositories {
         google()
         mavenCentral()
