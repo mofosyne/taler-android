@@ -34,6 +34,24 @@
         <action
             android:id="@+id/action_nav_main_to_nav_uri_input"
             app:destination="@id/nav_uri_input" />
+        <action
+            android:id="@+id/action_nav_main_to_promptTip"
+            app:destination="@id/promptTip" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/promptTip"
+        android:name="net.taler.wallet.tip.PromptTipFragment"
+        android:label="Review Tip"
+        tools:layout="@layout/fragment_prompt_tip">
+        <action
+            android:id="@+id/action_promptTip_to_nav_main"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
+        <action
+            android:id="@+id/action_promptTip_to_alreadyAccepted"
+            app:destination="@id/alreadyAccepted"
+            app:popUpTo="@id/nav_main" />
     </fragment>
 
     <fragment
@@ -129,6 +147,12 @@
         android:name="net.taler.wallet.transactions.TransactionRefreshFragment"
         android:label="@string/transactions_detail_title"
         tools:layout="@layout/fragment_transaction_withdrawal" />
+
+    <fragment
+        android:id="@+id/alreadyAccepted"
+        android:name="net.taler.wallet.tip.AlreadyAcceptedFragment"
+        android:label="@string/tip_already_accepted"
+        tools:layout="@layout/fragment_already_accepted" />
 
     <fragment
         android:id="@+id/alreadyPaid"

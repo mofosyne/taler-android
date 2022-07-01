@@ -187,6 +187,14 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="refund_success">Refund received: %s</string>
 
     <string name="tip_title">Tip</string>
+    <string name="tip_already_accepted">This tip is already accepted.</string>
+    <string name="tip_total">Total</string>
+    <string name="tip_fees">Fee</string>
+    <string name="tip_exchange">Exchange</string>
+    <string name="tip_merchant_url">Merchant URL</string>
+    <string name="tip_button_confirm">Accept tip</string>
+    <string name="tip_received">Tip received</string>
+
     <string name="wifi_disabled_error">Turn on Wi-Fi to get free Wi-Fi</string>
     <string name="wifi_connect_error">Could not connect to free Wi-Fi: %s</string>
 

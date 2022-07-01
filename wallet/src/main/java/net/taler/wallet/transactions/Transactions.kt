@@ -212,9 +212,8 @@ class TransactionTip(
     override val transactionId: String,
     override val timestamp: Timestamp,
     override val pending: Boolean,
-    // TODO status: TipStatus,
-    val exchangeBaseUrl: String,
-    val merchant: ContractMerchant,
+    val frozen: Boolean,
+    val merchantBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount
@@ -225,7 +224,7 @@ class TransactionTip(
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_tip_from, merchant.name)
+        return context.getString(R.string.transaction_tip_from, merchantBaseUrl)
     }
 
     override val generalTitleRes = R.string.tip_title

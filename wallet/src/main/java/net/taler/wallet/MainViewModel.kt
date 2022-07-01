@@ -36,6 +36,7 @@ import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
+import net.taler.wallet.tip.TipManager
 import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
@@ -86,6 +87,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     val withdrawManager = WithdrawManager(api, viewModelScope)
+    val tipManager = TipManager(api, viewModelScope)
     val paymentManager = PaymentManager(api, viewModelScope)
     val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
