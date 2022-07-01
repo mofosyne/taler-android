@@ -7,7 +7,7 @@
     <string name="config_button_save">Save</string>
     <string name="config_bank_url_error">The address is invalid.</string>
     <string name="config_username_error">Please enter your username!</string>
-    <string name="config_error">Error retrieving configuration: %s</string>
+    <string name="config_error">Error retrieving configuration</string>
     <string name="config_error_auth">Invalid username or password!</string>
     <string name="config_error_offline" translatable="false">@string/balance_offline</string>
     <string name="config_demo_hint">For testing, you can <![CDATA[<a href="%s">create a test account at the demo bank</a>]]>.</string>

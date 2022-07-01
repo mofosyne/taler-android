@@ -37,6 +37,7 @@ import net.taler.cashier.MainViewModel
 import net.taler.cashier.R
 import net.taler.cashier.databinding.FragmentConfigBinding
 import net.taler.common.exhaustive
+import net.taler.common.showError
 
 // NOTE: HTTP should eventually be disabled.
 private const val URL_BANK_TEST = "https://int.taler.net/sandbox/demobanks/default"
@@ -45,15 +46,15 @@ private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
 class ConfigFragment : Fragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
-    private val configManager by lazy { viewModel.configManager}
+    private val configManager by lazy { viewModel.configManager }
 
     private lateinit var ui: FragmentConfigBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentConfigBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -118,7 +119,8 @@ class ConfigFragment : Fragment() {
 
     private fun checkConfig(config: Config): Boolean {
         if (!config.bankUrl.startsWith("https://") &&
-            !config.bankUrl.startsWith("http://")) {
+            !config.bankUrl.startsWith("http://")
+        ) {
             ui.urlView.error = getString(R.string.config_bank_url_error)
             ui.urlView.requestFocus()
             return false
@@ -146,8 +148,7 @@ class ConfigFragment : Fragment() {
                 if (result.authError) {
                     Snackbar.make(requireView(), R.string.config_error_auth, LENGTH_LONG).show()
                 } else {
-                    val str = getString(R.string.config_error, result.msg)
-                    Snackbar.make(requireView(), str, LENGTH_LONG).show()
+                    requireActivity().showError(getString(R.string.config_error), result.msg)
                 }
             }
         }.exhaustive
