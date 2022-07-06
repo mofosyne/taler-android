@@ -41,5 +41,7 @@ cashier_deploy_nightly:
     - mv cashier/build/outputs/apk/release/*.apk cashier-debug.apk
     # install fdroidserver and dependencies for nightly publishing
     - apt update && apt-get -qy install --no-install-recommends fdroidserver openssh-client
+    # backport fix from https://gitlab.com/fdroid/fdroidserver/-/merge_requests/1078
+    - sed -e '/common.apk_strip_v1_signatures/ s/^#*/#/' -i /usr/lib/python3/dist-packages/fdroidserver/nightly.py
     - fdroid --version
     - CI_PROJECT_URL="https://gitlab.com/gnu-taler/fdroid-repo" CI_PROJECT_PATH="gnu-taler/fdroid-repo" fdroid nightly -v
