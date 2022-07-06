@@ -33,7 +33,9 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat.START
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -46,6 +48,8 @@ import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.taler.common.isOnline
 import net.taler.common.showError
 import net.taler.wallet.BuildConfig.VERSION_CODE
@@ -56,7 +60,10 @@ import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNEC
 import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import net.taler.wallet.databinding.ActivityMainBinding
 import net.taler.wallet.refund.RefundStatus
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.Locale.ROOT
+import javax.net.ssl.HttpsURLConnection
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     OnPreferenceStartFragmentCallback {
@@ -145,44 +152,92 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         super.onDestroy()
     }
 
+    private fun getTalerAction(uri: Uri, maxRedirects: Int, actionFound: MutableLiveData<String>): MutableLiveData<String> {
+        val scheme = uri.scheme ?: return actionFound
+
+        if (scheme == "http" || scheme == "https") {
+            model.viewModelScope.launch(Dispatchers.IO) {
+                val conn: HttpsURLConnection  = URL(uri.toString()).openConnection() as HttpsURLConnection
+                Log.v(TAG, "prepare query: ${uri}")
+                conn.setRequestProperty("Accept", "text/html")
+                conn.connectTimeout = 5000
+                conn.requestMethod = "HEAD"
+                conn.connect()
+                val status = conn.responseCode
+
+                if (status == HttpURLConnection.HTTP_OK || status == HttpURLConnection.HTTP_PAYMENT_REQUIRED) {
+                    val talerHeader = conn.headerFields["Taler"]
+                    if (talerHeader != null && talerHeader[0] != null) {
+                        Log.v(TAG, "taler header: ${talerHeader[0]}")
+                        val talerHeaderUri = Uri.parse(talerHeader[0])
+                        getTalerAction(talerHeaderUri, 0, actionFound)
+                    }
+                }
+                if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                    || status == HttpURLConnection.HTTP_MOVED_PERM
+                    || status == HttpURLConnection.HTTP_SEE_OTHER) {
+                    val location = conn.headerFields["Location"]
+                    if (location != null && location[0] != null) {
+                        Log.v(TAG, "location redirect: ${location[0]}")
+                        val locUri = Uri.parse(location[0])
+                        getTalerAction(locUri, maxRedirects -1, actionFound)
+                    }
+                }
+            }
+        } else {
+            if (!scheme.startsWith("taler")) {
+                return actionFound
+            }
+            actionFound.postValue(uri.toString())
+        }
+
+        return actionFound
+    }
+
     private fun handleTalerUri(url: String, from: String) {
         val uri = Uri.parse(url)
         if (uri.fragment != null && !isOnline()) {
             connectToWifi(this, uri.fragment!!)
         }
-        val normalizedURL = url.lowercase(ROOT)
-        val action = normalizedURL.substring(
-            if (normalizedURL.startsWith("taler://")) {
-                "taler://".length
-            } else if (normalizedURL.startsWith("taler+http://") && model.devMode.value == true) {
-                "taler+http://".length
-            } else {
-                normalizedURL.length
-            }
-        )
-        when {
-            action.startsWith("pay/") -> {
-                Log.v(TAG, "navigating!")
-                nav.navigate(R.id.action_nav_main_to_promptPayment)
-                model.paymentManager.preparePay(url)
-            }
-            action.startsWith("tip/") -> {
-                Log.v(TAG, "navigating!")
-                nav.navigate(R.id.action_nav_main_to_promptTip)
-                model.tipManager.prepareTip(url)
-            }
-            action.startsWith("withdraw/") -> {
-                Log.v(TAG, "navigating!")
-                // there's more than one entry point, so use global action
-                nav.navigate(R.id.action_global_promptWithdraw)
-                model.withdrawManager.getWithdrawalDetails(url)
-            }
-            action.startsWith("refund/") -> {
-                model.showProgressBar.value = true
-                model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
-            }
-            else -> {
-                showError(R.string.error_unsupported_uri, "From: $from\nURI: $url")
+
+        getTalerAction(uri, 3, MutableLiveData<String>()).observe(this) { url ->
+            Log.v(TAG, "found action $url")
+
+            val normalizedURL = url.lowercase(ROOT)
+            val action = normalizedURL.substring(
+                if (normalizedURL.startsWith("taler://")) {
+                    "taler://".length
+                } else if (normalizedURL.startsWith("taler+http://") && model.devMode.value == true) {
+                    "taler+http://".length
+                } else {
+                    normalizedURL.length
+                }
+            )
+
+            when {
+                action.startsWith("pay/") -> {
+                    Log.v(TAG, "navigating!")
+                    nav.navigate(R.id.action_nav_main_to_promptPayment)
+                    model.paymentManager.preparePay(url)
+                }
+                action.startsWith("tip/") -> {
+                    Log.v(TAG, "navigating!")
+                    nav.navigate(R.id.action_nav_main_to_promptTip)
+                    model.tipManager.prepareTip(url)
+                }
+                action.startsWith("withdraw/") -> {
+                    Log.v(TAG, "navigating!")
+                    // there's more than one entry point, so use global action
+                    nav.navigate(R.id.action_global_promptWithdraw)
+                    model.withdrawManager.getWithdrawalDetails(url)
+                }
+                action.startsWith("refund/") -> {
+                    model.showProgressBar.value = true
+                    model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
+                }
+                else -> {
+                    showError(R.string.error_unsupported_uri, "From: $from\nURI: $url")
+                }
             }
         }
     }
