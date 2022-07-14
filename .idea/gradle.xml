@@ -15,8 +15,6 @@
             <option value="$PROJECT_DIR$/cashier" />
             <option value="$PROJECT_DIR$/merchant-lib" />
             <option value="$PROJECT_DIR$/merchant-terminal" />
-            <option value="$PROJECT_DIR$/multiplatform" />
-            <option value="$PROJECT_DIR$/multiplatform/common" />
             <option value="$PROJECT_DIR$/taler-kotlin-android" />
             <option value="$PROJECT_DIR$/wallet" />
           </set>

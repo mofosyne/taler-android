@@ -73,11 +73,20 @@ class WithdrawManager(
     private val mLastTransaction = MutableLiveData<LastTransaction>()
     val lastTransaction: LiveData<LastTransaction> = mLastTransaction
 
+    /**
+     * Returns null if the given [amount] can't be compared to the balance
+     * e.g. due to mismatching currency.
+     */
     @UiThread
-    fun hasSufficientBalance(amount: Amount): Boolean {
+    fun hasSufficientBalance(amount: Amount): Boolean? {
         val balanceResult = viewModel.balance.value
         if (balanceResult !is BalanceResult.Success) return false
-        return balanceResult.amount.positive && amount <= balanceResult.amount.amount
+        return try {
+            balanceResult.amount.positive && amount <= balanceResult.amount.amount
+        } catch (e : IllegalStateException) {
+            Log.e(TAG, "Error comparing amounts", e)
+            null
+        }
     }
 
     @UiThread

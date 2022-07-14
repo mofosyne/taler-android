@@ -164,13 +164,19 @@ class BalanceFragment : Fragment() {
     private fun onAmountConfirmed(amount: Amount) {
         if (amount.isZero()) {
             ui.amountView.error = getString(R.string.withdraw_error_zero)
-        } else if (!withdrawManager.hasSufficientBalance(amount)) {
-            ui.amountView.error = getString(R.string.withdraw_error_insufficient_balance)
-        } else {
-            ui.amountView.error = null
-            withdrawManager.withdraw(amount)
-            actionBalanceFragmentToTransactionFragment().let {
-                findNavController().navigate(it)
+        } else when (withdrawManager.hasSufficientBalance(amount)) {
+            true -> {
+                ui.amountView.error = null
+                withdrawManager.withdraw(amount)
+                actionBalanceFragmentToTransactionFragment().let {
+                    findNavController().navigate(it)
+                }
+            }
+            false -> {
+                ui.amountView.error = getString(R.string.withdraw_error_insufficient_balance)
+            }
+            null -> {
+                ui.amountView.error = getString(R.string.withdraw_error_currency_mismatch)
             }
         }
     }

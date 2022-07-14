@@ -26,6 +26,7 @@
     <string name="withdraw_into">How much e-cash should be withdrawn?</string>
     <string name="withdraw_error_zero">Enter positive amount!</string>
     <string name="withdraw_error_insufficient_balance">Insufficient balance</string>
+    <string name="withdraw_error_currency_mismatch">Error: Bank reported a different currency</string>
     <string name="withdraw_error_fetch">Error communicating with bank: %s</string>
     <string name="withdraw_error_timeout">No wallet tried to withdraw. Please try again.</string>
     <string name="withdraw_error_offline" translatable="false">@string/balance_offline</string>
