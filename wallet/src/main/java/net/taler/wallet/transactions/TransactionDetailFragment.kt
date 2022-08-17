@@ -23,8 +23,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
@@ -67,7 +70,7 @@ abstract class TransactionDetailFragment : Fragment() {
         feeView: TextView,
         info: TransactionInfo,
         raw: Amount,
-        fee: Amount
+        fee: Amount,
     ) {
         orderAmountView.text = raw.toString()
         feeView.text = getString(R.string.amount_negative, fee.toString())
@@ -83,6 +86,32 @@ abstract class TransactionDetailFragment : Fragment() {
             orderSummaryView.setOnClickListener { startActivitySafe(i) }
         }
         orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
+    }
+
+    @StringRes
+    protected open val deleteDialogTitle = R.string.transactions_delete
+    @StringRes
+    protected open val deleteDialogMessage = R.string.transactions_delete_dialog_message
+    @StringRes
+    protected open val deleteDialogButton = R.string.transactions_delete
+
+    protected fun onDeleteButtonClicked(t: Transaction) {
+        AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+            .setTitle(deleteDialogTitle)
+            .setMessage(deleteDialogMessage)
+            .setPositiveButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setNegativeButton(deleteDialogButton) { dialog, _ ->
+                deleteTransaction(t)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun deleteTransaction(t: Transaction) {
+        transactionManager.deleteTransaction(t.transactionId)
+        findNavController().popBackStack()
     }
 
 }

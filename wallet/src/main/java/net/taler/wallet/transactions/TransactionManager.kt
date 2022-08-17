@@ -25,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
-import java.util.HashMap
 import java.util.LinkedList
 
 sealed class TransactionsResult {
@@ -96,7 +95,14 @@ class TransactionManager(
         }.onError {
             Log.e(TAG, "Error deleteTransaction $it")
         }.onSuccess {
-            // no op
+            // re-load transactions as our list is stale otherwise
+            loadTransactions()
+        }
+    }
+
+    fun deleteTransactions(transactionIds: List<String>) {
+        transactionIds.forEach { id ->
+            deleteTransaction(id)
         }
     }
 

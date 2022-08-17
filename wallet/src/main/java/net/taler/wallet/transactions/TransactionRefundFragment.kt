@@ -32,8 +32,8 @@ class TransactionRefundFragment : TransactionDetailFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentTransactionPaymentBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -56,6 +56,9 @@ class TransactionRefundFragment : TransactionDetailFragment() {
             t.amountRaw,
             fee
         )
+        ui.deleteButton.setOnClickListener {
+            onDeleteButtonClicked(t)
+        }
     }
 
 }

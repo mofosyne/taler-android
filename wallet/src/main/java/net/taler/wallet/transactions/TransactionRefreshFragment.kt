@@ -33,8 +33,8 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentTransactionWithdrawalBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -50,7 +50,10 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
         ui.chosenAmountView.visibility = GONE
         val fee = t.amountEffective
         ui.feeView.text = getString(R.string.amount_negative, fee.toString())
-        ui. exchangeView.text = cleanExchange(t.exchangeBaseUrl)
+        ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
+        ui.deleteButton.setOnClickListener {
+            onDeleteButtonClicked(t)
+        }
     }
 
 }

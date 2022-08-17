@@ -25,8 +25,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_LONG
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
@@ -211,8 +209,9 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.transaction_delete -> {
-                val s = "Not yet implemented. Pester Florian! ;)"
-                Toast.makeText(requireContext(), s, LENGTH_LONG).show()
+                tracker?.selection?.toList()?.let { transactionIds ->
+                    transactionManager.deleteTransactions(transactionIds)
+                }
                 mode.finish()
             }
             R.id.transaction_select_all -> transactionAdapter.selectAll()
