@@ -94,19 +94,19 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         )
         ui.content.toolbar.setupWithNavController(nav, appBarConfiguration)
 
-        model.showProgressBar.observe(this, { show ->
+        model.showProgressBar.observe(this) { show ->
             ui.content.progressBar.visibility = if (show) VISIBLE else INVISIBLE
-        })
+        }
 
         val versionView: TextView = ui.navView.getHeaderView(0).findViewById(R.id.versionView)
-        model.devMode.observe(this, { enabled ->
+        model.devMode.observe(this) { enabled ->
             ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
             if (enabled) {
                 @SuppressLint("SetTextI18n")
                 versionView.text = "$VERSION_NAME ($VERSION_CODE)"
                 versionView.visibility = VISIBLE
             } else versionView.visibility = GONE
-        })
+        }
 
         if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->
             handleTalerUri(uri, "intent")

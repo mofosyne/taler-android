@@ -48,7 +48,7 @@ class BalancesFragment : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentBalancesBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -59,9 +59,9 @@ class BalancesFragment : Fragment(),
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.balances.observe(viewLifecycleOwner, {
+        model.balances.observe(viewLifecycleOwner) {
             onBalancesChanged(it)
-        })
+        }
     }
 
     private fun onBalancesChanged(balances: List<BalanceItem>) {

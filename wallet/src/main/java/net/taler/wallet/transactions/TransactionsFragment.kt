@@ -23,6 +23,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
@@ -42,6 +43,7 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
+import net.taler.wallet.scanQrCode
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -65,8 +67,8 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentTransactionsBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -103,21 +105,26 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             }
         })
 
-        transactionManager.progress.observe(viewLifecycleOwner, { show ->
-            if (show) ui.progressBar.fadeIn() else ui.progressBar.fadeOut()
-        })
-        transactionManager.transactions.observe(viewLifecycleOwner, { result ->
-            onTransactionsResult(result)
-        })
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         model.balances.observe(viewLifecycleOwner) { balances ->
+            // hide extra fab when in single currency mode (uses MainFragment's FAB)
+            if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
             balances.find { it.currency == currency }?.available?.let { amount: Amount ->
                 requireActivity().title =
                     getString(R.string.transactions_detail_title_balance, amount)
             }
+        }
+        transactionManager.progress.observe(viewLifecycleOwner) { show ->
+            if (show) ui.progressBar.fadeIn() else ui.progressBar.fadeOut()
+        }
+        transactionManager.transactions.observe(viewLifecycleOwner) { result ->
+            onTransactionsResult(result)
+        }
+        ui.mainFab.setOnClickListener {
+            scanQrCode(requireActivity())
+        }
+        ui.mainFab.setOnLongClickListener {
+            findNavController().navigate(R.id.action_nav_transactions_to_nav_uri_input)
+            true
         }
     }
 

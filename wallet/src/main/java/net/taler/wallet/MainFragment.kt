@@ -43,16 +43,16 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentMainBinding.inflate(inflater, container, false)
         return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        model.balances.observe(viewLifecycleOwner, {
+        model.balances.observe(viewLifecycleOwner) {
             onBalancesChanged(it)
-        })
+        }
         model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
             // we only need to navigate to a dedicated list, when in multi-currency mode
             if (currencyMode == MULTI) {

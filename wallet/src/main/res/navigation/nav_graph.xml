@@ -118,7 +118,11 @@
         android:id="@+id/nav_transactions"
         android:name="net.taler.wallet.transactions.TransactionsFragment"
         android:label="@string/transactions_title"
-        tools:layout="@layout/fragment_transactions" />
+        tools:layout="@layout/fragment_transactions" >
+        <action
+            android:id="@+id/action_nav_transactions_to_nav_uri_input"
+            app:destination="@id/nav_uri_input" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_transactions_detail_withdrawal"
