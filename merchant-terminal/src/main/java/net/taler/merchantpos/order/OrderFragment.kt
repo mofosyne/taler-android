@@ -50,9 +50,10 @@ class OrderFragment : Fragment() {
         return ui.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        orderManager.currentOrderId.observe(viewLifecycleOwner, { orderId ->
+        orderManager.currentOrderId.observe(viewLifecycleOwner) { orderId ->
             val liveOrder = orderManager.getOrder(orderId)
             onOrderSwitched(orderId, liveOrder)
             // add a new OrderStateFragment for each order
@@ -60,7 +61,7 @@ class OrderFragment : Fragment() {
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment1, OrderStateFragment())
                 .commit()
-        })
+        }
     }
 
     override fun onStart() {

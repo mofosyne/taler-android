@@ -16,28 +16,22 @@
 
 package net.taler.wallet.tip
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import net.taler.common.Amount
-import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.databinding.FragmentPromptPaymentBinding
 import net.taler.wallet.databinding.FragmentPromptTipBinding
-import net.taler.wallet.withdraw.ExchangeSelection
 
 /**
  * Show a tip and ask the user to accept/decline.
@@ -81,9 +75,15 @@ class PromptTipFragment : Fragment() {
 
     private fun onPaymentStatusChanged(payStatus: TipStatus?) {
         when (payStatus) {
+            null -> {}
             is TipStatus.Prepared -> {
                 showLoading(false)
-                showContent(payStatus.tipAmountRaw, payStatus.tipAmountEffective, payStatus.exchangeBaseUrl, payStatus.merchantBaseUrl)
+                showContent(
+                    amountRaw = payStatus.tipAmountRaw,
+                    amountEffective = payStatus.tipAmountEffective,
+                    exchange = payStatus.exchangeBaseUrl,
+                    merchant = payStatus.merchantBaseUrl
+                )
                 //showOrder(payStatus.contractTerms, payStatus.amountRaw, fees)
                 ui.confirmWithdrawButton.isEnabled = true
                 ui.confirmWithdrawButton.setOnClickListener {

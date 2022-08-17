@@ -98,6 +98,7 @@ class VideoFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data!!.extras!!.get("data") as Bitmap

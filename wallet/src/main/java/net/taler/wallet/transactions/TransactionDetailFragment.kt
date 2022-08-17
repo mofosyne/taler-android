@@ -44,6 +44,7 @@ abstract class TransactionDetailFragment : Fragment() {
         setHasOptionsMenu(model.devMode.value == true)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         requireActivity().apply {
@@ -53,10 +54,12 @@ abstract class TransactionDetailFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.transactions_detail, menu)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             else -> super.onOptionsItemSelected(item)

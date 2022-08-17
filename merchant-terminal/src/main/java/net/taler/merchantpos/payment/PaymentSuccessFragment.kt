@@ -31,11 +31,12 @@ class PaymentSuccessFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentPaymentSuccessBinding.inflate(inflater, container, false)
         return ui.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         ui.paymentButton.setOnClickListener {

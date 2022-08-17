@@ -22,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.navigate
@@ -46,18 +45,19 @@ class ConfigFetcherFragment : Fragment() {
         return ui.root
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         configManager.fetchConfig(configManager.config, false)
-        configManager.configUpdateResult.observe(viewLifecycleOwner, Observer { result ->
+        configManager.configUpdateResult.observe(viewLifecycleOwner) { result ->
             when (result) {
-                null -> return@Observer
+                null -> return@observe
                 is ConfigUpdateResult.Error -> onNetworkError(result.msg)
                 is ConfigUpdateResult.Success -> {
                     navigate(actionConfigFetcherToOrder())
                 }
             }
-        })
+        }
     }
 
     private fun onNetworkError(msg: String) {

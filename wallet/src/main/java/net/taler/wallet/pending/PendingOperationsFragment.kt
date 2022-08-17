@@ -62,7 +62,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentPendingOperationsBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -79,9 +79,9 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
             addItemDecoration(myItemDecoration)
         }
 
-        pendingOperationsManager.pendingOperations.observe(viewLifecycleOwner, {
+        pendingOperationsManager.pendingOperations.observe(viewLifecycleOwner) {
             updatePending(it)
-        })
+        }
     }
 
     override fun onStart() {
@@ -89,6 +89,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
         pendingOperationsManager.getPending()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.retry_pending -> {
@@ -99,6 +100,7 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.pending_operations, menu)
         super.onCreateOptionsMenu(menu, inflater)

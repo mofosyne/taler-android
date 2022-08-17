@@ -22,7 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import io.noties.markwon.Markwon
 import net.taler.common.fadeIn
@@ -44,8 +43,8 @@ class ReviewExchangeTosFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentReviewExchangeTosBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -56,7 +55,7 @@ class ReviewExchangeTosFragment : Fragment() {
         ui.acceptTosCheckBox.setOnCheckedChangeListener { _, _ ->
             withdrawManager.acceptCurrentTermsOfService()
         }
-        withdrawManager.withdrawStatus.observe(viewLifecycleOwner, Observer {
+        withdrawManager.withdrawStatus.observe(viewLifecycleOwner) {
             when (it) {
                 is WithdrawStatus.TosReviewRequired -> {
                     val sections = try {
@@ -65,7 +64,7 @@ class ReviewExchangeTosFragment : Fragment() {
                         parseTos(markwon, text)
                     } catch (e: ParseException) {
                         onTosError(e.message ?: "Unknown Error")
-                        return@Observer
+                        return@observe
                     }
                     adapter.setSections(sections)
                     ui.tosList.adapter = adapter
@@ -80,8 +79,9 @@ class ReviewExchangeTosFragment : Fragment() {
                 is WithdrawStatus.ReceivedDetails -> {
                     findNavController().navigate(R.id.action_reviewExchangeTOS_to_promptWithdraw)
                 }
+                else -> {}
             }
-        })
+        }
     }
 
     private fun onTosError(msg: String) {

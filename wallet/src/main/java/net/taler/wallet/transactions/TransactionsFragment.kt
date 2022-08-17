@@ -130,6 +130,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         tracker?.onSaveInstanceState(outState)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.transactions, menu)
         setupSearch(menu.findItem(R.id.action_search))
