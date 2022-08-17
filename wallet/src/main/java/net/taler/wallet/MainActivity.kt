@@ -217,12 +217,12 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             when {
                 action.startsWith("pay/") -> {
                     Log.v(TAG, "navigating!")
-                    nav.navigate(R.id.action_nav_main_to_promptPayment)
+                    nav.navigate(R.id.action_global_promptPayment)
                     model.paymentManager.preparePay(url)
                 }
                 action.startsWith("tip/") -> {
                     Log.v(TAG, "navigating!")
-                    nav.navigate(R.id.action_nav_main_to_promptTip)
+                    nav.navigate(R.id.action_global_promptTip)
                     model.tipManager.prepareTip(url)
                 }
                 action.startsWith("withdraw/") -> {

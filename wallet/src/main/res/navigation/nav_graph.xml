@@ -26,17 +26,11 @@
         android:label="@string/balances_title"
         tools:layout="@layout/fragment_balances">
         <action
-            android:id="@+id/action_nav_main_to_promptPayment"
-            app:destination="@id/promptPayment" />
-        <action
             android:id="@+id/action_nav_main_to_nav_transactions"
             app:destination="@id/nav_transactions" />
         <action
             android:id="@+id/action_nav_main_to_nav_uri_input"
             app:destination="@id/nav_uri_input" />
-        <action
-            android:id="@+id/action_nav_main_to_promptTip"
-            app:destination="@id/promptTip" />
     </fragment>
 
     <fragment
@@ -230,6 +224,10 @@
     <action
         android:id="@+id/action_global_promptPayment"
         app:destination="@id/promptPayment" />
+
+    <action
+        android:id="@+id/action_global_promptTip"
+        app:destination="@id/promptTip" />
 
     <action
         android:id="@+id/action_global_pending_operations"
