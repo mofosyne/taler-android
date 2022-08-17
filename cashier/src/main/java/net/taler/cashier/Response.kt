@@ -19,7 +19,6 @@ package net.taler.cashier
 import android.content.Context
 import android.util.Log
 import io.ktor.client.call.body
-import io.ktor.client.call.receive
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.Serializable
@@ -47,7 +46,6 @@ class Response<out T> private constructor(
         private suspend fun getExceptionString(e: ResponseException): String {
             val response = e.response
             return try {
-                Log.e("TEST", "TRY RECEIVE $response")
                 val error: Error = response.body()
                 "Error ${error.code}: ${error.hint}"
             } catch (ex: Exception) {

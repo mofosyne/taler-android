@@ -62,7 +62,7 @@ class MainFragment : Fragment() {
         })
 
         ui.mainFab.setOnClickListener {
-            scanQrCode(requireActivity())
+            model.scanCode()
         }
         ui.mainFab.setOnLongClickListener {
             findNavController().navigate(R.id.action_nav_main_to_nav_uri_input)

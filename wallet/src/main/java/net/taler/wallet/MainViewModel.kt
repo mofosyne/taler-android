@@ -97,6 +97,9 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
 
+    private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
+    val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
+
     private val mLastBackup = MutableLiveData(
         // fake backup time until we actually do backup
         System.currentTimeMillis() -
@@ -149,6 +152,11 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     fun tunnelResponse(resp: String) {
         val respJson = JSONObject(resp)
         api.sendRequest("tunnelResponse", respJson)
+    }
+
+    @UiThread
+    fun scanCode() {
+        mScanCodeEvent.value = true.toEvent()
     }
 
 }

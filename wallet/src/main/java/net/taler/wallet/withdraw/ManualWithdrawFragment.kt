@@ -29,7 +29,6 @@ import net.taler.common.hideKeyboard
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentManualWithdrawBinding
-import net.taler.wallet.scanQrCode
 import java.util.Locale
 
 class ManualWithdrawFragment : Fragment() {
@@ -50,7 +49,9 @@ class ManualWithdrawFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ui.qrCodeButton.setOnClickListener { scanQrCode(requireActivity()) }
+        ui.qrCodeButton.setOnClickListener {
+            model.scanCode()
+        }
         ui.currencyView.text = exchangeItem.currency
         val paymentOptions = exchangeItem.paytoUris.mapNotNull { paytoUri ->
             Uri.parse(paytoUri).authority?.uppercase(Locale.getDefault())
@@ -66,7 +67,7 @@ class ManualWithdrawFragment : Fragment() {
             return
         }
         ui.amountLayout.error = null
-        var value = 0.0
+        val value: Double
         try {
             value = ui.amountView.text.toString().replace(',', '.').toDouble()
         } catch (e: NumberFormatException) {

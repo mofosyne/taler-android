@@ -41,7 +41,6 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
-import net.taler.wallet.scanQrCode
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -118,7 +117,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             onTransactionsResult(result)
         }
         ui.mainFab.setOnClickListener {
-            scanQrCode(requireActivity())
+            model.scanCode()
         }
         ui.mainFab.setOnLongClickListener {
             findNavController().navigate(R.id.action_nav_transactions_to_nav_uri_input)

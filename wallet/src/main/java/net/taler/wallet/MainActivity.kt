@@ -46,10 +46,14 @@ import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCal
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
-import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentIntegrator.parseActivityResult
+import com.google.zxing.client.android.Intents.Scan.MIXED_SCAN
+import com.google.zxing.client.android.Intents.Scan.SCAN_TYPE
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
+import com.journeyapps.barcodescanner.ScanOptions.QR_CODE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.taler.common.EventObserver
 import net.taler.common.isOnline
 import net.taler.common.showError
 import net.taler.wallet.BuildConfig.VERSION_CODE
@@ -65,6 +69,7 @@ import java.net.URL
 import java.util.Locale.ROOT
 import javax.net.ssl.HttpsURLConnection
 
+
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     OnPreferenceStartFragmentCallback {
 
@@ -72,6 +77,11 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
     private lateinit var ui: ActivityMainBinding
     private lateinit var nav: NavController
+
+    private val barcodeLauncher = registerForActivityResult(ScanContract()) { result ->
+        if (result == null || result.contents == null) return@registerForActivityResult
+        handleTalerUri(result.contents, "QR code")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,6 +128,17 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         registerReceiver(nfcConnectedReceiver, IntentFilter(MERCHANT_NFC_CONNECTED))
         registerReceiver(nfcDisconnectedReceiver, IntentFilter(MERCHANT_NFC_DISCONNECTED))
         registerReceiver(tunnelResponseReceiver, IntentFilter(HTTP_TUNNEL_RESPONSE))
+
+        model.scanCodeEvent.observe(this, EventObserver {
+            val scanOptions = ScanOptions().apply {
+                setPrompt("")
+                setBeepEnabled(true)
+                setOrientationLocked(false)
+                setDesiredBarcodeFormats(QR_CODE)
+                addExtra(SCAN_TYPE, MIXED_SCAN)
+            }
+            if (it) barcodeLauncher.launch(scanOptions)
+        })
     }
 
     override fun onBackPressed() {
@@ -135,15 +156,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IntentIntegrator.REQUEST_CODE) {
-            parseActivityResult(requestCode, resultCode, data)?.contents?.let { contents ->
-                handleTalerUri(contents, "QR code")
-            }
-        }
-    }
-
     override fun onDestroy() {
         unregisterReceiver(triggerPaymentReceiver)
         unregisterReceiver(nfcConnectedReceiver)
@@ -152,13 +164,18 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         super.onDestroy()
     }
 
-    private fun getTalerAction(uri: Uri, maxRedirects: Int, actionFound: MutableLiveData<String>): MutableLiveData<String> {
+    private fun getTalerAction(
+        uri: Uri,
+        maxRedirects: Int,
+        actionFound: MutableLiveData<String>,
+    ): MutableLiveData<String> {
         val scheme = uri.scheme ?: return actionFound
 
         if (scheme == "http" || scheme == "https") {
             model.viewModelScope.launch(Dispatchers.IO) {
-                val conn: HttpsURLConnection  = URL(uri.toString()).openConnection() as HttpsURLConnection
-                Log.v(TAG, "prepare query: ${uri}")
+                val conn: HttpsURLConnection =
+                    URL(uri.toString()).openConnection() as HttpsURLConnection
+                Log.v(TAG, "prepare query: $uri")
                 conn.setRequestProperty("Accept", "text/html")
                 conn.connectTimeout = 5000
                 conn.requestMethod = "HEAD"
@@ -175,12 +192,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
                 if (status == HttpURLConnection.HTTP_MOVED_TEMP
                     || status == HttpURLConnection.HTTP_MOVED_PERM
-                    || status == HttpURLConnection.HTTP_SEE_OTHER) {
+                    || status == HttpURLConnection.HTTP_SEE_OTHER
+                ) {
                     val location = conn.headerFields["Location"]
                     if (location != null && location[0] != null) {
                         Log.v(TAG, "location redirect: ${location[0]}")
                         val locUri = Uri.parse(location[0])
-                        getTalerAction(locUri, maxRedirects -1, actionFound)
+                        getTalerAction(locUri, maxRedirects - 1, actionFound)
                     }
                 }
             }
@@ -200,10 +218,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             connectToWifi(this, uri.fragment!!)
         }
 
-        getTalerAction(uri, 3, MutableLiveData<String>()).observe(this) { url ->
-            Log.v(TAG, "found action $url")
+        getTalerAction(uri, 3, MutableLiveData<String>()).observe(this) { u ->
+            Log.v(TAG, "found action $u")
 
-            val normalizedURL = url.lowercase(ROOT)
+            val normalizedURL = u.lowercase(ROOT)
             val action = normalizedURL.substring(
                 if (normalizedURL.startsWith("taler://")) {
                     "taler://".length
@@ -218,25 +236,25 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 action.startsWith("pay/") -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptPayment)
-                    model.paymentManager.preparePay(url)
+                    model.paymentManager.preparePay(u)
                 }
                 action.startsWith("tip/") -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptTip)
-                    model.tipManager.prepareTip(url)
+                    model.tipManager.prepareTip(u)
                 }
                 action.startsWith("withdraw/") -> {
                     Log.v(TAG, "navigating!")
                     // there's more than one entry point, so use global action
                     nav.navigate(R.id.action_global_promptWithdraw)
-                    model.withdrawManager.getWithdrawalDetails(url)
+                    model.withdrawManager.getWithdrawalDetails(u)
                 }
                 action.startsWith("refund/") -> {
                     model.showProgressBar.value = true
-                    model.refundManager.refund(url).observe(this, Observer(::onRefundResponse))
+                    model.refundManager.refund(u).observe(this, Observer(::onRefundResponse))
                 }
                 else -> {
-                    showError(R.string.error_unsupported_uri, "From: $from\nURI: $url")
+                    showError(R.string.error_unsupported_uri, "From: $from\nURI: $u")
                 }
             }
         }
@@ -292,7 +310,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
     override fun onPreferenceStartFragment(
         caller: PreferenceFragmentCompat,
-        pref: Preference
+        pref: Preference,
     ): Boolean {
         when (pref.key) {
             "pref_backup" -> nav.navigate(R.id.action_nav_settings_to_nav_settings_backup)

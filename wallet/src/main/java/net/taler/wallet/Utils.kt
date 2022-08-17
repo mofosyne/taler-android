@@ -16,7 +16,6 @@
 
 package net.taler.wallet
 
-import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
@@ -30,15 +29,6 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import com.google.zxing.integration.android.IntentIntegrator
-
-fun scanQrCode(activity: Activity) {
-    IntentIntegrator(activity).apply {
-        setPrompt("")
-        setBeepEnabled(true)
-        setOrientationLocked(false)
-    }.initiateScan(listOf(IntentIntegrator.QR_CODE))
-}
 
 fun connectToWifi(context: Context, ssid: String) {
     if (SDK_INT >= 29) {
