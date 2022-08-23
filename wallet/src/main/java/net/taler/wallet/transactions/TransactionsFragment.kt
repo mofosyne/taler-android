@@ -106,8 +106,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             // hide extra fab when in single currency mode (uses MainFragment's FAB)
             if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
             balances.find { it.currency == currency }?.available?.let { amount: Amount ->
-                requireActivity().title =
-                    getString(R.string.transactions_detail_title_balance, amount)
+                ui.amount.text = amount.amountStr
             }
         }
         transactionManager.progress.observe(viewLifecycleOwner) { show ->
@@ -134,6 +133,11 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.transactions, menu)
         setupSearch(menu.findItem(R.id.action_search))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().title = getString(R.string.transactions_detail_title_currency, currency)
     }
 
     private fun setupSearch(item: MenuItem) {
