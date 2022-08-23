@@ -57,9 +57,9 @@ class PromptWithdrawFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        withdrawManager.withdrawStatus.observe(viewLifecycleOwner, {
+        withdrawManager.withdrawStatus.observe(viewLifecycleOwner) {
             showWithdrawStatus(it)
-        })
+        }
         withdrawManager.exchangeSelection.observe(viewLifecycleOwner, EventObserver {
             findNavController().navigate(R.id.action_promptWithdraw_to_selectExchangeFragment)
         })

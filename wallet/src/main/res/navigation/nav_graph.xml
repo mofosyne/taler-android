@@ -86,7 +86,7 @@
 
     <fragment
         android:id="@+id/nav_exchange_manual_withdrawal"
-        android:name="net.taler.wallet.withdraw.ManualWithdrawFragment"
+        android:name="net.taler.wallet.withdraw.manual.ManualWithdrawFragment"
         android:label="@string/withdraw_title">
         <action
             android:id="@+id/action_nav_exchange_manual_withdrawal_to_promptWithdraw"
@@ -95,7 +95,7 @@
 
     <fragment
         android:id="@+id/nav_exchange_manual_withdrawal_success"
-        android:name="net.taler.wallet.withdraw.ManualWithdrawSuccessFragment"
+        android:name="net.taler.wallet.withdraw.manual.ManualWithdrawSuccessFragment"
         android:label="@string/withdraw_title">
         <action
             android:id="@+id/action_nav_exchange_manual_withdrawal_success_to_nav_main"

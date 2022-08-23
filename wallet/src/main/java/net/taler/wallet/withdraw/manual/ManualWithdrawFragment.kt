@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.withdraw
+package net.taler.wallet.withdraw.manual
 
 import android.net.Uri
 import android.os.Bundle

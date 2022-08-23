@@ -16,7 +16,7 @@
 
 package net.taler.wallet.withdraw
 
-import Bech32Data
+import Bech32
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.UiThread
@@ -26,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
-import net.taler.common.CyptoUtils
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
@@ -35,11 +34,6 @@ import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
-import toBech32Data
-import kotlin.experimental.and
-import kotlin.experimental.or
-import kotlin.math.floor
-import kotlin.reflect.KProperty
 
 sealed class WithdrawStatus {
     data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
@@ -287,7 +281,6 @@ class WithdrawManager(
 
 }
 
-
 fun createManualTransferRequired(
     amount: Amount,
     exchangeBaseUrl: String,
@@ -319,5 +312,3 @@ fun createManualTransferRequired(
         transactionId = transactionId,
     )
 }
-
-
