@@ -19,7 +19,6 @@ package net.taler.wallet.settings
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
@@ -64,11 +63,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefReset
         )
     }
-
-    val createDocumentActivity =
-        registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-
-        }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
@@ -123,7 +117,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         prefLogcat.setOnPreferenceClickListener {
             val toast =
-                Toast.makeText(requireActivity(), "Log export currently unavailable", Toast.LENGTH_LONG)
+                Toast.makeText(requireActivity(),
+                    "Log export currently unavailable",
+                    Toast.LENGTH_LONG)
             toast.show()
 
 //            val myPid = android.os.Process.myPid()

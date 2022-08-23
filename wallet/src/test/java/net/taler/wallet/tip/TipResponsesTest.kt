@@ -14,12 +14,10 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.payment
+package net.taler.wallet.tip
 
 import kotlinx.serialization.json.Json
 import net.taler.common.Amount
-import net.taler.wallet.tip.ConfirmTipResult
-import net.taler.wallet.tip.PrepareTipResponse
 import org.junit.Test
 
 class TipResponsesTest {
@@ -38,15 +36,8 @@ class TipResponsesTest {
             "result": {}
              }
         """.trimIndent()
-        val response = json.decodeFromString(ConfirmTipResult.serializer(), jsonStr)
-        response as ConfirmTipResult
-        assert(response != null)
+        json.decodeFromString(ConfirmTipResult.serializer(), jsonStr)
     }
-
-/*
-
-*/
-
 
     @Test
     fun testTipPossibleSerializer() {
@@ -68,7 +59,6 @@ class TipResponsesTest {
         assert(response.walletTipId == "SZH86ATJC4NZ427JHFVQ9M3S1TCQKVWSSZGSBW8MQ8VTVWD4M4GG")
         assert(response.tipAmountEffective == Amount(currency = "ARS", fraction = 40000000, value = 1))
     }
-
 
     @Test
     fun testTipAcceptedSerializer() {

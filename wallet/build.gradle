@@ -109,11 +109,9 @@ android {
 
     lint {
         abortOnError true
-        ignore 'WrongConstant'
         ignoreWarnings false
     }
     namespace 'net.taler.wallet'
-
 }
 
 dependencies {
