@@ -34,6 +34,7 @@ import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
+import net.taler.wallet.peer.PeerManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.tip.TipManager
@@ -93,6 +94,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
+    val peerManager: PeerManager = PeerManager(api, viewModelScope)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent

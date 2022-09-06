@@ -37,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.withdraw.WithdrawStatus
 
 @Composable
@@ -189,7 +191,7 @@ $sr
         IconButton(
             onClick = { copyToClipBoard(context, "Bitcoin", copyText) },
         ) {
-            Row {
+            Row(verticalAlignment = CenterVertically) {
                 Icon(Icons.Default.ContentCopy, stringResource(R.string.copy))
                 Text(
                     modifier = Modifier.padding(start = 8.dp),

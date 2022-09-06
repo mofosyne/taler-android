@@ -29,6 +29,8 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import net.taler.common.Amount
+import net.taler.common.AmountParserException
 
 fun connectToWifi(context: Context, ssid: String) {
     if (SDK_INT >= 29) {
@@ -84,3 +86,11 @@ private fun connectToWifiDeprecated(context: Context, ssid: String) {
 fun cleanExchange(exchange: String) = exchange.let {
     if (it.startsWith("https://")) it.substring(8) else it
 }.trimEnd('/')
+
+fun getAmount(currency: String, text: String): Amount? {
+    return try {
+        Amount.fromString(currency, text)
+    } catch (e: AmountParserException) {
+        null
+    }
+}

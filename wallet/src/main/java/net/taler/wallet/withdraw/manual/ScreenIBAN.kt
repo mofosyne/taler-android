@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.withdraw.WithdrawStatus
 
 @Composable

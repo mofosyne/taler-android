@@ -49,6 +49,11 @@ class ManualWithdrawFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        arguments?.getString("amount")?.let {
+            val amount = Amount.fromJSONString(it)
+            ui.amountView.setText(amount.amountStr)
+        }
+
         ui.qrCodeButton.setOnClickListener {
             model.scanCode()
         }

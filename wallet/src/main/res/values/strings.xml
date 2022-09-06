@@ -46,6 +46,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
     <string name="enter_uri">Enter Taler URI</string>
     <string name="copy" tools:override="true">Copy</string>
+    <string name="copy_uri">Copy Taler URI</string>
     <string name="paste">Paste</string>
     <string name="paste_invalid">Clipboard contains an invalid data type</string>
     <string name="uri_invalid">Not a valid Taler URI</string>
@@ -95,6 +96,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_refund_from">Refund from %s</string>
     <string name="transaction_pending">PENDING</string>
     <string name="transaction_refresh">Coin expiry change fee</string>
+    <string name="transaction_peer_push_debit">Push payment</string>
+    <string name="transaction_peer_pull_credit">Invoice</string>
 
     <string name="payment_title">Payment</string>
     <string name="payment_fee">+%s payment fee</string>
@@ -108,6 +111,21 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_initiated">Payment initiated</string>
     <string name="payment_already_paid_title">Already paid</string>
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
+
+    <string name="receive_amount">Amount to receive</string>
+    <string name="receive_amount_invalid">Amount invalid</string>
+    <string name="receive_intro">Choose where to receive money from:</string>
+    <string name="receive_withdraw">Withdraw from bank account</string>
+    <string name="receive_peer">Invoice another wallet</string>
+    <string name="receive_peer_title">Request payment</string>
+    <string name="receive_peer_create_button">Create invoice</string>
+    <string name="receive_peer_invoice_instruction">Let the payer scan this QR code to pay:</string>
+    <string name="receive_peer_invoice_uri">Alternatively, copy and send this URI:</string>
+
+    <string name="send_peer_amount">Amount to send</string>
+    <string name="send_peer_create_button">Send funds now</string>
+    <string name="send_peer_warning">Warning: Funds will leave the wallet immediately.</string>
+    <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>
 
     <string name="withdraw_initiated">Withdrawal initiated</string>
     <string name="withdraw_title">Withdrawal</string>

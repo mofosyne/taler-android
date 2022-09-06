@@ -16,9 +16,6 @@
 
 package net.taler.wallet.withdraw.manual
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,7 +23,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -81,10 +77,4 @@ class ManualWithdrawSuccessFragment : Fragment() {
         super.onStart()
         activity?.setTitle(R.string.withdraw_title)
     }
-}
-
-fun copyToClipBoard(context: Context, label: String, str: String) {
-    val clipboard = context.getSystemService<ClipboardManager>()
-    val clip = ClipData.newPlainText(label, str)
-    clipboard?.setPrimaryClip(clip)
 }

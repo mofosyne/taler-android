@@ -252,3 +252,116 @@ class TransactionRefresh(
 
     override val generalTitleRes = R.string.transaction_refresh
 }
+
+@Serializable
+data class PeerInfoShort(
+    val expiration: Timestamp? = null,
+    val summary: String? = null,
+)
+
+/**
+ * Debit because we paid someone's invoice.
+ */
+@Serializable
+@SerialName("peer-pull-debit")
+class TransactionPeerPullDebit(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
+    val exchangeBaseUrl: String,
+    override val error: TalerErrorInfo? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount,
+    val info: PeerInfoShort,
+) : Transaction() {
+    override val icon = R.drawable.ic_cash_usd_outline
+    override val detailPageNav = R.id.nav_transactions_detail_peer
+
+    @Transient
+    override val amountType = AmountType.Negative
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_peer_push_debit)
+    }
+    override val generalTitleRes = R.string.payment_title
+}
+
+/**
+ * Credit because someone paid for an invoice we created.
+ */
+@Serializable
+@SerialName("peer-pull-credit")
+class TransactionPeerPullCredit(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
+    val exchangeBaseUrl: String,
+    override val error: TalerErrorInfo? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount,
+    val info: PeerInfoShort,
+    val talerUri: String,
+    // val completed: Boolean, maybe
+) : Transaction() {
+    override val icon = R.drawable.transaction_withdrawal
+    override val detailPageNav = R.id.nav_transactions_detail_peer
+
+    override val amountType get() = AmountType.Positive
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_peer_pull_credit)
+    }
+    override val generalTitleRes = R.string.transaction_peer_pull_credit
+}
+
+/**
+ * Debit because we sent money to someone.
+ */
+@Serializable
+@SerialName("peer-push-debit")
+class TransactionPeerPushDebit(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
+    val exchangeBaseUrl: String,
+    override val error: TalerErrorInfo? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount,
+    val info: PeerInfoShort,
+    val talerUri: String,
+    // val completed: Boolean, definitely
+) : Transaction() {
+    override val icon = R.drawable.ic_cash_usd_outline
+    override val detailPageNav = R.id.nav_transactions_detail_peer
+
+    @Transient
+    override val amountType = AmountType.Negative
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_peer_push_debit)
+    }
+    override val generalTitleRes = R.string.payment_title
+}
+
+/**
+ * We received money via a peer payment.
+ */
+@Serializable
+@SerialName("peer-push-credit")
+class TransactionPeerPushCredit(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
+    val exchangeBaseUrl: String,
+    override val error: TalerErrorInfo? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount,
+    val info: PeerInfoShort,
+) : Transaction() {
+    override val icon = R.drawable.transaction_withdrawal
+    override val detailPageNav = R.id.nav_transactions_detail_peer
+
+    @Transient
+    override val amountType = AmountType.Positive
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_peer_push_debit)
+    }
+    override val generalTitleRes = R.string.withdraw_title
+}

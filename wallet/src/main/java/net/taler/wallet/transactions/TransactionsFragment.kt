@@ -115,6 +115,12 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         transactionManager.transactions.observe(viewLifecycleOwner) { result ->
             onTransactionsResult(result)
         }
+        ui.sendButton.setOnClickListener {
+            findNavController().navigate(R.id.sendFunds)
+        }
+        ui.receiveButton.setOnClickListener {
+            findNavController().navigate(R.id.receiveFunds)
+        }
         ui.mainFab.setOnClickListener {
             model.scanCode()
         }

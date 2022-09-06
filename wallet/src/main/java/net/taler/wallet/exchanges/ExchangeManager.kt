@@ -20,6 +20,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Event
@@ -29,12 +31,12 @@ import net.taler.wallet.backend.WalletBackendApi
 
 @Serializable
 data class ExchangeListResponse(
-    val exchanges: List<ExchangeItem>
+    val exchanges: List<ExchangeItem>,
 )
 
 class ExchangeManager(
     private val api: WalletBackendApi,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
 
     private val mProgress = MutableLiveData<Boolean>()
@@ -76,6 +78,16 @@ class ExchangeManager(
             Log.d(TAG, "Exchange $exchangeUrl added")
             list()
         }
+    }
+
+    fun findExchangeForCurrency(currency: String): Flow<ExchangeItem?> = flow {
+        val response = api.request("listExchanges", ExchangeListResponse.serializer())
+        var exchange: ExchangeItem? = null
+        response.onSuccess { exchangeListResponse ->
+            // just pick the first for now
+            exchange = exchangeListResponse.exchanges.find { it.currency == currency }
+        }
+        emit(exchange)
     }
 
 }
