@@ -55,7 +55,7 @@ import net.taler.wallet.compose.getQrCodeSize
 import org.json.JSONObject
 
 @Composable
-fun PeerPullResultComposable(state: PeerPaymentState, onClose: () -> Unit) {
+fun PeerPullResultComposable(state: PeerOutgoingState, onClose: () -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -68,10 +68,10 @@ fun PeerPullResultComposable(state: PeerPaymentState, onClose: () -> Unit) {
             text = stringResource(id = R.string.receive_peer_invoice_instruction),
         )
         when (state) {
-            PeerPaymentIntro -> error("Result composable with PullPaymentIntro")
-            is PeerPaymentCreating -> PeerPullCreatingComposable()
-            is PeerPaymentResponse -> PeerPullResponseComposable(state)
-            is PeerPaymentError -> PeerPullErrorComposable(state)
+            PeerOutgoingIntro -> error("Result composable with PullPaymentIntro")
+            is PeerOutgoingCreating -> PeerPullCreatingComposable()
+            is PeerOutgoingResponse -> PeerPullResponseComposable(state)
+            is PeerOutgoingError -> PeerPullErrorComposable(state)
         }
         Button(modifier = Modifier
             .padding(16.dp)
@@ -94,7 +94,7 @@ private fun ColumnScope.PeerPullCreatingComposable() {
 }
 
 @Composable
-private fun ColumnScope.PeerPullResponseComposable(state: PeerPaymentResponse) {
+private fun ColumnScope.PeerPullResponseComposable(state: PeerOutgoingResponse) {
     val qrCodeSize = getQrCodeSize()
     Image(
         modifier = Modifier
@@ -135,7 +135,7 @@ private fun ColumnScope.PeerPullResponseComposable(state: PeerPaymentResponse) {
 }
 
 @Composable
-private fun ColumnScope.PeerPullErrorComposable(state: PeerPaymentError) {
+private fun ColumnScope.PeerPullErrorComposable(state: PeerOutgoingError) {
     Text(
         modifier = Modifier
             .align(CenterHorizontally)
@@ -150,7 +150,7 @@ private fun ColumnScope.PeerPullErrorComposable(state: PeerPaymentError) {
 @Composable
 fun PeerPullCreatingPreview() {
     Surface {
-        PeerPullResultComposable(PeerPaymentCreating) {}
+        PeerPullResultComposable(PeerOutgoingCreating) {}
     }
 }
 
@@ -159,7 +159,7 @@ fun PeerPullCreatingPreview() {
 fun PeerPullResponsePreview() {
     Surface {
         val talerUri = "https://example.org/foo/bar/can/be/very/long/url/so/fit/it/on/screen"
-        val response = PeerPaymentResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
+        val response = PeerOutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
         PeerPullResultComposable(response) {}
     }
 }
@@ -169,7 +169,7 @@ fun PeerPullResponsePreview() {
 fun PeerPullResponseLandscapePreview() {
     Surface {
         val talerUri = "https://example.org/foo/bar/can/be/very/long/url/so/fit/it/on/screen"
-        val response = PeerPaymentResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
+        val response = PeerOutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
         PeerPullResultComposable(response) {}
     }
 }
@@ -179,7 +179,7 @@ fun PeerPullResponseLandscapePreview() {
 fun PeerPullErrorPreview() {
     Surface {
         val json = JSONObject().apply { put("foo", "bar") }
-        val response = PeerPaymentError(TalerErrorInfo(42, "hint", "message", json))
+        val response = PeerOutgoingError(TalerErrorInfo(42, "hint", "message", json))
         PeerPullResultComposable(response) {}
     }
 }

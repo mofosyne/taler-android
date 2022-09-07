@@ -98,6 +98,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_refresh">Coin expiry change fee</string>
     <string name="transaction_peer_push_debit">Push payment</string>
     <string name="transaction_peer_pull_credit">Invoice</string>
+    <string name="transaction_peer_pull_debit">Invoice paid</string>
 
     <string name="payment_title">Payment</string>
     <string name="payment_fee">+%s payment fee</string>
@@ -126,6 +127,9 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_peer_create_button">Send funds now</string>
     <string name="send_peer_warning">Warning: Funds will leave the wallet immediately.</string>
     <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>
+
+    <string name="pay_peer_title">Pay invoice</string>
+    <string name="pay_peer_intro">Do you want to pay this invoice?</string>
 
     <string name="withdraw_initiated">Withdrawal initiated</string>
     <string name="withdraw_title">Withdrawal</string>

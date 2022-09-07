@@ -141,6 +141,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/promptPullPayment"
+        android:name="net.taler.wallet.peer.PullPaymentFragment"
+        android:label="@string/pay_peer_title">
+        <action
+            android:id="@+id/action_promptPullPayment_to_nav_main"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_transactions"
         android:name="net.taler.wallet.transactions.TransactionsFragment"
         android:label="@string/transactions_title"
@@ -274,6 +284,10 @@
     <action
         android:id="@+id/action_global_promptTip"
         app:destination="@id/promptTip" />
+
+    <action
+        android:id="@+id/action_global_prompt_pull_payment"
+        app:destination="@id/promptPullPayment" />
 
     <action
         android:id="@+id/action_global_pending_operations"

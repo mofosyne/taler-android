@@ -280,9 +280,9 @@ class TransactionPeerPullDebit(
     @Transient
     override val amountType = AmountType.Negative
     override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_peer_push_debit)
+        return context.getString(R.string.transaction_peer_pull_debit)
     }
-    override val generalTitleRes = R.string.payment_title
+    override val generalTitleRes = R.string.transaction_peer_pull_debit
 }
 
 /**

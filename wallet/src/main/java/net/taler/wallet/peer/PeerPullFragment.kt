@@ -51,7 +51,7 @@ class PeerPullFragment : Fragment() {
                 MdcTheme {
                     Surface {
                         val state = peerManager.pullState.collectAsStateLifecycleAware()
-                        if (state.value is PeerPaymentIntro) {
+                        if (state.value is PeerOutgoingIntro) {
                             val exchangeState =
                                 exchangeFlow.collectAsStateLifecycleAware(initial = null)
                             PeerPullIntroComposable(

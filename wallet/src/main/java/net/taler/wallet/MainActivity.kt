@@ -253,6 +253,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     model.showProgressBar.value = true
                     model.refundManager.refund(u).observe(this, Observer(::onRefundResponse))
                 }
+                action.startsWith("pay-pull/") -> {
+                    nav.navigate(R.id.action_global_prompt_pull_payment)
+                    model.peerManager.checkPeerPullPayment(u)
+                }
                 else -> {
                     showError(R.string.error_unsupported_uri, "From: $from\nURI: $u")
                 }
