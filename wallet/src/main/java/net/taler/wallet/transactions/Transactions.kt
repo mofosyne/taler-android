@@ -361,7 +361,7 @@ class TransactionPeerPushCredit(
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_peer_push_debit)
+        return context.getString(R.string.transaction_peer_push_credit)
     }
-    override val generalTitleRes = R.string.withdraw_title
+    override val generalTitleRes = R.string.transaction_peer_push_credit
 }

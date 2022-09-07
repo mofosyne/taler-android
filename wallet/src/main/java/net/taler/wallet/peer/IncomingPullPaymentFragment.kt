@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.peer
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,34 +24,36 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.composethemeadapter.MdcTheme
-import net.taler.common.Amount
+import net.taler.wallet.MainViewModel
+import net.taler.wallet.R
 import net.taler.wallet.compose.collectAsStateLifecycleAware
-import net.taler.wallet.peer.OutgoingIntro
-import net.taler.wallet.peer.OutgoingPushIntroComposable
-import net.taler.wallet.peer.OutgoingPushResultComposable
 
-class SendFundsFragment : Fragment() {
+class IncomingPullPaymentFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
-    private val transactionManager get() = model.transactionManager
     private val peerManager get() = model.peerManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = ComposeView(requireContext()).apply {
-        setContent {
-            MdcTheme {
-                Surface {
-                    val state = peerManager.pushState.collectAsStateLifecycleAware()
-                    if (state.value is OutgoingIntro) {
-                        val currency = transactionManager.selectedCurrency
-                            ?: error("No currency selected")
-                        OutgoingPushIntroComposable(currency, this@SendFundsFragment::onSend)
-                    } else {
-                        OutgoingPushResultComposable(state.value) {
-                            findNavController().popBackStack()
+    ): View {
+        lifecycleScope.launchWhenResumed {
+            peerManager.incomingPullState.collect {
+                if (it is IncomingAccepted) {
+                    findNavController().navigate(R.id.action_promptPullPayment_to_nav_main)
+                }
+            }
+        }
+        return ComposeView(requireContext()).apply {
+            setContent {
+                MdcTheme {
+                    Surface {
+                        val state = peerManager.incomingPullState.collectAsStateLifecycleAware()
+                        IncomingComposable(state, incomingPull) { terms ->
+                            peerManager.acceptPeerPullPayment(terms)
                         }
                     }
                 }
@@ -61,15 +63,6 @@ class SendFundsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.transactions_send_funds)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!requireActivity().isChangingConfigurations) peerManager.resetPushPayment()
-    }
-
-    private fun onSend(amount: Amount, summary: String) {
-        peerManager.initiatePeerPushPayment(amount, summary)
+        activity?.setTitle(R.string.pay_peer_title)
     }
 }

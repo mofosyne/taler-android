@@ -31,7 +31,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 
-class PullPaymentFragment : Fragment() {
+class IncomingPushPaymentFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val peerManager get() = model.peerManager
 
@@ -41,9 +41,9 @@ class PullPaymentFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         lifecycleScope.launchWhenResumed {
-            peerManager.paymentState.collect {
-                if (it is PeerIncomingAccepted) {
-                    findNavController().navigate(R.id.action_promptPullPayment_to_nav_main)
+            peerManager.incomingPushState.collect {
+                if (it is IncomingAccepted) {
+                    findNavController().navigate(R.id.action_promptPushPayment_to_nav_main)
                 }
             }
         }
@@ -51,9 +51,9 @@ class PullPaymentFragment : Fragment() {
             setContent {
                 MdcTheme {
                     Surface {
-                        val state = peerManager.paymentState.collectAsStateLifecycleAware()
-                        PeerPullPaymentComposable(state) { terms ->
-                            peerManager.acceptPeerPullPayment(terms)
+                        val state = peerManager.incomingPushState.collectAsStateLifecycleAware()
+                        IncomingComposable(state, incomingPush) { terms ->
+                            peerManager.acceptPeerPushPayment(terms)
                         }
                     }
                 }
@@ -63,6 +63,6 @@ class PullPaymentFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.pay_peer_title)
+        activity?.setTitle(R.string.receive_peer_payment_title)
     }
 }

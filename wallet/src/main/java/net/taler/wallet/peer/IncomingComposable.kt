@@ -17,6 +17,7 @@
 package net.taler.wallet.peer
 
 import android.annotation.SuppressLint
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -49,10 +50,26 @@ import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorInfo
 
+data class IncomingData(
+    @StringRes val intro: Int,
+    @StringRes val button: Int,
+)
+
+val incomingPush = IncomingData(
+    intro = R.string.receive_peer_payment_intro,
+    button = R.string.receive_peer_payment_title,
+)
+
+val incomingPull = IncomingData(
+    intro = R.string.pay_peer_intro,
+    button = R.string.payment_button_confirm,
+)
+
 @Composable
-fun PeerPullPaymentComposable(
-    state: State<PeerIncomingState>,
-    onAccept: (PeerIncomingTerms) -> Unit,
+fun IncomingComposable(
+    state: State<IncomingState>,
+    data: IncomingData,
+    onAccept: (IncomingTerms) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -64,15 +81,16 @@ fun PeerPullPaymentComposable(
             modifier = Modifier
                 .padding(16.dp)
                 .align(CenterHorizontally),
-            text = stringResource(id = R.string.pay_peer_intro))
+            text = stringResource(id = data.intro),
+        )
         when (val s = state.value) {
-            PeerIncomingChecking -> PeerPullCheckingComposable()
-            is PeerIncomingTerms -> PeerPullTermsComposable(s, onAccept)
-            is PeerIncomingAccepting -> PeerPullTermsComposable(s, onAccept)
-            PeerIncomingAccepted -> {
+            IncomingChecking -> PeerPullCheckingComposable()
+            is IncomingTerms -> PeerPullTermsComposable(s, onAccept, data)
+            is IncomingAccepting -> PeerPullTermsComposable(s, onAccept, data)
+            IncomingAccepted -> {
                 // we navigate away, don't show anything
             }
-            is PeerIncomingError -> PeerPullErrorComposable(s)
+            is IncomingError -> PeerPullErrorComposable(s)
         }
     }
 }
@@ -88,8 +106,9 @@ fun ColumnScope.PeerPullCheckingComposable() {
 
 @Composable
 fun ColumnScope.PeerPullTermsComposable(
-    terms: PeerIncomingTerms,
-    onAccept: (PeerIncomingTerms) -> Unit,
+    terms: IncomingTerms,
+    onAccept: (IncomingTerms) -> Unit,
+    data: IncomingData,
 ) {
     Text(
         modifier = Modifier
@@ -126,7 +145,7 @@ fun ColumnScope.PeerPullTermsComposable(
                     style = MaterialTheme.typography.body1,
                 )
             }
-            if (terms is PeerIncomingAccepting) {
+            if (terms is IncomingAccepting) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .padding(end = 64.dp)
@@ -144,7 +163,7 @@ fun ColumnScope.PeerPullTermsComposable(
                     onClick = { onAccept(terms) },
                 ) {
                     Text(
-                        text = stringResource(id = R.string.payment_button_confirm),
+                        text = stringResource(id = data.button),
                     )
                 }
             }
@@ -153,7 +172,7 @@ fun ColumnScope.PeerPullTermsComposable(
 }
 
 @Composable
-fun ColumnScope.PeerPullErrorComposable(s: PeerIncomingError) {
+fun ColumnScope.PeerPullErrorComposable(s: IncomingError) {
     Text(
         modifier = Modifier
             .align(CenterHorizontally)
@@ -169,8 +188,8 @@ fun ColumnScope.PeerPullErrorComposable(s: PeerIncomingError) {
 fun PeerPullCheckingPreview() {
     Surface {
         @SuppressLint("UnrememberedMutableState")
-        val s = mutableStateOf(PeerIncomingChecking)
-        PeerPullPaymentComposable(s) {}
+        val s = mutableStateOf(IncomingChecking)
+        IncomingComposable(s, incomingPush) {}
     }
 }
 
@@ -178,7 +197,7 @@ fun PeerPullCheckingPreview() {
 @Composable
 fun PeerPullTermsPreview() {
     Surface {
-        val terms = PeerIncomingTerms(
+        val terms = IncomingTerms(
             amount = Amount.fromDouble("TESTKUDOS", 42.23),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
@@ -189,7 +208,7 @@ fun PeerPullTermsPreview() {
 
         @SuppressLint("UnrememberedMutableState")
         val s = mutableStateOf(terms)
-        PeerPullPaymentComposable(s) {}
+        IncomingComposable(s, incomingPush) {}
     }
 }
 
@@ -197,7 +216,7 @@ fun PeerPullTermsPreview() {
 @Composable
 fun PeerPullAcceptingPreview() {
     Surface {
-        val terms = PeerIncomingTerms(
+        val terms = IncomingTerms(
             amount = Amount.fromDouble("TESTKUDOS", 42.23),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
@@ -207,8 +226,8 @@ fun PeerPullAcceptingPreview() {
         )
 
         @SuppressLint("UnrememberedMutableState")
-        val s = mutableStateOf(PeerIncomingAccepting(terms))
-        PeerPullPaymentComposable(s) {}
+        val s = mutableStateOf(IncomingAccepting(terms))
+        IncomingComposable(s, incomingPush) {}
     }
 }
 
@@ -217,7 +236,7 @@ fun PeerPullAcceptingPreview() {
 fun PeerPullPayErrorPreview() {
     Surface {
         @SuppressLint("UnrememberedMutableState")
-        val s = mutableStateOf(PeerIncomingError(TalerErrorInfo(42, "hint", "msg")))
-        PeerPullPaymentComposable(s) {}
+        val s = mutableStateOf(IncomingError(TalerErrorInfo(42, "hint", "msg")))
+        IncomingComposable(s, incomingPush) {}
     }
 }

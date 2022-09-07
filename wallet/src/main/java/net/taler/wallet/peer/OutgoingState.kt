@@ -20,17 +20,17 @@ import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
 import net.taler.wallet.backend.TalerErrorInfo
 
-sealed class PeerOutgoingState
-object PeerOutgoingIntro : PeerOutgoingState()
-object PeerOutgoingCreating : PeerOutgoingState()
-data class PeerOutgoingResponse(
+sealed class OutgoingState
+object OutgoingIntro : OutgoingState()
+object OutgoingCreating : OutgoingState()
+data class OutgoingResponse(
     val talerUri: String,
     val qrCode: Bitmap,
-) : PeerOutgoingState()
+) : OutgoingState()
 
-data class PeerOutgoingError(
+data class OutgoingError(
     val info: TalerErrorInfo,
-) : PeerOutgoingState()
+) : OutgoingState()
 
 @Serializable
 data class InitiatePeerPullPaymentResponse(

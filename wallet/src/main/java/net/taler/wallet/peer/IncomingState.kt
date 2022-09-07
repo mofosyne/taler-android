@@ -20,21 +20,21 @@ import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
 
-sealed class PeerIncomingState
-object PeerIncomingChecking : PeerIncomingState()
-open class PeerIncomingTerms(
+sealed class IncomingState
+object IncomingChecking : IncomingState()
+open class IncomingTerms(
     val amount: Amount,
     val contractTerms: PeerContractTerms,
     val id: String,
-) : PeerIncomingState()
+) : IncomingState()
 
-class PeerIncomingAccepting(s: PeerIncomingTerms) :
-    PeerIncomingTerms(s.amount, s.contractTerms, s.id)
+class IncomingAccepting(s: IncomingTerms) :
+    IncomingTerms(s.amount, s.contractTerms, s.id)
 
-object PeerIncomingAccepted : PeerIncomingState()
-data class PeerIncomingError(
+object IncomingAccepted : IncomingState()
+data class IncomingError(
     val info: TalerErrorInfo,
-) : PeerIncomingState()
+) : IncomingState()
 
 @Serializable
 data class PeerContractTerms(
@@ -47,4 +47,11 @@ data class CheckPeerPullPaymentResponse(
     val amount: Amount,
     val contractTerms: PeerContractTerms,
     val peerPullPaymentIncomingId: String,
+)
+
+@Serializable
+data class CheckPeerPushPaymentResponse(
+    val amount: Amount,
+    val contractTerms: PeerContractTerms,
+    val peerPushPaymentIncomingId: String,
 )

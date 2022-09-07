@@ -32,7 +32,7 @@ import net.taler.wallet.R
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.exchanges.ExchangeItem
 
-class PeerPullFragment : Fragment() {
+class OutgoingPullFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager get() = model.exchangeManager
     private val peerManager get() = model.peerManager
@@ -51,16 +51,16 @@ class PeerPullFragment : Fragment() {
                 MdcTheme {
                     Surface {
                         val state = peerManager.pullState.collectAsStateLifecycleAware()
-                        if (state.value is PeerOutgoingIntro) {
+                        if (state.value is OutgoingIntro) {
                             val exchangeState =
                                 exchangeFlow.collectAsStateLifecycleAware(initial = null)
-                            PeerPullIntroComposable(
+                            OutgoingPullIntroComposable(
                                 amount = amount,
                                 exchangeState = exchangeState,
-                                onCreateInvoice = this@PeerPullFragment::onCreateInvoice,
+                                onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
                             )
                         } else {
-                            PeerPullResultComposable(state.value) {
+                            OutgoingPullResultComposable(state.value) {
                                 findNavController().popBackStack()
                             }
                         }

@@ -55,7 +55,7 @@ import net.taler.wallet.compose.getQrCodeSize
 import org.json.JSONObject
 
 @Composable
-fun PeerPushResultComposable(state: PeerOutgoingState, onClose: () -> Unit) {
+fun OutgoingPullResultComposable(state: OutgoingState, onClose: () -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -65,13 +65,13 @@ fun PeerPushResultComposable(state: PeerOutgoingState, onClose: () -> Unit) {
         Text(
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
             style = MaterialTheme.typography.h6,
-            text = stringResource(id = R.string.send_peer_payment_instruction),
+            text = stringResource(id = R.string.receive_peer_invoice_instruction),
         )
         when (state) {
-            PeerOutgoingIntro -> error("Result composable with PullPaymentIntro")
-            is PeerOutgoingCreating -> PeerPushCreatingComposable()
-            is PeerOutgoingResponse -> PeerPushResponseComposable(state)
-            is PeerOutgoingError -> PeerPushErrorComposable(state)
+            OutgoingIntro -> error("Result composable with PullPaymentIntro")
+            is OutgoingCreating -> PeerPullCreatingComposable()
+            is OutgoingResponse -> PeerPullResponseComposable(state)
+            is OutgoingError -> PeerPullErrorComposable(state)
         }
         Button(modifier = Modifier
             .padding(16.dp)
@@ -83,7 +83,7 @@ fun PeerPushResultComposable(state: PeerOutgoingState, onClose: () -> Unit) {
 }
 
 @Composable
-private fun ColumnScope.PeerPushCreatingComposable() {
+private fun ColumnScope.PeerPullCreatingComposable() {
     val qrCodeSize = getQrCodeSize()
     CircularProgressIndicator(
         modifier = Modifier
@@ -94,7 +94,7 @@ private fun ColumnScope.PeerPushCreatingComposable() {
 }
 
 @Composable
-private fun ColumnScope.PeerPushResponseComposable(state: PeerOutgoingResponse) {
+private fun ColumnScope.PeerPullResponseComposable(state: OutgoingResponse) {
     val qrCodeSize = getQrCodeSize()
     Image(
         modifier = Modifier
@@ -135,7 +135,7 @@ private fun ColumnScope.PeerPushResponseComposable(state: PeerOutgoingResponse) 
 }
 
 @Composable
-private fun ColumnScope.PeerPushErrorComposable(state: PeerOutgoingError) {
+private fun ColumnScope.PeerPullErrorComposable(state: OutgoingError) {
     Text(
         modifier = Modifier
             .align(CenterHorizontally)
@@ -148,38 +148,38 @@ private fun ColumnScope.PeerPushErrorComposable(state: PeerOutgoingError) {
 
 @Preview
 @Composable
-fun PeerPushCreatingPreview() {
+fun PeerPullCreatingPreview() {
     Surface {
-        PeerPushResultComposable(PeerOutgoingCreating) {}
+        OutgoingPullResultComposable(OutgoingCreating) {}
     }
 }
 
 @Preview
 @Composable
-fun PeerPushResponsePreview() {
+fun PeerPullResponsePreview() {
     Surface {
         val talerUri = "https://example.org/foo/bar/can/be/very/long/url/so/fit/it/on/screen"
-        val response = PeerOutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
-        PeerPushResultComposable(response) {}
+        val response = OutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
+        OutgoingPullResultComposable(response) {}
     }
 }
 
 @Preview(widthDp = 720, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun PeerPushResponseLandscapePreview() {
+fun PeerPullResponseLandscapePreview() {
     Surface {
         val talerUri = "https://example.org/foo/bar/can/be/very/long/url/so/fit/it/on/screen"
-        val response = PeerOutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
-        PeerPushResultComposable(response) {}
+        val response = OutgoingResponse(talerUri, QrCodeManager.makeQrCode(talerUri))
+        OutgoingPullResultComposable(response) {}
     }
 }
 
 @Preview
 @Composable
-fun PeerPushErrorPreview() {
+fun PeerPullErrorPreview() {
     Surface {
         val json = JSONObject().apply { put("foo", "bar") }
-        val response = PeerOutgoingError(TalerErrorInfo(42, "hint", "message", json))
-        PeerPushResultComposable(response) {}
+        val response = OutgoingError(TalerErrorInfo(42, "hint", "message", json))
+        OutgoingPullResultComposable(response) {}
     }
 }

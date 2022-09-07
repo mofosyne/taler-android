@@ -50,6 +50,7 @@ import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.peer.TransactionPeerPullCreditComposable
 import net.taler.wallet.peer.TransactionPeerPullDebitComposable
+import net.taler.wallet.peer.TransactionPeerPushCreditComposable
 import net.taler.wallet.peer.TransactionPeerPushDebitComposable
 
 class TransactionPeerFragment : TransactionDetailFragment() {
@@ -89,7 +90,7 @@ fun TransactionPeerComposable(t: Transaction, onDelete: () -> Unit) {
         )
         when (t) {
             is TransactionPeerPullCredit -> TransactionPeerPullCreditComposable(t)
-            is TransactionPeerPushCredit -> TODO()
+            is TransactionPeerPushCredit -> TransactionPeerPushCreditComposable(t)
             is TransactionPeerPullDebit -> TransactionPeerPullDebitComposable(t)
             is TransactionPeerPushDebit -> TransactionPeerPushDebitComposable(t)
             else -> error("unexpected transaction: ${t::class.simpleName}")
