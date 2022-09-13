@@ -70,8 +70,7 @@ sealed class WithdrawStatus {
         val subject: String,
         val amountRaw: Amount,
         override val transactionId: String?,
-    ) : ManualTransferRequired() {
-    }
+    ) : ManualTransferRequired()
 
     data class ManualTransferRequiredBitcoin(
         val exchangeBaseUrl: String,
@@ -287,10 +286,10 @@ fun createManualTransferRequired(
     uriStr: String,
     transactionId: String? = null,
 ): WithdrawStatus.ManualTransferRequired {
-    val uri = Uri.parse(uriStr)
+    val uri = Uri.parse(uriStr.replace("receiver-name=", "receiver_name="))
     if ("bitcoin".equals(uri.authority, true)) {
-        val msg = uri.getQueryParameter("message")
-        val reg = "\\b([A-Z0-9]{52})\\b".toRegex().find(msg.orEmpty())
+        val msg = uri.getQueryParameter("message").orEmpty()
+        val reg = "\\b([A-Z0-9]{52})\\b".toRegex().find(msg)
         val reserve = reg?.value ?: uri.getQueryParameter("subject")!!
         val segwitAddrs = Bech32.generateFakeSegwitAddress(reserve, uri.pathSegments.first())
         return WithdrawStatus.ManualTransferRequiredBitcoin(
@@ -307,7 +306,7 @@ fun createManualTransferRequired(
         exchangeBaseUrl = exchangeBaseUrl,
         uri = uri,
         iban = uri.lastPathSegment!!,
-        subject = uri.getQueryParameter("message")!!,
+        subject = uri.getQueryParameter("subject") ?: "Error: No subject in URI",
         amountRaw = amount,
         transactionId = transactionId,
     )
