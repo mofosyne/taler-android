@@ -56,7 +56,6 @@ public data class Amount(
     public companion object {
 
         private const val FRACTIONAL_BASE: Int = 100000000 // 1e8
-        public val SEGWIT_MIN = Amount("BTC", 0, 294)
 
         private val REGEX_CURRENCY = Regex("""^[-_*A-Za-z0-9]{1,12}$""")
         public val MAX_VALUE: Long = 2.0.pow(52).toLong()

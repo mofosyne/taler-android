@@ -17,9 +17,6 @@
 package net.taler.wallet.withdraw.manual
 
 import android.net.Uri
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -28,18 +25,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import net.taler.common.Amount
 import net.taler.wallet.R
-import net.taler.wallet.compose.copyToClipBoard
+import net.taler.wallet.compose.CopyToClipboardButton
 import net.taler.wallet.withdraw.WithdrawStatus
 
 @Composable
@@ -59,62 +52,24 @@ fun ScreenBitcoin(
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
-        .padding(all = 16.dp)
         .wrapContentWidth(Alignment.CenterHorizontally)
         .verticalScroll(scrollState)
+        .padding(all = 16.dp)
     ) {
         Text(
-            text = stringResource(R.string.withdraw_manual_ready_title),
+            text = stringResource(R.string.withdraw_manual_bitcoin_title),
             style = MaterialTheme.typography.h5,
         )
         Text(
-            text = stringResource(R.string.withdraw_manual_ready_intro,
-                status.amountRaw.toString()),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        Text(
-            text = stringResource(R.string.withdraw_manual_bitcoin_ready_details_intro),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        Text(
-            text = stringResource(R.string.withdraw_manual_bitcoin_ready_details_segwit),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), status.subject)
-        Text(
-            text = stringResource(R.string.withdraw_manual_bitcoin_ready_details_bitcoincore),
+            text = stringResource(R.string.withdraw_manual_bitcoin_intro),
             style = MaterialTheme.typography.body1,
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
         BitcoinSegwitAddrs(
-            status.amountRaw,
-            status.account,
-            status.segwitAddrs
-        )
-        Text(
-            text = stringResource(R.string.withdraw_manual_bitcoin_ready_details_confirm,
-                status.amountRaw.withCurrency(Amount.SEGWIT_MIN.currency) + Amount.SEGWIT_MIN + Amount.SEGWIT_MIN),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        Text(
-            text = stringResource(R.string.withdraw_manual_ready_warning),
-            style = MaterialTheme.typography.body2,
-            color = colorResource(R.color.notice_text),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(all = 8.dp)
-                .background(colorResource(R.color.notice_background))
-                .border(BorderStroke(2.dp, colorResource(R.color.notice_border)))
-                .padding(all = 16.dp)
+            amount = status.amountRaw,
+            addr = status.account,
+            segwitAddresses = status.segwitAddrs
         )
         if (bankAppClick != null) {
             Button(
@@ -132,9 +87,12 @@ fun ScreenBitcoin(
                 colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.red)),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
-                    .align(Alignment.End),
+                    .align(End),
             ) {
-                Text(text = stringResource(R.string.withdraw_manual_ready_cancel))
+                Text(
+                    text = stringResource(R.string.withdraw_manual_ready_cancel),
+                    color = Color.White,
+                )
             }
         }
     }
@@ -142,19 +100,12 @@ fun ScreenBitcoin(
 
 @Composable
 fun BitcoinSegwitAddrs(amount: Amount, addr: String, segwitAddresses: List<String>) {
-    val context = LocalContext.current
-
-    val sr = segwitAddresses.joinToString(separator = "\n") { s ->
-        """
-$s ${Amount.SEGWIT_MIN}
-    """.trimIndent()
-    }
-    val copyText = """
-$addr ${amount.withCurrency("BTC")}
-$sr
-    """.trimIndent()
-
     Column {
+        CopyToClipboardButton(
+            modifier = Modifier.align(End),
+            label = "Bitcoin",
+            content = getCopyText(amount, addr, segwitAddresses),
+        )
         Row(modifier = Modifier.padding(vertical = 8.dp)) {
             Column(modifier = Modifier.weight(0.3f)) {
                 Text(
@@ -177,31 +128,26 @@ $sr
                         text = segwitAddress,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 3.em
+                        fontSize = 3.em,
                     )
                     Text(
-                        text = Amount.SEGWIT_MIN.toString(),
+                        text = SEGWIT_MIN.toString(),
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold,
                     )
                 }
             }
         }
-
-        IconButton(
-            onClick = { copyToClipBoard(context, "Bitcoin", copyText) },
-        ) {
-            Row(verticalAlignment = CenterVertically) {
-                Icon(Icons.Default.ContentCopy, stringResource(R.string.copy))
-                Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = stringResource(R.string.copy),
-                    style = MaterialTheme.typography.body1,
-                )
-            }
-        }
     }
+}
 
+private val SEGWIT_MIN = Amount("BTC", 0, 294)
+
+private fun getCopyText(amount: Amount, addr: String, segwitAddresses: List<String>): String {
+    val sr = segwitAddresses.joinToString(separator = "\n") { s ->
+        "\n$s ${SEGWIT_MIN}\n"
+    }
+    return "$addr ${amount.withCurrency("BTC")}\n$sr"
 }
 
 @Preview

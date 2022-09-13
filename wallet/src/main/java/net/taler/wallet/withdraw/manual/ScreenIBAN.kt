@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -58,9 +59,9 @@ fun ScreenIBAN(
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
-        .padding(all = 16.dp)
         .wrapContentWidth(Alignment.CenterHorizontally)
         .verticalScroll(scrollState)
+        .padding(all = 16.dp)
     ) {
         Text(
             text = stringResource(R.string.withdraw_manual_ready_title),
@@ -69,12 +70,6 @@ fun ScreenIBAN(
         Text(
             text = stringResource(R.string.withdraw_manual_ready_intro,
                 status.amountRaw.toString()),
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        Text(
-            text = stringResource(R.string.withdraw_manual_ready_details_intro),
             style = MaterialTheme.typography.body1,
             modifier = Modifier
                 .padding(vertical = 8.dp)
@@ -112,7 +107,10 @@ fun ScreenIBAN(
                     .padding(vertical = 16.dp)
                     .align(Alignment.End),
             ) {
-                Text(text = stringResource(R.string.withdraw_manual_ready_cancel))
+                Text(
+                    text = stringResource(R.string.withdraw_manual_ready_cancel),
+                    color = Color.White,
+                )
             }
         }
     }
