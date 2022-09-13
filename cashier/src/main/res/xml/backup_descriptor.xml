@@ -15,5 +15,6 @@
   -->
 
 <full-backup-content>
-
+    <!-- will not be able to decrypt this, causing crash -->
+    <exclude domain="sharedpref" path="secret_settings.xml"/>
 </full-backup-content>
