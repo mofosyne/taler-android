@@ -38,17 +38,15 @@ import net.taler.common.Amount
 import net.taler.common.QrCodeManager.makeQrCode
 import net.taler.common.isOnline
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
 private val TAG = WithdrawManager::class.java.simpleName
 
 private val INTERVAL = SECONDS.toMillis(1)
-private val TIMEOUT = MINUTES.toMillis(2)
 
 class WithdrawManager(
     private val app: Application,
-    private val viewModel: MainViewModel
+    private val viewModel: MainViewModel,
 ) {
     private val scope
         get() = viewModel.viewModelScope
@@ -83,7 +81,7 @@ class WithdrawManager(
         if (balanceResult !is BalanceResult.Success) return false
         return try {
             balanceResult.amount.positive && amount <= balanceResult.amount.amount
-        } catch (e : IllegalStateException) {
+        } catch (e: IllegalStateException) {
             Log.e(TAG, "Error comparing amounts", e)
             null
         }
@@ -128,7 +126,7 @@ class WithdrawManager(
         }
     }
 
-    private val timer: CountDownTimer = object : CountDownTimer(TIMEOUT, INTERVAL) {
+    private val timer: CountDownTimer = object : CountDownTimer(Long.MAX_VALUE, INTERVAL) {
         override fun onTick(millisUntilFinished: Long) {
             val result = withdrawResult.value
             if (result is WithdrawResult.Success) {
@@ -155,7 +153,8 @@ class WithdrawManager(
     }
 
     private fun checkWithdrawStatus(withdrawalId: String) = scope.launch(Dispatchers.IO) {
-        val url = "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}"
+        val url =
+            "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}"
         Log.d(TAG, "Checking withdraw status at $url")
         val response = makeJsonGetRequest(url, config)
         if (response !is Success) return@launch  // ignore errors and continue trying
@@ -206,7 +205,8 @@ class WithdrawManager(
     }
 
     private fun abort(withdrawalId: String) = scope.launch(Dispatchers.IO) {
-        val url = "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}/abort"
+        val url =
+            "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}/abort"
         Log.d(TAG, "Aborting withdrawal at $url")
         makeJsonPostRequest(url, JSONObject(), config)
     }
@@ -263,5 +263,5 @@ sealed class WithdrawStatus {
 
 data class LastTransaction(
     val withdrawAmount: Amount,
-    val withdrawStatus: WithdrawStatus
+    val withdrawStatus: WithdrawStatus,
 )

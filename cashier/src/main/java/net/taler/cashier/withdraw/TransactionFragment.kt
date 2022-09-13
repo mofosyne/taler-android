@@ -50,21 +50,21 @@ class TransactionFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentTransactionBinding.inflate(inflater, container, false)
         return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        withdrawManager.withdrawAmount.observe(viewLifecycleOwner, { amount ->
+        withdrawManager.withdrawAmount.observe(viewLifecycleOwner) { amount ->
             ui.amountView.text = amount?.toString()
-        })
-        withdrawManager.withdrawResult.observe(viewLifecycleOwner, { result ->
+        }
+        withdrawManager.withdrawResult.observe(viewLifecycleOwner) { result ->
             onWithdrawResultReceived(result)
-        })
-        withdrawManager.withdrawStatus.observe(viewLifecycleOwner, { status ->
+        }
+        withdrawManager.withdrawStatus.observe(viewLifecycleOwner) { status ->
             onWithdrawStatusChanged(status)
-        })
+        }
 
         // change intro text depending on whether NFC is available or not
         val hasNfc = NfcManager.hasNfc(requireContext())

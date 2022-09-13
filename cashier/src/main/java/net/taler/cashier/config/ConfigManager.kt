@@ -55,7 +55,7 @@ private val TAG = ConfigManager::class.java.simpleName
 class ConfigManager(
     private val app: Application,
     private val scope: CoroutineScope,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) {
 
     val configDestination = ConfigFragmentDirections.actionGlobalConfigFragment()
@@ -112,6 +112,7 @@ class ConfigManager(
             mConfigResult.postValue(result)
         }
     }
+
     private suspend fun checkConfig(config: Config) = withContext(Dispatchers.IO) {
         val url = "${config.bankUrl}/integration-api/config"
         Log.d(TAG, "Checking config: $url")
