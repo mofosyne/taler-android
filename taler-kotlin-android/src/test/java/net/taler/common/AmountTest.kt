@@ -16,11 +16,11 @@
 
 package net.taler.common
 
-import kotlin.random.Random
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.random.Random
 
 class AmountTest {
 
@@ -58,6 +58,14 @@ class AmountTest {
         assertEquals(1500000000, amount.value)
         assertEquals(3, amount.fraction)
         assertEquals("1500000000.00000003 EUR", amount.toString())
+    }
+
+    @Test
+    fun testToString() {
+        Amount.fromString("BITCOINBTC", "0.00000001").let { amount ->
+            assertEquals("0.00000001 BITCOINBTC", amount.toString())
+            assertEquals("0.00000001", amount.amountStr)
+        }
     }
 
     @Test
@@ -195,7 +203,7 @@ class AmountTest {
     }
 
     @Test
-    fun testComparision() {
+    fun testComparison() {
         assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0"))
         assertTrue(Amount.fromJSONString("EUR:0") <= Amount.fromJSONString("EUR:0.00000001"))
         assertTrue(Amount.fromJSONString("EUR:0") < Amount.fromJSONString("EUR:0.00000001"))
