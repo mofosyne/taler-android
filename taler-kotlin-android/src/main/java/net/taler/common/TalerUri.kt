@@ -45,7 +45,7 @@ public object TalerUri {
             }
             else -> return null
         }
-        if (!uri.startsWith(prefix)) return null
+        if (!uri.startsWith(prefix, ignoreCase = true)) return null
         val parts = uri.let {
             (if (it.endsWith("/")) it.dropLast(1) else it).substring(prefix.length).split('/')
         }

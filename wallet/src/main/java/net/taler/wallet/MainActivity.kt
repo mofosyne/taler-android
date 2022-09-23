@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
             }
         } else {
-            if (!scheme.startsWith("taler")) {
+            if (!scheme.startsWith("taler", ignoreCase = true)) {
                 return actionFound
             }
             actionFound.postValue(uri.toString())
@@ -223,9 +223,11 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
             val normalizedURL = u.lowercase(ROOT)
             val action = normalizedURL.substring(
-                if (normalizedURL.startsWith("taler://")) {
+                if (normalizedURL.startsWith("taler://", ignoreCase = true)) {
                     "taler://".length
-                } else if (normalizedURL.startsWith("taler+http://") && model.devMode.value == true) {
+                } else if (normalizedURL.startsWith("taler+http://",
+                        ignoreCase = true) && model.devMode.value == true
+                ) {
                     "taler+http://".length
                 } else {
                     normalizedURL.length
@@ -233,31 +235,31 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             )
 
             when {
-                action.startsWith("pay/") -> {
+                action.startsWith("pay/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptPayment)
                     model.paymentManager.preparePay(u)
                 }
-                action.startsWith("tip/") -> {
+                action.startsWith("tip/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptTip)
                     model.tipManager.prepareTip(u)
                 }
-                action.startsWith("withdraw/") -> {
+                action.startsWith("withdraw/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     // there's more than one entry point, so use global action
                     nav.navigate(R.id.action_global_promptWithdraw)
                     model.withdrawManager.getWithdrawalDetails(u)
                 }
-                action.startsWith("refund/") -> {
+                action.startsWith("refund/", ignoreCase = true) -> {
                     model.showProgressBar.value = true
                     model.refundManager.refund(u).observe(this, Observer(::onRefundResponse))
                 }
-                action.startsWith("pay-pull/") -> {
+                action.startsWith("pay-pull/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_pull_payment)
                     model.peerManager.checkPeerPullPayment(u)
                 }
-                action.startsWith("pay-push/") -> {
+                action.startsWith("pay-push/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_push_payment)
                     model.peerManager.checkPeerPushPayment(u)
                 }

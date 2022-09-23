@@ -82,7 +82,7 @@ abstract class TransactionDetailFragment : Fragment() {
         } else {
             "${info.summary}\n\n${info.fulfillmentMessage}"
         }
-        if (info.fulfillmentUrl?.startsWith("http") == true) {
+        if (info.fulfillmentUrl?.startsWith("http", ignoreCase = true) == true) {
             val i = Intent().apply {
                 data = Uri.parse(info.fulfillmentUrl)
             }

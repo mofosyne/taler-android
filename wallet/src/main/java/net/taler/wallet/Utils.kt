@@ -84,7 +84,7 @@ private fun connectToWifiDeprecated(context: Context, ssid: String) {
 }
 
 fun cleanExchange(exchange: String) = exchange.let {
-    if (it.startsWith("https://")) it.substring(8) else it
+    if (it.startsWith("https://", ignoreCase = true)) it.substring(8) else it
 }.trimEnd('/')
 
 fun getAmount(currency: String, text: String): Amount? {

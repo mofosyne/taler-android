@@ -60,6 +60,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="taler" />
+                <data
+                    android:scheme="TALER"
+                    tools:ignore="AppLinkUrlError" />
             </intent-filter>
         </activity>
 
