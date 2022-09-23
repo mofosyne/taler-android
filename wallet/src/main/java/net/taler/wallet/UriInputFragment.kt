@@ -59,7 +59,8 @@ class UriInputFragment : Fragment() {
             }
         }
         ui.okButton.setOnClickListener {
-            if (ui.uriView.text?.startsWith("taler://", ignoreCase = true) == true) {
+            if (ui.uriView.text?.startsWith("taler://", ignoreCase = true) == true ||
+                ui.uriView.text?.startsWith("payto://", ignoreCase = true) == true) {
                 ui.uriLayout.error = null
                 val i = Intent(ACTION_VIEW, Uri.parse(ui.uriView.text.toString()))
                 startActivity(i)

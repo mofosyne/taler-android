@@ -75,7 +75,7 @@ class TransactionWithdrawal(
     val withdrawalDetails: WithdrawalDetails,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
-    override val amountEffective: Amount
+    override val amountEffective: Amount,
 ) : Transaction() {
     override val icon = R.drawable.transaction_withdrawal
 
@@ -102,7 +102,7 @@ sealed class WithdrawalDetails {
          *
          * Already contains the amount and message.
          */
-        val exchangePaytoUris: List<String>
+        val exchangePaytoUris: List<String>,
     ) : WithdrawalDetails()
 
     @Serializable
@@ -133,7 +133,7 @@ class TransactionPayment(
     val status: PaymentStatus,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
-    override val amountEffective: Amount
+    override val amountEffective: Amount,
 ) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageNav = R.id.action_nav_transactions_detail_payment
@@ -192,7 +192,7 @@ class TransactionRefund(
     val amountInvalid: Amount? = null,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
-    override val amountEffective: Amount
+    override val amountEffective: Amount,
 ) : Transaction() {
     override val icon = R.drawable.transaction_refund
     override val detailPageNav = R.id.action_nav_transactions_detail_refund
@@ -216,7 +216,7 @@ class TransactionTip(
     val merchantBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
-    override val amountEffective: Amount
+    override val amountEffective: Amount,
 ) : Transaction() {
     override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
     override val detailPageNav = 0
@@ -239,7 +239,7 @@ class TransactionRefresh(
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
-    override val amountEffective: Amount
+    override val amountEffective: Amount,
 ) : Transaction() {
     override val icon = R.drawable.transaction_refresh
     override val detailPageNav = R.id.action_nav_transactions_detail_refresh
@@ -251,6 +251,30 @@ class TransactionRefresh(
     }
 
     override val generalTitleRes = R.string.transaction_refresh
+}
+
+@Serializable
+@SerialName("deposit")
+class TransactionDeposit(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val pending: Boolean,
+    override val error: TalerErrorInfo? = null,
+    override val amountRaw: Amount,
+    override val amountEffective: Amount,
+    val targetPaytoUri: String,
+    val depositGroupId: String,
+) : Transaction() {
+    override val icon = R.drawable.ic_cash_usd_outline
+    override val detailPageNav = R.id.action_nav_transactions_detail_deposit
+
+    @Transient
+    override val amountType = AmountType.Negative
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_deposit)
+    }
+
+    override val generalTitleRes = R.string.transaction_deposit
 }
 
 @Serializable
@@ -282,6 +306,7 @@ class TransactionPeerPullDebit(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_peer_pull_debit)
     }
+
     override val generalTitleRes = R.string.transaction_peer_pull_debit
 }
 
@@ -309,6 +334,7 @@ class TransactionPeerPullCredit(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_peer_pull_credit)
     }
+
     override val generalTitleRes = R.string.transaction_peer_pull_credit
 }
 
@@ -337,6 +363,7 @@ class TransactionPeerPushDebit(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_peer_push_debit)
     }
+
     override val generalTitleRes = R.string.payment_title
 }
 
@@ -363,5 +390,6 @@ class TransactionPeerPushCredit(
     override fun getTitle(context: Context): String {
         return context.getString(R.string.transaction_peer_push_credit)
     }
+
     override val generalTitleRes = R.string.transaction_peer_push_credit
 }

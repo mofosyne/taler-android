@@ -203,9 +203,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
             }
         } else {
-            if (!scheme.startsWith("taler", ignoreCase = true)) {
-                return actionFound
-            }
             actionFound.postValue(uri.toString())
         }
 
@@ -225,8 +222,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             val action = normalizedURL.substring(
                 if (normalizedURL.startsWith("taler://", ignoreCase = true)) {
                     "taler://".length
-                } else if (normalizedURL.startsWith("taler+http://",
-                        ignoreCase = true) && model.devMode.value == true
+                } else if (normalizedURL.startsWith("taler+http://", ignoreCase = true) &&
+                    model.devMode.value == true
                 ) {
                     "taler+http://".length
                 } else {

@@ -89,7 +89,7 @@ class TransactionManager(
         }
     }
 
-    fun deleteTransaction(transactionId: String)  = scope.launch {
+    fun deleteTransaction(transactionId: String) = scope.launch {
         api.request<Unit>("deleteTransaction") {
             put("transactionId", transactionId)
         }.onError {

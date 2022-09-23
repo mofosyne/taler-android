@@ -22,11 +22,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.TalerErrorInfo
+import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.payment.PayStatus.AlreadyPaid
 import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
@@ -119,9 +120,28 @@ class PaymentManager(
         mPayStatus.value = PayStatus.None
     }
 
+    @UiThread
+    fun makeDeposit(url: String, amount: Amount) = scope.launch {
+        // TODO
+        api.request("createDepositGroup", CreateDepositGroupResponse.serializer()) {
+            put("depositPaytoUri", url)
+            put("amount", amount.toJSONString())
+        }.onError {
+            Log.e(TAG, "Error createDepositGroup $it")
+        }.onSuccess {
+            Log.e(TAG, "createDepositGroup $it")
+        }
+    }
+
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
         mPayStatus.value = PayStatus.Error(error.userFacingMsg)
     }
 
 }
+
+@Serializable
+data class CreateDepositGroupResponse(
+    val depositGroupId: String,
+    val transactionId: String,
+)
