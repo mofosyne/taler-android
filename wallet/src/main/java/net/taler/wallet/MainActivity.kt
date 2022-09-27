@@ -70,7 +70,6 @@ import java.net.URL
 import java.util.Locale.ROOT
 import javax.net.ssl.HttpsURLConnection
 
-
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     OnPreferenceStartFragmentCallback {
 

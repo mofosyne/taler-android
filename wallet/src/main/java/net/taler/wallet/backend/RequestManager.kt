@@ -14,14 +14,31 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.backend
 
-import android.app.Application
-import com.google.android.material.color.DynamicColors
+import androidx.annotation.GuardedBy
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.coroutines.Continuation
 
-class WalletApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
+class RequestManager {
+
+    @GuardedBy("this")
+    private val contMap = ConcurrentHashMap<Int, Continuation<ApiResponse>>()
+
+    @Volatile
+    @GuardedBy("this")
+    private var currentId = 0
+
+    @Synchronized
+    fun addRequest(cont: Continuation<ApiResponse>, block: (Int) -> Unit) {
+        val id = currentId++
+        contMap[id] = cont
+        block(id)
     }
+
+    @Synchronized
+    fun getAndRemoveContinuation(id: Int): Continuation<ApiResponse>? {
+        return contMap.remove(id)
+    }
+
 }

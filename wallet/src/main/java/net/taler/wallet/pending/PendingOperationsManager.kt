@@ -18,40 +18,51 @@ package net.taler.wallet.pending
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.jsonArray
 import net.taler.wallet.TAG
+import net.taler.wallet.backend.ApiResponse
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 
 open class PendingOperationInfo(
     val type: String,
-    val detail: JSONObject
+    val detail: JSONObject,
 )
 
-class PendingOperationsManager(private val walletBackendApi: WalletBackendApi) {
+class PendingOperationsManager(
+    private val walletBackendApi: WalletBackendApi,
+    private val scope: CoroutineScope,
+) {
 
     val pendingOperations = MutableLiveData<List<PendingOperationInfo>>()
 
     internal fun getPending() {
-        walletBackendApi.sendRequest("getPendingOperations") { isError, result ->
-            if (isError) {
-                Log.i(TAG, "got getPending error result: ${result.toString(2)}")
-                return@sendRequest
+        scope.launch {
+            val response = walletBackendApi.sendRequest("getPendingOperations")
+            if (response is ApiResponse.Error) {
+                Log.i(TAG, "got getPending error result: ${response.error}")
+                return@launch
+            } else if (response is ApiResponse.Response) {
+                Log.i(TAG, "got getPending result")
+                val pendingList = mutableListOf<PendingOperationInfo>()
+                val pendingJson = response.result["pendingOperations"]?.jsonArray ?: return@launch
+                for (i in 0 until pendingJson.size) {
+                    val p = JSONObject(pendingJson[i].toString())
+                    val type = p.getString("type")
+                    pendingList.add(PendingOperationInfo(type, p))
+                }
+                Log.i(TAG, "Got ${pendingList.size} pending operations")
+                pendingOperations.postValue((pendingList))
             }
-            Log.i(TAG, "got getPending result")
-            val pendingList = mutableListOf<PendingOperationInfo>()
-            val pendingJson = result.getJSONArray("pendingOperations")
-            for (i in 0 until pendingJson.length()) {
-                val p = pendingJson.getJSONObject(i)
-                val type = p.getString("type")
-                pendingList.add(PendingOperationInfo(type, p))
-            }
-            Log.i(TAG, "Got ${pendingList.size} pending operations")
-            pendingOperations.postValue((pendingList))
         }
     }
 
     fun retryPendingNow() {
-        walletBackendApi.sendRequest("retryPendingNow")
+        scope.launch {
+            walletBackendApi.sendRequest("retryPendingNow")
+        }
     }
 
 }

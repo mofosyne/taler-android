@@ -14,14 +14,25 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet
+package net.taler.wallet.backend
 
-import android.app.Application
-import com.google.android.material.color.DynamicColors
+import kotlinx.serialization.Serializable
 
-class WalletApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
-    }
+@Serializable
+data class InitResponse(
+    val versionInfo: WalletCoreVersion,
+)
+
+fun interface VersionReceiver {
+    fun onVersionReceived(versionInfo: WalletCoreVersion)
 }
+
+@Serializable
+data class WalletCoreVersion(
+    val hash: String? = null,
+    val version: String,
+    val exchange: String,
+    val merchant: String,
+    val bank: String,
+    val devMode: Boolean,
+)
