@@ -24,15 +24,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 import net.taler.common.Event
-import net.taler.common.assertUiThread
 import net.taler.common.toEvent
 import net.taler.wallet.accounts.AccountManager
+import net.taler.wallet.backend.NotificationPayload
+import net.taler.wallet.backend.NotificationReceiver
+import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.backend.WalletCoreVersion
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse
 import net.taler.wallet.deposit.DepositManager
@@ -58,7 +62,9 @@ private val transactionNotifications = listOf(
     "withdraw-group-finished"
 )
 
-class MainViewModel(val app: Application) : AndroidViewModel(app) {
+class MainViewModel(
+    app: Application,
+) : AndroidViewModel(app), VersionReceiver, NotificationReceiver {
 
     private val mBalances = MutableLiveData<List<BalanceItem>>()
     val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
@@ -70,32 +76,13 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var merchantVersion: String? = null
         private set
 
-    private val api = WalletBackendApi(app) { payload ->
-        if (payload.optString("operation") == "init") {
-            val result = payload.getJSONObject("result")
-            val versions = result.getJSONObject("versionInfo")
-            exchangeVersion = versions.getString("exchange")
-            merchantVersion = versions.getString("merchant")
-        } else if (payload.getString("type") != "waiting-for-retry") { // ignore ping
-            Log.i(TAG, "Received notification from wallet-core: ${payload.toString(2)}")
-            loadBalances()
-            if (payload.optString("type") in transactionNotifications) {
-                assertUiThread()
-                // TODO notification API should give us a currency to update
-                // update currently selected transaction list
-                transactionManager.loadTransactions()
-            }
-            // refresh pending ops and history with each notification
-            if (devMode.value == true) {
-                pendingOperationsManager.getPending()
-            }
-        }
-    }
+    private val api = WalletBackendApi(app, this, this)
 
     val withdrawManager = WithdrawManager(api, viewModelScope)
     val tipManager = TipManager(api, viewModelScope)
     val paymentManager = PaymentManager(api, viewModelScope)
-    val pendingOperationsManager: PendingOperationsManager = PendingOperationsManager(api)
+    val pendingOperationsManager: PendingOperationsManager =
+        PendingOperationsManager(api, viewModelScope)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
@@ -117,9 +104,25 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     )
     val lastBackup: LiveData<Long> = mLastBackup
 
-    override fun onCleared() {
-        api.destroy()
-        super.onCleared()
+    override fun onVersionReceived(versionInfo: WalletCoreVersion) {
+        exchangeVersion = versionInfo.exchange
+        merchantVersion = versionInfo.merchant
+    }
+
+    override fun onNotificationReceived(payload: NotificationPayload) {
+        if (payload.type == "waiting-for-retry") return // ignore ping)
+        Log.i(TAG, "Received notification from wallet-core: $payload")
+
+        loadBalances()
+        if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {
+            // TODO notification API should give us a currency to update
+            // update currently selected transaction list
+            transactionManager.loadTransactions()
+        }
+        // refresh pending ops and history with each notification
+        if (devMode.value == true) {
+            pendingOperationsManager.getPending()
+        }
     }
 
     @UiThread
@@ -174,22 +177,29 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
 
     @UiThread
     fun dangerouslyReset() {
-        api.sendRequest("reset")
+        viewModelScope.launch {
+            api.sendRequest("reset")
+        }
         withdrawManager.testWithdrawalStatus.value = null
         mBalances.value = emptyList()
     }
 
     fun startTunnel() {
-        api.sendRequest("startTunnel")
+        viewModelScope.launch {
+            api.sendRequest("startTunnel")
+        }
     }
 
     fun stopTunnel() {
-        api.sendRequest("stopTunnel")
+        viewModelScope.launch {
+            api.sendRequest("stopTunnel")
+        }
     }
 
     fun tunnelResponse(resp: String) {
-        val respJson = JSONObject(resp)
-        api.sendRequest("tunnelResponse", respJson)
+        viewModelScope.launch {
+            api.sendRequest("tunnelResponse", JSONObject(resp))
+        }
     }
 
     @UiThread

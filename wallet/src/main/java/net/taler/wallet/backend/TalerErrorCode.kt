@@ -3879,9 +3879,10 @@ enum class TalerErrorCode(val code: Int) {
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializer(forClass = TalerErrorCode::class)
-object TalerErrorCodeSerializer: KSerializer<TalerErrorCode> {
+object TalerErrorCodeSerializer : KSerializer<TalerErrorCode> {
 
-    override val descriptor = PrimitiveSerialDescriptor("TalerErrorCodeSerializer", PrimitiveKind.INT)
+    override val descriptor =
+        PrimitiveSerialDescriptor("TalerErrorCodeSerializer", PrimitiveKind.INT)
 
     override fun deserialize(decoder: Decoder): TalerErrorCode {
         val code = decoder.decodeInt()
