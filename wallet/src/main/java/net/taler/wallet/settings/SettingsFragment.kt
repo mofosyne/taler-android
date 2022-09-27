@@ -18,7 +18,7 @@ package net.taler.wallet.settings
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
@@ -35,11 +35,13 @@ import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.withdraw.WithdrawTestStatus
+import java.lang.System.currentTimeMillis
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     private val model: MainViewModel by activityViewModels()
+    private val settingsManager get() = model.settingsManager
     private val withdrawManager by lazy { model.withdrawManager }
 
     private lateinit var prefBackup: Preference
@@ -62,6 +64,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefVersionMerchant,
             prefReset
         )
+    }
+
+    private val logLauncher = registerForActivityResult(CreateDocument("text/plain")) { uri ->
+        settingsManager.exportLogcat(uri)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -116,32 +122,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         prefLogcat.setOnPreferenceClickListener {
-            val toast =
-                Toast.makeText(requireActivity(),
-                    "Log export currently unavailable",
-                    Toast.LENGTH_LONG)
-            toast.show()
-
-//            val myPid = android.os.Process.myPid()
-//            val proc = Runtime.getRuntime()
-//                .exec(arrayOf("logcat", "-d", "--pid=$myPid", "*:V"))
-//            val bytes = proc.inputStream.readBytes()
-//            val f = File(requireActivity().getExternalFilesDir(null),
-//                "taler-wallet-log-${System.currentTimeMillis()}.txt")
-//            f.writeBytes(bytes)
-//            val toast = Toast.makeText(requireActivity(), "Saved to ${f.absolutePath}", Toast.LENGTH_LONG)
-//            toast.show()
-//            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-//                addCategory(Intent.CATEGORY_OPENABLE)
-//                type = "application/pdf"
-//                putExtra(Intent.EXTRA_TITLE, "invoice.pdf")
-//
-//                // Optionally, specify a URI for the directory that should be opened in
-//                // the system file picker before your app creates the document.
-//                putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-//            }
-//            startActivityForResult(intent, CREATE_FILE)
-//            ActivityResultContracts.CreateDocument
+            logLauncher.launch("taler-wallet-log-${currentTimeMillis()}.txt")
             true
         }
 
