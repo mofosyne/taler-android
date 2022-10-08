@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name_short">Kassenterminal</string>
+    <string name="app_name_short">Merchant Terminal</string>
     <string name="project_name">GNU Taler</string>
     <string name="menu_order">Bestellungen</string>
     <string name="menu_history">Verlauf</string>
@@ -25,7 +25,7 @@
     <string name="config_forget_password">Vergessen</string>
     <string name="config_fetching_label">Konfiguration wird abgerufen</string>
     <string name="payment_intro_nfc">Bitte zum Bezahlen den QR-Code scannen oder per NFC empfangen.</string>
-    <string name="payment_intro">Zum Bezahlen scannen Sie bitte den QR-Code.</string>
+    <string name="payment_intro">Bitte lassen Sie zum Bezahlen den QR-Code scannen.</string>
     <string name="payment_cancel">Bezahlvorgang abbrechen</string>
     <string name="payment_received">Zahlung erhalten</string>
     <string name="payment_back_button">Weiter</string>
