@@ -68,10 +68,10 @@ class PaymentManager(
     @UiThread
     fun preparePay(url: String) = scope.launch {
         mPayStatus.value = PayStatus.Loading
-        api.request("preparePay", PreparePayResponse.serializer()) {
+        api.request("preparePayForUri", PreparePayResponse.serializer()) {
             put("talerPayUri", url)
         }.onError {
-            handleError("preparePay", it)
+            handleError("preparePayForUri", it)
         }.onSuccess { response ->
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
