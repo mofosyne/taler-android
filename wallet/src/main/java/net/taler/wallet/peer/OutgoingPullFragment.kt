@@ -80,7 +80,7 @@ class OutgoingPullFragment : Fragment() {
         if (!requireActivity().isChangingConfigurations) peerManager.resetPullPayment()
     }
 
-    private fun onCreateInvoice(amount: Amount, exchange: ExchangeItem) {
-        peerManager.initiatePullPayment(amount, exchange)
+    private fun onCreateInvoice(amount: Amount, summary: String, exchange: ExchangeItem) {
+        peerManager.initiatePullPayment(amount, summary, exchange)
     }
 }

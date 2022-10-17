@@ -46,14 +46,14 @@ class PeerManager(
     private val _incomingPushState = MutableStateFlow<IncomingState>(IncomingChecking)
     val incomingPushState: StateFlow<IncomingState> = _incomingPushState
 
-    fun initiatePullPayment(amount: Amount, exchange: ExchangeItem) {
+    fun initiatePullPayment(amount: Amount, summary: String, exchange: ExchangeItem) {
         _outgoingPullState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
             api.request("initiatePeerPullPayment", InitiatePeerPullPaymentResponse.serializer()) {
                 put("exchangeBaseUrl", exchange.exchangeBaseUrl)
                 put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {
-                    put("summary", "test")
+                    put("summary", summary)
                 })
             }.onSuccess {
                 val qrCode = QrCodeManager.makeQrCode(it.talerUri)

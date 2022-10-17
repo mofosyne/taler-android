@@ -53,7 +53,7 @@ import net.taler.wallet.exchanges.ExchangeItem
 fun OutgoingPullIntroComposable(
     amount: Amount,
     exchangeState: State<ExchangeItem?>,
-    onCreateInvoice: (amount: Amount, exchange: ExchangeItem) -> Unit,
+    onCreateInvoice: (amount: Amount, subject: String, exchange: ExchangeItem) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -109,7 +109,7 @@ fun OutgoingPullIntroComposable(
             modifier = Modifier.padding(16.dp),
             enabled = subject.isNotBlank() && exchangeItem != null,
             onClick = {
-                onCreateInvoice(amount, exchangeItem ?: error("clickable without exchange"))
+                onCreateInvoice(amount, subject, exchangeItem ?: error("clickable without exchange"))
             },
         ) {
             Text(text = stringResource(R.string.receive_peer_create_button))
@@ -124,6 +124,6 @@ fun PreviewReceiveFundsIntro() {
         @SuppressLint("UnrememberedMutableState")
         val exchangeFlow =
             mutableStateOf(ExchangeItem("https://example.org", "TESTKUDOS", emptyList()))
-        OutgoingPullIntroComposable(Amount.fromDouble("TESTKUDOS", 42.23), exchangeFlow) { _, _ -> }
+        OutgoingPullIntroComposable(Amount.fromDouble("TESTKUDOS", 42.23), exchangeFlow) { _, _, _ -> }
     }
 }
