@@ -65,8 +65,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="host_apdu_service_desc">Taler NFC Payments</string>
 
     <string name="balances_title">Balances</string>
-    <string name="amount_positive">+ %s</string>
-    <string name="amount_negative">- %s</string>
+    <string name="amount_positive">+%s</string>
+    <string name="amount_negative">-%s</string>
     <string name="amount_chosen">Chosen Amount</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
