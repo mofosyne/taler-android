@@ -306,7 +306,7 @@ fun createManualTransferRequired(
         exchangeBaseUrl = exchangeBaseUrl,
         uri = uri,
         iban = uri.lastPathSegment!!,
-        subject = uri.getQueryParameter("subject") ?: "Error: No subject in URI",
+        subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
         amountRaw = amount,
         transactionId = transactionId,
     )
