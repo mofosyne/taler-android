@@ -18,4 +18,7 @@
     <item
         android:id="@+id/action_manual_withdrawal"
         android:title="@string/exchange_menu_manual_withdraw" />
+    <item
+        android:id="@+id/action_receive_peer"
+        android:title="@string/receive_peer" />
 </menu>

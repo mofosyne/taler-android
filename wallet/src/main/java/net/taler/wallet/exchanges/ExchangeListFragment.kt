@@ -38,6 +38,7 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     protected val model: MainViewModel by activityViewModels()
     private val exchangeManager by lazy { model.exchangeManager }
+    private val transactionManager get() = model.transactionManager
 
     protected lateinit var ui: FragmentExchangeListBinding
     protected open val isSelectOnly = false
@@ -61,12 +62,12 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
             AddExchangeDialogFragment().show(parentFragmentManager, "ADD_EXCHANGE")
         }
 
-        exchangeManager.progress.observe(viewLifecycleOwner, { show ->
+        exchangeManager.progress.observe(viewLifecycleOwner) { show ->
             if (show) ui.progressBar.fadeIn() else ui.progressBar.fadeOut()
-        })
-        exchangeManager.exchanges.observe(viewLifecycleOwner, { exchanges ->
+        }
+        exchangeManager.exchanges.observe(viewLifecycleOwner) { exchanges ->
             onExchangeUpdate(exchanges)
-        })
+        }
         exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
             if (error) onAddExchangeFailed()
         })
@@ -94,6 +95,11 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
     override fun onManualWithdraw(item: ExchangeItem) {
         exchangeManager.withdrawalExchange = item
         findNavController().navigate(R.id.action_nav_settings_exchanges_to_nav_exchange_manual_withdrawal)
+    }
+
+    override fun onPeerReceive(item: ExchangeItem) {
+        transactionManager.selectedCurrency = item.currency
+        findNavController().navigate(R.id.receiveFunds)
     }
 
 }

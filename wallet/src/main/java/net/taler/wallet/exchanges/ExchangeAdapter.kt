@@ -43,6 +43,7 @@ data class ExchangeItem(
 interface ExchangeClickListener {
     fun onExchangeSelected(item: ExchangeItem)
     fun onManualWithdraw(item: ExchangeItem)
+    fun onPeerReceive(item: ExchangeItem)
 }
 
 internal class ExchangeAdapter(
@@ -96,6 +97,10 @@ internal class ExchangeAdapter(
                 when (menuItem.itemId) {
                     R.id.action_manual_withdrawal -> {
                         listener.onManualWithdraw(item)
+                        true
+                    }
+                    R.id.action_receive_peer -> {
+                        listener.onPeerReceive(item)
                         true
                     }
                     else -> false
