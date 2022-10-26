@@ -46,13 +46,6 @@
             app:selectable="false"
             app:title="Show backup secret" />
 
-        <Preference
-            app:dependency="pref_backup_switch"
-            app:icon="@drawable/ic_baseline_cloud_circle"
-            app:key="pref_backup_recovery"
-            app:summary="Not used"
-            app:title="Secure cloud recovery"/>
-
     </PreferenceCategory>
 
 </PreferenceScreen>

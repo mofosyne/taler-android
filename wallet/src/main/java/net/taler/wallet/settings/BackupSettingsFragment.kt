@@ -16,28 +16,14 @@
 
 package net.taler.wallet.settings
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import net.taler.wallet.R
-import org.gnu.anastasis.ui.MainActivity
 
 class BackupSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_backup, rootKey)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val recoveryPref: Preference = findPreference("pref_backup_recovery")!!
-        recoveryPref.setOnPreferenceClickListener {
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            startActivity(intent)
-            true
-        }
     }
 
 }
