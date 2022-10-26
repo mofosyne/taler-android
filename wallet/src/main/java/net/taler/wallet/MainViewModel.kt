@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
+import net.taler.wallet.accounts.AccountManager
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse
@@ -97,6 +98,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
     val peerManager: PeerManager = PeerManager(api, viewModelScope)
     val settingsManager: SettingsManager = SettingsManager(app.applicationContext, viewModelScope)
+    val accountManager: AccountManager = AccountManager(api, viewModelScope)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
