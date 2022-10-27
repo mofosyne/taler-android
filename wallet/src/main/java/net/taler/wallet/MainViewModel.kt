@@ -26,6 +26,7 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import net.taler.common.Amount
 import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
@@ -138,6 +139,16 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     @UiThread
     fun showTransactions(currency: String) {
         mTransactionsEvent.value = currency.toEvent()
+    }
+
+    @UiThread
+    fun hasSufficientBalance(amount: Amount): Boolean {
+        balances.value?.forEach { balanceItem ->
+            if (balanceItem.currency == amount.currency) {
+                return balanceItem.available >= amount
+            }
+        }
+        return false
     }
 
     @UiThread

@@ -67,6 +67,7 @@ class SendFundsFragment : Fragment() {
                 Surface {
                     SendFundsIntro(
                         model.transactionManager.selectedCurrency ?: error("No currency selected"),
+                        model::hasSufficientBalance,
                         this@SendFundsFragment::onDeposit,
                         this@SendFundsFragment::onPeerPush,
                     )
@@ -99,6 +100,7 @@ class SendFundsFragment : Fragment() {
 @Composable
 private fun SendFundsIntro(
     currency: String,
+    hasSufficientBalance: (Amount) -> Boolean,
     onDeposit: (Amount) -> Unit,
     onPeerPush: (Amount) -> Unit,
 ) {
@@ -110,6 +112,7 @@ private fun SendFundsIntro(
     ) {
         var text by rememberSaveable { mutableStateOf("") }
         var isError by rememberSaveable { mutableStateOf(false) }
+        var insufficientBalance by rememberSaveable { mutableStateOf(false) }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -123,13 +126,19 @@ private fun SendFundsIntro(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                 onValueChange = { input ->
                     isError = false
+                    insufficientBalance = false
                     text = input.filter { it.isDigit() || it == '.' }
                 },
-                isError = isError,
+                isError = isError || insufficientBalance,
                 label = {
                     if (isError) {
                         Text(
                             stringResource(R.string.receive_amount_invalid),
+                            color = Color.Red,
+                        )
+                    } else if (insufficientBalance) {
+                        Text(
+                            stringResource(R.string.payment_balance_insufficient),
                             color = Color.Red,
                         )
                     } else {
@@ -150,14 +159,18 @@ private fun SendFundsIntro(
             style = MaterialTheme.typography.h6,
         )
         Row(modifier = Modifier.padding(16.dp)) {
+            fun onClickButton(block: (Amount) -> Unit) {
+                val amount = getAmount(currency, text)
+                if (amount == null) isError = true
+                else if (!hasSufficientBalance(amount)) insufficientBalance = true
+                else block(amount)
+            }
             Button(
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .weight(1f),
                 onClick = {
-                    val amount = getAmount(currency, text)
-                    if (amount == null) isError = true
-                    else onDeposit(amount)
+                    onClickButton { amount -> onDeposit(amount) }
                 }) {
                 Text(text = stringResource(R.string.send_deposit))
             }
@@ -166,9 +179,7 @@ private fun SendFundsIntro(
                     .height(IntrinsicSize.Max)
                     .weight(1f),
                 onClick = {
-                    val amount = getAmount(currency, text)
-                    if (amount == null) isError = true
-                    else onPeerPush(amount)
+                    onClickButton { amount -> onPeerPush(amount) }
                 },
             ) {
                 Text(text = stringResource(R.string.send_peer))
@@ -181,6 +192,6 @@ private fun SendFundsIntro(
 @Composable
 fun PreviewSendFundsIntro() {
     Surface {
-        SendFundsIntro("TESTKUDOS", {}) {}
+        SendFundsIntro("TESTKUDOS", { true }, {}) {}
     }
 }
