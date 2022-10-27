@@ -125,7 +125,18 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="receive_peer_invoice_instruction">Let the payer scan this QR code to pay:</string>
     <string name="receive_peer_invoice_uri">Alternatively, copy and send this URI:</string>
 
-    <string name="send_peer_amount">Amount to send</string>
+    <string name="send_amount">Amount to send</string>
+    <string name="send_intro">Choose where to send money to:</string>
+    <string name="send_deposit">To a bank account</string>
+    <string name="send_deposit_title">Deposit to a bank account</string>
+    <string name="send_deposit_iban">IBAN</string>
+    <string name="send_deposit_bic">BIC/SWIFT</string>
+    <string name="send_deposit_name">Account holder</string>
+    <string name="send_deposit_check_fees_button">Check fees</string>
+    <string name="send_deposit_amount_effective">Effective Amount</string>
+    <string name="send_deposit_create_button">Make deposit</string>
+    <string name="send_peer">To another wallet</string>
+    <string name="send_peer_title">Send money to another wallet</string>
     <string name="send_peer_create_button">Send funds now</string>
     <string name="send_peer_warning">Warning: Funds will leave the wallet immediately.</string>
     <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>

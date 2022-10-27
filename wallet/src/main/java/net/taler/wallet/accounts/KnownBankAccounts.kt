@@ -16,6 +16,7 @@
 
 package net.taler.wallet.accounts
 
+import android.net.Uri
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -48,14 +49,28 @@ sealed class PaytoUri(
 
 @Serializable
 @SerialName("iban")
-class PaytoUriIBAN(
+class PaytoUriIban(
     val iban: String,
+    val bic: String? = "SANDBOXX",
     override val targetPath: String,
     override val params: Map<String, String>,
 ) : PaytoUri(
     isKnown = true,
     targetType = "iban",
-)
+) {
+    val paytoUri: String
+        get() = Uri.Builder()
+            .scheme("payto")
+            .appendEncodedPath("/$targetType")
+            .apply { if (bic != null) appendPath(bic) }
+            .appendPath(iban)
+            .apply {
+                params.forEach { (key, value) ->
+                    appendQueryParameter(key, value)
+                }
+            }
+            .build().toString()
+}
 
 @Serializable
 @SerialName("x-taler-bank")

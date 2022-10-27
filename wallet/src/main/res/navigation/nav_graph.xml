@@ -48,7 +48,14 @@
     <fragment
         android:id="@+id/sendFunds"
         android:name="net.taler.wallet.SendFundsFragment"
-        android:label="@string/transactions_send_funds" />
+        android:label="@string/transactions_send_funds">
+        <action
+            android:id="@+id/action_sendFunds_to_nav_deposit"
+            app:destination="@id/nav_deposit" />
+        <action
+            android:id="@+id/action_sendFunds_to_nav_peer_push"
+            app:destination="@id/nav_peer_push" />
+    </fragment>
 
     <fragment
         android:id="@+id/promptTip"
@@ -125,6 +132,11 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_deposit"
+        android:name="net.taler.wallet.payment.DepositFragment"
+        android:label="@string/send_deposit_title" />
+
+    <fragment
         android:id="@+id/nav_settings_backup"
         android:name="net.taler.wallet.settings.BackupSettingsFragment"
         android:label="@string/nav_settings_backup" />
@@ -133,6 +145,17 @@
         android:id="@+id/nav_peer_pull"
         android:name="net.taler.wallet.peer.OutgoingPullFragment"
         android:label="@string/receive_peer_title">
+        <argument
+            android:name="amount"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_peer_push"
+        android:name="net.taler.wallet.peer.OutgoingPushFragment"
+        android:label="@string/send_peer_title">
         <argument
             android:name="amount"
             android:defaultValue="@null"

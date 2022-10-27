@@ -23,8 +23,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -167,6 +169,7 @@ private fun ReceiveFundsIntro(
             Button(
                 modifier = Modifier
                     .padding(end = 16.dp)
+                    .height(IntrinsicSize.Max)
                     .weight(1f),
                 onClick = {
                     val amount = getAmount(currency, text)
@@ -176,7 +179,7 @@ private fun ReceiveFundsIntro(
                 Text(text = stringResource(R.string.receive_withdraw))
             }
             Button(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(IntrinsicSize.Max),
                 onClick = {
                     val amount = getAmount(currency, text)
                     if (amount == null) isError = true

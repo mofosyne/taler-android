@@ -21,11 +21,14 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.TAG
+import net.taler.wallet.accounts.PaytoUriIban
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.payment.PayStatus.AlreadyPaid
@@ -43,12 +46,12 @@ sealed class PayStatus {
         val contractTerms: ContractTerms,
         val proposalId: String,
         val amountRaw: Amount,
-        val amountEffective: Amount
+        val amountEffective: Amount,
     ) : PayStatus()
 
     data class InsufficientBalance(
         val contractTerms: ContractTerms,
-        val amountRaw: Amount
+        val amountRaw: Amount,
     ) : PayStatus()
 
     // TODO bring user to fulfilment URI
@@ -64,6 +67,9 @@ class PaymentManager(
 
     private val mPayStatus = MutableLiveData<PayStatus>(PayStatus.None)
     internal val payStatus: LiveData<PayStatus> = mPayStatus
+
+    private val mDepositState = MutableStateFlow<DepositState>(DepositState.Start)
+    internal val depositState = mDepositState.asStateFlow()
 
     @UiThread
     fun preparePay(url: String) = scope.launch {
@@ -120,28 +126,91 @@ class PaymentManager(
         mPayStatus.value = PayStatus.None
     }
 
-    @UiThread
-    fun makeDeposit(url: String, amount: Amount) = scope.launch {
-        // TODO
-        api.request("createDepositGroup", CreateDepositGroupResponse.serializer()) {
-            put("depositPaytoUri", url)
-            put("amount", amount.toJSONString())
-        }.onError {
-            Log.e(TAG, "Error createDepositGroup $it")
-        }.onSuccess {
-            Log.e(TAG, "createDepositGroup $it")
-        }
-    }
-
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
         mPayStatus.value = PayStatus.Error(error.userFacingMsg)
     }
 
+    /* Deposits */
+
+    @UiThread
+    fun onDepositButtonClicked(amount: Amount, receiverName: String, iban: String, bic: String) {
+        val paytoUri: String = PaytoUriIban(
+            iban = iban,
+            bic = bic,
+            targetPath = "",
+            params = mapOf("receiver-name" to receiverName),
+        ).paytoUri
+
+        if (depositState.value.showFees) {
+            val effectiveDepositAmount = depositState.value.effectiveDepositAmount
+                ?: Amount.zero(amount.currency)
+            makeDeposit(paytoUri, amount, effectiveDepositAmount)
+        } else {
+            prepareDeposit(paytoUri, amount)
+        }
+    }
+
+    private fun prepareDeposit(paytoUri: String, amount: Amount) {
+        mDepositState.value = DepositState.CheckingFees
+        scope.launch {
+            api.request("prepareDeposit", PrepareDepositResponse.serializer()) {
+                put("depositPaytoUri", paytoUri)
+                put("amount", amount.toJSONString())
+            }.onError {
+                Log.e(TAG, "Error prepareDeposit $it")
+                mDepositState.value = DepositState.Error(it.userFacingMsg)
+            }.onSuccess {
+                mDepositState.value = DepositState.FeesChecked(
+                    effectiveDepositAmount = it.effectiveDepositAmount.amount,
+                )
+            }
+        }
+    }
+
+    private fun makeDeposit(
+        paytoUri: String,
+        amount: Amount,
+        effectiveDepositAmount: Amount,
+    ) {
+        mDepositState.value = DepositState.MakingDeposit(effectiveDepositAmount)
+        scope.launch {
+            api.request("createDepositGroup", CreateDepositGroupResponse.serializer()) {
+                put("depositPaytoUri", paytoUri)
+                put("amount", amount.toJSONString())
+            }.onError {
+                Log.e(TAG, "Error createDepositGroup $it")
+                mDepositState.value = DepositState.Error(it.userFacingMsg)
+            }.onSuccess {
+                mDepositState.value = DepositState.Success
+            }
+        }
+    }
+
+    @UiThread
+    fun resetDepositState() {
+        mDepositState.value = DepositState.Start
+    }
 }
+
+@Serializable
+data class PrepareDepositResponse(
+    val totalDepositCost: AmountJson,
+    val effectiveDepositAmount: AmountJson,
+)
 
 @Serializable
 data class CreateDepositGroupResponse(
     val depositGroupId: String,
     val transactionId: String,
 )
+
+@Serializable
+@Deprecated("no idea why this is now in the API")
+data class AmountJson(
+    val currency: String,
+    val value: Long,
+    val fraction: Int,
+) {
+    val amount = Amount(currency, value, fraction)
+}

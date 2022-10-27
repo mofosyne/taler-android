@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -39,16 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
-import net.taler.wallet.getAmount
 
 @Composable
 fun OutgoingPushIntroComposable(
-    currency: String,
+    amount: Amount,
     onSend: (amount: Amount, summary: String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -58,38 +55,14 @@ fun OutgoingPushIntroComposable(
             .verticalScroll(scrollState),
         horizontalAlignment = CenterHorizontally,
     ) {
-        var amountText by rememberSaveable { mutableStateOf("") }
-        var isError by rememberSaveable { mutableStateOf(false) }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(16.dp),
         ) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 16.dp),
-                value = amountText,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-                onValueChange = { input ->
-                    isError = false
-                    amountText = input.filter { it.isDigit() || it == '.' }
-                },
-                isError = isError,
-                label = {
-                    if (isError) {
-                        Text(
-                            stringResource(R.string.receive_amount_invalid),
-                            color = Color.Red,
-                        )
-                    } else {
-                        Text(stringResource(R.string.send_peer_amount))
-                    }
-                }
-            )
             Text(
                 modifier = Modifier,
-                text = currency,
+                text = amount.toString(),
                 softWrap = false,
                 style = MaterialTheme.typography.h6,
             )
@@ -118,11 +91,9 @@ fun OutgoingPushIntroComposable(
         )
         Button(
             modifier = Modifier.padding(16.dp),
-            enabled = subject.isNotBlank() && amountText.isNotBlank(),
+            enabled = subject.isNotBlank(),
             onClick = {
-                val amount = getAmount(currency, amountText)
-                if (amount == null) isError = true
-                else onSend(amount, subject)
+                onSend(amount, subject)
             },
         ) {
             Text(text = stringResource(R.string.send_peer_create_button))
@@ -134,6 +105,6 @@ fun OutgoingPushIntroComposable(
 @Composable
 fun PeerPushIntroComposablePreview() {
     Surface {
-        OutgoingPushIntroComposable("TESTKUDOS") { _, _ -> }
+        OutgoingPushIntroComposable(Amount.fromDouble("TESTKUDOS", 42.23)) { _, _ -> }
     }
 }

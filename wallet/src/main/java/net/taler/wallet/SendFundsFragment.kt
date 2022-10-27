@@ -20,21 +20,42 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
-import net.taler.wallet.compose.collectAsStateLifecycleAware
-import net.taler.wallet.peer.OutgoingIntro
-import net.taler.wallet.peer.OutgoingPushIntroComposable
-import net.taler.wallet.peer.OutgoingPushResultComposable
 
 class SendFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
-    private val transactionManager get() = model.transactionManager
     private val peerManager get() = model.peerManager
 
     override fun onCreateView(
@@ -44,16 +65,11 @@ class SendFundsFragment : Fragment() {
         setContent {
             MdcTheme {
                 Surface {
-                    val state = peerManager.pushState.collectAsStateLifecycleAware()
-                    if (state.value is OutgoingIntro) {
-                        val currency = transactionManager.selectedCurrency
-                            ?: error("No currency selected")
-                        OutgoingPushIntroComposable(currency, this@SendFundsFragment::onSend)
-                    } else {
-                        OutgoingPushResultComposable(state.value) {
-                            findNavController().popBackStack()
-                        }
-                    }
+                    SendFundsIntro(
+                        model.transactionManager.selectedCurrency ?: error("No currency selected"),
+                        this@SendFundsFragment::onDeposit,
+                        this@SendFundsFragment::onPeerPush,
+                    )
                 }
             }
         }
@@ -69,7 +85,102 @@ class SendFundsFragment : Fragment() {
         if (!requireActivity().isChangingConfigurations) peerManager.resetPushPayment()
     }
 
-    private fun onSend(amount: Amount, summary: String) {
-        peerManager.initiatePeerPushPayment(amount, summary)
+    fun onDeposit(amount: Amount) {
+        val bundle = bundleOf("amount" to amount.toJSONString())
+        findNavController().navigate(R.id.action_sendFunds_to_nav_deposit, bundle)
+    }
+
+    fun onPeerPush(amount: Amount) {
+        val bundle = bundleOf("amount" to amount.toJSONString())
+        findNavController().navigate(R.id.action_sendFunds_to_nav_peer_push, bundle)
+    }
+}
+
+@Composable
+private fun SendFundsIntro(
+    currency: String,
+    onDeposit: (Amount) -> Unit,
+    onPeerPush: (Amount) -> Unit,
+) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(scrollState),
+    ) {
+        var text by rememberSaveable { mutableStateOf("") }
+        var isError by rememberSaveable { mutableStateOf(false) }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(16.dp),
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp),
+                value = text,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                onValueChange = { input ->
+                    isError = false
+                    text = input.filter { it.isDigit() || it == '.' }
+                },
+                isError = isError,
+                label = {
+                    if (isError) {
+                        Text(
+                            stringResource(R.string.receive_amount_invalid),
+                            color = Color.Red,
+                        )
+                    } else {
+                        Text(stringResource(R.string.send_amount))
+                    }
+                }
+            )
+            Text(
+                modifier = Modifier,
+                text = currency,
+                softWrap = false,
+                style = MaterialTheme.typography.h6,
+            )
+        }
+        Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            text = stringResource(R.string.send_intro),
+            style = MaterialTheme.typography.h6,
+        )
+        Row(modifier = Modifier.padding(16.dp)) {
+            Button(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .weight(1f),
+                onClick = {
+                    val amount = getAmount(currency, text)
+                    if (amount == null) isError = true
+                    else onDeposit(amount)
+                }) {
+                Text(text = stringResource(R.string.send_deposit))
+            }
+            Button(
+                modifier = Modifier
+                    .height(IntrinsicSize.Max)
+                    .weight(1f),
+                onClick = {
+                    val amount = getAmount(currency, text)
+                    if (amount == null) isError = true
+                    else onPeerPush(amount)
+                },
+            ) {
+                Text(text = stringResource(R.string.send_peer))
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewSendFundsIntro() {
+    Surface {
+        SendFundsIntro("TESTKUDOS", {}) {}
     }
 }

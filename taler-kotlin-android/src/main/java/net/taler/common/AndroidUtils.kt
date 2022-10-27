@@ -97,10 +97,18 @@ fun Context.isOnline(): Boolean {
 }
 
 fun FragmentActivity.showError(mainText: String, detailText: String = "") = ErrorBottomSheet
-        .newInstance(mainText, detailText)
-        .show(supportFragmentManager, "ERROR_BOTTOM_SHEET")
+    .newInstance(mainText, detailText)
+    .show(supportFragmentManager, "ERROR_BOTTOM_SHEET")
 
 fun FragmentActivity.showError(@StringRes mainId: Int, detailText: String = "") {
+    showError(getString(mainId), detailText)
+}
+
+fun Fragment.showError(mainText: String, detailText: String = "") = ErrorBottomSheet
+    .newInstance(mainText, detailText)
+    .show(parentFragmentManager, "ERROR_BOTTOM_SHEET")
+
+fun Fragment.showError(@StringRes mainId: Int, detailText: String = "") {
     showError(getString(mainId), detailText)
 }
 
