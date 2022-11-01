@@ -71,7 +71,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     private val api = WalletBackendApi(app) { payload ->
         if (payload.optString("operation") == "init") {
             val result = payload.getJSONObject("result")
-            val versions = result.getJSONObject("supported_protocol_versions")
+            val versions = result.getJSONObject("versionInfo")
             exchangeVersion = versions.getString("exchange")
             merchantVersion = versions.getString("merchant")
         } else if (payload.getString("type") != "waiting-for-retry") { // ignore ping

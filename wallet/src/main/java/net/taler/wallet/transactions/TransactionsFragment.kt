@@ -161,7 +161,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                 // workaround to avoid issues with some emulators and keyboard devices
                 // firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
-                item.actionView.clearFocus()
+                searchView.clearFocus()
                 onSearch(query)
                 return true
             }

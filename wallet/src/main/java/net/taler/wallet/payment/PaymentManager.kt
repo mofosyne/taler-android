@@ -162,7 +162,7 @@ class PaymentManager(
                 mDepositState.value = DepositState.Error(it.userFacingMsg)
             }.onSuccess {
                 mDepositState.value = DepositState.FeesChecked(
-                    effectiveDepositAmount = it.effectiveDepositAmount.amount,
+                    effectiveDepositAmount = it.effectiveDepositAmount,
                 )
             }
         }
@@ -195,8 +195,8 @@ class PaymentManager(
 
 @Serializable
 data class PrepareDepositResponse(
-    val totalDepositCost: AmountJson,
-    val effectiveDepositAmount: AmountJson,
+    val totalDepositCost: Amount,
+    val effectiveDepositAmount: Amount,
 )
 
 @Serializable
@@ -204,13 +204,3 @@ data class CreateDepositGroupResponse(
     val depositGroupId: String,
     val transactionId: String,
 )
-
-@Serializable
-@Deprecated("no idea why this is now in the API")
-data class AmountJson(
-    val currency: String,
-    val value: Long,
-    val fraction: Int,
-) {
-    val amount = Amount(currency, value, fraction)
-}
