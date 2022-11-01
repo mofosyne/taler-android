@@ -59,17 +59,19 @@ class SendFundsFragment : Fragment() {
     private val peerManager get() = model.peerManager
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setContent {
             MdcTheme {
                 Surface {
                     SendFundsIntro(
-                        model.transactionManager.selectedCurrency ?: error("No currency selected"),
-                        model::hasSufficientBalance,
-                        this@SendFundsFragment::onDeposit,
-                        this@SendFundsFragment::onPeerPush,
+                        currency = model.transactionManager.selectedCurrency
+                            ?: error("No currency selected"),
+                        hasSufficientBalance = model::hasSufficientBalance,
+                        onDeposit = this@SendFundsFragment::onDeposit,
+                        onPeerPush = this@SendFundsFragment::onPeerPush,
                     )
                 }
             }

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
@@ -53,7 +53,6 @@ android {
             excludes += ['META-INF/common.kotlin_module', 'META-INF/*.kotlin_module']
         }
     }
-
 
     lint {
         abortOnError true
