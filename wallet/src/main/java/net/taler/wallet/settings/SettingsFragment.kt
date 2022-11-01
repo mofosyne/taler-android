@@ -48,6 +48,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefDevMode: SwitchPreferenceCompat
     private lateinit var prefWithdrawTest: Preference
     private lateinit var prefLogcat: Preference
+    private lateinit var prefExportDb: Preference
     private lateinit var prefVersionApp: Preference
     private lateinit var prefVersionCore: Preference
     private lateinit var prefVersionExchange: Preference
@@ -58,6 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefBackup,
             prefWithdrawTest,
             prefLogcat,
+            prefExportDb,
             prefVersionApp,
             prefVersionCore,
             prefVersionExchange,
@@ -69,6 +71,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val logLauncher = registerForActivityResult(CreateDocument("text/plain")) { uri ->
         settingsManager.exportLogcat(uri)
     }
+    private val dbExportLauncher = registerForActivityResult(CreateDocument("application/json")) { uri ->
+        settingsManager.exportDb(uri)
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
@@ -76,6 +81,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         prefDevMode = findPreference("pref_dev_mode")!!
         prefWithdrawTest = findPreference("pref_testkudos")!!
         prefLogcat = findPreference("pref_logcat")!!
+        prefExportDb = findPreference("pref_export_db")!!
         prefVersionApp = findPreference("pref_version_app")!!
         prefVersionCore = findPreference("pref_version_core")!!
         prefVersionExchange = findPreference("pref_version_protocol_exchange")!!
@@ -123,6 +129,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         prefLogcat.setOnPreferenceClickListener {
             logLauncher.launch("taler-wallet-log-${currentTimeMillis()}.txt")
+            true
+        }
+        prefExportDb.setOnPreferenceClickListener {
+            dbExportLauncher.launch("taler-wallet-db-${currentTimeMillis()}.json")
             true
         }
 

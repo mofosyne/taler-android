@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.taler.wallet.R
+import net.taler.wallet.backend.WALLET_DB
 
 class SettingsManager(
     private val context: Context,
@@ -57,6 +58,33 @@ class SettingsManager(
 
     private fun onLogExportError() {
         Toast.makeText(context, R.string.settings_logcat_error, LENGTH_LONG).show()
+    }
+
+    fun exportDb(uri: Uri?) {
+        if (uri == null) {
+            onDbExportError()
+            return
+        }
+        scope.launch(Dispatchers.IO) {
+            try {
+                context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
+                    context.openFileInput(WALLET_DB).use { inputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                } ?: onDbExportError()
+            } catch (e: Exception) {
+                Log.e(SettingsManager::class.simpleName, "Error exporting db: ", e)
+                onDbExportError()
+                return@launch
+            }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, R.string.settings_db_export_success, LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun onDbExportError() {
+        Toast.makeText(context, R.string.settings_db_export_error, LENGTH_LONG).show()
     }
 
 }

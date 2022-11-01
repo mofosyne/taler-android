@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.system.exitProcess
 
 private const val TAG = "taler-wallet-backend"
+const val WALLET_DB = "talerwalletdb-v30.json"
 
 class RequestData(val clientRequestId: Int, val messenger: Messenger)
 
@@ -83,7 +84,7 @@ class WalletBackendService : Service() {
         msg.put("operation", "init")
         val args = JSONObject()
         msg.put("args", args)
-        args.put("persistentStoragePath", "${application.filesDir}/talerwalletdb-v30.json")
+        args.put("persistentStoragePath", "${application.filesDir}/$WALLET_DB")
         akono.sendMessage(msg.toString())
     }
 
