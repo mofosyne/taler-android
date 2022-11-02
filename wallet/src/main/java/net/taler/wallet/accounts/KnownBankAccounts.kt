@@ -61,7 +61,7 @@ class PaytoUriIban(
     val paytoUri: String
         get() = Uri.Builder()
             .scheme("payto")
-            .appendEncodedPath("/$targetType")
+            .authority(targetType)
             .apply { if (bic != null) appendPath(bic) }
             .appendPath(iban)
             .apply {

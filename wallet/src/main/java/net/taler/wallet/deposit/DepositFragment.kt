@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.payment
+package net.taler.wallet.deposit
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -59,7 +59,7 @@ import net.taler.wallet.compose.collectAsStateLifecycleAware
 
 class DepositFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
-    private val paymentManager get() = model.paymentManager
+    private val depositManager get() = model.depositManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,15 +69,23 @@ class DepositFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
+        val receiverName = arguments?.getString("receiverName")
+        val iban = arguments?.getString("IBAN")
+        val bic = arguments?.getString("BIC") ?: ""
 
+        if (receiverName != null && iban != null) {
+            onDepositButtonClicked(amount, receiverName, iban, bic)
+        }
         return ComposeView(requireContext()).apply {
             setContent {
                 MdcTheme {
                     Surface {
-                        val state = paymentManager.depositState.collectAsStateLifecycleAware()
+                        val state = depositManager.depositState.collectAsStateLifecycleAware()
                         MakeDepositComposable(
                             state = state.value,
                             amount = amount,
+                            presetName = receiverName,
+                            presetIban = iban,
                             onMakeDeposit = this@DepositFragment::onDepositButtonClicked,
                         )
                     }
@@ -94,7 +102,7 @@ class DepositFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         if (!requireActivity().isChangingConfigurations) {
-            paymentManager.resetDepositState()
+            depositManager.resetDepositState()
         }
     }
 
@@ -104,7 +112,7 @@ class DepositFragment : Fragment() {
         iban: String,
         bic: String,
     ) {
-        paymentManager.onDepositButtonClicked(amount, receiverName, iban, bic)
+        depositManager.onDepositButtonClicked(amount, receiverName, iban, bic)
     }
 }
 
@@ -112,6 +120,8 @@ class DepositFragment : Fragment() {
 private fun MakeDepositComposable(
     state: DepositState,
     amount: Amount,
+    presetName: String? = null,
+    presetIban: String? = null,
     onMakeDeposit: (Amount, String, String, String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -121,8 +131,8 @@ private fun MakeDepositComposable(
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        var name by rememberSaveable { mutableStateOf("") }
-        var iban by rememberSaveable { mutableStateOf("") }
+        var name by rememberSaveable { mutableStateOf(presetName ?: "") }
+        var iban by rememberSaveable { mutableStateOf(presetIban ?: "") }
         var bic by rememberSaveable { mutableStateOf("") }
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(

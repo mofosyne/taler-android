@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.taler.common.Amount
+import net.taler.common.AmountParserException
 import net.taler.common.Event
 import net.taler.common.assertUiThread
 import net.taler.common.toEvent
@@ -34,6 +35,7 @@ import net.taler.wallet.accounts.AccountManager
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.balances.BalanceItem
 import net.taler.wallet.balances.BalanceResponse
+import net.taler.wallet.deposit.DepositManager
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.peer.PeerManager
@@ -100,6 +102,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val peerManager: PeerManager = PeerManager(api, viewModelScope)
     val settingsManager: SettingsManager = SettingsManager(app.applicationContext, viewModelScope)
     val accountManager: AccountManager = AccountManager(api, viewModelScope)
+    val depositManager: DepositManager = DepositManager(api, viewModelScope)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
@@ -142,6 +145,24 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     @UiThread
+    fun getCurrencies(): List<String> {
+        return balances.value?.map { balanceItem ->
+            balanceItem.currency
+        } ?: emptyList()
+    }
+
+    @UiThread
+    fun createAmount(amountText: String, currency: String): AmountResult {
+        val amount = try {
+            Amount.fromString(currency, amountText)
+        } catch (e: AmountParserException) {
+            return AmountResult.InvalidAmount
+        }
+        if (hasSufficientBalance(amount)) return AmountResult.Success(amount)
+        return AmountResult.InsufficientBalance
+    }
+
+    @UiThread
     fun hasSufficientBalance(amount: Amount): Boolean {
         balances.value?.forEach { balanceItem ->
             if (balanceItem.currency == amount.currency) {
@@ -176,4 +197,10 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
         mScanCodeEvent.value = true.toEvent()
     }
 
+}
+
+sealed class AmountResult {
+    class Success(val amount: Amount) : AmountResult()
+    object InsufficientBalance : AmountResult()
+    object InvalidAmount : AmountResult()
 }

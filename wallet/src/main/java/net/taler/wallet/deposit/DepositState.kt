@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.payment
+package net.taler.wallet.deposit
 
 import net.taler.common.Amount
 

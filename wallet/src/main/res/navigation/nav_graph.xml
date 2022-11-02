@@ -58,6 +58,18 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_payto_uri"
+        android:name="net.taler.wallet.deposit.PayToUriFragment"
+        android:label="@string/transactions_send_funds">
+        <argument
+            android:name="uri"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_nav_payto_uri_to_nav_deposit"
+            app:destination="@id/nav_deposit" />
+    </fragment>
+
+    <fragment
         android:id="@+id/promptTip"
         android:name="net.taler.wallet.tip.PromptTipFragment"
         android:label="Review Tip"
@@ -133,8 +145,23 @@
 
     <fragment
         android:id="@+id/nav_deposit"
-        android:name="net.taler.wallet.payment.DepositFragment"
-        android:label="@string/send_deposit_title" />
+        android:name="net.taler.wallet.deposit.DepositFragment"
+        android:label="@string/send_deposit_title">
+        <argument
+            android:name="amount"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="IBAN"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="receiverName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_settings_backup"
@@ -355,5 +382,9 @@
     <action
         android:id="@+id/action_nav_transactions_detail_deposit"
         app:destination="@id/nav_transactions_detail_deposit" />
+
+    <action
+        android:id="@+id/action_nav_payto_uri"
+        app:destination="@id/nav_payto_uri" />
 
 </navigation>

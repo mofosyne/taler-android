@@ -32,6 +32,7 @@ import android.view.View.VISIBLE
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat.START
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -146,6 +147,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         else super.onBackPressed()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == ACTION_VIEW) intent.dataString?.let { uri ->
+            handleTalerUri(uri, "intent")
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> nav.navigate(R.id.nav_main)
@@ -217,6 +225,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         getTalerAction(uri, 3, MutableLiveData<String>()).observe(this) { u ->
             Log.v(TAG, "found action $u")
+
+            if (u.startsWith("payto://", ignoreCase = true)) {
+                Log.v(TAG, "navigating with paytoUri!")
+                val bundle = bundleOf("uri" to u)
+                nav.navigate(R.id.action_nav_payto_uri, bundle)
+                return@observe
+            }
 
             val normalizedURL = u.lowercase(ROOT)
             val action = normalizedURL.substring(
