@@ -51,8 +51,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.collectAsStateLifecycleAware
@@ -89,6 +92,19 @@ class DepositFragment : Fragment() {
                             onMakeDeposit = this@DepositFragment::onDepositButtonClicked,
                         )
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launchWhenStarted {
+            depositManager.depositState.collect { state ->
+                if (state is DepositState.Error) {
+                    showError(state.msg)
+                } else if (state is DepositState.Success) {
+                    findNavController().navigate(R.id.action_nav_deposit_to_nav_main)
                 }
             }
         }
@@ -189,23 +205,30 @@ private fun MakeDepositComposable(
                 )
             }
         )
+        val amountTitle = if (state.effectiveDepositAmount == null) {
+            R.string.amount_chosen
+        } else R.string.send_deposit_amount_effective
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(id = R.string.amount_chosen),
+            text = stringResource(id = amountTitle),
         )
+        val shownAmount = if (state.effectiveDepositAmount == null) amount else {
+            state.effectiveDepositAmount
+        }
         Text(
             modifier = Modifier.padding(16.dp),
             fontSize = 24.sp,
             color = colorResource(R.color.green),
-            text = amount.toString(),
+            text = shownAmount.toString(),
         )
         AnimatedVisibility(visible = state.showFees) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                val effectiveAmount = state.effectiveDepositAmount
-                val fee = amount - (effectiveAmount ?: Amount.zero(amount.currency))
+                val totalAmount = state.totalDepositCost ?: amount
+                val effectiveAmount = state.effectiveDepositAmount ?: Amount.zero(amount.currency)
+                val fee = totalAmount - effectiveAmount
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(id = R.string.withdraw_fees),
@@ -222,13 +245,13 @@ private fun MakeDepositComposable(
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(id = R.string.send_deposit_amount_effective),
+                    text = stringResource(id = R.string.send_amount),
                 )
                 Text(
                     modifier = Modifier.padding(16.dp),
                     fontSize = 24.sp,
                     color = colorResource(R.color.green),
-                    text = effectiveAmount.toString(),
+                    text = totalAmount.toString(),
                 )
             }
         }
@@ -263,6 +286,7 @@ fun PreviewMakeDepositComposable() {
     Surface {
         val state = DepositState.FeesChecked(
             effectiveDepositAmount = Amount.fromDouble("TESTKUDOS", 42.00),
+            totalDepositCost = Amount.fromDouble("TESTKUDOS", 42.23),
         )
         MakeDepositComposable(
             state = state,

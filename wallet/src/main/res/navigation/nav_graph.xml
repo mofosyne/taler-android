@@ -161,6 +161,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_nav_deposit_to_nav_main"
+            app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
     </fragment>
 
     <fragment

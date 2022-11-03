@@ -53,11 +53,14 @@ class DepositManager(
             params = mapOf("receiver-name" to receiverName),
         ).paytoUri
 
-        if (depositState.value.showFees) {
-            val effectiveDepositAmount = depositState.value.effectiveDepositAmount
-                ?: Amount.zero(amount.currency)
-            makeDeposit(paytoUri, amount, effectiveDepositAmount)
-        } else {
+        if (depositState.value.showFees) makeDeposit(
+            paytoUri = paytoUri,
+            amount = amount,
+            totalDepositCost = depositState.value.totalDepositCost
+                ?: Amount.zero(amount.currency),
+            effectiveDepositAmount = depositState.value.effectiveDepositAmount
+                ?: Amount.zero(amount.currency),
+        ) else {
             prepareDeposit(paytoUri, amount)
         }
     }
@@ -73,6 +76,7 @@ class DepositManager(
                 mDepositState.value = DepositState.Error(it.userFacingMsg)
             }.onSuccess {
                 mDepositState.value = DepositState.FeesChecked(
+                    totalDepositCost = it.totalDepositCost,
                     effectiveDepositAmount = it.effectiveDepositAmount,
                 )
             }
@@ -82,9 +86,13 @@ class DepositManager(
     private fun makeDeposit(
         paytoUri: String,
         amount: Amount,
+        totalDepositCost: Amount,
         effectiveDepositAmount: Amount,
     ) {
-        mDepositState.value = DepositState.MakingDeposit(effectiveDepositAmount)
+        mDepositState.value = DepositState.MakingDeposit(
+            totalDepositCost = totalDepositCost,
+            effectiveDepositAmount = effectiveDepositAmount,
+        )
         scope.launch {
             api.request("createDepositGroup", CreateDepositGroupResponse.serializer()) {
                 put("depositPaytoUri", paytoUri)

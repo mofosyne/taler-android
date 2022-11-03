@@ -21,17 +21,20 @@ import net.taler.common.Amount
 sealed class DepositState {
 
     open val showFees: Boolean = false
+    open val totalDepositCost: Amount? = null
     open val effectiveDepositAmount: Amount? = null
 
     object Start : DepositState()
     object CheckingFees : DepositState()
     class FeesChecked(
+        override val totalDepositCost: Amount,
         override val effectiveDepositAmount: Amount,
     ) : DepositState() {
         override val showFees = true
     }
 
     class MakingDeposit(
+        override val totalDepositCost: Amount,
         override val effectiveDepositAmount: Amount,
     ) : DepositState() {
         override val showFees = true
