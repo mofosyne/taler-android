@@ -55,7 +55,7 @@ class ExchangeManager(
         scope.launch {
             val response = api.request("listExchanges", ExchangeListResponse.serializer())
             response.onError {
-                throw AssertionError("Wallet core failed to return exchanges!")
+                throw AssertionError("Wallet core failed to return exchanges! ${it.userFacingMsg}")
             }.onSuccess {
                 Log.d(TAG, "Exchange list: ${it.exchanges}")
                 mProgress.value = false
