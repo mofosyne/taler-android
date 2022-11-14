@@ -40,7 +40,7 @@ import net.taler.common.exhaustive
 import net.taler.common.showError
 
 private const val URL_BANK_TEST = "https://bank.demo.taler.net/demobanks/default"
-private const val URL_BANK_TEST_REGISTER = "$URL_BANK_TEST/accounts/register"
+private const val URL_BANK_TEST_REGISTER = "https://bank.demo.taler.net/webui/#/register"
 
 class ConfigFragment : Fragment() {
 
