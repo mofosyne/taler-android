@@ -42,16 +42,16 @@ class PaymentResponsesTest {
             "wire_method": "x-taler-bank",
             "order_id": "2020.240-01MD5F476HMXW",
             "timestamp": {
-              "t_ms": 1598538535000
+              "t_s": 1598538535
             },
             "refund_deadline": {
-              "t_ms": 1598538835000
+              "t_s": 1598538835
             },
             "pay_deadline": {
-              "t_ms": 1598538835000
+              "t_s": 1598538835
             },
             "wire_transfer_deadline": {
-              "t_ms": 1598542135000
+              "t_s": 1598542135
             },
             "max_wire_fee": "CHF:0.1",
             "max_fee": "CHF:0.1",

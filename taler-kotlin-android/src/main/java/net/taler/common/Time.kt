@@ -29,50 +29,31 @@ import kotlin.math.max
 
 @Serializable
 data class Timestamp(
-    @SerialName("t_ms")
-    @Serializable(NeverSerializer::class)
-    val old_ms: Long? = null,
     @SerialName("t_s")
     @Serializable(NeverSerializer::class)
-    private val s: Long? = null,
+    private val s: Long,
 ) : Comparable<Timestamp> {
-
-    constructor(ms: Long) : this(ms, null)
 
     companion object {
         private const val NEVER: Long = -1
-        fun now(): Timestamp = Timestamp(System.currentTimeMillis())
+        fun now(): Timestamp = fromMillis(System.currentTimeMillis())
         fun never(): Timestamp = Timestamp(NEVER)
+        fun fromMillis(ms: Long) = Timestamp(ms / 1000L)
     }
 
-    val ms: Long = if (s != null) {
-        s * 1000L
-    } else if (old_ms !== null) {
-        old_ms
-    } else  {
-        throw Exception("timestamp didn't have t_s or t_ms")
+    val ms: Long = s * 1000L
+
+    operator fun minus(other: Timestamp): RelativeTime = when {
+        ms == NEVER -> RelativeTime.fromMillis(RelativeTime.FOREVER)
+        other.ms == NEVER -> throw Error("Invalid argument for timestamp comparison")
+        ms < other.ms -> RelativeTime.fromMillis(0)
+        else -> RelativeTime.fromMillis(ms - other.ms)
     }
 
-
-    /**
-     * Returns a copy of this [Timestamp] rounded to seconds.
-     */
-    fun truncateSeconds(): Timestamp {
-        if (ms == NEVER) return Timestamp(ms)
-        return Timestamp((ms / 1000L) * 1000L)
-    }
-
-    operator fun minus(other: Timestamp): Duration = when {
-        ms == NEVER -> Duration(Duration.FOREVER)
-        other.ms == NEVER -> throw Error("Invalid argument for timestamp comparision")
-        ms < other.ms -> Duration(0)
-        else -> Duration(ms - other.ms)
-    }
-
-    operator fun minus(other: Duration): Timestamp = when {
+    operator fun minus(other: RelativeTime): Timestamp = when {
         ms == NEVER -> this
-        other.ms == Duration.FOREVER -> Timestamp(0)
-        else -> Timestamp(max(0, ms - other.ms))
+        other.ms == RelativeTime.FOREVER -> fromMillis(0)
+        else -> fromMillis(max(0, ms - other.ms))
     }
 
     override fun compareTo(other: Timestamp): Int {
@@ -88,26 +69,21 @@ data class Timestamp(
 }
 
 @Serializable
-data class Duration(
-    @SerialName("d_ms")
-    @Serializable(ForeverSerializer::class) val old_ms: Long? = null,
-    @SerialName("d_s")
+data class RelativeTime(
+    /**
+     * Duration in microseconds or "forever" to represent an infinite duration.
+     * Numeric values are capped at 2^53 - 1 inclusive.
+     */
+    @SerialName("d_us")
     @Serializable(ForeverSerializer::class)
-    private val s: Long? = null,
+    private val s: Long,
 ) {
-    val ms: Long = if (s != null) {
-        s * 1000L
-    } else if (old_ms !== null) {
-        old_ms
-    } else  {
-        throw Exception("duration didn't have d_s or d_ms")
-    }
-
-    constructor(ms: Long) : this(ms, null)
+    val ms: Long = s * 1000L
 
     companion object {
         internal const val FOREVER: Long = -1
-        fun forever(): Duration = Duration(FOREVER)
+        fun forever(): RelativeTime = fromMillis(FOREVER)
+        fun fromMillis(ms: Long) = RelativeTime(ms / 100L)
     }
 }
 

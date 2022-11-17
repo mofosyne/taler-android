@@ -18,9 +18,9 @@ package net.taler.common
 
 import kotlinx.serialization.json.Json.Default.decodeFromString
 import kotlinx.serialization.json.Json.Default.encodeToString
-import kotlin.random.Random
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import kotlin.random.Random
 
 // TODO test other functionality of Timestamp and Duration
 class TimeTest {
@@ -29,18 +29,18 @@ class TimeTest {
     fun testSerialize() {
         for (i in 0 until 42) {
             val t = Random.nextLong()
-            assertEquals("""{"t_ms":$t}""", encodeToString(Timestamp.serializer(), Timestamp(t)))
+            assertEquals("""{"t_s":$t}""", encodeToString(Timestamp.serializer(), Timestamp(t)))
         }
-        assertEquals("""{"t_ms":"never"}""", encodeToString(Timestamp.serializer(), Timestamp.never()))
+        assertEquals("""{"t_s":"never"}""", encodeToString(Timestamp.serializer(), Timestamp.never()))
     }
 
     @Test
     fun testDeserialize() {
         for (i in 0 until 42) {
             val t = Random.nextLong()
-            assertEquals(Timestamp(t), decodeFromString(Timestamp.serializer(), """{ "t_ms": $t }"""))
+            assertEquals(Timestamp(t), decodeFromString(Timestamp.serializer(), """{ "t_s": $t }"""))
         }
-        assertEquals(Timestamp.never(), decodeFromString(Timestamp.serializer(), """{ "t_ms": "never" }"""))
+        assertEquals(Timestamp.never(), decodeFromString(Timestamp.serializer(), """{ "t_s": "never" }"""))
     }
 
 }

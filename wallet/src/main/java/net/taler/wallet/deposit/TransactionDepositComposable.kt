@@ -82,7 +82,7 @@ fun TransactionDepositComposable(t: TransactionDeposit, onDelete: () -> Unit) {
 fun TransactionDepositComposablePreview() {
     val t = TransactionDeposit(
         transactionId = "transactionId",
-        timestamp = Timestamp(System.currentTimeMillis() - 360 * 60 * 1000),
+        timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         pending = true,
         depositGroupId = "fooBar",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),

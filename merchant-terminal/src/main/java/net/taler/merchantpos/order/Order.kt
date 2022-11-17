@@ -117,7 +117,7 @@ data class Order(val id: Int, val currency: String, val availableCategories: Map
         }
 
     fun toContractTerms(): ContractTerms {
-        val deadline = Timestamp(now() + HOURS.toMillis(1))
+        val deadline = Timestamp.fromMillis(now() + HOURS.toMillis(1))
         return ContractTerms(
             summary = summary,
             summaryI18n = summaryI18n,

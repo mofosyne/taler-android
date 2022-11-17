@@ -19,7 +19,6 @@ package net.taler.merchantlib
 import io.ktor.http.HttpStatusCode.Companion.NotFound
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import net.taler.common.Amount
 import net.taler.common.ContractProduct
@@ -173,7 +172,7 @@ class MerchantApiTest {
                       "order_id": "2020.217-0281FGXCS25P2",
                       "row_id": 183,
                       "timestamp": {
-                        "t_ms": 1596542338000
+                        "t_s": 1596542338
                       },
                       "amount": "TESTKUDOS:1",
                       "summary": "Chips",
@@ -184,7 +183,7 @@ class MerchantApiTest {
                       "order_id": "2020.216-01G2ZPXSP6BYT",
                       "row_id": 154,
                       "timestamp": {
-                        "t_ms": 1596468174000
+                        "t_s": 1596468174
                       },
                       "amount": "TESTKUDOS:0.8",
                       "summary": "Peanuts",
@@ -203,7 +202,7 @@ class MerchantApiTest {
             assertEquals(true, order1.paid)
             assertEquals(true, order1.refundable)
             assertEquals("Chips", order1.summary)
-            assertEquals(Timestamp(1596542338000), order1.timestamp)
+            assertEquals(Timestamp.fromMillis(1596542338000), order1.timestamp)
 
             val order2 = it.orders[1]
             assertEquals(Amount("TESTKUDOS", 0, 80000000), order2.amount)
@@ -211,7 +210,7 @@ class MerchantApiTest {
             assertEquals(false, order2.paid)
             assertEquals(false, order2.refundable)
             assertEquals("Peanuts", order2.summary)
-            assertEquals(Timestamp(1596468174000), order2.timestamp)
+            assertEquals(Timestamp.fromMillis(1596468174000), order2.timestamp)
         }
     }
 

@@ -26,7 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import net.taler.common.Duration
+import net.taler.common.RelativeTime
 import net.taler.common.assertUiThread
 import net.taler.merchantlib.CheckPaymentResponse
 import net.taler.merchantlib.MerchantApi
@@ -74,7 +74,7 @@ class PaymentManager(
         mPayment.value = Payment(order, order.summary, configManager.currency!!)
         val request = PostOrderRequest(
             contractTerms = order.toContractTerms(),
-            refundDelay = Duration(HOURS.toMillis(1))
+            refundDelay = RelativeTime.fromMillis(HOURS.toMillis(1))
         )
         api.postOrder(merchantConfig, request).handle(::onNetworkError) { orderResponse ->
             assertUiThread()

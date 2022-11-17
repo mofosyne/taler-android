@@ -61,13 +61,13 @@ fun TransactionPeerPullDebitComposable(t: TransactionPeerPullDebit) {
 fun TransactionPeerPullDebitPreview() {
     val t = TransactionPeerPullDebit(
         transactionId = "transactionId",
-        timestamp = Timestamp(System.currentTimeMillis() - 360 * 60 * 1000),
+        timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         pending = true,
         exchangeBaseUrl = "https://exchange.example.org/",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),
         info = PeerInfoShort(
-            expiration = Timestamp(System.currentTimeMillis() + 60 * 60 * 1000),
+            expiration = Timestamp.fromMillis(System.currentTimeMillis() + 60 * 60 * 1000),
             summary = "test invoice",
         ),
     )
