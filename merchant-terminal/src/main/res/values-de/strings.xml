@@ -43,7 +43,7 @@
 \n
 \n%2$s</string>
     <string name="toast_back_to_exit">Klicken Sie zum Beenden erneut auf «Zurück»</string>
-    <string name="app_name">GNU Taler POS-Terminal</string>
+    <string name="app_name">GNU Taler Point-of-Sale</string>
     <string name="config_label">Händlereinstellungen</string>
     <string name="config_username">Benutzername</string>
     <string name="config_password">Passwort</string>
