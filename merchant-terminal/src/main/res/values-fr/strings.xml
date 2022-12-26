@@ -11,7 +11,7 @@
     <string name="refund_confirm">Approuver le remboursement</string>
     <string name="refund_error_backend">Erreur lors du traitement du remboursement</string>
     <string name="menu_settings">Réglages</string>
-    <string name="app_name">Point de vente GNU Taler</string>
+    <string name="app_name">GNU Taler Point de vente</string>
     <string name="app_name_short">Terminal marchand</string>
     <string name="menu_order">Commandes</string>
     <string name="order_label_title">Commande numéro %s</string>
