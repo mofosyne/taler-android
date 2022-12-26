@@ -3,7 +3,7 @@
     <string name="config_button_save">Speichern</string>
     <string name="config_bank_url_error">Die Adresse ist ungültig.</string>
     <string name="config_username_error">Bitte geben Sie Ihren Benutzernamen ein!</string>
-    <string name="config_error">Fehler beim Abrufen der Konfiguration: %s</string>
+    <string name="config_error">Fehler beim Abrufen der Konfiguration</string>
     <string name="config_error_auth">Benutzername oder Passwort ungültig!</string>
     <string name="balance_current_label">Aktueller Saldo</string>
     <string name="balance_error">FEHLER: %s</string>
@@ -24,7 +24,7 @@
     <string name="transaction_button_back">Zurück</string>
     <string name="transaction_last_success">Letzte Transaktion: %s abgehoben</string>
     <string name="transaction_last_error">Letzte Transaktion: Fehler</string>
-    <string name="app_name">Taler Kassierer</string>
+    <string name="app_name">Taler Cashier</string>
     <string name="config_bank_url">Bank API Adresse</string>
     <string name="config_demo_hint">Zum Testen können Sie <![CDATA[<a href="%s">ein Testkonto bei der Demobank erstellen</a>]]>.</string>
     <string name="transaction_intro">Scannen Sie zum Abheben den Code mit dem Taler-Wallet:</string>
@@ -38,5 +38,6 @@
     <string name="about_license">Lizenz: %s</string>
     <string name="about_version">Version: %s</string>
     <string name="about_copyright">Copyright: %s</string>
-    <string name="about_supported_bank_api">Bank API Version: %s</string>
+    <string name="about_supported_bank_api">Bankschnittstellen-Version: %s</string>
+    <string name="withdraw_error_currency_mismatch">Fehler: Die Bank hat eine andere Währung gemeldet</string>
 </resources>
