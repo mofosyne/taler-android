@@ -53,11 +53,13 @@ class PeerManager(
     fun initiatePullPayment(amount: Amount, summary: String, exchange: ExchangeItem) {
         _outgoingPullState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
+            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
             api.request("initiatePeerPullPayment", InitiatePeerPullPaymentResponse.serializer()) {
                 put("exchangeBaseUrl", exchange.exchangeBaseUrl)
                 put("partialContractTerms", JSONObject().apply {
                     put("amount", amount.toJSONString())
                     put("summary", summary)
+                    put("purse_expiration", JSONObject(Json.encodeToString(expiry)))
                 })
             }.onSuccess {
                 val qrCode = QrCodeManager.makeQrCode(it.talerUri)
