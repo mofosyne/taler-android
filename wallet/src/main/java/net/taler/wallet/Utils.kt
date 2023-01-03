@@ -35,6 +35,8 @@ import com.google.accompanist.themeadapter.material.MdcTheme
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 
+const val CURRENCY_BTC = "BITCOINBTC"
+
 fun connectToWifi(context: Context, ssid: String) {
     if (SDK_INT >= 29) {
         connectToWifi29(context, ssid)

@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import net.taler.common.Amount
+import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
 import net.taler.wallet.compose.CopyToClipboardButton
 import net.taler.wallet.withdraw.WithdrawStatus
@@ -163,7 +164,7 @@ fun PreviewScreenBitcoin() {
                 "bc1qsleagehks96u7jmqrzcf0fw80ea5g57qm3m84c"
             ),
             subject = "0ZSX8SH0M30KHX8K3Y1DAMVGDQV82XEF9DG1HC4QMQ3QWYT4AF00",
-            amountRaw = Amount("BITCOINBTC", 0, 14000000),
+            amountRaw = Amount(CURRENCY_BTC, 0, 14000000),
             transactionId = "",
         ), {}) {}
     }

@@ -129,6 +129,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_amount">Amount to send</string>
     <string name="send_intro">Choose where to send money to:</string>
     <string name="send_deposit">To a bank account</string>
+    <string name="send_deposit_bitcoin">To a Bitcoin wallet</string>
     <string name="send_deposit_title">Deposit to a bank account</string>
     <string name="send_deposit_iban">IBAN</string>
     <string name="send_deposit_bic">BIC/SWIFT</string>
@@ -137,6 +138,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_deposit_amount_effective">Effective Amount</string>
     <string name="send_deposit_create_button">Make deposit</string>
     <string name="send_peer">To another wallet</string>
+    <string name="send_peer_bitcoin">To another Taler wallet</string>
     <string name="send_peer_title">Send money to another wallet</string>
     <string name="send_peer_create_button">Send funds now</string>
     <string name="send_peer_warning">Warning: Funds will leave the wallet immediately.</string>

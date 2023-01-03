@@ -171,7 +171,11 @@ private fun SendFundsIntro(
                 onClick = {
                     onClickButton { amount -> onDeposit(amount) }
                 }) {
-                Text(text = stringResource(R.string.send_deposit))
+                Text(text = if (currency == CURRENCY_BTC) {
+                    stringResource(R.string.send_deposit_bitcoin)
+                } else {
+                    stringResource(R.string.send_deposit)
+                })
             }
             Button(
                 modifier = Modifier
@@ -181,7 +185,11 @@ private fun SendFundsIntro(
                     onClickButton { amount -> onPeerPush(amount) }
                 },
             ) {
-                Text(text = stringResource(R.string.send_peer))
+                Text(text = if (currency == CURRENCY_BTC) {
+                    stringResource(R.string.send_peer_bitcoin)
+                } else {
+                    stringResource(R.string.send_peer)
+                })
             }
         }
     }
