@@ -37,7 +37,7 @@ class ErrorFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         ui = FragmentErrorBinding.inflate(inflater, container, false)
         return ui.root
     }

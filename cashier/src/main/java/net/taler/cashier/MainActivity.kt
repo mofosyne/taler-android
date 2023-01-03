@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (!configManager.hasConfig() && nav.currentDestination?.id == R.id.configFragment) {
             // we are in the configuration screen and need a config to continue

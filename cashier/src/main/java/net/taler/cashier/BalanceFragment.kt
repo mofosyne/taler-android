@@ -54,19 +54,19 @@ class BalanceFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         ui = FragmentBalanceBinding.inflate(layoutInflater, container, false)
         return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        withdrawManager.lastTransaction.observe(viewLifecycleOwner, { lastTransaction ->
+        withdrawManager.lastTransaction.observe(viewLifecycleOwner) { lastTransaction ->
             onLastTransaction(lastTransaction)
-        })
-        viewModel.balance.observe(viewLifecycleOwner, { result ->
+        }
+        viewModel.balance.observe(viewLifecycleOwner) { result ->
             onBalanceUpdated(result)
-        })
+        }
         ui.button5.setOnClickListener { onAmountButtonPressed(5) }
         ui.button10.setOnClickListener { onAmountButtonPressed(10) }
         ui.button20.setOnClickListener { onAmountButtonPressed(20) }
@@ -81,9 +81,9 @@ class BalanceFragment : Fragment() {
                 true
             } else false
         }
-        configManager.currency.observe(viewLifecycleOwner, { currency ->
+        configManager.currency.observe(viewLifecycleOwner) { currency ->
             ui.currencyView.text = currency
-        })
+        }
         ui.confirmWithdrawalButton.setOnClickListener { onAmountConfirmed(getAmountFromView()) }
     }
 
