@@ -21,6 +21,7 @@ plugins {
 }
 
 android {
+    namespace 'net.taler.common'
     compileSdkVersion 32
     buildToolsVersion "$build_tools_version"
 
@@ -49,9 +50,6 @@ android {
             excludes += ['META-INF/*.kotlin_module']
         }
     }
-
-    namespace 'net.taler.common'
-
 }
 
 dependencies {

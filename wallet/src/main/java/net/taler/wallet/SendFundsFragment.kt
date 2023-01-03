@@ -52,6 +52,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
+import net.taler.common.Amount.Companion.isValidAmountStr
 
 class SendFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -126,7 +127,8 @@ private fun SendFundsIntro(
                 onValueChange = { input ->
                     isError = false
                     insufficientBalance = false
-                    text = input.filter { it.isDigit() || it == '.' }
+                    val filtered = input.filter { it.isDigit() || it == '.' }
+                    if (filtered.endsWith('.') || isValidAmountStr(filtered)) text = filtered
                 },
                 isError = isError || insufficientBalance,
                 label = {

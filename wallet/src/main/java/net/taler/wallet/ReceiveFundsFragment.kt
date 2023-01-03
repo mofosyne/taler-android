@@ -55,6 +55,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
+import net.taler.common.Amount.Companion.isValidAmountStr
 import net.taler.wallet.exchanges.ExchangeItem
 
 class ReceiveFundsFragment : Fragment() {
@@ -136,7 +137,8 @@ private fun ReceiveFundsIntro(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = Decimal),
                 onValueChange = { input ->
                     isError = false
-                    text = input.filter { it.isDigit() || it == '.' }
+                    val filtered = input.filter { it.isDigit() || it == '.' }
+                    if (filtered.endsWith('.') || isValidAmountStr(filtered)) text = filtered
                 },
                 isError = isError,
                 label = {

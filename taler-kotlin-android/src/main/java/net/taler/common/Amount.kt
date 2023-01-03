@@ -25,8 +25,11 @@ import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-public class AmountParserException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
-public class AmountOverflowException(msg: String? = null, cause: Throwable? = null) : Exception(msg, cause)
+public class AmountParserException(msg: String? = null, cause: Throwable? = null) :
+    Exception(msg, cause)
+
+public class AmountOverflowException(msg: String? = null, cause: Throwable? = null) :
+    Exception(msg, cause)
 
 @Serializable(with = KotlinXAmountSerializer::class)
 public data class Amount(
@@ -50,7 +53,7 @@ public data class Amount(
      * of the base currency value.  For example, a fraction
      * of 50_000_000 would correspond to 50 cents.
      */
-    val fraction: Int
+    val fraction: Int,
 ) : Comparable<Amount> {
 
     public companion object {
@@ -63,8 +66,8 @@ public data class Amount(
         public const val MAX_FRACTION: Int = 99_999_999
 
         public fun fromDouble(currency: String, value: Double): Amount {
-            val intPart = Math.floor(value).toLong()
-            val fraPart = Math.floor((value - intPart) *  FRACTIONAL_BASE).toInt()
+            val intPart = floor(value).toLong()
+            val fraPart = floor((value - intPart) * FRACTIONAL_BASE).toInt()
             return Amount(currency, intPart, fraPart)
         }
 
@@ -87,12 +90,32 @@ public data class Amount(
                 val fractionStr = valueSplit[1]
                 if (fractionStr.length > MAX_FRACTION_LENGTH)
                     throw AmountParserException("Fraction $fractionStr too long")
-                val fraction = "0.$fractionStr".toDoubleOrNull()
-                    ?.times(FRACTIONAL_BASE)
-                    ?.roundToInt()
-                checkFraction(fraction)
+                checkFraction(fractionStr.getFraction())
             } else 0
             return Amount(checkCurrency(currency), value, fraction)
+        }
+
+        public fun isValidAmountStr(str: String): Boolean {
+            val split = str.split(".")
+            try {
+                checkValue(split[0].toLongOrNull())
+            } catch (e: AmountParserException) {
+                return false
+            }
+            // also check fraction, if it exists
+            if (split.size > 1) {
+                val fractionStr = split[1]
+                if (fractionStr.length > MAX_FRACTION_LENGTH) return false
+                val fraction = fractionStr.getFraction() ?: return false
+                return fraction <= MAX_FRACTION
+            }
+            return true
+        }
+
+        private fun String.getFraction(): Int? {
+            return "0.$this".toDoubleOrNull()
+                ?.times(FRACTIONAL_BASE)
+                ?.roundToInt()
         }
 
         public fun min(currency: String): Amount = Amount(currency, 0, 1)
@@ -132,7 +155,8 @@ public data class Amount(
 
     public operator fun plus(other: Amount): Amount {
         check(currency == other.currency) { "Can only subtract from same currency" }
-        val resultValue = value + other.value + floor((fraction + other.fraction).toDouble() / FRACTIONAL_BASE).toLong()
+        val resultValue =
+            value + other.value + floor((fraction + other.fraction).toDouble() / FRACTIONAL_BASE).toLong()
         if (resultValue > MAX_VALUE)
             throw AmountOverflowException()
         val resultFraction = (fraction + other.fraction) % FRACTIONAL_BASE
