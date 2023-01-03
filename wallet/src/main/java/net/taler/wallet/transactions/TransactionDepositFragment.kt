@@ -20,9 +20,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
-import com.google.android.material.composethemeadapter.MdcTheme
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.deposit.TransactionDepositComposable
 
 class TransactionDepositFragment : TransactionDetailFragment() {
@@ -33,12 +32,10 @@ class TransactionDepositFragment : TransactionDetailFragment() {
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setContent {
-            MdcTheme {
-                Surface {
-                    val t = transaction ?: error("No transaction")
-                    TransactionDepositComposable(t as TransactionDeposit) {
-                        onDeleteButtonClicked(t)
-                    }
+            TalerSurface {
+                val t = transaction ?: error("No transaction")
+                TransactionDepositComposable(t as TransactionDeposit) {
+                    onDeleteButtonClicked(t)
                 }
             }
         }

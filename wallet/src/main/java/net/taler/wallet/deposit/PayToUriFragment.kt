@@ -62,11 +62,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.wallet.AmountResult
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 
 class PayToUriFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -82,29 +82,27 @@ class PayToUriFragment : Fragment() {
         val currencies = model.getCurrencies()
         return ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
-                    Surface {
-                        if (currencies.isEmpty()) Text(
-                            text = stringResource(id = R.string.payment_balance_insufficient),
-                            color = colorResource(id = R.color.red),
-                        ) else if (depositManager.isSupportedPayToUri(uri)) PayToComposable(
-                            currencies = model.getCurrencies(),
-                            getAmount = model::createAmount,
-                            onAmountChosen = { amount ->
-                                val u = Uri.parse(uri)
-                                val bundle = bundleOf(
-                                    "amount" to amount.toJSONString(),
-                                    "receiverName" to u.getQueryParameters("receiver-name")[0],
-                                    "IBAN" to u.pathSegments.last(),
-                                )
-                                findNavController().navigate(
-                                    R.id.action_nav_payto_uri_to_nav_deposit, bundle)
-                            },
-                        ) else Text(
-                            text = stringResource(id = R.string.uri_invalid),
-                            color = colorResource(id = R.color.red),
-                        )
-                    }
+                TalerSurface {
+                    if (currencies.isEmpty()) Text(
+                        text = stringResource(id = R.string.payment_balance_insufficient),
+                        color = colorResource(id = R.color.red),
+                    ) else if (depositManager.isSupportedPayToUri(uri)) PayToComposable(
+                        currencies = model.getCurrencies(),
+                        getAmount = model::createAmount,
+                        onAmountChosen = { amount ->
+                            val u = Uri.parse(uri)
+                            val bundle = bundleOf(
+                                "amount" to amount.toJSONString(),
+                                "receiverName" to u.getQueryParameters("receiver-name")[0],
+                                "IBAN" to u.pathSegments.last(),
+                            )
+                            findNavController().navigate(
+                                R.id.action_nav_payto_uri_to_nav_deposit, bundle)
+                        },
+                    ) else Text(
+                        text = stringResource(id = R.string.uri_invalid),
+                        color = colorResource(id = R.color.red),
+                    )
                 }
             }
         }

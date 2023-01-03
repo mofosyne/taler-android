@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -37,10 +36,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.peer.TransactionPeerPullCreditComposable
 import net.taler.wallet.peer.TransactionPeerPullDebitComposable
 import net.taler.wallet.peer.TransactionPeerPushCreditComposable
@@ -54,12 +53,10 @@ class TransactionPeerFragment : TransactionDetailFragment() {
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setContent {
-            MdcTheme {
-                Surface {
-                    val t = transaction ?: error("No transaction")
-                    TransactionPeerComposable(t) {
-                        onDeleteButtonClicked(t)
-                    }
+            TalerSurface {
+                val t = transaction ?: error("No transaction")
+                TransactionPeerComposable(t) {
+                    onDeleteButtonClicked(t)
                 }
             }
         }

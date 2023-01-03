@@ -21,15 +21,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.withdraw.WithdrawStatus
 
 class ManualWithdrawSuccessFragment : Fragment() {
@@ -57,18 +56,15 @@ class ManualWithdrawSuccessFragment : Fragment() {
             }
         }
         setContent {
-            MdcTheme {
-                Surface {
-                    when (status) {
-                        is WithdrawStatus.ManualTransferRequiredBitcoin -> {
-                            ScreenBitcoin(status, onBankAppClick, onCancelClick)
-                        }
-                        is WithdrawStatus.ManualTransferRequiredIBAN -> {
-                            ScreenIBAN(status, onBankAppClick, onCancelClick)
-                        }
+            TalerSurface {
+                when (status) {
+                    is WithdrawStatus.ManualTransferRequiredBitcoin -> {
+                        ScreenBitcoin(status, onBankAppClick, onCancelClick)
+                    }
+                    is WithdrawStatus.ManualTransferRequiredIBAN -> {
+                        ScreenIBAN(status, onBankAppClick, onCancelClick)
                     }
                 }
-
             }
         }
     }

@@ -54,7 +54,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.wallet.exchanges.ExchangeItem
 
@@ -67,14 +66,12 @@ class ReceiveFundsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setContent {
-            MdcTheme {
-                Surface {
-                    ReceiveFundsIntro(
-                        model.transactionManager.selectedCurrency ?: error("No currency selected"),
-                        this@ReceiveFundsFragment::onManualWithdraw,
-                        this@ReceiveFundsFragment::onPeerPull,
-                    )
-                }
+            TalerSurface {
+                ReceiveFundsIntro(
+                    model.transactionManager.selectedCurrency ?: error("No currency selected"),
+                    this@ReceiveFundsFragment::onManualWithdraw,
+                    this@ReceiveFundsFragment::onPeerPull,
+                )
             }
         }
     }
@@ -179,7 +176,9 @@ private fun ReceiveFundsIntro(
                 Text(text = stringResource(R.string.receive_withdraw))
             }
             Button(
-                modifier = Modifier.weight(1f).height(IntrinsicSize.Max),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(IntrinsicSize.Max),
                 onClick = {
                     val amount = getAmount(currency, text)
                     if (amount == null) isError = true

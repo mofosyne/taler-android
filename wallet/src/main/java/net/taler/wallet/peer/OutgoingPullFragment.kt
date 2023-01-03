@@ -20,15 +20,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.exchanges.ExchangeItem
 
@@ -48,21 +47,19 @@ class OutgoingPullFragment : Fragment() {
         val exchangeFlow = exchangeManager.findExchangeForCurrency(amount.currency)
         return ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
-                    Surface {
-                        val state = peerManager.pullState.collectAsStateLifecycleAware()
-                        if (state.value is OutgoingIntro) {
-                            val exchangeState =
-                                exchangeFlow.collectAsStateLifecycleAware(initial = null)
-                            OutgoingPullIntroComposable(
-                                amount = amount,
-                                exchangeState = exchangeState,
-                                onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
-                            )
-                        } else {
-                            OutgoingPullResultComposable(state.value) {
-                                findNavController().popBackStack()
-                            }
+                TalerSurface {
+                    val state = peerManager.pullState.collectAsStateLifecycleAware()
+                    if (state.value is OutgoingIntro) {
+                        val exchangeState =
+                            exchangeFlow.collectAsStateLifecycleAware(initial = null)
+                        OutgoingPullIntroComposable(
+                            amount = amount,
+                            exchangeState = exchangeState,
+                            onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
+                        )
+                    } else {
+                        OutgoingPullResultComposable(state.value) {
+                            findNavController().popBackStack()
                         }
                     }
                 }

@@ -53,11 +53,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 
 class DepositFragment : Fragment() {
@@ -81,17 +81,15 @@ class DepositFragment : Fragment() {
         }
         return ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
-                    Surface {
-                        val state = depositManager.depositState.collectAsStateLifecycleAware()
-                        MakeDepositComposable(
-                            state = state.value,
-                            amount = amount,
-                            presetName = receiverName,
-                            presetIban = iban,
-                            onMakeDeposit = this@DepositFragment::onDepositButtonClicked,
-                        )
-                    }
+                TalerSurface {
+                    val state = depositManager.depositState.collectAsStateLifecycleAware()
+                    MakeDepositComposable(
+                        state = state.value,
+                        amount = amount,
+                        presetName = receiverName,
+                        presetIban = iban,
+                        onMakeDeposit = this@DepositFragment::onDepositButtonClicked,
+                    )
                 }
             }
         }

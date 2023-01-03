@@ -20,15 +20,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 
 class OutgoingPushFragment : Fragment() {
@@ -45,18 +44,16 @@ class OutgoingPushFragment : Fragment() {
         } ?: error("no amount passed")
         return ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
-                    Surface {
-                        val state = peerManager.pushState.collectAsStateLifecycleAware()
-                        if (state.value is OutgoingIntro) {
-                            OutgoingPushIntroComposable(
-                                amount = amount,
-                                onSend = this@OutgoingPushFragment::onSend,
-                            )
-                        } else {
-                            OutgoingPushResultComposable(state.value) {
-                                findNavController().popBackStack()
-                            }
+                TalerSurface {
+                    val state = peerManager.pushState.collectAsStateLifecycleAware()
+                    if (state.value is OutgoingIntro) {
+                        OutgoingPushIntroComposable(
+                            amount = amount,
+                            onSend = this@OutgoingPushFragment::onSend,
+                        )
+                    } else {
+                        OutgoingPushResultComposable(state.value) {
+                            findNavController().popBackStack()
                         }
                     }
                 }

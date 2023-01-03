@@ -51,7 +51,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.composethemeadapter.MdcTheme
 import net.taler.common.Amount
 
 class SendFundsFragment : Fragment() {
@@ -64,16 +63,14 @@ class SendFundsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         setContent {
-            MdcTheme {
-                Surface {
-                    SendFundsIntro(
-                        currency = model.transactionManager.selectedCurrency
-                            ?: error("No currency selected"),
-                        hasSufficientBalance = model::hasSufficientBalance,
-                        onDeposit = this@SendFundsFragment::onDeposit,
-                        onPeerPush = this@SendFundsFragment::onPeerPush,
-                    )
-                }
+            TalerSurface {
+                SendFundsIntro(
+                    currency = model.transactionManager.selectedCurrency
+                        ?: error("No currency selected"),
+                    hasSufficientBalance = model::hasSufficientBalance,
+                    onDeposit = this@SendFundsFragment::onDeposit,
+                    onPeerPush = this@SendFundsFragment::onPeerPush,
+                )
             }
         }
     }
