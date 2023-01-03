@@ -16,6 +16,7 @@
 
 package net.taler.wallet.compose
 
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -24,6 +25,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
+import com.google.accompanist.themeadapter.material.MdcTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
@@ -51,3 +53,12 @@ fun <T : R, R> Flow<T>.collectAsStateLifecycleAware(
 fun <T> StateFlow<T>.collectAsStateLifecycleAware(
     context: CoroutineContext = EmptyCoroutineContext,
 ): State<T> = collectAsStateLifecycleAware(initial = value, context = context)
+
+@Composable
+fun TalerSurface(content: @Composable () -> Unit) {
+    MdcTheme {
+        Surface {
+            content()
+        }
+    }
+}

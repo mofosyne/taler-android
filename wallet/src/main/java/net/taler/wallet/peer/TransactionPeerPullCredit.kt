@@ -65,7 +65,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
         QrCodeUriComposable(
             talerUri = t.talerUri,
             clipBoardLabel = "Invoice",
-            buttonText = stringResource(id = R.string.copy_uri),
+            buttonText = stringResource(id = R.string.copy),
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),

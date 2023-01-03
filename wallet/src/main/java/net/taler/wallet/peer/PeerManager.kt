@@ -22,12 +22,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.QrCodeManager
+import net.taler.common.Timestamp
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeItem
 import org.json.JSONObject
+import java.util.concurrent.TimeUnit.DAYS
 
 class PeerManager(
     private val api: WalletBackendApi,
@@ -51,8 +55,8 @@ class PeerManager(
         scope.launch(Dispatchers.IO) {
             api.request("initiatePeerPullPayment", InitiatePeerPullPaymentResponse.serializer()) {
                 put("exchangeBaseUrl", exchange.exchangeBaseUrl)
-                put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {
+                    put("amount", amount.toJSONString())
                     put("summary", summary)
                 })
             }.onSuccess {
@@ -72,10 +76,13 @@ class PeerManager(
     fun initiatePeerPushPayment(amount: Amount, summary: String) {
         _outgoingPushState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
+            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
             api.request("initiatePeerPushPayment", InitiatePeerPushPaymentResponse.serializer()) {
                 put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {
+                    put("amount", amount.toJSONString())
                     put("summary", summary)
+                    put("purse_expiration", JSONObject(Json.encodeToString(expiry)))
                 })
             }.onSuccess { response ->
                 val qrCode = QrCodeManager.makeQrCode(response.talerUri)

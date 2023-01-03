@@ -28,10 +28,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
-import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
 import androidx.core.content.getSystemService
-import com.google.accompanist.themeadapter.material.MdcTheme
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 
@@ -84,15 +81,6 @@ private fun connectToWifiDeprecated(context: Context, ssid: String) {
                 enableNetwork(netId, true)
                 reconnect()
             }
-        }
-    }
-}
-
-@Composable
-fun TalerSurface(content: @Composable () -> Unit) {
-    MdcTheme {
-        Surface {
-            content()
         }
     }
 }

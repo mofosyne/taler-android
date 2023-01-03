@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
-import net.taler.wallet.TalerSurface
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.peer.TransactionPeerPullCreditComposable
 import net.taler.wallet.peer.TransactionPeerPullDebitComposable
 import net.taler.wallet.peer.TransactionPeerPushCreditComposable

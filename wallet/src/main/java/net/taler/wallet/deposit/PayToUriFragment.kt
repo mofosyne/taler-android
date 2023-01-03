@@ -66,7 +66,7 @@ import net.taler.common.Amount
 import net.taler.wallet.AmountResult
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.TalerSurface
+import net.taler.wallet.compose.TalerSurface
 
 class PayToUriFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()

@@ -28,7 +28,7 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.TalerSurface
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.withdraw.WithdrawStatus
 
 class ManualWithdrawSuccessFragment : Fragment() {

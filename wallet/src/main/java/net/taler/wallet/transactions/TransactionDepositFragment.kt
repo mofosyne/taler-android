@@ -21,7 +21,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import net.taler.wallet.TalerSurface
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.TransactionDepositComposable
 
 class TransactionDepositFragment : TransactionDetailFragment() {

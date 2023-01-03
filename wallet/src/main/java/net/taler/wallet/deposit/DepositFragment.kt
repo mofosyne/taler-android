@@ -57,7 +57,7 @@ import net.taler.common.Amount
 import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.TalerSurface
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 
 class DepositFragment : Fragment() {

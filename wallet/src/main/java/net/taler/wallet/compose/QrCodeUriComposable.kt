@@ -21,13 +21,17 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,11 +40,13 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
@@ -58,12 +64,18 @@ fun ColumnScope.QrCodeUriComposable(
     inBetween: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
     val qrCodeSize = getQrCodeSize()
-    val qrState = produceState<ImageBitmap?>(null) {
+    val qrPlaceHolder = if (LocalInspectionMode.current) {
+        QrCodeManager.makeQrCode(talerUri, qrCodeSize.value.toInt()).asImageBitmap()
+    } else null
+    val qrState = produceState(qrPlaceHolder) {
         value = QrCodeManager.makeQrCode(talerUri, qrCodeSize.value.toInt()).asImageBitmap()
     }
     qrState.value?.let { qrCode ->
         Image(
-            modifier = Modifier.size(qrCodeSize),
+            modifier = Modifier
+                .size(qrCodeSize)
+                .align(CenterHorizontally)
+                .padding(vertical = 8.dp),
             bitmap = qrCode,
             contentDescription = stringResource(id = R.string.button_scan_qr_code),
         )
@@ -78,12 +90,23 @@ fun ColumnScope.QrCodeUriComposable(
             text = talerUri,
         )
     }
-    CopyToClipboardButton(
-        modifier = Modifier,
-        label = clipBoardLabel,
-        content = talerUri,
-        buttonText = buttonText,
-    )
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        CopyToClipboardButton(
+            label = clipBoardLabel,
+            content = talerUri,
+            buttonText = buttonText,
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+        )
+        ShareButton(
+            content = talerUri,
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+        )
+    }
 }
 
 @Composable
@@ -100,14 +123,16 @@ fun CopyToClipboardButton(
     content: String,
     modifier: Modifier = Modifier,
     buttonText: String = stringResource(R.string.copy),
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     val context = LocalContext.current
     Button(
         modifier = modifier,
+        colors = colors,
         onClick = { copyToClipBoard(context, label, content) },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.ContentCopy, stringResource(R.string.copy))
+            Icon(Icons.Default.ContentCopy, buttonText)
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = buttonText,

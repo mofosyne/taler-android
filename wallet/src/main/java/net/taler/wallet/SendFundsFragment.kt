@@ -53,6 +53,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.Amount.Companion.isValidAmountStr
+import net.taler.wallet.compose.TalerSurface
 
 class SendFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
