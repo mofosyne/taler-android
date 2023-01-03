@@ -52,7 +52,7 @@ internal const val CONFIG_URL_DEMO = "https://docs.taler.net/_static/sample-pos-
 internal const val CONFIG_USERNAME_DEMO = ""
 internal const val CONFIG_PASSWORD_DEMO = ""
 
-private val VERSION = Version(1, 0, 0)
+private val VERSION = Version(3, 0, 1)
 
 private val TAG = ConfigManager::class.java.simpleName
 
@@ -137,6 +137,7 @@ class ConfigManager(
         val versionIncompatible =
             VERSION.getIncompatibleStringOrNull(context, configResponse.version)
         if (versionIncompatible != null) {
+            Log.e(TAG, "Versions incompatible $configResponse")
             mConfigUpdateResult.postValue(ConfigUpdateResult.Error(versionIncompatible))
             return
         }
