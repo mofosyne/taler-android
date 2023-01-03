@@ -16,7 +16,7 @@
 
 package net.taler.wallet.withdraw
 
-import Bech32.Companion.generateFakeSegwitAddress
+import net.taler.common.Bech32.Companion.generateFakeSegwitAddress
 import org.junit.Assert
 import org.junit.Test
 

@@ -16,7 +16,6 @@
 
 package net.taler.wallet.withdraw
 
-import Bech32
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.UiThread
@@ -26,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
+import net.taler.common.Bech32
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
