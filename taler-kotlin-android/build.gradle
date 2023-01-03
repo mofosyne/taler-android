@@ -26,8 +26,6 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -72,7 +70,7 @@ dependencies {
     implementation 'com.google.zxing:core:3.5.0'  // needs minSdkVersion 24+ or desugar
 
     // JSON parsing and serialization
-    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
+    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20220320'
 }

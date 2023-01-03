@@ -1,15 +1,15 @@
 buildscript {
     ext {
-        kotlin_version = '1.7.20'
-        ktor_version = '2.1.0'
+        kotlin_version = '1.7.20' // observe compatibility with compose compiler
+        ktor_version = '2.1.3'
         nav_version = '2.5.3'
         material_version = '1.7.0'
         lifecycle_version = '2.5.1'
         constraintlayout_version = '2.1.4'
-        compose_version = '1.3.0'
+        compose_version = '1.3.2'
         junit_version = "4.13.2"
         // check https://android-rebuilds.beuc.net/ for availability of free build tools
-        build_tools_version = "33.0.0"
+        build_tools_version = "33.0.1"
         // should debug build types be minified with D8 as well? good for catching issues early
         minify_debug = true
     }
