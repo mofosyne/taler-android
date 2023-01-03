@@ -34,8 +34,9 @@ import net.taler.wallet.exchanges.ExchangeAdapter.ExchangeItemViewHolder
 @Serializable
 data class ExchangeItem(
     val exchangeBaseUrl: String,
-    val currency: String,
-    val paytoUris: List<String>
+    // can be null before exchange info in wallet-core was fully loaded
+    val currency: String? = null,
+    val paytoUris: List<String>,
 ) {
     val name: String get() = cleanExchange(exchangeBaseUrl)
 }
@@ -79,7 +80,11 @@ internal class ExchangeAdapter(
 
         fun bind(item: ExchangeItem) {
             urlView.text = item.name
-            currencyView.text = context.getString(R.string.exchange_list_currency, item.currency)
+            currencyView.text = if (item.currency == null) {
+                context.getString(R.string.settings_version_unknown)
+            } else {
+                context.getString(R.string.exchange_list_currency, item.currency)
+            }
             if (selectOnly) {
                 itemView.setOnClickListener { listener.onExchangeSelected(item) }
                 overflowIcon.visibility = GONE

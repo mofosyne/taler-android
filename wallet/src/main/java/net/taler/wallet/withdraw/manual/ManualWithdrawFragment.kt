@@ -67,7 +67,8 @@ class ManualWithdrawFragment : Fragment() {
     }
 
     private fun onCheckFees() {
-        if (ui.amountView.text?.isEmpty() != false) {
+        val currency = exchangeItem.currency
+        if (currency == null || ui.amountView.text?.isEmpty() != false) {
             ui.amountLayout.error = getString(R.string.withdraw_amount_error)
             return
         }
@@ -79,7 +80,7 @@ class ManualWithdrawFragment : Fragment() {
             ui.amountLayout.error = getString(R.string.withdraw_amount_error)
             return
         }
-        val amount = Amount.fromDouble(exchangeItem.currency, value)
+        val amount = Amount.fromDouble(currency, value)
         ui.amountView.hideKeyboard()
 
         withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)
