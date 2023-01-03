@@ -39,6 +39,7 @@ def gitCommit = { ->
 }
 
 android {
+    namespace 'net.taler.wallet'
     compileSdkVersion 33
     buildToolsVersion "$build_tools_version"
 
@@ -111,7 +112,6 @@ android {
         abortOnError true
         ignoreWarnings false
     }
-    namespace 'net.taler.wallet'
 }
 
 dependencies {

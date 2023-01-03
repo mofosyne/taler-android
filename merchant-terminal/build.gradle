@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace 'net.taler.merchantpos'
     compileSdkVersion 33
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
@@ -59,7 +60,6 @@ android {
         ignore 'WrongConstant'
         ignoreWarnings false
     }
-    namespace 'net.taler.merchantpos'
 }
 
 dependencies {
