@@ -1,1 +1,1 @@
-Taler Point-of-Sale Merchant Terminal
+Taler Point-of-Sale Terminal
