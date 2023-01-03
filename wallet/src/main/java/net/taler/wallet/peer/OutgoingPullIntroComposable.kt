@@ -76,7 +76,7 @@ fun OutgoingPullIntroComposable(
             isError = subject.isBlank(),
             label = {
                 Text(
-                    stringResource(R.string.withdraw_manual_ready_subject),
+                    stringResource(R.string.send_peer_purpose),
                     color = if (subject.isBlank()) {
                         colorResource(R.color.red)
                     } else Color.Unspecified,

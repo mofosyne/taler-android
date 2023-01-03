@@ -58,7 +58,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
         )
     }
     TransactionInfoComposable(
-        label = stringResource(id = R.string.withdraw_manual_ready_subject),
+        label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
     if (t.pending) {
