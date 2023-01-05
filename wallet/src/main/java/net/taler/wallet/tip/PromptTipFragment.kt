@@ -44,11 +44,11 @@ class PromptTipFragment : Fragment() {
     private lateinit var ui: FragmentPromptTipBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         ui = FragmentPromptTipBinding.inflate(inflater, container, false)
-        ui.introView.fadeIn()
         return ui.root
     }
 
@@ -73,54 +73,52 @@ class PromptTipFragment : Fragment() {
         }
     }
 
-    private fun onPaymentStatusChanged(payStatus: TipStatus?) {
-        when (payStatus) {
-            null -> {}
-            is TipStatus.Prepared -> {
-                showLoading(false)
-                showContent(
-                    amountRaw = payStatus.tipAmountRaw,
-                    amountEffective = payStatus.tipAmountEffective,
-                    exchange = payStatus.exchangeBaseUrl,
-                    merchant = payStatus.merchantBaseUrl
+    private fun onPaymentStatusChanged(payStatus: TipStatus) = when (payStatus) {
+        is TipStatus.Prepared -> {
+            showLoading(false)
+            showContent(
+                amountRaw = payStatus.tipAmountRaw,
+                amountEffective = payStatus.tipAmountEffective,
+                exchange = payStatus.exchangeBaseUrl,
+                merchant = payStatus.merchantBaseUrl
+            )
+            ui.confirmWithdrawButton.isEnabled = true
+            ui.confirmWithdrawButton.setOnClickListener {
+                tipManager.confirmTip(
+                    payStatus.walletTipId,
+                    payStatus.tipAmountRaw.currency
                 )
-                //showOrder(payStatus.contractTerms, payStatus.amountRaw, fees)
-                ui.confirmWithdrawButton.isEnabled = true
-                ui.confirmWithdrawButton.setOnClickListener {
-                    model.showProgressBar.value = true
-                    tipManager.confirmTip(
-                        payStatus.walletTipId,
-                        payStatus.tipAmountRaw.currency
-                    )
-                    ui.confirmWithdrawButton.fadeOut()
-                    ui.progressBar.fadeIn()
-                }
             }
-            is TipStatus.AlreadyAccepted -> {
-                showLoading(false)
-                tipManager.resetTipStatus()
-                findNavController().navigate(R.id.action_promptTip_to_alreadyAccepted)
-            }
-            is TipStatus.Success -> {
-                showLoading(false)
-                tipManager.resetTipStatus()
-                findNavController().navigate(R.id.action_promptTip_to_nav_main)
-                model.showTransactions(payStatus.currency)
-                Snackbar.make(requireView(), R.string.tip_received, LENGTH_LONG).show()
-            }
-            is TipStatus.Error -> {
-                showLoading(false)
-                ui.introView.text = getString(R.string.payment_error, payStatus.error)
-                ui.introView.fadeIn()
-            }
-            is TipStatus.None -> {
-                // No payment active.
-                showLoading(false)
-            }
-            is TipStatus.Loading -> {
-                // Wait until loaded ...
-                showLoading(true)
-            }
+        }
+        is TipStatus.Accepting -> {
+            model.showProgressBar.value = true
+            ui.confirmProgressBar.fadeIn()
+            ui.confirmWithdrawButton.fadeOut()
+        }
+        is TipStatus.AlreadyAccepted -> {
+            showLoading(false)
+            tipManager.resetTipStatus()
+            findNavController().navigate(R.id.action_promptTip_to_alreadyAccepted)
+        }
+        is TipStatus.Success -> {
+            showLoading(false)
+            tipManager.resetTipStatus()
+            findNavController().navigate(R.id.action_promptTip_to_nav_main)
+            model.showTransactions(payStatus.currency)
+            Snackbar.make(requireView(), R.string.tip_received, LENGTH_LONG).show()
+        }
+        is TipStatus.Error -> {
+            showLoading(false)
+            ui.introView.text = getString(R.string.payment_error, payStatus.error)
+            ui.introView.fadeIn()
+        }
+        is TipStatus.None -> {
+            // No tip active
+            showLoading(false)
+        }
+        is TipStatus.Loading -> {
+            // Wait until loaded ...
+            showLoading(true)
         }
     }
 

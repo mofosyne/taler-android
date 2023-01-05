@@ -33,9 +33,10 @@ class AlreadyAcceptedFragment : Fragment() {
     private lateinit var ui: FragmentAlreadyAcceptedBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentAlreadyAcceptedBinding.inflate(inflater, container, false)
         return ui.root
     }

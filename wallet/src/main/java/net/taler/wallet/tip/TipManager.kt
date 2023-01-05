@@ -25,10 +25,10 @@ import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.TalerErrorInfo
-import net.taler.wallet.tip.PrepareTipResponse.TipPossibleResponse
+import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.tip.PrepareTipResponse.AlreadyAcceptedResponse
+import net.taler.wallet.tip.PrepareTipResponse.TipPossibleResponse
 
 sealed class TipStatus {
     object None : TipStatus()
@@ -41,12 +41,12 @@ sealed class TipStatus {
         val tipAmountRaw: Amount,
         val tipAmountEffective: Amount,
     ) : TipStatus()
-
+    object Accepting : TipStatus()
     data class AlreadyAccepted(
         val walletTipId: String,
     ) : TipStatus()
 
-    // TODO bring user to fulfilment URI
+    // TODO bring user to fulfilment URI (not yet in wallet API)
     data class Error(val error: String) : TipStatus()
     data class Success(val currency: String) : TipStatus()
 }
@@ -77,6 +77,7 @@ class TipManager(
     }
 
     fun confirmTip(tipId: String, currency: String) = scope.launch {
+        mTipStatus.value = TipStatus.Accepting
         api.request("acceptTip", ConfirmTipResult.serializer()) {
             put("walletTipId", tipId)
         }.onError {
@@ -85,31 +86,6 @@ class TipManager(
             mTipStatus.postValue(TipStatus.Success(currency))
         }
     }
-
-/*
-    @UiThread
-    fun abortTip() {
-        val ps = tipStatus.value
-        if (ps is TipStatus.Prepared) {
-            abortProposal(ps.walletTipId)
-        }
-        resetTipStatus()
-    }
-*/
-
-/*
-    internal fun abortProposal(proposalId: String) = scope.launch {
-        Log.i(TAG, "aborting proposal")
-        api.request<Unit>("abortProposal") {
-            put("proposalId", proposalId)
-        }.onError {
-            Log.e(TAG, "received error response to abortProposal")
-            handleError("abortProposal", it)
-        }.onSuccess {
-            mTipStatus.postValue(TipStatus.None)
-        }
-    }
-*/
 
     @UiThread
     fun resetTipStatus() {

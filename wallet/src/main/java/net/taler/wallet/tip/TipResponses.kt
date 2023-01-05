@@ -21,9 +21,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import net.taler.common.Amount
-import net.taler.common.ContractTerms
 import net.taler.common.Timestamp
-import net.taler.wallet.backend.TalerErrorInfo
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
@@ -46,7 +44,7 @@ sealed class PrepareTipResponse {
             exchangeBaseUrl = exchangeBaseUrl,
             expirationTimestamp = expirationTimestamp,
             tipAmountEffective = tipAmountEffective,
-            tipAmountRaw =  tipAmountRaw
+            tipAmountRaw = tipAmountRaw,
         )
     }
 
@@ -58,6 +56,4 @@ sealed class PrepareTipResponse {
 }
 
 @Serializable
-class ConfirmTipResult {
-
-}
+class ConfirmTipResult
