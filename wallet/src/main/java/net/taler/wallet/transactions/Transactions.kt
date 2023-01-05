@@ -212,14 +212,13 @@ class TransactionTip(
     override val transactionId: String,
     override val timestamp: Timestamp,
     override val pending: Boolean,
-    val frozen: Boolean,
     val merchantBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
 ) : Transaction() {
-    override val icon = R.drawable.transaction_tip_accepted // TODO different when declined
-    override val detailPageNav = 0
+    override val icon = R.drawable.transaction_tip_accepted
+    override val detailPageNav = R.id.action_nav_transactions_detail_tip
 
     @Transient
     override val amountType = AmountType.Positive

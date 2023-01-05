@@ -259,6 +259,12 @@
         tools:layout="@layout/fragment_transaction_withdrawal" />
 
     <fragment
+        android:id="@+id/nav_transactions_detail_tip"
+        android:name="net.taler.wallet.transactions.TransactionTipFragment"
+        android:label="@string/transactions_detail_title"
+        tools:layout="@layout/fragment_transaction_withdrawal" />
+
+    <fragment
         android:id="@+id/nav_transactions_detail_peer"
         android:name="net.taler.wallet.transactions.TransactionPeerFragment"
         android:label="@string/transactions_detail_title"
@@ -386,6 +392,10 @@
     <action
         android:id="@+id/action_nav_transactions_detail_deposit"
         app:destination="@id/nav_transactions_detail_deposit" />
+
+    <action
+        android:id="@+id/action_nav_transactions_detail_tip"
+        app:destination="@id/nav_transactions_detail_tip" />
 
     <action
         android:id="@+id/action_nav_payto_uri"
