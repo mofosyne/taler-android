@@ -44,7 +44,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class WalletBackendApi(
     private val app: Application,
-    private val notificationHandler: ((payload: JSONObject) -> Unit)
+    private val notificationHandler: ((payload: JSONObject) -> Unit),
 ) {
     private var walletBackendMessenger: Messenger? = null
     private val queuedMessages = LinkedList<Message>()
@@ -121,10 +121,10 @@ class WalletBackendApi(
     fun sendRequest(
         operation: String,
         args: JSONObject? = null,
-        onResponse: (isError: Boolean, message: JSONObject) -> Unit = { _, _ -> }
+        onResponse: (isError: Boolean, message: JSONObject) -> Unit = { _, _ -> },
     ) {
         val requestID = nextRequestID.incrementAndGet()
-        Log.i(TAG, "sending request for operation $operation ($requestID)")
+        Log.i(TAG, "sending request for operation $operation ($requestID)\n${args?.toString(2)}")
         val msg = Message.obtain(null, MSG_COMMAND)
         handlers[requestID] = onResponse
         msg.replyTo = incomingMessenger
@@ -145,7 +145,7 @@ class WalletBackendApi(
     suspend inline fun <reified T> request(
         operation: String,
         serializer: KSerializer<T>? = null,
-        noinline args: (JSONObject.() -> JSONObject)? = null
+        noinline args: (JSONObject.() -> JSONObject)? = null,
     ): WalletResponse<T> = withContext(Dispatchers.Default) {
         suspendCoroutine { cont ->
             val json = Json {
