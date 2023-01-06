@@ -41,6 +41,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,11 +68,14 @@ fun OutgoingPullIntroComposable(
         val exchangeItem = exchangeState.value
         OutlinedTextField(
             modifier = Modifier
-                .padding(16.dp)
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                 .focusRequester(focusRequester),
+            singleLine = true,
             value = subject,
             onValueChange = { input ->
-                subject = input
+                if (input.length <= 100)
+                    subject = input
             },
             isError = subject.isBlank(),
             label = {
@@ -86,6 +90,14 @@ fun OutgoingPullIntroComposable(
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp, end = 16.dp),
+            color = if (subject.isBlank()) colorResource(R.color.red) else Color.Unspecified,
+            text = stringResource(R.string.char_count, subject.length, 100),
+            textAlign = TextAlign.End,
+        )
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(id = R.string.amount_chosen),
