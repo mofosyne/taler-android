@@ -74,6 +74,7 @@ internal class TransactionAdapter(
     internal inner class TransactionViewHolder(private val v: View) : ViewHolder(v) {
         private val context: Context = v.context
 
+        private val root: ViewGroup = v.findViewById(R.id.root)
         private val icon: ImageView = v.findViewById(R.id.icon)
         private val title: TextView = v.findViewById(R.id.title)
         private val extraInfoView: TextView = v.findViewById(R.id.extraInfoView)
@@ -87,7 +88,6 @@ internal class TransactionAdapter(
 
         fun bind(transaction: Transaction, selected: Boolean) {
             v.setOnClickListener { listener.onTransactionClicked(transaction) }
-            v.isActivated = selected
             if (transaction.error == null) {
                 icon.setImageResource(transaction.icon)
             } else {
@@ -98,6 +98,10 @@ internal class TransactionAdapter(
             time.text = transaction.timestamp.ms.toRelativeTime(context)
             bindAmount(transaction)
             pendingView.visibility = if (transaction.pending) VISIBLE else GONE
+            val bgColor = getColor(context,
+                if (selected) R.color.selectedBackground
+                else android.R.color.transparent)
+            root.setBackgroundColor(bgColor)
         }
 
         private fun bindExtraInfo(transaction: Transaction) {
