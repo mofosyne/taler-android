@@ -25,6 +25,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
@@ -220,7 +221,17 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         when (item.itemId) {
             R.id.transaction_delete -> {
                 tracker?.selection?.toList()?.let { transactionIds ->
-                    transactionManager.deleteTransactions(transactionIds)
+                    AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+                        .setTitle(R.string.transactions_delete)
+                        .setMessage(R.string.transactions_delete_selected_dialog_message)
+                        .setPositiveButton(R.string.cancel) { dialog, _ ->
+                            dialog.cancel()
+                        }
+                        .setNegativeButton(R.string.transactions_delete) { dialog, _ ->
+                            transactionManager.deleteTransactions(transactionIds)
+                            dialog.dismiss()
+                        }
+                        .show()
                 }
                 mode.finish()
             }
