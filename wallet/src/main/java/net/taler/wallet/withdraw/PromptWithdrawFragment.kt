@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -114,13 +115,18 @@ class PromptWithdrawFragment : Fragment() {
     }
 
     private fun onReceivedDetails(s: ReceivedDetails) {
-        showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri)
+        showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri,
+            s.ageRestrictionOptions)
         ui.confirmWithdrawButton.apply {
             text = getString(R.string.withdraw_button_confirm)
             setOnClickListener {
                 it.fadeOut()
                 ui.confirmProgressBar.fadeIn()
-                withdrawManager.acceptWithdrawal()
+                val ageRestrict = (ui.ageSelector.selectedItem as String?)?.let { age ->
+                    if (age == context.getString(R.string.withdraw_restrict_age_unrestricted)) null
+                    else age.toIntOrNull()
+                }
+                withdrawManager.acceptWithdrawal(ageRestrict)
             }
             isEnabled = true
         }
@@ -131,6 +137,7 @@ class PromptWithdrawFragment : Fragment() {
         amountEffective: Amount,
         exchange: String,
         uri: String?,
+        ageRestrictionOptions: List<Int>? = null,
     ) {
         model.showProgressBar.value = false
         ui.progressBar.fadeOut()
@@ -158,6 +165,15 @@ class PromptWithdrawFragment : Fragment() {
                 val exchangeSelection = ExchangeSelection(amountRaw, uri)
                 withdrawManager.selectExchange(exchangeSelection)
             }
+        }
+
+        if (ageRestrictionOptions != null) {
+            ui.ageLabel.fadeIn()
+            val context = requireContext()
+            val items = listOf(context.getString(R.string.withdraw_restrict_age_unrestricted)) +
+                    ageRestrictionOptions.map { it.toString() }
+            ui.ageSelector.adapter = ArrayAdapter(context, R.layout.list_item_age, items)
+            ui.ageSelector.fadeIn()
         }
 
         ui.withdrawCard.fadeIn()

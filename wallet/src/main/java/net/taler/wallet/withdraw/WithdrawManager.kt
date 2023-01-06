@@ -44,6 +44,7 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
+        val ageRestrictionOptions: List<Int>? = null,
         val tosText: String,
         val tosEtag: String,
         val showImmediately: Event<Boolean>,
@@ -54,11 +55,12 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
+        val ageRestrictionOptions: List<Int>? = null,
     ) : WithdrawStatus()
 
     object Withdrawing : WithdrawStatus()
     data class Success(val currency: String) : WithdrawStatus()
-    sealed class ManualTransferRequired: WithdrawStatus() {
+    sealed class ManualTransferRequired : WithdrawStatus() {
         abstract val uri: Uri
         abstract val transactionId: String?
     }
@@ -103,6 +105,7 @@ data class WithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
     val amountEffective: Amount,
+    val ageRestrictionOptions: List<Int>? = null,
 )
 
 @Serializable
@@ -152,9 +155,12 @@ class WithdrawManager(
             if (details.defaultExchangeBaseUrl == null) {
                 val exchangeSelection = ExchangeSelection(details.amount, uri)
                 withdrawStatus.value = WithdrawStatus.NeedsExchange(exchangeSelection.toEvent())
-            } else {
-                getWithdrawalDetails(details.defaultExchangeBaseUrl, details.amount, false, uri)
-            }
+            } else getWithdrawalDetails(
+                exchangeBaseUrl = details.defaultExchangeBaseUrl,
+                amount = details.amount,
+                showTosImmediately = false,
+                uri = uri,
+            )
         }
     }
 
@@ -177,6 +183,7 @@ class WithdrawManager(
                     exchangeBaseUrl = exchangeBaseUrl,
                     amountRaw = details.amountRaw,
                     amountEffective = details.amountEffective,
+                    ageRestrictionOptions = details.ageRestrictionOptions,
                 )
             } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
         }
@@ -198,6 +205,7 @@ class WithdrawManager(
                 exchangeBaseUrl = exchangeBaseUrl,
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
+                ageRestrictionOptions = details.ageRestrictionOptions,
                 tosText = it.content,
                 tosEtag = it.currentEtag,
                 showImmediately = showImmediately.toEvent(),
@@ -221,23 +229,28 @@ class WithdrawManager(
                 exchangeBaseUrl = s.exchangeBaseUrl,
                 amountRaw = s.amountRaw,
                 amountEffective = s.amountEffective,
+                ageRestrictionOptions = s.ageRestrictionOptions,
             )
         }
     }
 
     @UiThread
-    fun acceptWithdrawal() = scope.launch {
+    fun acceptWithdrawal(restrictAge: Int? = null) = scope.launch {
         val status = withdrawStatus.value as ReceivedDetails
         withdrawStatus.value = WithdrawStatus.Withdrawing
         if (status.talerWithdrawUri == null) {
-            acceptManualWithdrawal(status)
+            acceptManualWithdrawal(status, restrictAge)
         } else {
-            acceptBankIntegratedWithdrawal(status)
+            acceptBankIntegratedWithdrawal(status, restrictAge)
         }
     }
 
-    private suspend fun acceptBankIntegratedWithdrawal(status: ReceivedDetails) {
+    private suspend fun acceptBankIntegratedWithdrawal(
+        status: ReceivedDetails,
+        restrictAge: Int? = null,
+    ) {
         api.request<Unit>("acceptBankIntegratedWithdrawal") {
+            restrictAge?.let { put("restrictAge", restrictAge) }
             put("exchangeBaseUrl", status.exchangeBaseUrl)
             put("talerWithdrawUri", status.talerWithdrawUri)
         }.onError {
@@ -247,8 +260,9 @@ class WithdrawManager(
         }
     }
 
-    private suspend fun acceptManualWithdrawal(status: ReceivedDetails) {
+    private suspend fun acceptManualWithdrawal(status: ReceivedDetails, restrictAge: Int? = null) {
         api.request("acceptManualWithdrawal", AcceptManualWithdrawalResponse.serializer()) {
+            restrictAge?.let { put("restrictAge", restrictAge) }
             put("exchangeBaseUrl", status.exchangeBaseUrl)
             put("amount", status.amountRaw.toJSONString())
         }.onError {
