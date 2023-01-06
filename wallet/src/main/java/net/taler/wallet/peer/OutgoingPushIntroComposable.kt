@@ -77,7 +77,7 @@ fun OutgoingPushIntroComposable(
             singleLine = true,
             value = subject,
             onValueChange = { input ->
-                if (input.length <= 100)
+                if (input.length <= MAX_LENGTH_SUBJECT)
                     subject = input
             },
             isError = subject.isBlank(),
@@ -95,7 +95,7 @@ fun OutgoingPushIntroComposable(
                 .fillMaxWidth()
                 .padding(top = 5.dp, end = 16.dp),
             color = if (subject.isBlank()) colorResource(R.color.red) else Color.Unspecified,
-            text = stringResource(R.string.char_count, subject.length, 100),
+            text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )
         Text(

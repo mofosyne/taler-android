@@ -33,6 +33,8 @@ import net.taler.wallet.exchanges.ExchangeItem
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit.DAYS
 
+const val MAX_LENGTH_SUBJECT = 100
+
 class PeerManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
