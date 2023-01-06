@@ -90,8 +90,24 @@ class PaytoUriBitcoin(
     @SerialName("segwitAddrs")
     val segwitAddresses: List<String>,
     override val targetPath: String,
-    override val params: Map<String, String>,
+    override val params: Map<String, String> = emptyMap(),
 ) : PaytoUri(
     isKnown = true,
     targetType = "bitcoin",
-)
+) {
+    val paytoUri: String
+        get() = Uri.Builder()
+            .scheme("payto")
+            .authority(targetType)
+            .apply {
+                segwitAddresses.forEach { address ->
+                    appendPath(address)
+                }
+            }
+            .apply {
+                params.forEach { (key, value) ->
+                    appendQueryParameter(key, value)
+                }
+            }
+            .build().toString()
+}

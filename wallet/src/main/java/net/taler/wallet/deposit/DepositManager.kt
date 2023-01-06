@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.wallet.TAG
+import net.taler.wallet.accounts.PaytoUriBitcoin
 import net.taler.wallet.accounts.PaytoUriIban
 import net.taler.wallet.backend.WalletBackendApi
 
@@ -52,16 +53,28 @@ class DepositManager(
             targetPath = "",
             params = mapOf("receiver-name" to receiverName),
         ).paytoUri
+        makeDeposit(amount, paytoUri)
+    }
 
+    @UiThread
+    fun onDepositButtonClicked(amount: Amount, bitcoinAddress: String) {
+        val paytoUri: String = PaytoUriBitcoin(
+            segwitAddresses = listOf(bitcoinAddress),
+            targetPath = bitcoinAddress,
+        ).paytoUri
+        makeDeposit(amount, paytoUri)
+    }
+
+    private fun makeDeposit(amount: Amount, uri: String) {
         if (depositState.value.showFees) makeDeposit(
-            paytoUri = paytoUri,
+            paytoUri = uri,
             amount = amount,
             totalDepositCost = depositState.value.totalDepositCost
                 ?: Amount.zero(amount.currency),
             effectiveDepositAmount = depositState.value.effectiveDepositAmount
                 ?: Amount.zero(amount.currency),
         ) else {
-            prepareDeposit(paytoUri, amount)
+            prepareDeposit(uri, amount)
         }
     }
 
