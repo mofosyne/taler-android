@@ -224,7 +224,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                     AlertDialog.Builder(requireContext(), R.style.DialogTheme)
                         .setTitle(R.string.transactions_delete)
                         .setMessage(R.string.transactions_delete_selected_dialog_message)
-                        .setPositiveButton(R.string.cancel) { dialog, _ ->
+                        .setNeutralButton(R.string.cancel) { dialog, _ ->
                             dialog.cancel()
                         }
                         .setNegativeButton(R.string.transactions_delete) { dialog, _ ->

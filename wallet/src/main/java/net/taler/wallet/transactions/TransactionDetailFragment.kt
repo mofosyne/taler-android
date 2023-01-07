@@ -102,7 +102,7 @@ abstract class TransactionDetailFragment : Fragment() {
         AlertDialog.Builder(requireContext(), R.style.DialogTheme)
             .setTitle(deleteDialogTitle)
             .setMessage(deleteDialogMessage)
-            .setPositiveButton(R.string.cancel) { dialog, _ ->
+            .setNeutralButton(R.string.cancel) { dialog, _ ->
                 dialog.cancel()
             }
             .setNegativeButton(deleteDialogButton) { dialog, _ ->
