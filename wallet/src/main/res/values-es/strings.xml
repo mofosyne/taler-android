@@ -2,22 +2,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="google_play_title" tools:keep="@string/google_play_title">Cartera Taler (experimental)</string>
     <string name="nav_prompt_withdraw">Retirar Efectivo Digital</string>
-    <string name="nav_exchange_tos">Términos de servicio del Exchange</string>
-    <string name="nav_exchange_select">Seleccionar Exchange</string>
-    <string name="button_back">Volver atrás</string>
-    <string name="enter_uri">Insertar URI Taler</string>
+    <string name="nav_exchange_tos">Términos de servicio del cambiario</string>
+    <string name="nav_exchange_select">Seleccionar cambiario</string>
+    <string name="button_back">Regresar</string>
+    <string name="enter_uri">Insertar URI de Taler</string>
     <string name="paste">Pegar</string>
-    <string name="paste_invalid">El portapapeles contiene un tipo de datos inválido</string>
+    <string name="paste_invalid">El portapapeles contiene un tipo de dato inválido</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="search">Buscar</string>
     <string name="menu">Menú</string>
     <string name="or">o</string>
-    <string name="error_unsupported_uri">Error: Esta URI de Taler no está soportada.</string>
+    <string name="error_unsupported_uri">Error: esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
     <string name="balances_title">Saldo</string>
     <string name="amount_positive">+ %s</string>
-    <string name="amount_chosen">Elegir Cantidad</string>
+    <string name="amount_chosen">Monto Elegido</string>
     <string name="balances_inbound_label">entrada</string>
     <string name="transactions_empty">No tienes ninguna transacción</string>
     <string name="transactions_detail_title">Transacción</string>
@@ -33,48 +33,48 @@
     <string name="transaction_refresh">Comisión de cambio por expiración de moneda</string>
     <string name="payment_title">Pago</string>
     <string name="payment_button_confirm">Confirmar Pago</string>
-    <string name="payment_label_amount_total">Cantidad Total:</string>
+    <string name="payment_label_amount_total">Monto Total:</string>
     <string name="payment_label_order_summary">Compra</string>
     <string name="payment_error">Error: %s</string>
-    <string name="payment_balance_insufficient">Balance insuficiente!</string>
-    <string name="payment_aborted">Abortado</string>
+    <string name="payment_balance_insufficient">¡Saldo insuficiente!</string>
+    <string name="payment_aborted">Cancelado</string>
     <string name="payment_failed">Fallido</string>
-    <string name="payment_already_paid_title">Ya pagado</string>
+    <string name="payment_already_paid_title">Ya fue pagado</string>
     <string name="payment_already_paid">Ya has pagado por esta compra.</string>
-    <string name="withdraw_initiated">Retirada iniciada</string>
-    <string name="withdraw_title">Retirada</string>
+    <string name="withdraw_initiated">Retiro iniciado</string>
+    <string name="withdraw_title">Retiro</string>
     <string name="withdraw_total">Retirar</string>
     <string name="withdraw_fees">Comisión</string>
-    <string name="withdraw_exchange">Exchange</string>
-    <string name="withdraw_button_confirm">Confirmar Retirada</string>
+    <string name="withdraw_exchange">Cambiario</string>
+    <string name="withdraw_button_confirm">Confirmar Retiro</string>
     <string name="withdraw_button_tos">Revisar Términos</string>
     <string name="withdraw_waiting_confirm">Esperando confirmación</string>
-    <string name="withdraw_manual_title">Realizar transferencia manual al exchange</string>
-    <string name="withdraw_amount">¿Cuanto quieres retirar\?</string>
+    <string name="withdraw_manual_title">Realizar transferencia manual al cambiario</string>
+    <string name="withdraw_amount">¿Cuánto deseas retirar\?</string>
     <string name="withdraw_manual_check_fees">Comisiones por cheque</string>
-    <string name="withdraw_error_title">Error en la retirada</string>
+    <string name="withdraw_error_title">Error en el retiro</string>
     <string name="withdraw_error_test">Error retirando TESTKUDOS</string>
-    <string name="exchange_settings_title">Intercambios</string>
-    <string name="exchange_settings_summary">Gestionar la lista de exchanges conocidos en esta cartera</string>
-    <string name="exchange_list_title">Intercambios</string>
-    <string name="exchange_list_empty">Sin exchanges conocidos
+    <string name="exchange_settings_title">Cambiarios</string>
+    <string name="exchange_settings_summary">Gestionar la lista de cambiarios conocidos en esta cartera</string>
+    <string name="exchange_list_title">Cambiarios</string>
+    <string name="exchange_list_empty">Sin cambiarios conocidos
 \n
-\nAñade uno manualmente para retirar efectivo digital!</string>
-    <string name="exchange_list_currency">Divisa:%s</string>
-    <string name="exchange_list_add">Añadir exchange</string>
-    <string name="exchange_add_url">Inserta la dirección del exchange</string>
-    <string name="exchange_add_error">No se pudo añadir el exchange</string>
-    <string name="exchange_fee_withdrawal_fee_label">Comisión Retirada:</string>
-    <string name="exchange_fee_overhead_label">Pérdida Redondeo:</string>
+\n¡Añade uno manualmente or retira efectivo digital!</string>
+    <string name="exchange_list_currency">Moneda: %s</string>
+    <string name="exchange_list_add">Añadir cambiario</string>
+    <string name="exchange_add_url">Ingresa dirección del cambiario</string>
+    <string name="exchange_add_error">No se pudo añadir el cambiario</string>
+    <string name="exchange_fee_withdrawal_fee_label">Comisión de Retiro:</string>
+    <string name="exchange_fee_overhead_label">Pérdida de Redondeo:</string>
     <string name="exchange_fee_coin_expiration_label">Expiración de moneda más temprana:</string>
-    <string name="exchange_fee_coin_fees_label">Comisiones Moneda</string>
-    <string name="exchange_fee_wire_fees_label">Comisiones Transferencia</string>
-    <string name="exchange_fee_withdraw_fee">Comisión Retirada:%s</string>
-    <string name="exchange_fee_deposit_fee">Comisión Depósito:%s</string>
-    <string name="exchange_fee_refresh_fee">Comisión Cambio:%s</string>
-    <string name="exchange_fee_refund_fee">Comisión devolución: %s</string>
-    <string name="exchange_fee_wire_fee_wire_fee">Comisión Transferencia: %s</string>
-    <string name="exchange_fee_wire_fee_closing_fee">Comisión Cierre: %s</string>
+    <string name="exchange_fee_coin_fees_label">Comisiones de Moneda</string>
+    <string name="exchange_fee_wire_fees_label">Comisiones de Transferencia</string>
+    <string name="exchange_fee_withdraw_fee">Comisión de Retiro: %s</string>
+    <string name="exchange_fee_deposit_fee">Comisión de Depósito: %s</string>
+    <string name="exchange_fee_refresh_fee">Comisión de Cambio: %s</string>
+    <string name="exchange_fee_refund_fee">Comisión de Devolución: %s</string>
+    <string name="exchange_fee_wire_fee_wire_fee">Comisión de Transferencia: %s</string>
+    <string name="exchange_fee_wire_fee_closing_fee">Comisión de Cierre: %s</string>
     <string name="exchange_tos_accept">Aceptar Términos de Servicio</string>
     <string name="exchange_tos_error">Error mostrando los Términos de Servicio: %s</string>
     <string name="pending_operations_title">Operaciones Pendientes</string>
@@ -83,44 +83,44 @@
     <string name="settings_dev_mode">Modo Desarrollador</string>
     <string name="settings_withdraw_testkudos">Retirar TESTKUDOS</string>
     <string name="settings_withdraw_testkudos_summary">Obtener dinero para realizar pruebas</string>
-    <string name="settings_logcat">Log de Depuración</string>
-    <string name="settings_dev_mode_summary">Muestra más información intencionada para depuración</string>
-    <string name="settings_logcat_summary">Ver/enviar log interno</string>
-    <string name="settings_version_app">Versión App</string>
-    <string name="settings_version_core">Cartera Versión Principal</string>
-    <string name="settings_version_protocol_exchange">Exchange Versiones Soportadas</string>
-    <string name="settings_version_protocol_merchant">Versiones Soportadas Comerciantes</string>
+    <string name="settings_logcat">Bitácora de Depuración</string>
+    <string name="settings_dev_mode_summary">Muestra más información de depuración</string>
+    <string name="settings_logcat_summary">Guardar bitácora interna</string>
+    <string name="settings_version_app">Versión de la Aplicación</string>
+    <string name="settings_version_core">Versión de Wallet Core</string>
+    <string name="settings_version_protocol_exchange">Versiones de Exchange Soportadas</string>
+    <string name="settings_version_protocol_merchant">Versiones de Merchant Soportadas</string>
     <string name="settings_version_unknown">Desconocido</string>
     <string name="settings_reset">Resetear Cartera (¡peligroso!)</string>
     <string name="settings_reset_summary">Tira tu dinero</string>
     <string name="nav_settings_backup">Copia de seguridad</string>
-    <string name="backup_last">Última copia de seguridad:%s</string>
+    <string name="backup_last">Última copia de seguridad: %s</string>
     <string name="refund_title">Devolución</string>
     <string name="refund_error">Error procesando la devolución</string>
-    <string name="refund_success">Devolución recibida:%s</string>
-    <string name="tip_title">Consejo</string>
+    <string name="refund_success">Devolución recibida: %s</string>
+    <string name="tip_title">Propina</string>
     <string name="wifi_disabled_error">Conecta tu Wi-Fi para obtener Wi-Fi gratis</string>
-    <string name="wifi_connect_error">No se pudo conectar a la Wi-Fi gratuita:%s</string>
+    <string name="wifi_connect_error">No se pudo conectar al Wi-Fi gratis: %s</string>
     <string name="app_name">Cartera Taler</string>
-    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler hace transacciones online con privacidad-amigable, de forma rápida y sencilla.</string>
-    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Esta App es una cartera para GNU Taler. Es altamente experimental, y no está lista para producción todavía. GNU Taler es un sistema de pago con preservación de la privacidad. Los clientes pueden permanecer anónimos, pero los comerciantes no pueden esconder sus ingresos a través de GNU Taler. Eso ayuda a evitar la evasión de impuestos y el lavado de dinero. El uso principal de GNU Taler son los pagos;no es la intención la acumulación de valor. Los pagos son siempre respaldados por una divisa existente. El pago es realizado después de cambiar dinero existente en dinero electrónico con la ayuda de un servicio de Exchange que es, un proveedor de servicios de pago para Taler. Cuando se realiza un pago, los clientes solo necesitan una cartera cargada. Un comerciante puede aceptar pagos sin hacer registrarse a sus cliente en su página Web. GNU Taler es inmune contra varios tipos de fraude, como el phising de información de tarjetas de crédito o el fraude por devolución. En caso de pérdida o robo, solo una cantidad limitada de dinero dejado en la cartera podría perderse.</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler hace transacciones en línea amigables con la privacidad, de forma rápida y sencilla.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Esta aplicación es una cartera para GNU Taler. Es altamente experimental, y no está lista para producción aún. GNU Taler es un sistema de pago que preserva la privacidad. Los clientes pueden permanecer anónimos, pero los comerciantes no pueden esconder sus ingresos a través de GNU Taler. Eso ayuda a evitar la evasión de impuestos y el lavado de dinero. El uso principal de GNU Taler son los pagos; su intención no es servir como reserva de valor. Los pagos son siempre respaldados por una moneda existente. El pago es realizado después de cambiar dinero existente en dinero electrónico con la ayuda de un servicio de cambiario, que es un proveedor de servicios de pagos para Taler. Cuando se realiza un pago, los clientes solo necesitan una cartera con fondos. Un comerciante puede aceptar pagos sin hacer registrar a sus clientes en su página Web. GNU Taler es inmune contra varios tipos de fraude, como el phising de información de tarjetas de crédito o el fraude por devolución. En caso de pérdida o robo, solo una cantidad limitada de dinero guardado en la cartera podría perderse.</string>
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Cartera</string>
-    <string name="nav_exchange_fees">Comisiones del Exchange</string>
+    <string name="nav_exchange_fees">Comisiones del cambiario</string>
     <string name="nav_error">Error</string>
-    <string name="button_scan_qr_code">Escanear código QR Taler</string>
-    <string name="uri_invalid">Taler URI no válida</string>
+    <string name="button_scan_qr_code">Escanear código QR de Taler</string>
+    <string name="uri_invalid">URI de Taler inválida</string>
     <string name="offline">La operación requiere acceso a Internet. Por favor asegúrate que tu conexión a Internet funcione y prueba de nuevo.</string>
     <string name="menu_retry_pending_operations">Reintentar Operaciones Pendientes</string>
     <string name="amount_negative">- %s</string>
     <string name="balances_empty_state">No hay efectivo digital en tu cartera.
 \n
-\nPuedes coger dinero de prueba desde el banco demo:
+\nPuedes obtener dinero de prueba desde el banco demostrativo:
 \n
 \nhttps://bank.demo.taler.net</string>
     <string name="transactions_title">Transacciones</string>
     <string name="transactions_empty_search">No se han encontrado transacciones. Prueba una búsqueda diferente.</string>
-    <string name="transactions_error">No pudo cargar transacciones
+    <string name="transactions_error">No se pudo cargar las transacciones
 \n
 \n%s</string>
     <string name="transactions_detail_title_balance">Balance: %s</string>
@@ -128,16 +128,87 @@
     <string name="payment_fee">+%s comisión por pago</string>
     <string name="payment_initiated">Pago iniciado</string>
     <string name="withdraw_button_confirm_bank">Confirmar con el banco</string>
-    <string name="withdraw_amount_error">Inserta una cantidad válida</string>
+    <string name="withdraw_amount_error">Inserta un monto válido</string>
     <string name="withdraw_manual_payment_options">Opciones de pago soportadas por %1$s:
 \n
 \n%2$s</string>
-    <string name="withdraw_error_message">La retirada ahora mismo no es posible. Por favor prueba de nuevo más tarde!</string>
+    <string name="withdraw_error_message">El retiro ahora mismo no es posible. ¡Por favor prueba de nuevo más tarde!</string>
     <string name="exchange_menu_manual_withdraw">Retirar</string>
     <plurals name="exchange_fee_coin">
         <item quantity="one">Moneda: %s (usada %d vez)</item>
-        <item quantity="other">Moneda: %s (usadas %d veces)</item>
+        <item quantity="other">Moneda: %s (usada %d veces)</item>
     </plurals>
     <string name="exchange_fee_wire_fee_timespan">Intervalo de tiempo: %1$s - %2$s</string>
     <string name="host_apdu_service_desc">Pagos Taler con NFC</string>
+    <string name="transactions_delete_dialog_title">Eliminar Transacción</string>
+    <string name="transactions_delete_dialog_message">¿Estás seguro de que deseas eliminar esta transacción de tu cartera\?</string>
+    <string name="withdraw_manual_ready_cancel">Cancelar retiro</string>
+    <string name="tip_already_accepted">Esta propina ya fue aceptada.</string>
+    <string name="transaction_deposit">Depósito</string>
+    <string name="transaction_peer_pull_debit">Cobro pagado</string>
+    <string name="transaction_peer_push_credit">Pago push</string>
+    <string name="transaction_peer_pull_credit">Factura</string>
+    <string name="receive_peer_invoice_instruction">Muestra al pagador este código QR para pagar:</string>
+    <string name="receive_peer_invoice_uri">O bien, copia y envía esta URI:</string>
+    <string name="receive_peer_create_button">Crear factura</string>
+    <string name="pay_peer_title">Pagar factura</string>
+    <string name="send_peer_create_button">Enviar fondos ahora</string>
+    <string name="send_peer_warning">Advertencia: los fondos saldrán de esta cartera inmediatamente.</string>
+    <string name="send_peer_payment_instruction">Permite al pagador escanear este código QR para recibir:</string>
+    <string name="tip_exchange">Cambiario</string>
+    <string name="tip_merchant_url">URL de comerciante</string>
+    <string name="withdraw_manual_ready_title">¡El cambiario está listo para el retiro!</string>
+    <string name="withdraw_manual_ready_details_intro">Detalles de la transferencia bancaria</string>
+    <string name="copy" tools:override="true">Copiar</string>
+    <string name="transactions_balance">Saldo</string>
+    <string name="withdraw_manual_ready_bank_button">Abrir en aplicación de banco</string>
+    <string name="copy_uri">Copiar URI de Taler</string>
+    <string name="transactions_send_funds">Enviar
+\nFondos</string>
+    <string name="transactions_receive_funds">Recibir
+\nFondos</string>
+    <string name="transactions_cancel_dialog_message">¿Estás seguro de que quieres cancelar este retiro\? Los fondos que están en tránsito podrían perderse.</string>
+    <string name="transactions_detail_title_currency">Transacciones de %s</string>
+    <string name="receive_peer_title">Solicitar pago</string>
+    <string name="receive_amount">Monto a recibir</string>
+    <string name="receive_intro">Elige desde dónde recibir el dinero:</string>
+    <string name="receive_peer">Cobrar a otra cartera</string>
+    <string name="receive_amount_invalid">Monto inválido</string>
+    <string name="receive_withdraw">Retiro desde cuenta de banco</string>
+    <string name="send_deposit_create_button">Hacer un depósito</string>
+    <string name="send_deposit_name">Titular de la cuenta</string>
+    <string name="send_deposit_amount_effective">Monto efectivo</string>
+    <string name="send_amount">Monto a enviar</string>
+    <string name="send_intro">Elige hacia dónde enviar el dinero:</string>
+    <string name="send_deposit">A una cuenta de banco</string>
+    <string name="send_deposit_title">Deposita a una cuenta de banco</string>
+    <string name="send_deposit_iban"></string>
+    <string name="send_deposit_bic"></string>
+    <string name="receive_peer_payment_title">Recibir pago</string>
+    <string name="currency">Moneda</string>
+    <string name="send_peer">A otra cartera</string>
+    <string name="send_peer_title">Enviar dinero a otra cartera</string>
+    <string name="transaction_peer_push_debit">Pagos push</string>
+    <string name="send_peer_payment_amount_received">Monto recibido</string>
+    <string name="send_peer_payment_amount_sent">Monto enviado</string>
+    <string name="pay_peer_intro">¿Quieres pagar esta factura\?</string>
+    <string name="receive_peer_payment_intro">¿Quieres recibir este pago\?</string>
+    <string name="withdraw_manual_bitcoin_intro">Ahora haz una transacción dividida con las siguientes tres salidas.</string>
+    <string name="withdraw_manual_ready_subject">Sujeto</string>
+    <string name="settings_logcat_error">Error exportando bitácora</string>
+    <string name="settings_logcat_success">Bitácora exportada al archivo</string>
+    <string name="tip_total">Total</string>
+    <string name="send_peer_purpose">Motivo</string>
+    <string name="send_peer_bitcoin">A otra cartera Taler</string>
+    <string name="withdraw_manual_ready_intro">Para completar el proceso, necesitas transferir %s a la cuenta bancaria del cambiario</string>
+    <string name="withdraw_manual_bitcoin_title">Cambiario de Bitcoin listo para el retiro</string>
+    <string name="settings_db_export_summary">Guardar base de datos interna</string>
+    <string name="settings_db_export_success">Base de datos exportada al archivo</string>
+    <string name="tip_button_confirm">Aceptar propina</string>
+    <string name="tip_received">Propina recibida</string>
+    <string name="tip_fees">Comisión</string>
+    <string name="send_deposit_bitcoin">A una cartera Bitcoin</string>
+    <string name="settings_db_export">Base de datos</string>
+    <string name="settings_db_export_error">Error exportando base de datos</string>
+    <string name="withdraw_manual_ready_warning">Asegúrate de usar el sujeto correcto; de lo contrario, el dinero no llegará a esta cartera.</string>
 </resources>
