@@ -74,9 +74,9 @@ class ConfigFragment : Fragment() {
         }
         ui.saveButton.setOnClickListener {
             val config = Config(
-                bankUrl = ui.urlView.editText!!.text.toString(),
-                username = ui.usernameView.editText!!.text.toString(),
-                password = ui.passwordView.editText!!.text.toString()
+                bankUrl = ui.urlView.editText!!.text.toString().trim(),
+                username = ui.usernameView.editText!!.text.toString().trim(),
+                password = ui.passwordView.editText!!.text.toString().trim()
             )
             if (checkConfig(config)) {
                 // show progress
@@ -111,9 +111,9 @@ class ConfigFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // for some reason automatic restore isn't working at the moment!?
-        outState.putCharSequence("urlView", ui.urlView.editText?.text)
-        outState.putCharSequence("usernameView", ui.usernameView.editText?.text)
-        outState.putCharSequence("passwordView", ui.passwordView.editText?.text)
+        outState.putCharSequence("urlView", ui.urlView.editText?.text?.trim())
+        outState.putCharSequence("usernameView", ui.usernameView.editText?.text?.trim())
+        outState.putCharSequence("passwordView", ui.passwordView.editText?.text?.trim())
     }
 
     private fun checkConfig(config: Config): Boolean {
