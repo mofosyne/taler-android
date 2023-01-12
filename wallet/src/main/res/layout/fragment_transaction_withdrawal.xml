@@ -54,12 +54,15 @@
             app:layout_constraintTop_toBottomOf="@+id/effectiveAmountLabel"
             tools:text="23.42 TESTKUDOS" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/confirmWithdrawalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_account_balance"
+            app:icon="@drawable/ic_account_balance"
             android:text="@string/withdraw_button_confirm_bank"
+            android:textColor="?colorOnPrimary"
+            app:iconTint="?colorOnPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/chosenAmountLabel"
             app:drawableTint="?attr/colorOnPrimarySurface"
             app:layout_constraintBottom_toTopOf="@+id/actionButton"
             app:layout_constraintEnd_toEndOf="parent"
