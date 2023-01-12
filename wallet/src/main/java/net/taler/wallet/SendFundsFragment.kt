@@ -29,11 +29,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -98,6 +99,7 @@ class SendFundsFragment : Fragment() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SendFundsIntro(
     currency: String,
@@ -152,13 +154,13 @@ private fun SendFundsIntro(
                 modifier = Modifier,
                 text = currency,
                 softWrap = false,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.titleLarge,
             )
         }
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.send_intro),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.titleLarge,
         )
         Row(modifier = Modifier.padding(16.dp)) {
             fun onClickButton(block: (Amount) -> Unit) {
@@ -170,6 +172,7 @@ private fun SendFundsIntro(
             Button(
                 modifier = Modifier
                     .padding(end = 16.dp)
+                    .height(IntrinsicSize.Max)
                     .weight(1f),
                 onClick = {
                     onClickButton { amount -> onDeposit(amount) }

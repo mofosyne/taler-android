@@ -32,14 +32,15 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -115,6 +116,7 @@ class PayToUriFragment : Fragment() {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PayToComposable(
     currencies: List<String>,
@@ -183,6 +185,7 @@ private fun PayToComposable(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyDropdown(
     currencies: List<String>,
@@ -203,9 +206,7 @@ fun CurrencyDropdown(
             readOnly = true,
             enabled = false,
             textStyle = LocalTextStyle.current.copy( // show text as if not disabled
-                color = TextFieldDefaults.outlinedTextFieldColors().textColor(
-                    enabled = true,
-                ).value
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             ),
             singleLine = true,
             label = {
@@ -218,13 +219,16 @@ fun CurrencyDropdown(
             modifier = Modifier,
         ) {
             currencies.forEachIndexed { index, s ->
-                DropdownMenuItem(onClick = {
-                    selectedIndex = index
-                    onCurrencyChanged(currencies[index])
-                    expanded = false
-                }) {
-                    Text(text = s)
-                }
+                DropdownMenuItem(
+                    text = {
+                        Text(text = s)
+                    },
+                    onClick = {
+                        selectedIndex = index
+                        onCurrencyChanged(currencies[index])
+                        expanded = false
+                    }
+                )
             }
         }
     }

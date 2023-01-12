@@ -27,13 +27,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -116,7 +116,7 @@ fun ColumnScope.PeerPullTermsComposable(
             .padding(16.dp)
             .align(CenterHorizontally),
         text = terms.contractTerms.summary,
-        style = MaterialTheme.typography.h5,
+        style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(modifier = Modifier.weight(1f))
     Card(modifier = Modifier.fillMaxWidth()) {
@@ -128,12 +128,12 @@ fun ColumnScope.PeerPullTermsComposable(
             ) {
                 Text(
                     text = stringResource(id = R.string.payment_label_amount_total),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
                     text = terms.contractTerms.amount.toString(),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -143,7 +143,7 @@ fun ColumnScope.PeerPullTermsComposable(
                 Text(
                     modifier = Modifier.align(End),
                     text = stringResource(id = R.string.payment_fee, fee),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
             if (terms is IncomingAccepting) {
@@ -158,7 +158,7 @@ fun ColumnScope.PeerPullTermsComposable(
                         .align(End)
                         .padding(top = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = colorResource(R.color.green),
+                        containerColor = colorResource(R.color.green),
                         contentColor = Color.White,
                     ),
                     onClick = { onAccept(terms) },
@@ -179,7 +179,7 @@ fun ColumnScope.PeerPullErrorComposable(s: IncomingError) {
             .align(CenterHorizontally)
             .padding(horizontal = 32.dp),
         text = s.info.userFacingMsg,
-        style = MaterialTheme.typography.h5,
+        style = MaterialTheme.typography.headlineSmall,
         color = colorResource(id = R.color.red),
     )
 }

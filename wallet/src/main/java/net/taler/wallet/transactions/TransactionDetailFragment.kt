@@ -24,10 +24,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.common.Amount
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
@@ -99,7 +99,7 @@ abstract class TransactionDetailFragment : Fragment() {
     protected open val deleteDialogButton = R.string.transactions_delete
 
     protected fun onDeleteButtonClicked(t: Transaction) {
-        AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setTitle(deleteDialogTitle)
             .setMessage(deleteDialogMessage)
             .setNeutralButton(R.string.cancel) { dialog, _ ->

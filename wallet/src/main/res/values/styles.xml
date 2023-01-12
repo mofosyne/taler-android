@@ -16,30 +16,23 @@
 
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
         <item name="windowActionModeOverlay">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="Widget.Material3.ActionBar.Solid" />
 
-    <style name="AppTheme.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary" />
+    <style name="AppTheme.Toolbar" parent="Widget.Material3.Toolbar" />
 
-    <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert" />
+    <style name="DialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert" />
 
     <style name="TransactionTitle">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="TransactionLabel">
@@ -72,13 +65,11 @@
         <item name="cardElevation">8dp</item>
     </style>
 
-    <style name="FabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+    <style name="FabStyle" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
-        <item name="backgroundTint">@color/colorPrimary</item>
         <item name="layout_dodgeInsetEdges">bottom</item>
-        <item name="tint">?attr/colorOnPrimary</item>
     </style>
 
 </resources>

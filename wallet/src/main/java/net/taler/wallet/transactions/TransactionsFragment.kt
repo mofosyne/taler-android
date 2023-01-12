@@ -25,7 +25,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
@@ -36,6 +35,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
@@ -232,7 +232,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         when (item.itemId) {
             R.id.transaction_delete -> {
                 tracker?.selection?.toList()?.let { transactionIds ->
-                    AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+                    MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
                         .setTitle(R.string.transactions_delete)
                         .setMessage(R.string.transactions_delete_selected_dialog_message)
                         .setNeutralButton(R.string.cancel) { dialog, _ ->

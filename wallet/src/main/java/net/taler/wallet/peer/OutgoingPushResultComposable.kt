@@ -24,11 +24,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -55,7 +55,7 @@ fun OutgoingPushResultComposable(state: OutgoingState, onClose: () -> Unit) {
     ) {
         Text(
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.titleLarge,
             text = stringResource(id = R.string.send_peer_payment_instruction),
         )
         when (state) {
@@ -92,7 +92,7 @@ private fun ColumnScope.PeerPushResponseComposable(state: OutgoingResponse) {
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             text = stringResource(id = R.string.receive_peer_invoice_uri),
         )
     }
@@ -105,7 +105,7 @@ private fun ColumnScope.PeerPushErrorComposable(state: OutgoingError) {
             .align(CenterHorizontally)
             .padding(16.dp),
         color = colorResource(R.color.red),
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.bodyLarge,
         text = state.info.userFacingMsg,
     )
 }

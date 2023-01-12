@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 
@@ -32,7 +33,7 @@ class AddExchangeDialogFragment : DialogFragment() {
     private val exchangeManager by lazy { model.exchangeManager }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+        return MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setIcon(R.drawable.ic_account_balance)
             .setTitle(R.string.exchange_list_add)
             .setView(R.layout.dialog_exchange_add)

@@ -18,10 +18,10 @@ package net.taler.wallet.transactions
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +36,19 @@ import net.taler.wallet.R
 fun DeleteTransactionComposable(onDelete: () -> Unit) {
     Button(
         modifier = Modifier.padding(16.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.red)),
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.red)),
         onClick = onDelete,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_delete),
                 contentDescription = null,
-                tint = Color.White,
+                tint = Color.White
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = stringResource(R.string.transactions_delete),
-                color = Color.White,
+                color = Color.White
             )
         }
     }

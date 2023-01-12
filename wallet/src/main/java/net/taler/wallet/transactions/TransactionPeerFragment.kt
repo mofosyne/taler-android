@@ -25,8 +25,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -76,7 +76,7 @@ fun TransactionPeerComposable(t: Transaction, onDelete: () -> Unit) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
         )
         when (t) {
             is TransactionPeerPullCredit -> TransactionPeerPullCreditComposable(t)
@@ -94,7 +94,7 @@ fun TransactionAmountComposable(label: String, amount: Amount, amountType: Amoun
     Text(
         modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
         text = label,
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
     )
     Text(
         modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -113,7 +113,7 @@ fun TransactionInfoComposable(label: String, info: String) {
     Text(
         modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
         text = label,
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
     )
     Text(
         modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),

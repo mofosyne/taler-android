@@ -19,11 +19,11 @@ package net.taler.wallet.settings
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.showError
@@ -143,7 +143,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showResetDialog() {
-        AlertDialog.Builder(requireContext(), R.style.DialogTheme)
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setMessage("Do you really want to reset the wallet and lose all coins and purchases?")
             .setPositiveButton("Reset") { _, _ ->
                 model.dangerouslyReset()

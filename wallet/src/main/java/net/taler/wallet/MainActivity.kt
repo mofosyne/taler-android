@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -34,6 +35,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat.START
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
@@ -44,6 +46,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
+import com.google.android.material.elevation.SurfaceColors
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
@@ -84,8 +87,20 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         handleTalerUri(result.contents, "QR code")
     }
 
+    private val insetsController: WindowInsetsControllerCompat? by lazy {
+        window?.let { window -> WindowInsetsControllerCompat(window, window.decorView) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set status bar color
+        val color = SurfaceColors.SURFACE_0.getColor(this)
+        window.statusBarColor = color
+        window.navigationBarColor = color
+        insetsController?.isAppearanceLightStatusBars =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK != Configuration.UI_MODE_NIGHT_YES
+
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
 

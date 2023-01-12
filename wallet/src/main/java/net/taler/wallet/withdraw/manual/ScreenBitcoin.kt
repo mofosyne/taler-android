@@ -23,11 +23,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.End
@@ -59,11 +59,11 @@ fun ScreenBitcoin(
     ) {
         Text(
             text = stringResource(R.string.withdraw_manual_bitcoin_title),
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineSmall,
         )
         Text(
             text = stringResource(R.string.withdraw_manual_bitcoin_intro),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
@@ -85,7 +85,7 @@ fun ScreenBitcoin(
         if (onCancelClick != null) {
             Button(
                 onClick = onCancelClick,
-                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.red)),
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.red)),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .align(End),
@@ -111,13 +111,13 @@ fun BitcoinSegwitAddrs(amount: Amount, addr: String, segwitAddresses: List<Strin
             Column(modifier = Modifier.weight(0.3f)) {
                 Text(
                     text = addr,
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Normal,
                     fontSize = 3.em
                 )
                 Text(
                     text = amount.withCurrency("BTC").toString(),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -127,13 +127,13 @@ fun BitcoinSegwitAddrs(amount: Amount, addr: String, segwitAddresses: List<Strin
                 Column(modifier = Modifier.weight(0.3f)) {
                     Text(
                         text = segwitAddress,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Normal,
                         fontSize = 3.em,
                     )
                     Text(
                         text = SEGWIT_MIN.toString(),
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                     )
                 }

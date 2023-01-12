@@ -26,13 +26,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
@@ -65,12 +65,12 @@ fun ScreenIBAN(
     ) {
         Text(
             text = stringResource(R.string.withdraw_manual_ready_title),
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineSmall,
         )
         Text(
             text = stringResource(R.string.withdraw_manual_ready_intro,
                 status.amountRaw.toString()),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
@@ -80,7 +80,7 @@ fun ScreenIBAN(
         DetailRow(stringResource(R.string.withdraw_exchange), status.exchangeBaseUrl, false)
         Text(
             text = stringResource(R.string.withdraw_manual_ready_warning),
-            style = MaterialTheme.typography.body2,
+            style = MaterialTheme.typography.bodyMedium,
             color = colorResource(R.color.notice_text),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -102,7 +102,7 @@ fun ScreenIBAN(
         if (onCancelClick != null) {
             Button(
                 onClick = onCancelClick,
-                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(R.color.red)),
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.red)),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .align(Alignment.End),
@@ -125,7 +125,7 @@ fun DetailRow(label: String, content: String, copy: Boolean = true) {
                 .weight(0.3f)) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = if (copy) FontWeight.Bold else FontWeight.Normal,
             )
             if (copy) {
@@ -136,7 +136,7 @@ fun DetailRow(label: String, content: String, copy: Boolean = true) {
         }
         Text(
             text = content,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .weight(0.7f)
