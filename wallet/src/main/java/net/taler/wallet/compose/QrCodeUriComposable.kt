@@ -42,7 +42,6 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -100,11 +99,17 @@ fun ColumnScope.QrCodeUriComposable(
             label = clipBoardLabel,
             content = talerUri,
             buttonText = buttonText,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         )
         ShareButton(
             content = talerUri,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         )
     }
 }

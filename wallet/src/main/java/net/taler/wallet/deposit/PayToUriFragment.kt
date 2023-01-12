@@ -54,7 +54,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,7 +85,7 @@ class PayToUriFragment : Fragment() {
                 TalerSurface {
                     if (currencies.isEmpty()) Text(
                         text = stringResource(id = R.string.payment_balance_insufficient),
-                        color = colorResource(id = R.color.red),
+                        color = MaterialTheme.colorScheme.error,
                     ) else if (depositManager.isSupportedPayToUri(uri)) PayToComposable(
                         currencies = model.getCurrencies(),
                         getAmount = model::createAmount,
@@ -102,7 +101,7 @@ class PayToUriFragment : Fragment() {
                         },
                     ) else Text(
                         text = stringResource(id = R.string.uri_invalid),
-                        color = colorResource(id = R.color.red),
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
@@ -151,7 +150,7 @@ private fun PayToComposable(
                 if (amountError.isBlank()) {
                     Text(stringResource(R.string.send_amount))
                 } else {
-                    Text(amountError, color = colorResource(R.color.red))
+                    Text(amountError, color = MaterialTheme.colorScheme.error)
                 }
             }
         )

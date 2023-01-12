@@ -42,7 +42,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -138,12 +137,12 @@ private fun SendFundsIntro(
                     if (isError) {
                         Text(
                             stringResource(R.string.receive_amount_invalid),
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.error,
                         )
                     } else if (insufficientBalance) {
                         Text(
                             stringResource(R.string.payment_balance_insufficient),
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.error,
                         )
                     } else {
                         Text(stringResource(R.string.send_amount))

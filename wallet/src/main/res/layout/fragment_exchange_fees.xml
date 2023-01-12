@@ -44,7 +44,7 @@
             app:layout_constraintStart_toEndOf="@+id/withdrawFeeLabel"
             app:layout_constraintTop_toTopOf="@+id/withdrawFeeLabel"
             tools:text="-0.23 TESTKUDOS"
-            tools:textColor="@color/red" />
+            tools:textColor="?colorError" />
 
         <TextView
             android:id="@+id/overheadLabel"
@@ -64,7 +64,7 @@
             app:layout_constraintStart_toEndOf="@+id/overheadLabel"
             app:layout_constraintTop_toTopOf="@+id/overheadLabel"
             tools:text="-0.42 TESTKUDOS"
-            tools:textColor="@color/red" />
+            tools:textColor="?colorError" />
 
         <TextView
             android:id="@+id/expirationLabel"

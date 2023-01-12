@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -82,7 +83,7 @@ fun MakeDepositComposable(
                 Text(
                     stringResource(R.string.send_deposit_name),
                     color = if (name.isBlank()) {
-                        colorResource(R.color.red)
+                        MaterialTheme.colorScheme.error
                     } else Color.Unspecified,
                 )
             }
@@ -103,7 +104,7 @@ fun MakeDepositComposable(
                 Text(
                     text = stringResource(R.string.send_deposit_iban),
                     color = if (iban.isBlank()) {
-                        colorResource(R.color.red)
+                        MaterialTheme.colorScheme.error
                     } else Color.Unspecified,
                 )
             }
@@ -153,7 +154,7 @@ fun MakeDepositComposable(
                 Text(
                     modifier = Modifier.padding(16.dp),
                     fontSize = 24.sp,
-                    color = colorResource(if (fee.isZero()) R.color.green else R.color.red),
+                    color = if (fee.isZero()) colorResource(R.color.green) else MaterialTheme.colorScheme.error,
                     text = if (fee.isZero()) {
                         fee.toString()
                     } else {
@@ -176,7 +177,7 @@ fun MakeDepositComposable(
             Text(
                 modifier = Modifier.padding(16.dp),
                 fontSize = 18.sp,
-                color = colorResource(R.color.red),
+                color = MaterialTheme.colorScheme.error,
                 text = (state as? DepositState.Error)?.msg ?: "",
             )
         }

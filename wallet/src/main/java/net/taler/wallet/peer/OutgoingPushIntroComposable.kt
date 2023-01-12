@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,7 +86,7 @@ fun OutgoingPushIntroComposable(
                 Text(
                     stringResource(R.string.send_peer_purpose),
                     color = if (subject.isBlank()) {
-                        colorResource(R.color.red)
+                        MaterialTheme.colorScheme.error
                     } else Color.Unspecified,
                 )
             }
@@ -96,7 +95,7 @@ fun OutgoingPushIntroComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 5.dp, end = 16.dp),
-            color = if (subject.isBlank()) colorResource(R.color.red) else Color.Unspecified,
+            color = if (subject.isBlank()) MaterialTheme.colorScheme.error else Color.Unspecified,
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )

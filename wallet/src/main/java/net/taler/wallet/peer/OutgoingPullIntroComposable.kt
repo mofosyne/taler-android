@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -84,7 +85,7 @@ fun OutgoingPullIntroComposable(
                 Text(
                     stringResource(R.string.send_peer_purpose),
                     color = if (subject.isBlank()) {
-                        colorResource(R.color.red)
+                        MaterialTheme.colorScheme.error
                     } else Color.Unspecified,
                 )
             }
@@ -96,7 +97,7 @@ fun OutgoingPullIntroComposable(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 5.dp, end = 16.dp),
-            color = if (subject.isBlank()) colorResource(R.color.red) else Color.Unspecified,
+            color = if (subject.isBlank()) MaterialTheme.colorScheme.error else Color.Unspecified,
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )

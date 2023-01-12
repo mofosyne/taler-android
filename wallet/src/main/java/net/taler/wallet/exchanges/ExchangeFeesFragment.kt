@@ -17,12 +17,12 @@
 package net.taler.wallet.exchanges
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -71,7 +71,9 @@ class ExchangeFeesFragment : Fragment() {
         if (amount.isZero()) text = amount.toString()
         else {
             text = getString(R.string.amount_negative, amount)
-            setTextColor(getColor(context, R.color.red))
+            val value = TypedValue()
+            requireContext().theme.resolveAttribute(R.attr.colorError, value, true)
+            setTextColor(value.data)
         }
     }
 

@@ -102,7 +102,7 @@ fun TransactionAmountComposable(label: String, amount: Amount, amountType: Amoun
         fontSize = 24.sp,
         color = when (amountType) {
             AmountType.Positive -> colorResource(R.color.green)
-            AmountType.Negative -> colorResource(R.color.red)
+            AmountType.Negative -> MaterialTheme.colorScheme.error
             AmountType.Neutral -> Color.Unspecified
         },
     )

@@ -32,8 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,14 +83,14 @@ fun ScreenBitcoin(
         if (onCancelClick != null) {
             Button(
                 onClick = onCancelClick,
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.red)),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .align(End),
             ) {
                 Text(
                     text = stringResource(R.string.withdraw_manual_ready_cancel),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onError,
                 )
             }
         }

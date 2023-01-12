@@ -180,7 +180,7 @@ fun ColumnScope.PeerPullErrorComposable(s: IncomingError) {
             .padding(horizontal = 32.dp),
         text = s.info.userFacingMsg,
         style = MaterialTheme.typography.headlineSmall,
-        color = colorResource(id = R.color.red),
+        color = MaterialTheme.colorScheme.error,
     )
 }
 
