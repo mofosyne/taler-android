@@ -96,10 +96,12 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         // Set status bar color
         val color = SurfaceColors.SURFACE_0.getColor(this)
+        val isLightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK !=
+                Configuration.UI_MODE_NIGHT_YES
         window.statusBarColor = color
         window.navigationBarColor = color
-        insetsController?.isAppearanceLightStatusBars =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK != Configuration.UI_MODE_NIGHT_YES
+        insetsController?.isAppearanceLightStatusBars = isLightMode
+        insetsController?.isAppearanceLightNavigationBars = isLightMode
 
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
