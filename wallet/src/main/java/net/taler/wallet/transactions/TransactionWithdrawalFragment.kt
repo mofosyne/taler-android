@@ -57,6 +57,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         ui.effectiveAmountLabel.text = getString(R.string.withdraw_total)
         ui.effectiveAmountView.text = t.amountEffective.toString()
         setupConfirmWithdrawalButton(t)
+        setupActionButton(t)
         ui.chosenAmountLabel.text = getString(R.string.amount_chosen)
         ui.chosenAmountView.text =
             getString(R.string.amount_positive, t.amountRaw.toString())
@@ -107,4 +108,19 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         } else ui.confirmWithdrawalButton.visibility = View.GONE
     }
 
+    private fun setupActionButton(t: TransactionWithdrawal) {
+        ui.actionButton.visibility = t.error?.let { error ->
+            when (error.code) {
+                7025 -> { // KYC
+                    ui.actionButton.setText(R.string.transaction_action_kyc)
+                    val i = Intent(ACTION_VIEW).apply {
+                        data = Uri.parse(error.kycUrl)
+                    }
+                    ui.actionButton.setOnClickListener { startActivitySafe(i) }
+                    View.VISIBLE
+                }
+                else -> View.GONE
+            }
+        } ?: View.GONE
+    }
 }

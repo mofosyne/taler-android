@@ -68,6 +68,9 @@ data class TalerErrorInfo(
     // Error details
     @Serializable(JSONObjectDeserializer::class)
     val details: JSONObject? = null,
+
+    // KYC URL (in case KYC is required)
+    val kycUrl: String? = null,
 ) {
     val userFacingMsg: String
         get() {
