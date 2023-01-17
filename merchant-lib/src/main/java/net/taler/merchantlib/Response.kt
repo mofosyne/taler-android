@@ -73,7 +73,7 @@ class Response<out T> private constructor(
         val response = e.response
         return try {
             val error: Error = response.body()
-            "Error ${error.code}: ${error.hint}"
+            "Error ${error.code} (${response.status.value}): ${error.hint} ${error.detail}"
         } catch (ex: Exception) {
             "Status code: ${response.status.value}"
         }
@@ -84,6 +84,7 @@ class Response<out T> private constructor(
     @Serializable
     private class Error(
         val code: Int?,
-        val hint: String?
+        val hint: String?,
+        val detail: String?,
     )
 }
