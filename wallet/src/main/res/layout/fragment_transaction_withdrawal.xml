@@ -33,7 +33,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
             tools:text="23 March 2020 23:42pm" />
 
         <TextView
@@ -145,7 +144,6 @@
             android:text="@string/transactions_delete"
             app:backgroundTint="@color/red"
             app:icon="@drawable/ic_delete"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/exchangeView" />
