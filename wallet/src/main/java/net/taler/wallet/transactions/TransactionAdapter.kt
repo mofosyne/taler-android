@@ -36,6 +36,7 @@ import com.google.android.material.button.MaterialButton
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
+import net.taler.wallet.handleKyc
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
 internal class TransactionAdapter(
@@ -127,16 +128,11 @@ internal class TransactionAdapter(
         }
 
         private fun bindActionButton(transaction: Transaction) {
-            actionButton.setOnClickListener { listener.onActionButtonClicked(transaction) }
-            actionButton.visibility = transaction.error?.let { error ->
-                when (error.code) {
-                    7025 -> { // KYC
-                        actionButton.setText(R.string.transaction_action_kyc)
-                        VISIBLE
-                    }
-                    else -> GONE
-                }
-            } ?: GONE
+            actionButton.visibility = transaction.handleKyc({ GONE }) {
+                actionButton.setOnClickListener { listener.onActionButtonClicked(transaction) }
+                actionButton.setText(R.string.transaction_action_kyc)
+                VISIBLE
+            }
         }
 
         private fun bindAmount(transaction: Transaction) {

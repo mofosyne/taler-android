@@ -33,6 +33,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentTransactionWithdrawalBinding
+import net.taler.wallet.handleKyc
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.withdraw.createManualTransferRequired
@@ -104,25 +105,21 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
                     )
                     withdrawManager.viewManualWithdrawal(status)
                     findNavController().navigate(
-                        R.id.action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success)
+                        R.id.action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success
+                    )
                 }
             } else ui.confirmWithdrawalButton.visibility = GONE
         } else ui.confirmWithdrawalButton.visibility = GONE
     }
 
     private fun setupActionButton(t: TransactionWithdrawal) {
-        ui.actionButton.visibility = t.error?.let { error ->
-            when (error.code) {
-                7025 -> { // KYC
-                    ui.actionButton.setText(R.string.transaction_action_kyc)
-                    val i = Intent(ACTION_VIEW).apply {
-                        data = Uri.parse(error.kycUrl)
-                    }
-                    ui.actionButton.setOnClickListener { startActivitySafe(i) }
-                    VISIBLE
-                }
-                else -> GONE
+        ui.actionButton.visibility = t.handleKyc({ GONE }) {
+            ui.actionButton.setText(R.string.transaction_action_kyc)
+            val i = Intent(ACTION_VIEW).apply {
+                data = Uri.parse(it.kycUrl)
             }
-        } ?: GONE
+            ui.actionButton.setOnClickListener { startActivitySafe(i) }
+            VISIBLE
+        }
     }
 }

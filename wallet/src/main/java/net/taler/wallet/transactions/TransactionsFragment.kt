@@ -45,6 +45,7 @@ import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
+import net.taler.wallet.handleKyc
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -182,13 +183,9 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     }
 
     override fun onActionButtonClicked(transaction: Transaction) {
-        transaction.error?.let {error ->
-            when (error.code) {
-                7025 -> { // KYC
-                    val i = Intent(Intent.ACTION_VIEW, Uri.parse(error.kycUrl))
-                    startActivitySafe(i)
-                }
-            }
+        transaction.handleKyc({ error("Unhandled Action Button Event") }) {
+            val i = Intent(Intent.ACTION_VIEW, Uri.parse(it.kycUrl))
+            startActivitySafe(i)
         }
     }
 
