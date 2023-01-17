@@ -17,9 +17,6 @@
 package net.taler.wallet
 
 import android.content.ClipboardManager
-import android.content.Intent
-import android.content.Intent.ACTION_VIEW
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,8 +59,7 @@ class UriInputFragment : Fragment() {
             if (ui.uriView.text?.startsWith("taler://", ignoreCase = true) == true ||
                 ui.uriView.text?.startsWith("payto://", ignoreCase = true) == true) {
                 ui.uriLayout.error = null
-                val i = Intent(ACTION_VIEW, Uri.parse(ui.uriView.text.toString()))
-                startActivity(i)
+                launchInAppBrowser(requireContext(), ui.uriView.text.toString())
             } else {
                 ui.uriLayout.error = getString(R.string.uri_invalid)
             }

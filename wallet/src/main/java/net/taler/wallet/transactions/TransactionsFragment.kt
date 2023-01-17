@@ -16,8 +16,6 @@
 
 package net.taler.wallet.transactions
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.LayoutInflater
@@ -41,11 +39,11 @@ import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
-import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
 import net.taler.wallet.handleKyc
+import net.taler.wallet.launchInAppBrowser
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -185,8 +183,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     override fun onActionButtonClicked(transaction: Transaction) {
         transaction.handleKyc({ error("Unhandled Action Button Event") }) { error ->
             error.kycUrl?.let {
-                val i = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                startActivitySafe(i)
+                launchInAppBrowser(requireContext(), it)
             }
         }
     }

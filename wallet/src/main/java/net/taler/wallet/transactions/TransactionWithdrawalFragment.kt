@@ -16,9 +16,6 @@
 
 package net.taler.wallet.transactions
 
-import android.content.Intent
-import android.content.Intent.ACTION_VIEW
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,13 +24,13 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import net.taler.common.startActivitySafe
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentTransactionWithdrawalBinding
 import net.taler.wallet.handleKyc
+import net.taler.wallet.launchInAppBrowser
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.withdraw.createManualTransferRequired
@@ -89,10 +86,9 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
             if (t.withdrawalDetails is TalerBankIntegrationApi &&
                 t.withdrawalDetails.bankConfirmationUrl != null
             ) {
-                val i = Intent(ACTION_VIEW).apply {
-                    data = Uri.parse(t.withdrawalDetails.bankConfirmationUrl)
+                ui.confirmWithdrawalButton.setOnClickListener {
+                    launchInAppBrowser(requireContext(), t.withdrawalDetails.bankConfirmationUrl)
                 }
-                ui.confirmWithdrawalButton.setOnClickListener { startActivitySafe(i) }
             } else if (t.withdrawalDetails is ManualTransfer) {
                 ui.confirmWithdrawalButton.setText(R.string.withdraw_manual_ready_details_intro)
                 ui.confirmWithdrawalButton.setOnClickListener {
@@ -115,9 +111,10 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
     private fun setupActionButton(t: TransactionWithdrawal) {
         ui.actionButton.visibility = t.handleKyc({ GONE }) { error ->
             ui.actionButton.setText(R.string.transaction_action_kyc)
-            error.kycUrl?.let {
-                val i = Intent(ACTION_VIEW, Uri.parse(it))
-                ui.actionButton.setOnClickListener { startActivitySafe(i) }
+            error.kycUrl?.let { kycUrl ->
+                ui.actionButton.setOnClickListener {
+                    launchInAppBrowser(requireContext(), kycUrl)
+                }
             }
             VISIBLE
         }

@@ -123,6 +123,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+    implementation "androidx.browser:browser:1.4.0"
 
     // Compose
     implementation 'androidx.activity:activity-compose:1.6.1'

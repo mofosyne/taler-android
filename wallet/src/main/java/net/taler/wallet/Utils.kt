@@ -21,6 +21,7 @@ import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.Uri
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
@@ -28,6 +29,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
@@ -107,4 +109,10 @@ fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -
             else -> notRequired()
         }
     } ?: notRequired()
+}
+
+fun launchInAppBrowser(context: Context, url: String) {
+    val builder = CustomTabsIntent.Builder()
+    val intent = builder.build()
+    intent.launchUrl(context, Uri.parse(url))
 }
