@@ -31,9 +31,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
+import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.Transaction
-import net.taler.wallet.withdraw.ERROR_KYC
 
 const val CURRENCY_BTC = "BITCOINBTC"
 
@@ -103,7 +103,7 @@ fun getAmount(currency: String, text: String): Amount? {
 fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -> T): T {
     return error?.let { error ->
         when (error.code) {
-            ERROR_KYC -> required(error)
+            TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED -> required(error)
             else -> notRequired()
         }
     } ?: notRequired()

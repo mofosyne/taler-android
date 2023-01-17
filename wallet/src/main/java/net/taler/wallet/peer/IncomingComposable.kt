@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 
 data class IncomingData(
@@ -236,7 +237,7 @@ fun PeerPullAcceptingPreview() {
 fun PeerPullPayErrorPreview() {
     Surface {
         @SuppressLint("UnrememberedMutableState")
-        val s = mutableStateOf(IncomingError(TalerErrorInfo(42, "hint", "msg")))
+        val s = mutableStateOf(IncomingError(TalerErrorInfo(TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "msg")))
         IncomingComposable(s, incomingPush) {}
     }
 }

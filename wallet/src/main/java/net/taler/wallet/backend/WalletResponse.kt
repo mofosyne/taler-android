@@ -56,7 +56,7 @@ sealed class WalletResponse<T> {
 data class TalerErrorInfo(
     // Numeric error code defined defined in the
     // GANA gnu-taler-error-codes registry.
-    val code: Int,
+    val code: TalerErrorCode,
 
     // English description of the error code.
     val hint: String? = null,
@@ -75,8 +75,7 @@ data class TalerErrorInfo(
     val userFacingMsg: String
         get() {
             return StringBuilder().apply {
-                append(code)
-                hint?.let { append(" (").append(it).append(")") }
+                hint?.let { append(it) }
                 message?.let { append(" ").append(it) }
                 details?.let { details ->
                     if (details.length() > 0) {

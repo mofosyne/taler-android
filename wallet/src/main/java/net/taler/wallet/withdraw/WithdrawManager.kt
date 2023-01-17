@@ -35,8 +35,6 @@ import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 
-const val ERROR_KYC = 7025
-
 sealed class WithdrawStatus {
     data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
     data class NeedsExchange(val exchangeSelection: Event<ExchangeSelection>) : WithdrawStatus()
