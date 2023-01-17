@@ -183,9 +183,11 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     }
 
     override fun onActionButtonClicked(transaction: Transaction) {
-        transaction.handleKyc({ error("Unhandled Action Button Event") }) {
-            val i = Intent(Intent.ACTION_VIEW, Uri.parse(it.kycUrl))
-            startActivitySafe(i)
+        transaction.handleKyc({ error("Unhandled Action Button Event") }) { error ->
+            error.kycUrl?.let {
+                val i = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                startActivitySafe(i)
+            }
         }
     }
 

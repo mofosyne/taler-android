@@ -113,12 +113,12 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
     }
 
     private fun setupActionButton(t: TransactionWithdrawal) {
-        ui.actionButton.visibility = t.handleKyc({ GONE }) {
+        ui.actionButton.visibility = t.handleKyc({ GONE }) { error ->
             ui.actionButton.setText(R.string.transaction_action_kyc)
-            val i = Intent(ACTION_VIEW).apply {
-                data = Uri.parse(it.kycUrl)
+            error.kycUrl?.let {
+                val i = Intent(ACTION_VIEW, Uri.parse(it))
+                ui.actionButton.setOnClickListener { startActivitySafe(i) }
             }
-            ui.actionButton.setOnClickListener { startActivitySafe(i) }
             VISIBLE
         }
     }
