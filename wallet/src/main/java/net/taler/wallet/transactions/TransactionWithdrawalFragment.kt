@@ -22,6 +22,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -57,6 +59,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         ui.effectiveAmountLabel.text = getString(R.string.withdraw_total)
         ui.effectiveAmountView.text = t.amountEffective.toString()
         setupConfirmWithdrawalButton(t)
+        setupActionButton(t)
         ui.chosenAmountLabel.text = getString(R.string.amount_chosen)
         ui.chosenAmountView.text =
             getString(R.string.amount_positive, t.amountRaw.toString())
@@ -103,8 +106,23 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
                     findNavController().navigate(
                         R.id.action_nav_transactions_detail_withdrawal_to_nav_exchange_manual_withdrawal_success)
                 }
-            } else ui.confirmWithdrawalButton.visibility = View.GONE
-        } else ui.confirmWithdrawalButton.visibility = View.GONE
+            } else ui.confirmWithdrawalButton.visibility = GONE
+        } else ui.confirmWithdrawalButton.visibility = GONE
     }
 
+    private fun setupActionButton(t: TransactionWithdrawal) {
+        ui.actionButton.visibility = t.error?.let { error ->
+            when (error.code) {
+                7025 -> { // KYC
+                    ui.actionButton.setText(R.string.transaction_action_kyc)
+                    val i = Intent(ACTION_VIEW).apply {
+                        data = Uri.parse(error.kycUrl)
+                    }
+                    ui.actionButton.setOnClickListener { startActivitySafe(i) }
+                    VISIBLE
+                }
+                else -> GONE
+            }
+        } ?: GONE
+    }
 }

@@ -32,6 +32,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.android.material.button.MaterialButton
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
@@ -78,6 +79,7 @@ internal class TransactionAdapter(
         private val icon: ImageView = v.findViewById(R.id.icon)
         private val title: TextView = v.findViewById(R.id.title)
         private val extraInfoView: TextView = v.findViewById(R.id.extraInfoView)
+        private val actionButton: MaterialButton = v.findViewById(R.id.actionButton)
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
@@ -95,6 +97,7 @@ internal class TransactionAdapter(
             }
             title.text = transaction.getTitle(context)
             bindExtraInfo(transaction)
+            bindActionButton(transaction)
             time.text = transaction.timestamp.ms.toRelativeTime(context)
             bindAmount(transaction)
             pendingView.visibility = if (transaction.pending) VISIBLE else GONE
@@ -121,6 +124,19 @@ internal class TransactionAdapter(
             } else {
                 extraInfoView.visibility = GONE
             }
+        }
+
+        private fun bindActionButton(transaction: Transaction) {
+            actionButton.setOnClickListener { listener.onActionButtonClicked(transaction) }
+            actionButton.visibility = transaction.error?.let { error ->
+                when (error.code) {
+                    7025 -> { // KYC
+                        actionButton.setText(R.string.transaction_action_kyc)
+                        VISIBLE
+                    }
+                    else -> GONE
+                }
+            } ?: GONE
         }
 
         private fun bindAmount(transaction: Transaction) {
