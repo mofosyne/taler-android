@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import net.taler.wallet.backend.TalerErrorCode.NONE
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_COMMAND
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_NOTIFY
 import net.taler.wallet.backend.WalletBackendService.Companion.MSG_REPLY
@@ -164,7 +165,7 @@ class WalletBackendApi(
                         WalletResponse.Success(t)
                     }
                 } catch (e: Exception) {
-                    val info = TalerErrorInfo(TalerErrorCode.NONE, "", e.toString(), null)
+                    val info = TalerErrorInfo(NONE, "", e.toString(), null)
                     WalletResponse.Error(info)
                 }
                 cont.resume(response)

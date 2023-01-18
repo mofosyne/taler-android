@@ -33,7 +33,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
-import net.taler.wallet.backend.TalerErrorCode
+import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.Transaction
 
@@ -105,7 +105,7 @@ fun getAmount(currency: String, text: String): Amount? {
 fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -> T): T {
     return error?.let { error ->
         when (error.code) {
-            TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED -> required(error)
+            WALLET_WITHDRAWAL_KYC_REQUIRED -> required(error)
             else -> notRequired()
         }
     } ?: notRequired()
