@@ -17,9 +17,7 @@
 package net.taler.merchantlib
 
 import io.ktor.client.call.body
-import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.ServerResponseException
 import kotlinx.serialization.Serializable
 
 class Response<out T> private constructor(
@@ -64,8 +62,7 @@ class Response<out T> private constructor(
     }
 
     private suspend fun getFailureString(failure: Failure): String = when (failure.exception) {
-        is ClientRequestException -> getExceptionString(failure.exception)
-        is ServerResponseException -> getExceptionString(failure.exception)
+        is ResponseException -> getExceptionString(failure.exception)
         else -> failure.exception.toString()
     }
 
@@ -85,6 +82,6 @@ class Response<out T> private constructor(
     private class Error(
         val code: Int?,
         val hint: String?,
-        val detail: String?,
+        val detail: String? = null,
     )
 }
