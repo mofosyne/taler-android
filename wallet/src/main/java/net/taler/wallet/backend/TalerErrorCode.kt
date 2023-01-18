@@ -34,6 +34,8 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable(TalerErrorCodeSerializer::class)
 enum class TalerErrorCode(val code: Int) {
 
+    UNKNOWN(-1),
+
 
     /**
      * Special code to indicate success (no error).
@@ -3883,7 +3885,9 @@ object TalerErrorCodeSerializer: KSerializer<TalerErrorCode> {
 
     override fun deserialize(decoder: Decoder): TalerErrorCode {
         val code = decoder.decodeInt()
-        return enumValues<TalerErrorCode>().first { code == it.code }
+        return enumValues<TalerErrorCode>().firstOrNull {
+            code == it.code
+        } ?: TalerErrorCode.UNKNOWN
     }
 
     override fun serialize(encoder: Encoder, value: TalerErrorCode) {
