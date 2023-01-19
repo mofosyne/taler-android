@@ -45,8 +45,8 @@ android {
 
     defaultConfig {
         applicationId "net.taler.wallet"
-        minSdkVersion 21
-        targetSdkVersion 32
+        minSdkVersion 24
+        targetSdkVersion 33
         versionCode 21
         versionName walletCoreVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -54,11 +54,13 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            // FIXME: walletcore only works when this is false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled minify_debug
+            // FIXME: walletcore only works when this is false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -116,7 +118,6 @@ android {
 
 dependencies {
     implementation project(":taler-kotlin-android")
-    implementation 'net.taler:akono:0.2'
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
@@ -160,36 +161,15 @@ dependencies {
     implementation "io.noties.markwon:ext-tables:$markwon_version"
     implementation "io.noties.markwon:recycler:$markwon_version"
 
+    // Java Native access
+    implementation "net.java.dev.jna:jna:5.13.0@aar"
+
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20220320'
 }
 
-def walletLibraryDir = "src/main/assets"
-def walletDestFile = "${walletLibraryDir}/taler-wallet-embedded-${walletCoreVersion}.js"
-task downloadWalletLibrary(type: Download, dependsOn: preBuild) {
-    src "https://git.taler.net/wallet-core.git/plain/${walletCoreVersion}/taler-wallet-embedded.js?h=prebuilt"
-    dest walletDestFile
-    onlyIfModified true
-    overwrite false
-    doFirst {
-        new File(walletLibraryDir).mkdirs()
-        if (!file(dest).exists()) {  // delete old versions before fetching new one
-            delete fileTree(walletLibraryDir) {
-                include 'taler-wallet-embedded-*.js'
-            }
-        }
-    }
-}
-task verifyWalletLibrary(type: Verify, dependsOn: downloadWalletLibrary) {
-    src walletDestFile
-    algorithm 'SHA-256'
-    checksum walletCoreSha256
-}
-
-tasks.withType(MergeResources) {
-    inputs.dir walletLibraryDir
-    dependsOn verifyWalletLibrary
-}
+// FIXME: add download and verify tasks for .so files
+// (They should go on src/main/jniLibs/${ANDROID_ABI}/libtalerwalletcore.so)
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {

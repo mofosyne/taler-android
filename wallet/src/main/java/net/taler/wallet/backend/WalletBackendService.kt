@@ -25,8 +25,7 @@ import android.os.Message
 import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
-import net.taler.akono.AkonoJni
-import net.taler.wallet.BuildConfig.WALLET_CORE_VERSION
+import com.sun.jna.Pointer
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -46,7 +45,8 @@ class WalletBackendService : Service() {
      */
     private val messenger: Messenger = Messenger(IncomingHandler(this))
 
-    private lateinit var akono: AkonoJni
+    private lateinit var walletCore: TalerWalletCore
+    private lateinit var instance: Pointer
 
     private var initialized = false
 
@@ -57,25 +57,23 @@ class WalletBackendService : Service() {
     private val subscribers = LinkedList<Messenger>()
 
     override fun onCreate() {
-        val talerWalletAndroidCode =
-            assets.open("taler-wallet-embedded-$WALLET_CORE_VERSION.js").use {
-                it.readBytes().toString(Charsets.UTF_8)
-            }
-
-
         Log.i(TAG, "onCreate in wallet backend service")
-        akono = AkonoJni()
-        akono.putModuleCode("@gnu-taler/taler-wallet-embedded", talerWalletAndroidCode)
-        akono.setMessageHandler(object : AkonoJni.MessageHandler {
-            override fun handleMessage(message: String) {
+
+        walletCore = TalerWalletCore.INSTANCE
+        instance = walletCore.TALER_WALLET_create()
+        walletCore.TALER_WALLET_set_message_handler(instance, object: TalerWalletCore.TALER_WALLET_MessageHandlerFn {
+            override fun invoke(handler_p: Pointer, message: String) {
                 this@WalletBackendService.handleAkonoMessage(message)
             }
-        })
-        //akono.evalNodeCode("require('source-map-support').install();")
-        akono.evalNodeCode("require('akono');")
-        akono.evalNodeCode("tw = require('@gnu-taler/taler-wallet-embedded');")
-        akono.evalNodeCode("tw.installNativeWalletListener();")
+        }, instance)
+        walletCore.TALER_start_redirect_std(object: TalerWalletCore.TALER_LogFn {
+            override fun invoke(cls: Pointer, stream: Int, msg: String) {
+                Log.d(TAG, "wallet log: $msg")
+            }
+        }, instance)
+        walletCore.TALER_WALLET_run(instance)
         sendInitMessage()
+        // runIntegrationTest()
         super.onCreate()
     }
 
@@ -85,7 +83,26 @@ class WalletBackendService : Service() {
         val args = JSONObject()
         msg.put("args", args)
         args.put("persistentStoragePath", "${application.filesDir}/$WALLET_DB")
-        akono.sendMessage(msg.toString())
+        Log.d(TAG, "init message: ${msg.toString(2)}")
+        walletCore.TALER_WALLET_send_request(instance, msg.toString())
+    }
+
+    /**
+     * Run the integration tests for wallet-core.
+     */
+    private fun runIntegrationTest() {
+        val msg = JSONObject()
+        msg.put("operation", "runIntegrationTest")
+        val args = JSONObject()
+        msg.put("args", args)
+        args.put("amountToWithdraw", "KUDOS:3")
+        args.put("amountToSpend", "KUDOS:1")
+        args.put("bankBaseUrl", "https://bank.demo.taler.net/demobanks/default/access-api/")
+        args.put("exchangeBaseUrl", "https://exchange.demo.taler.net/")
+        args.put("merchantBaseUrl", "https://backend.demo.taler.net/")
+        args.put("merchantAuthToken", "secret-token:sandbox")
+        Log.d(TAG, "integration test message: ${msg.toString(2)}")
+        walletCore.TALER_WALLET_send_request(instance, msg.toString())
     }
 
     /**
@@ -125,7 +142,7 @@ class WalletBackendService : Service() {
                     request.put("operation", operation)
                     request.put("id", serviceRequestID)
                     request.put("args", argsObj)
-                    svc.akono.sendMessage(request.toString(2))
+                    svc.walletCore.TALER_WALLET_send_request(svc.instance, request.toString(2))
                     Log.i(
                         TAG,
                         "mapping service request ID $serviceRequestID to client request ID $clientRequestID"
