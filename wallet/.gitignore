@@ -1,3 +1,3 @@
 /build
 /.bundle
-/src/main/assets/taler-wallet-*-*.js
+/src/main/jniLibs

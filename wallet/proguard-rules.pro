@@ -24,3 +24,6 @@
 
 #noinspection ShrinkerUnresolvedReference
 -keep class net.taler.wallet.** {*;}
+
+-keep class com.sun.jna.** {*;}
+-keep class * implements com.sun.jna.** {*;}
