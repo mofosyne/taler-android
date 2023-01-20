@@ -20,10 +20,13 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class net.taler.akono.** {*;}
-
 #noinspection ShrinkerUnresolvedReference
 -keep class net.taler.wallet.** {*;}
+-keep interface net.taler.wallet.** {*;}
 
--keep class com.sun.jna.** {*;}
--keep class * implements com.sun.jna.** {*;}
+-dontwarn java.awt.*
+-keep class com.sun.jna.* {*;}
+-keepclassmembers class * extends com.sun.jna.* {public*;}
+-keep,includedescriptorclasses class * {
+    native <methods>;
+}
