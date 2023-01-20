@@ -54,13 +54,11 @@ android {
     }
     buildTypes {
         release {
-            // FIXME: walletcore only works when this is false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            // FIXME: walletcore only works when this is false
-            minifyEnabled false
+            minifyEnabled minify_debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
