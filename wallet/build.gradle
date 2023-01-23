@@ -23,8 +23,8 @@ plugins {
     id "de.undercouch.download" version "5.3.0"
 }
 
-def walletCoreVersion = "v0.9.1-dev.1"
-def walletCoreSha256 = "dae4f51f87bed27fa2caa081c4cfdaaae04093eb782234dd716227af32b84e84"
+def walletCoreVersion = "v0.9.1"
+def walletCoreSha256 = "99fd96fb897c6954710728820369949090bff84d06728f04b29c6cb067c8f9d4"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
