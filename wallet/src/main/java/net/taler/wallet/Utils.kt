@@ -33,6 +33,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
+import net.taler.common.startActivitySafe
 import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.Transaction
@@ -113,6 +114,7 @@ fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -
 
 fun launchInAppBrowser(context: Context, url: String) {
     val builder = CustomTabsIntent.Builder()
-    val intent = builder.build()
-    intent.launchUrl(context, Uri.parse(url))
+    val intent = builder.build().intent
+    intent.data = Uri.parse(url)
+    context.startActivitySafe(intent)
 }

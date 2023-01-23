@@ -112,7 +112,7 @@ fun Fragment.showError(@StringRes mainId: Int, detailText: String = "") {
     showError(getString(mainId), detailText)
 }
 
-fun Fragment.startActivitySafe(intent: Intent) {
+fun Context.startActivitySafe(intent: Intent) {
     try {
         startActivity(intent)
     } catch (e: ActivityNotFoundException) {

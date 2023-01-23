@@ -46,7 +46,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
         // TODO test if this works with an actual payto:// handling app
         val componentName = intent.resolveActivity(requireContext().packageManager)
         val onBankAppClick = if (componentName == null) null else {
-            { startActivitySafe(intent) }
+            { requireContext().startActivitySafe(intent) }
         }
         val tid = status.transactionId
         val onCancelClick = if (tid == null) null else {

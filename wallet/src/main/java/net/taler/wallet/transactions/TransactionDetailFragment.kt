@@ -86,7 +86,7 @@ abstract class TransactionDetailFragment : Fragment() {
             val i = Intent().apply {
                 data = Uri.parse(info.fulfillmentUrl)
             }
-            orderSummaryView.setOnClickListener { startActivitySafe(i) }
+            orderSummaryView.setOnClickListener { requireContext().startActivitySafe(i) }
         }
         orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
     }
