@@ -42,12 +42,12 @@ fun DeleteTransactionComposable(onDelete: () -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_delete),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onError
+                tint = MaterialTheme.colorScheme.onError,
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = stringResource(R.string.transactions_delete),
-                color = MaterialTheme.colorScheme.onError
+                color = MaterialTheme.colorScheme.onError,
             )
         }
     }
