@@ -47,7 +47,7 @@ android {
         applicationId "net.taler.wallet"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 20
+        versionCode 21
         versionName walletCoreVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "WALLET_CORE_VERSION", "\"$walletCoreVersion\""
