@@ -25,7 +25,7 @@ import android.os.Message
 import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
-import com.sun.jna.Pointer
+import net.taler.qtart.TalerWalletCore
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -45,8 +45,7 @@ class WalletBackendService : Service() {
      */
     private val messenger: Messenger = Messenger(IncomingHandler(this))
 
-    private lateinit var walletCore: TalerWalletCore
-    private lateinit var instance: Pointer
+    private val walletCore = TalerWalletCore()
 
     private var initialized = false
 
@@ -59,19 +58,13 @@ class WalletBackendService : Service() {
     override fun onCreate() {
         Log.i(TAG, "onCreate in wallet backend service")
 
-        walletCore = TalerWalletCore.INSTANCE
-        instance = walletCore.TALER_WALLET_create()
-        walletCore.TALER_WALLET_set_message_handler(instance, object: TalerWalletCore.TALER_WALLET_MessageHandlerFn {
-            override fun invoke(handler_p: Pointer, message: String) {
-                this@WalletBackendService.handleAkonoMessage(message)
-            }
-        }, instance)
-        walletCore.TALER_start_redirect_std(object: TalerWalletCore.TALER_LogFn {
-            override fun invoke(cls: Pointer, stream: Int, msg: String) {
-                Log.d(TAG, "wallet log: $msg")
-            }
-        }, instance)
-        walletCore.TALER_WALLET_run(instance)
+        walletCore.setMessageHandler {
+            this@WalletBackendService.handleAkonoMessage(it)
+        }
+        walletCore.setStdoutHandler {
+            Log.d(TAG, "wallet log: $it")
+        }
+        walletCore.run()
         sendInitMessage()
         // runIntegrationTest()
         super.onCreate()
@@ -84,7 +77,7 @@ class WalletBackendService : Service() {
         msg.put("args", args)
         args.put("persistentStoragePath", "${application.filesDir}/$WALLET_DB")
         Log.d(TAG, "init message: ${msg.toString(2)}")
-        walletCore.TALER_WALLET_send_request(instance, msg.toString())
+        walletCore.sendRequest(msg.toString())
     }
 
     /**
@@ -102,7 +95,7 @@ class WalletBackendService : Service() {
         args.put("merchantBaseUrl", "https://backend.demo.taler.net/")
         args.put("merchantAuthToken", "secret-token:sandbox")
         Log.d(TAG, "integration test message: ${msg.toString(2)}")
-        walletCore.TALER_WALLET_send_request(instance, msg.toString())
+        walletCore.sendRequest(msg.toString())
     }
 
     /**
@@ -142,7 +135,7 @@ class WalletBackendService : Service() {
                     request.put("operation", operation)
                     request.put("id", serviceRequestID)
                     request.put("args", argsObj)
-                    svc.walletCore.TALER_WALLET_send_request(svc.instance, request.toString(2))
+                    svc.walletCore.sendRequest(request.toString())
                     Log.i(
                         TAG,
                         "mapping service request ID $serviceRequestID to client request ID $clientRequestID"
