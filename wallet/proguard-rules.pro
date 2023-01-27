@@ -21,12 +21,3 @@
 #-renamesourcefileattribute SourceFile
 
 #noinspection ShrinkerUnresolvedReference
--keep class net.taler.wallet.** {*;}
--keep interface net.taler.wallet.** {*;}
-
--dontwarn java.awt.*
--keep class com.sun.jna.* {*;}
--keepclassmembers class * extends com.sun.jna.* {public*;}
--keep,includedescriptorclasses class * {
-    native <methods>;
-}
