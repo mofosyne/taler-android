@@ -142,6 +142,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         })
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (ui.drawerLayout.isDrawerOpen(START)) ui.drawerLayout.closeDrawer(START)
         else super.onBackPressed()

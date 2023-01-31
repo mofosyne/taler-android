@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
         return true
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val currentDestination = nav.currentDestination?.id
         if (ui.drawerLayout.isDrawerOpen(START)) {
