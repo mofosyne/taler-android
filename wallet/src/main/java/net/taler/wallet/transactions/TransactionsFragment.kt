@@ -44,7 +44,6 @@ import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
 import net.taler.wallet.handleKyc
 import net.taler.wallet.launchInAppBrowser
-import net.taler.wallet.skipSystemBars
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -126,7 +125,6 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         ui.receiveButton.setOnClickListener {
             findNavController().navigate(R.id.receiveFunds)
         }
-        ui.mainFab.skipSystemBars()
         ui.mainFab.setOnClickListener {
             model.scanCode()
         }

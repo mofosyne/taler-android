@@ -61,7 +61,6 @@ class MainFragment : Fragment() {
             }
         })
 
-        ui.mainFab.skipSystemBars()
         ui.mainFab.setOnClickListener {
             model.scanCode()
         }
