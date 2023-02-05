@@ -22,7 +22,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -34,6 +36,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat.START
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
@@ -45,6 +48,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.client.android.Intents.Scan.MIXED_SCAN
@@ -89,11 +93,20 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
+        // Set status bar color
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        ui.content.appBarLayout.statusBarForeground =
+            MaterialShapeDrawable.createWithElevationOverlay(this)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            window.navigationBarColor = Color.BLACK
+        }
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         nav = navHostFragment.navController
         ui.navView.setupWithNavController(nav)
         ui.navView.setNavigationItemSelectedListener(this)
+        ui.navView.skipSystemBars()
         if (savedInstanceState == null) {
             ui.navView.menu.getItem(0).isChecked = true
         }

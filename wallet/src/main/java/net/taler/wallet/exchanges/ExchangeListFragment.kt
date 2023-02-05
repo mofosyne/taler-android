@@ -33,6 +33,7 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentExchangeListBinding
+import net.taler.wallet.skipSystemBars
 
 open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
@@ -58,6 +59,7 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
             adapter = exchangeAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
+        ui.addExchangeFab.skipSystemBars()
         ui.addExchangeFab.setOnClickListener {
             AddExchangeDialogFragment().show(parentFragmentManager, "ADD_EXCHANGE")
         }

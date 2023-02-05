@@ -15,14 +15,8 @@
   -->
 
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <style name="AppTheme" parent="AppTheme.Dark">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="android:statusBarColor">?colorSurface</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
-    </style>
+    <style name="AppTheme" parent="AppTheme.Dark" />
 
 </resources>
