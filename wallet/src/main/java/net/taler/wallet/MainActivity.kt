@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         // Set status bar color
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        ui.content.navHostFragment.skipSystemBars(top = false)
         ui.content.appBarLayout.statusBarForeground =
             MaterialShapeDrawable.createWithElevationOverlay(this)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {

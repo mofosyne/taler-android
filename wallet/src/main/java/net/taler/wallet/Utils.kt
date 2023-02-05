@@ -27,11 +27,18 @@ import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build.VERSION.SDK_INT
 import android.util.TypedValue
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 import net.taler.common.startActivitySafe
@@ -124,4 +131,17 @@ fun launchInAppBrowser(context: Context, url: String) {
     val intent = builder.build().intent
     intent.data = Uri.parse(url)
     context.startActivitySafe(intent)
+}
+
+fun View.skipSystemBars(top: Boolean = true, bottom: Boolean = true) {
+    val initialMarginBottom = marginBottom
+    val initialMarginTop = marginTop
+    ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+        val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+        view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            if (top) topMargin = insets.top + initialMarginTop
+            if (bottom) bottomMargin = insets.bottom + initialMarginBottom
+        }
+        WindowInsetsCompat.CONSUMED
+    }
 }
