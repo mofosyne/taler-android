@@ -42,7 +42,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/pasteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,9 +50,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_weight="1"
-        android:drawableLeft="@drawable/ic_content_paste"
         android:text="@string/paste"
-        app:drawableTint="?attr/colorOnPrimarySurface"
+        android:textColor="?colorOnPrimary"
+        app:icon="@drawable/ic_content_paste"
+        app:iconTint="?colorOnPrimary"
         app:layout_constraintEnd_toStartOf="@+id/okButton"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,6 +69,7 @@
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/green"
         android:text="@string/ok"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pasteButton"
         app:layout_constraintTop_toBottomOf="@+id/uriLayout" />
