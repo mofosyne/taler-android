@@ -78,7 +78,7 @@ fun OutgoingPullIntroComposable(
             value = subject,
             onValueChange = { input ->
                 if (input.length <= MAX_LENGTH_SUBJECT)
-                    subject = input
+                    subject = input.replace('\n', ' ')
             },
             isError = subject.isBlank(),
             label = {
