@@ -180,10 +180,17 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         }
     }
 
-    override fun onActionButtonClicked(transaction: Transaction) {
-        transaction.handleKyc({ error("Unhandled Action Button Event") }) { error ->
-            error.kycUrl?.let {
-                launchInAppBrowser(requireContext(), it)
+    override fun onActionButtonClicked(t: Transaction) {
+        if (t.error != null) {
+            t.handleKyc({ error("Unhandled Action Button Event") }) { error ->
+                error.kycUrl?.let {
+                    launchInAppBrowser(requireContext(), it)
+                }
+            }
+        } else if (t is TransactionWithdrawal && !t.confirmed) {
+            if (t.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
+                t.withdrawalDetails.bankConfirmationUrl != null) {
+                launchInAppBrowser(requireContext(), t.withdrawalDetails.bankConfirmationUrl)
             }
         }
     }

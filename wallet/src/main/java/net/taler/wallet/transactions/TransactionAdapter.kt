@@ -127,11 +127,21 @@ internal class TransactionAdapter(
             }
         }
 
-        private fun bindActionButton(transaction: Transaction) {
-            actionButton.visibility = transaction.handleKyc({ GONE }) {
-                actionButton.setOnClickListener { listener.onActionButtonClicked(transaction) }
-                actionButton.setText(R.string.transaction_action_kyc)
-                VISIBLE
+        private fun bindActionButton(t: Transaction) {
+            actionButton.setOnClickListener { listener.onActionButtonClicked(t) }
+            if (t.error != null) {
+                actionButton.visibility = t.handleKyc({ GONE }) {
+                    actionButton.setText(R.string.transaction_action_kyc)
+                    VISIBLE
+                }
+            } else if (t is TransactionWithdrawal && !t.confirmed) {
+                actionButton.setIconResource(R.drawable.ic_account_balance)
+                actionButton.visibility =
+                    if (t.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
+                        t.withdrawalDetails.bankConfirmationUrl != null) {
+                        actionButton.setText(R.string.withdraw_button_confirm_bank)
+                        VISIBLE
+                    } else GONE
             }
         }
 
