@@ -26,6 +26,7 @@ import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build.VERSION.SDK_INT
+import android.util.TypedValue
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
@@ -101,6 +102,12 @@ fun getAmount(currency: String, text: String): Amount? {
     } catch (e: AmountParserException) {
         null
     }
+}
+
+fun Context.getAttrColor(attr: Int): Int {
+    val value = TypedValue()
+    theme.resolveAttribute(attr, value, true)
+    return value.data
 }
 
 fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -> T): T {
