@@ -16,7 +16,7 @@
 
 <resources>
     <color name="colorPrimary">#3047a3</color>
-    <color name="colorPrimaryDark">#152238</color>
+    <color name="colorPrimaryDark">#002173</color>
     <color name="colorAccent">#BB1D24</color>
 
     <color name="success">#388E3C</color>
@@ -28,10 +28,10 @@
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#DDE1FF</color>
     <color name="md_theme_light_onPrimaryContainer">#001355</color>
-    <color name="md_theme_light_secondary">#2B5EA7</color>
+    <color name="md_theme_light_secondary">#4359AA</color>
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
-    <color name="md_theme_light_secondaryContainer">#D7E3FF</color>
-    <color name="md_theme_light_onSecondaryContainer">#001B3E</color>
+    <color name="md_theme_light_secondaryContainer">#DCE1FF</color>
+    <color name="md_theme_light_onSecondaryContainer">#001551</color>
     <color name="md_theme_light_tertiary">#B91B23</color>
     <color name="md_theme_light_onTertiary">#FFFFFF</color>
     <color name="md_theme_light_tertiaryContainer">#FFDAD7</color>
@@ -58,10 +58,10 @@
     <color name="md_theme_dark_onPrimary">#042584</color>
     <color name="md_theme_dark_primaryContainer">#263E9A</color>
     <color name="md_theme_dark_onPrimaryContainer">#DDE1FF</color>
-    <color name="md_theme_dark_secondary">#AAC7FF</color>
-    <color name="md_theme_dark_onSecondary">#002F65</color>
-    <color name="md_theme_dark_secondaryContainer">#00458E</color>
-    <color name="md_theme_dark_onSecondaryContainer">#D7E3FF</color>
+    <color name="md_theme_dark_secondary">#B7C4FF</color>
+    <color name="md_theme_dark_onSecondary">#0B2879</color>
+    <color name="md_theme_dark_secondaryContainer">#294190</color>
+    <color name="md_theme_dark_onSecondaryContainer">#DCE1FF</color>
     <color name="md_theme_dark_tertiary">#FFB3AD</color>
     <color name="md_theme_dark_onTertiary">#680009</color>
     <color name="md_theme_dark_tertiaryContainer">#930012</color>
