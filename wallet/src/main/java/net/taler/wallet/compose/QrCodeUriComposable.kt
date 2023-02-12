@@ -25,7 +25,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -37,12 +40,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material3.Card
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -70,16 +75,25 @@ fun ColumnScope.QrCodeUriComposable(
         value = QrCodeManager.makeQrCode(talerUri, qrCodeSize.value.toInt()).asImageBitmap()
     }
     qrState.value?.let { qrCode ->
-        Image(
-            modifier = Modifier
-                .size(qrCodeSize)
-                .align(CenterHorizontally)
-                .padding(vertical = 8.dp),
-            bitmap = qrCode,
-            contentDescription = stringResource(id = R.string.button_scan_qr_code),
-        )
+        Card(
+            modifier = Modifier.padding(8.dp),
+            shape = ShapeDefaults.Medium,
+        ) {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .size(qrCodeSize)
+                    .align(CenterHorizontally),
+                bitmap = qrCode,
+                contentScale = ContentScale.Crop,
+                contentDescription = stringResource(id = R.string.button_scan_qr_code),
+            )
+        }
     }
-    if (inBetween != null) inBetween()
+    if (inBetween != null) {
+        Spacer(modifier = Modifier.height(16.dp))
+        inBetween()
+    }
     val scrollState = rememberScrollState()
     Box(modifier = Modifier.padding(16.dp)) {
         Text(
@@ -136,14 +150,13 @@ fun CopyToClipboardButton(
         colors = colors,
         onClick = { copyToClipBoard(context, label, content) },
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.ContentCopy, buttonText)
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = buttonText,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
+        Icon(
+            Icons.Default.ContentCopy,
+            buttonText,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text(buttonText)
     }
 }
 

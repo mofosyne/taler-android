@@ -44,6 +44,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="button_back">Go Back</string>
     <string name="button_scan_qr_code">Scan Taler QR Code</string>
+    <string name="button_scan_qr_code_short">Scan QR</string>
     <string name="enter_uri">Enter Taler URI</string>
     <string name="copy" tools:override="true">Copy</string>
     <string name="copy_uri">Copy Taler URI</string>

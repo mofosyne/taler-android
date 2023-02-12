@@ -108,7 +108,7 @@ fun OutgoingPullIntroComposable(
         Text(
             modifier = Modifier.padding(16.dp),
             fontSize = 24.sp,
-            color = colorResource(R.color.green),
+            color = colorResource(R.color.success),
             text = amount.toString(),
         )
         Text(

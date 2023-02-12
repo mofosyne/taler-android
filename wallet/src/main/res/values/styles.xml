@@ -87,34 +87,25 @@
 
     <style name="DialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert" />
 
+    <style name="TransactionCard" parent="MaterialCardView">
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
     <style name="TransactionTitle">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TransactionLabel">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:gravity">center</item>
+    <style name="TransactionLabel" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
-    <style name="TransactionLabel.Time">
+    <style name="TransactionLabel.Time" parent="TextAppearance.Material3.LabelLarge">
         <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     </style>
 
-    <style name="TransactionContent">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:gravity">center</item>
-    </style>
+    <style name="TransactionContent" parent="TextAppearance.Material3.TitleLarge" />
 
     <style name="BottomCard">
         <item name="cardCornerRadius">0dp</item>
@@ -125,6 +116,13 @@
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="MaterialCardView" parent="Base.CardView">
+        <item name="cardBackgroundColor">?colorSurfaceVariant</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="contentPadding">16dp</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
 </resources>

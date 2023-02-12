@@ -136,7 +136,7 @@ fun MakeDepositComposable(
         Text(
             modifier = Modifier.padding(16.dp),
             fontSize = 24.sp,
-            color = colorResource(R.color.green),
+            color = colorResource(R.color.success),
             text = shownAmount.toString(),
         )
         AnimatedVisibility(visible = state.showFees) {
@@ -154,7 +154,7 @@ fun MakeDepositComposable(
                 Text(
                     modifier = Modifier.padding(16.dp),
                     fontSize = 24.sp,
-                    color = if (fee.isZero()) colorResource(R.color.green) else MaterialTheme.colorScheme.error,
+                    color = if (fee.isZero()) colorResource(R.color.success) else MaterialTheme.colorScheme.error,
                     text = if (fee.isZero()) {
                         fee.toString()
                     } else {
@@ -168,7 +168,7 @@ fun MakeDepositComposable(
                 Text(
                     modifier = Modifier.padding(16.dp),
                     fontSize = 24.sp,
-                    color = colorResource(R.color.green),
+                    color = colorResource(R.color.success),
                     text = totalAmount.toString(),
                 )
             }

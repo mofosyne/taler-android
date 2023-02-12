@@ -21,24 +21,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:paddingStart="16dp"
+    android:paddingStart="12dp"
     android:paddingTop="8dp"
     android:paddingEnd="16dp"
     android:paddingBottom="8dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:contentPadding="9dp"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
+        android:background="?colorPrimaryContainer"
         tools:ignore="ContentDescription"
+        app:tint="?colorOnPrimaryContainer"
         tools:src="@drawable/ic_cash_usd_outline" />
 
     <TextView
         android:id="@+id/title"
-        style="@style/TransactionTitle"
+        style="@style/TextAppearance.Material3.TitleMedium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -50,6 +54,7 @@
 
     <TextView
         android:id="@+id/extraInfoView"
+        style="@style/TextAppearance.Material3.BodyMedium"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -78,11 +83,11 @@
 
     <TextView
         android:id="@+id/time"
+        style="@style/TextAppearance.Material3.BodySmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/barrier"
         app:layout_constraintStart_toStartOf="@+id/title"
@@ -98,9 +103,9 @@
 
     <TextView
         android:id="@+id/amount"
+        style="@style/TextAppearance.Material3.HeadlineSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/pendingView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -110,8 +115,9 @@
         android:id="@+id/pendingView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/badge"
         android:text="@string/transaction_pending"
-        android:textSize="14sp"
+        android:textColor="?android:textColorPrimaryInverse"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

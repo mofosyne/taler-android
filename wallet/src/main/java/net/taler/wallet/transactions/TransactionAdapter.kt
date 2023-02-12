@@ -23,7 +23,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.selection.ItemDetailsLookup
@@ -33,9 +32,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.imageview.ShapeableImageView
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
+import net.taler.wallet.getAttrColor
 import net.taler.wallet.handleKyc
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
@@ -77,7 +78,7 @@ internal class TransactionAdapter(
         private val context: Context = v.context
 
         private val root: ViewGroup = v.findViewById(R.id.root)
-        private val icon: ImageView = v.findViewById(R.id.icon)
+        private val icon: ShapeableImageView = v.findViewById(R.id.icon)
         private val title: TextView = v.findViewById(R.id.title)
         private val extraInfoView: TextView = v.findViewById(R.id.extraInfoView)
         private val actionButton: MaterialButton = v.findViewById(R.id.actionButton)
@@ -86,8 +87,10 @@ internal class TransactionAdapter(
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
         private val amountColor = amount.currentTextColor
-        private val red = getColor(context, R.color.red)
-        private val green = getColor(context, R.color.green)
+        private val errorColor = context.getAttrColor(R.attr.colorError)
+        private val errorContainerColor = context.getAttrColor(R.attr.colorErrorContainer)
+        private val onErrorContainerColor = context.getAttrColor(R.attr.colorOnErrorContainer)
+        private val green = getColor(context, R.color.success)
 
         fun bind(transaction: Transaction, selected: Boolean) {
             v.setOnClickListener { listener.onTransactionClicked(transaction) }
@@ -95,6 +98,8 @@ internal class TransactionAdapter(
                 icon.setImageResource(transaction.icon)
             } else {
                 icon.setImageResource(R.drawable.ic_error)
+                icon.setColorFilter(onErrorContainerColor)
+                icon.setBackgroundColor(errorContainerColor)
             }
             title.text = transaction.getTitle(context)
             bindExtraInfo(transaction)
@@ -112,7 +117,7 @@ internal class TransactionAdapter(
             if (transaction.error != null) {
                 extraInfoView.text =
                     context.getString(R.string.payment_error, transaction.error!!.userFacingMsg)
-                extraInfoView.setTextColor(red)
+                extraInfoView.setTextColor(errorColor)
                 extraInfoView.visibility = VISIBLE
             } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
                 extraInfoView.setText(R.string.withdraw_waiting_confirm)
@@ -154,7 +159,7 @@ internal class TransactionAdapter(
                 }
                 AmountType.Negative -> {
                     amount.text = context.getString(R.string.amount_negative, amountStr)
-                    amount.setTextColor(if (transaction.pending) amountColor else red)
+                    amount.setTextColor(if (transaction.pending) amountColor else errorColor)
                 }
                 AmountType.Neutral -> {
                     amount.text = amountStr

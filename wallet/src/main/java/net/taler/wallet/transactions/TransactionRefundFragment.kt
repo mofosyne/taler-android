@@ -43,7 +43,7 @@ class TransactionRefundFragment : TransactionDetailFragment() {
         ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
 
         ui.amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
-        ui.amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
+        ui.amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.success))
         ui.amountPaidWithFeesView.text =
             getString(R.string.amount_positive, t.amountEffective.toString())
         val fee = t.amountRaw - t.amountEffective

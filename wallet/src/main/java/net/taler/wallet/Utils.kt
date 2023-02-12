@@ -126,6 +126,12 @@ fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -
     } ?: notRequired()
 }
 
+fun Context.getAttrColor(attr: Int): Int {
+    val value = TypedValue()
+    theme.resolveAttribute(attr, value, true)
+    return value.data
+}
+
 fun launchInAppBrowser(context: Context, url: String) {
     val builder = CustomTabsIntent.Builder()
     val intent = builder.build().intent

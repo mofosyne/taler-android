@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:backgroundTint="@color/green"
+            android:backgroundTint="@color/success"
             android:enabled="false"
             android:text="@string/payment_button_confirm"
             app:layout_constraintBottom_toBottomOf="parent"

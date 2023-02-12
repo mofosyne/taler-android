@@ -53,7 +53,7 @@ fun TransactionDepositComposable(t: TransactionDeposit, onDelete: () -> Unit) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_paid),

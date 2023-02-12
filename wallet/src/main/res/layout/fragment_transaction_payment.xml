@@ -22,95 +22,129 @@
     android:fillViewport="true"
     tools:context=".transactions.TransactionDetailFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/timeView"
             style="@style/TransactionLabel.Time"
-            app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesLabel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="23 March 2020 23:42pm" />
+            tools:text="23 March 2020 23:42pm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/amountPaidWithFeesLabel"
-            style="@style/TransactionLabel"
-            android:text="@string/transaction_paid"
-            app:layout_constraintBottom_toTopOf="@+id/amountPaidWithFeesView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/timeView" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/amountPaidWithFeesCard"
+            style="@style/TransactionCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/amountPaidWithFeesLabel"
+                    style="@style/TransactionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transaction_paid" />
 
-        <TextView
-            android:id="@+id/amountPaidWithFeesView"
-            style="@style/TransactionContent"
-            android:textColor="?colorError"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/amountPaidWithFeesLabel"
-            tools:text="-23.42 TESTKUDOS" />
+                <TextView
+                    android:id="@+id/amountPaidWithFeesView"
+                    style="@style/TransactionContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?colorError"
+                    tools:text="-23.42 TESTKUDOS" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/orderAmountLabel"
-            style="@style/TransactionLabel"
-            android:text="@string/transaction_order_total"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/amountPaidWithFeesView" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/orderAmountCard"
+            style="@style/TransactionCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/orderAmountLabel"
+                    style="@style/TransactionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transaction_order_total" />
 
-        <TextView
-            android:id="@+id/orderAmountView"
-            style="@style/TransactionContent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderAmountLabel"
-            tools:text="23 TESTKUDOS" />
+                <TextView
+                    android:id="@+id/orderAmountView"
+                    style="@style/TransactionContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="23 TESTKUDOS" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/feeLabel"
-            style="@style/TransactionLabel"
-            android:text="@string/withdraw_fees"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderAmountView" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/feeCard"
+            style="@style/TransactionCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/feeLabel"
+                    style="@style/TransactionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/withdraw_fees" />
 
-        <TextView
-            android:id="@+id/feeView"
-            style="@style/TransactionContent"
-            android:textColor="?colorError"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/feeLabel"
-            tools:text="-0.42 TESTKUDOS" />
+                <TextView
+                    android:id="@+id/feeView"
+                    style="@style/TransactionContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?colorError"
+                    tools:text="-0.42 TESTKUDOS" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/orderSummaryLabel"
-            style="@style/TransactionLabel"
-            android:text="@string/transaction_order"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/feeView" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/orderSummaryCard"
+            style="@style/TransactionCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/orderSummaryLabel"
+                    style="@style/TransactionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transaction_order" />
 
-        <TextView
-            android:id="@+id/orderSummaryView"
-            style="@style/TransactionContent"
-            android:textColor="?android:textColorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderSummaryLabel"
-            tools:text="Some Product that was bought and can have quite a long label" />
+                <TextView
+                    android:id="@+id/orderSummaryView"
+                    style="@style/TransactionContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorPrimary"
+                    tools:text="Some Product that was bought and can have quite a long label" />
 
-        <TextView
-            android:id="@+id/orderIdView"
-            style="@style/TransactionLabel"
-            android:layout_marginBottom="16dp"
-            android:text="@string/transaction_order_id"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderSummaryView" />
+                <TextView
+                    android:id="@+id/orderIdView"
+                    style="@style/TextAppearance.Material3.BodyMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/transaction_order_id" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deleteButton"
@@ -121,12 +155,8 @@
             android:textColor="?colorOnError"
             app:backgroundTint="?colorError"
             app:icon="@drawable/ic_delete"
-            app:iconTint="?colorOnError"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderIdView" />
+            app:iconTint="?colorOnError" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </ScrollView>

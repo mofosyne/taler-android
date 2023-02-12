@@ -25,7 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -35,7 +38,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -76,7 +78,7 @@ fun TransactionPeerComposable(t: Transaction, onDelete: () -> Unit) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
         )
         when (t) {
             is TransactionPeerPullCredit -> TransactionPeerPullCreditComposable(t)
@@ -91,33 +93,51 @@ fun TransactionPeerComposable(t: Transaction, onDelete: () -> Unit) {
 
 @Composable
 fun TransactionAmountComposable(label: String, amount: Amount, amountType: AmountType) {
-    Text(
-        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-        text = label,
-        style = MaterialTheme.typography.bodyMedium,
-    )
-    Text(
-        modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-        text = if (amountType == AmountType.Negative) "-$amount" else amount.toString(),
-        fontSize = 24.sp,
-        color = when (amountType) {
-            AmountType.Positive -> colorResource(R.color.green)
-            AmountType.Negative -> MaterialTheme.colorScheme.error
-            AmountType.Neutral -> Color.Unspecified
-        },
-    )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+        shape = ShapeDefaults.Medium,
+        colors = CardDefaults.cardColors()
+    ) {
+        Column(modifier = Modifier.padding(all = 16.dp)) {
+            Text(
+                modifier = Modifier.padding(bottom = 8.dp),
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = if (amountType == AmountType.Negative) "-$amount" else amount.toString(),
+                style = MaterialTheme.typography.titleLarge,
+                color = when (amountType) {
+                    AmountType.Positive -> colorResource(R.color.success)
+                    AmountType.Negative -> MaterialTheme.colorScheme.error
+                    AmountType.Neutral -> Color.Unspecified
+                },
+            )
+        }
+    }
 }
 
 @Composable
 fun TransactionInfoComposable(label: String, info: String) {
-    Text(
-        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-        text = label,
-        style = MaterialTheme.typography.bodyMedium,
-    )
-    Text(
-        modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-        text = info,
-        fontSize = 24.sp,
-    )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+        shape = ShapeDefaults.Medium,
+        colors = CardDefaults.cardColors()
+    ) {
+        Column(modifier = Modifier.padding(all = 16.dp)) {
+            Text(
+                modifier = Modifier.padding(bottom = 8.dp),
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Text(
+                text = info,
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+    }
 }
