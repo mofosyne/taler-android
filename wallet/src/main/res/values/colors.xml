@@ -20,7 +20,7 @@
     <color name="colorAccent">#BB1D24</color>
 
     <color name="success">#388E3C</color>
-    <color name="onSuccess">#000000</color>
+    <color name="onSuccess">#FFFFFF</color>
 
     <!-- Material 3 theme builder -->
     <color name="seed">#3047a3</color>

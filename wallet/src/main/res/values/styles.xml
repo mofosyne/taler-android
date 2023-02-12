@@ -107,9 +107,10 @@
 
     <style name="TransactionContent" parent="TextAppearance.Material3.TitleLarge" />
 
-    <style name="BottomCard">
-        <item name="cardCornerRadius">0dp</item>
-        <item name="cardElevation">8dp</item>
+    <style name="BottomCard" parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="contentPadding">8dp</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
     <style name="FabStyle" parent="Widget.Material3.FloatingActionButton.Primary">

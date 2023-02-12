@@ -84,6 +84,7 @@
             android:layout_margin="8dp"
             android:backgroundTint="@color/success"
             android:enabled="false"
+            android:textColor="@color/onSuccess"
             android:text="@string/payment_button_confirm"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

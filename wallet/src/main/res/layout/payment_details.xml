@@ -28,14 +28,14 @@
 
         <TextView
             android:id="@+id/errorView"
+            style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:textAlignment="center"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="22sp"
+            android:textColor="?colorError"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/orderLabelView"
+            app:layout_constraintBottom_toTopOf="@+id/orderCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -43,38 +43,36 @@
             tools:text="@string/payment_balance_insufficient"
             tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/orderLabelView"
-            android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/orderCard"
+            style="@style/TransactionCard"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/payment_label_order_summary"
-            android:textAlignment="center"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/orderView"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/errorView"
-            tools:visibility="visible" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/errorView"
+            app:layout_constraintBottom_toTopOf="@id/productsList"
+            android:visibility="invisible"
+            tools:visibility="visible">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/orderLabelView"
+                    style="@style/TransactionLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_label_order_summary" />
 
-        <TextView
-            android:id="@+id/orderView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_marginTop="16dp"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textSize="25sp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/productsList"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderLabelView"
-            tools:text="2 x Cappuccino, 1 x Hot Meals, 1 x Dessert"
-            tools:visibility="visible" />
+                <TextView
+                    android:id="@+id/orderView"
+                    style="@style/TransactionContent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="2 x Cappuccino, 1 x Hot Meals, 1 x Dessert" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsList"
@@ -85,7 +83,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderView"
+            app:layout_constraintTop_toBottomOf="@+id/orderCard"
             tools:listitem="@layout/list_item_product"
             tools:visibility="visible" />
 

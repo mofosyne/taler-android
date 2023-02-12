@@ -142,22 +142,18 @@ class PromptWithdrawFragment : Fragment() {
         model.showProgressBar.value = false
         ui.progressBar.fadeOut()
 
-        ui.introView.fadeIn()
         ui.effectiveAmountView.text = amountEffective.toString()
-        ui.effectiveAmountView.fadeIn()
+        ui.introCard.fadeIn()
 
-        ui.chosenAmountLabel.fadeIn()
         ui.chosenAmountView.text = amountRaw.toString()
-        ui.chosenAmountView.fadeIn()
+        ui.chosenAmountCard.fadeIn()
 
-        ui.feeLabel.fadeIn()
         ui.feeView.text =
             getString(R.string.amount_negative, (amountRaw - amountEffective).toString())
-        ui.feeView.fadeIn()
+        ui.feeCard.fadeIn()
 
-        ui.exchangeIntroView.fadeIn()
         ui.withdrawExchangeUrl.text = cleanExchange(exchange)
-        ui.withdrawExchangeUrl.fadeIn()
+        ui.exchangeIntroCard.fadeIn()
 
         if (uri != null) {  // no Uri for manual withdrawals
             ui.selectExchangeButton.fadeIn()
@@ -168,12 +164,11 @@ class PromptWithdrawFragment : Fragment() {
         }
 
         if (ageRestrictionOptions != null) {
-            ui.ageLabel.fadeIn()
             val context = requireContext()
             val items = listOf(context.getString(R.string.withdraw_restrict_age_unrestricted)) +
                     ageRestrictionOptions.map { it.toString() }
             ui.ageSelector.adapter = ArrayAdapter(context, R.layout.list_item_age, items)
-            ui.ageSelector.fadeIn()
+            ui.ageCard.fadeIn()
         }
 
         ui.withdrawCard.fadeIn()

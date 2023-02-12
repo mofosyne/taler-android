@@ -143,8 +143,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         } else {
             ui.bottom.feeView.visibility = GONE
         }
-        ui.details.orderLabelView.fadeIn()
-        ui.details.orderView.fadeIn()
+        ui.details.orderCard.fadeIn()
         ui.bottom.totalLabelView.fadeIn()
         ui.bottom.totalView.fadeIn()
     }
