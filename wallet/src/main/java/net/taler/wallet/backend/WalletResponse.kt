@@ -19,13 +19,14 @@ package net.taler.wallet.backend
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind.STRING
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonObject
-import org.json.JSONObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
 sealed class WalletResponse<T> {
@@ -52,7 +53,7 @@ sealed class WalletResponse<T> {
     }
 }
 
-@Serializable
+@Serializable(with = TalerErrorInfoDeserializer::class)
 data class TalerErrorInfo(
     // Numeric error code defined defined in the
     // GANA gnu-taler-error-codes registry.
@@ -65,42 +66,50 @@ data class TalerErrorInfo(
     // for the instance of the error.
     val message: String? = null,
 
-    // Error details
-    @Serializable(JSONObjectDeserializer::class)
-    val details: JSONObject? = null,
-
-    // KYC URL (in case KYC is required)
-    val kycUrl: String? = null,
+    // Error extra details
+    val extra: Map<String, JsonElement> = mapOf(),
 ) {
     val userFacingMsg: String
         get() {
             return StringBuilder().apply {
                 hint?.let { append(it) }
                 message?.let { append(" ").append(it) }
-                details?.let { details ->
-                    if (details.length() > 0) {
-                        append("\n\n")
-                        details.optJSONObject("errorResponse")?.let { errorResponse ->
-                            append(errorResponse.optString("code")).append(" ")
-                            append(errorResponse.optString("hint"))
-                        } ?: append(details.toString(2))
-                    }
-                }
             }.toString()
         }
+
+    fun getStringExtra(key: String): String? =
+        extra[key]?.jsonPrimitive?.content
 }
 
-class JSONObjectDeserializer : KSerializer<JSONObject> {
+class TalerErrorInfoDeserializer : KSerializer<TalerErrorInfo> {
+    private val stringToJsonElementSerializer = MapSerializer(String.serializer(), JsonElement.serializer())
 
-    override val descriptor = PrimitiveSerialDescriptor("JSONObjectDeserializer", STRING)
+    override val descriptor: SerialDescriptor
+        get() = stringToJsonElementSerializer.descriptor
 
-    override fun deserialize(decoder: Decoder): JSONObject {
-        val input = decoder as JsonDecoder
-        val tree = input.decodeJsonElement() as JsonObject
-        return JSONObject(tree.toString())
+    override fun deserialize(decoder: Decoder): TalerErrorInfo {
+        // Decoder -> JsonInput
+        require(decoder is JsonDecoder)
+        val json = decoder.json
+        val filtersMap = decoder.decodeSerializableValue(stringToJsonElementSerializer)
+
+        val code = filtersMap["code"]?.let {
+            json.decodeFromJsonElement(TalerErrorCode.serializer(), it)
+        } ?: TalerErrorCode.UNKNOWN
+        val hint = filtersMap["hint"]?.let {
+            json.decodeFromJsonElement(String.serializer(), it)
+        }
+        val message = filtersMap["message"]?.let {
+            json.decodeFromJsonElement(String.serializer(), it)
+        }
+
+        val knownKeys = setOf("code", "hint", "message")
+        val unknownFilters = filtersMap.filter { (key, _) -> !knownKeys.contains(key) }
+
+        return TalerErrorInfo(code, hint, message, unknownFilters)
     }
 
-    override fun serialize(encoder: Encoder, value: JSONObject) {
+    override fun serialize(encoder: Encoder, value: TalerErrorInfo) {
         error("not supported")
     }
 }

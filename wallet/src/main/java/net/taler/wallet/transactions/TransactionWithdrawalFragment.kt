@@ -111,7 +111,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
     private fun setupActionButton(t: TransactionWithdrawal) {
         ui.actionButton.visibility = t.handleKyc({ GONE }) { error ->
             ui.actionButton.setText(R.string.transaction_action_kyc)
-            error.kycUrl?.let { kycUrl ->
+            error.getStringExtra("kycUrl")?.let { kycUrl ->
                 ui.actionButton.setOnClickListener {
                     launchInAppBrowser(requireContext(), kycUrl)
                 }

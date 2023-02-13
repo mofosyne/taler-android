@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.JsonPrimitive
 import net.taler.common.QrCodeManager
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
@@ -42,7 +43,6 @@ import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.QrCodeUriComposable
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.getQrCodeSize
-import org.json.JSONObject
 
 @Composable
 fun OutgoingPushResultComposable(state: OutgoingState, onClose: () -> Unit) {
@@ -141,7 +141,7 @@ fun PeerPushResponseLandscapePreview() {
 @Composable
 fun PeerPushErrorPreview() {
     Surface {
-        val json = JSONObject().apply { put("foo", "bar") }
+        val json = mapOf("foo" to JsonPrimitive("bar"))
         val response = OutgoingError(TalerErrorInfo(WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "message", json))
         OutgoingPushResultComposable(response) {}
     }

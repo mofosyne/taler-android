@@ -165,7 +165,7 @@ class WalletBackendApi(
                         WalletResponse.Success(t)
                     }
                 } catch (e: Exception) {
-                    val info = TalerErrorInfo(NONE, "", e.toString(), null)
+                    val info = TalerErrorInfo(NONE, "", e.toString())
                     WalletResponse.Error(info)
                 }
                 cont.resume(response)
