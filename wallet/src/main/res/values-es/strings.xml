@@ -15,8 +15,8 @@
     <string name="or">o</string>
     <string name="error_unsupported_uri">Error: esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="balances_title">Saldo</string>
-    <string name="amount_positive">+ %s</string>
+    <string name="balances_title">Saldos</string>
+    <string name="amount_positive">+%s</string>
     <string name="amount_chosen">Monto Elegido</string>
     <string name="balances_inbound_label">entrada</string>
     <string name="transactions_empty">No tienes ninguna transacción</string>
@@ -112,7 +112,7 @@
     <string name="uri_invalid">URI de Taler inválida</string>
     <string name="offline">La operación requiere acceso a Internet. Por favor asegúrate que tu conexión a Internet funcione y prueba de nuevo.</string>
     <string name="menu_retry_pending_operations">Reintentar Operaciones Pendientes</string>
-    <string name="amount_negative">- %s</string>
+    <string name="amount_negative">-%s</string>
     <string name="balances_empty_state">No hay efectivo digital en tu cartera.
 \n
 \nPuedes obtener dinero de prueba desde el banco demostrativo:
@@ -182,8 +182,8 @@
     <string name="send_intro">Elige hacia dónde enviar el dinero:</string>
     <string name="send_deposit">A una cuenta de banco</string>
     <string name="send_deposit_title">Deposita a una cuenta de banco</string>
-    <string name="send_deposit_iban"></string>
-    <string name="send_deposit_bic"></string>
+    <string name="send_deposit_iban">IBAN</string>
+    <string name="send_deposit_bic">BIC/SWIFT</string>
     <string name="receive_peer_payment_title">Recibir pago</string>
     <string name="currency">Moneda</string>
     <string name="send_peer">A otra cartera</string>
@@ -211,4 +211,13 @@
     <string name="settings_db_export">Base de datos</string>
     <string name="settings_db_export_error">Error exportando base de datos</string>
     <string name="withdraw_manual_ready_warning">Asegúrate de usar el sujeto correcto; de lo contrario, el dinero no llegará a esta cartera.</string>
+    <string name="transaction_action_kyc">Completar KYC</string>
+    <string name="withdraw_restrict_age">Restringir Uso por Edad</string>
+    <string name="withdraw_restrict_age_unrestricted">Sin restricciones</string>
+    <string name="withdraw_manual_ready_iban">IBAN</string>
+    <string name="send_deposit_check_fees_button">Revisar comisiones</string>
+    <string name="char_count">%1$d/%2$d</string>
+    <string name="transactions_delete_selected_dialog_message">¿Estás seguro de que deseas eliminar las transacciones seleccionadas de tu cartera\?</string>
+    <string name="send_deposit_bitcoin_address">Dirección Bitcoin</string>
+    <string name="send_deposit_bitcoin_create_button">Transferir Bitcoin</string>
 </resources>
