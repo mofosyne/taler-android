@@ -235,9 +235,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
 
             val normalizedURL = u.lowercase(ROOT)
+            var ext = false
             val action = normalizedURL.substring(
                 if (normalizedURL.startsWith("taler://", ignoreCase = true)) {
                     "taler://".length
+                } else if (normalizedURL.startsWith("ext+taler://", ignoreCase = true)) {
+                    ext = true
+                    "ext+taler://".length
                 } else if (normalizedURL.startsWith("taler+http://", ignoreCase = true) &&
                     model.devMode.value == true
                 ) {
@@ -247,37 +251,42 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
             )
 
+            // Remove ext+ scheme prefix if present
+            val u2 = if (ext) {
+                "taler://" + u.substring("ext+taler://".length)
+            } else u
+
             when {
                 action.startsWith("pay/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptPayment)
-                    model.paymentManager.preparePay(u)
+                    model.paymentManager.preparePay(u2)
                 }
                 action.startsWith("tip/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     nav.navigate(R.id.action_global_promptTip)
-                    model.tipManager.prepareTip(u)
+                    model.tipManager.prepareTip(u2)
                 }
                 action.startsWith("withdraw/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     // there's more than one entry point, so use global action
                     nav.navigate(R.id.action_global_promptWithdraw)
-                    model.withdrawManager.getWithdrawalDetails(u)
+                    model.withdrawManager.getWithdrawalDetails(u2)
                 }
                 action.startsWith("refund/", ignoreCase = true) -> {
                     model.showProgressBar.value = true
-                    model.refundManager.refund(u).observe(this, Observer(::onRefundResponse))
+                    model.refundManager.refund(u2).observe(this, Observer(::onRefundResponse))
                 }
                 action.startsWith("pay-pull/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_pull_payment)
-                    model.peerManager.checkPeerPullPayment(u)
+                    model.peerManager.checkPeerPullPayment(u2)
                 }
                 action.startsWith("pay-push/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_push_payment)
-                    model.peerManager.checkPeerPushPayment(u)
+                    model.peerManager.checkPeerPushPayment(u2)
                 }
                 else -> {
-                    showError(R.string.error_unsupported_uri, "From: $from\nURI: $u")
+                    showError(R.string.error_unsupported_uri, "From: $from\nURI: $u2")
                 }
             }
         }

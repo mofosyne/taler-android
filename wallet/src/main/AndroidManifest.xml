@@ -65,6 +65,10 @@
                 <data
                     android:scheme="TALER"
                     tools:ignore="AppLinkUrlError" />
+                <data android:scheme="ext+taler" />
+                <data
+                    android:scheme="EXT+TALER"
+                    tools:ignore="AppLinkUrlError" />
                 <data android:scheme="payto" />
             </intent-filter>
         </activity>
