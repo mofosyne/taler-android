@@ -11,7 +11,7 @@ buildscript {
         // check https://android-rebuilds.beuc.net/ for availability of free build tools
         build_tools_version = "33.0.1"
         // should debug build types be minified with D8 as well? good for catching issues early
-        minify_debug = true
+        minify_debug = false
     }
     repositories {
         google()
