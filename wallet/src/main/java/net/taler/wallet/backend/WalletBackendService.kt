@@ -26,6 +26,7 @@ import android.os.Messenger
 import android.os.RemoteException
 import android.util.Log
 import net.taler.qtart.TalerWalletCore
+import net.taler.wallet.BuildConfig
 import net.taler.wallet.HostCardEmulatorService
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -61,8 +62,8 @@ class WalletBackendService : Service() {
         walletCore.setMessageHandler {
             this@WalletBackendService.handleAkonoMessage(it)
         }
-        walletCore.setStdoutHandler {
-            Log.d(TAG, "wallet log: $it")
+        if (BuildConfig.DEBUG) walletCore.setStdoutHandler {
+            Log.d(TAG, it)
         }
         walletCore.run()
         sendInitMessage()
@@ -76,6 +77,7 @@ class WalletBackendService : Service() {
         val args = JSONObject()
         msg.put("args", args)
         args.put("persistentStoragePath", "${application.filesDir}/$WALLET_DB")
+        args.put("logLevel", "INFO")
         Log.d(TAG, "init message: ${msg.toString(2)}")
         walletCore.sendRequest(msg.toString())
     }
