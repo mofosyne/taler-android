@@ -89,6 +89,17 @@ class TransactionManager(
         }
     }
 
+    /**
+     * Returns true if given [transactionId] was found for given [currency] and selected.
+     */
+    fun selectTransaction(currency: String, transactionId: String): Boolean {
+        val t = allTransactions[currency]?.find {
+            it.transactionId == transactionId
+        } ?: return false
+        selectedTransaction = t
+        return true
+    }
+
     fun deleteTransaction(transactionId: String) = scope.launch {
         api.request<Unit>("deleteTransaction") {
             put("transactionId", transactionId)

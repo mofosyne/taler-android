@@ -23,9 +23,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.EventObserver
 import net.taler.common.fadeIn
@@ -43,6 +45,7 @@ class PromptWithdrawFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
+    private val transactionManager by lazy { model.transactionManager }
 
     private lateinit var ui: FragmentPromptWithdrawBinding
 
@@ -88,9 +91,18 @@ class PromptWithdrawFragment : Fragment() {
         is WithdrawStatus.Success -> {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null
-            findNavController().navigate(R.id.action_promptWithdraw_to_nav_main)
-            model.showTransactions(status.currency)
-            Snackbar.make(requireView(), R.string.withdraw_initiated, LENGTH_LONG).show()
+            lifecycleScope.launch {
+                // FIXME this is hacky and blocks the UI thread, not good for many transactions
+                // load new transactions first and wait for result
+                transactionManager.loadTransactions().join()
+                // now select new transaction based on currency and ID
+                if (transactionManager.selectTransaction(status.currency, status.transactionId)) {
+                    findNavController().navigate(R.id.action_promptWithdraw_to_nav_transactions_detail_withdrawal)
+                } else {
+                    findNavController().navigate(R.id.action_promptWithdraw_to_nav_main)
+                }
+                Snackbar.make(requireView(), R.string.withdraw_initiated, LENGTH_LONG).show()
+            }
         }
         is WithdrawStatus.Error -> {
             model.showProgressBar.value = false
@@ -115,8 +127,13 @@ class PromptWithdrawFragment : Fragment() {
     }
 
     private fun onReceivedDetails(s: ReceivedDetails) {
-        showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri,
-            s.ageRestrictionOptions)
+        showContent(
+            amountRaw = s.amountRaw,
+            amountEffective = s.amountEffective,
+            exchange = s.exchangeBaseUrl,
+            uri = s.talerWithdrawUri,
+            ageRestrictionOptions = s.ageRestrictionOptions,
+        )
         ui.confirmWithdrawButton.apply {
             text = getString(R.string.withdraw_button_confirm)
             setOnClickListener {

@@ -59,7 +59,7 @@ sealed class WithdrawStatus {
     ) : WithdrawStatus()
 
     object Withdrawing : WithdrawStatus()
-    data class Success(val currency: String) : WithdrawStatus()
+    data class Success(val currency: String, val transactionId: String) : WithdrawStatus()
     sealed class ManualTransferRequired : WithdrawStatus() {
         abstract val uri: Uri
         abstract val transactionId: String?
@@ -106,6 +106,11 @@ data class WithdrawalDetails(
     val amountRaw: Amount,
     val amountEffective: Amount,
     val ageRestrictionOptions: List<Int>? = null,
+)
+
+@Serializable
+data class AcceptWithdrawalResponse(
+    val transactionId: String,
 )
 
 @Serializable
@@ -249,14 +254,15 @@ class WithdrawManager(
         status: ReceivedDetails,
         restrictAge: Int? = null,
     ) {
-        api.request<Unit>("acceptBankIntegratedWithdrawal") {
+        api.request("acceptBankIntegratedWithdrawal", AcceptWithdrawalResponse.serializer()) {
             restrictAge?.let { put("restrictAge", restrictAge) }
             put("exchangeBaseUrl", status.exchangeBaseUrl)
             put("talerWithdrawUri", status.talerWithdrawUri)
         }.onError {
             handleError("acceptBankIntegratedWithdrawal", it)
         }.onSuccess {
-            withdrawStatus.value = WithdrawStatus.Success(status.amountRaw.currency)
+            withdrawStatus.value =
+                WithdrawStatus.Success(status.amountRaw.currency, it.transactionId)
         }
     }
 

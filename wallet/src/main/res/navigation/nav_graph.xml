@@ -302,6 +302,10 @@
             app:destination="@id/nav_exchange_manual_withdrawal_success"
             app:popUpTo="@id/nav_main" />
         <action
+            android:id="@+id/action_promptWithdraw_to_nav_transactions_detail_withdrawal"
+            app:destination="@id/nav_transactions_detail_withdrawal"
+            app:popUpTo="@id/nav_main" />
+        <action
             android:id="@+id/action_promptWithdraw_to_errorFragment"
             app:destination="@id/errorFragment"
             app:popUpTo="@id/nav_main" />
