@@ -23,13 +23,14 @@ import net.taler.wallet.backend.TalerErrorInfo
 sealed class IncomingState
 object IncomingChecking : IncomingState()
 open class IncomingTerms(
-    val amount: Amount,
+    val amountRaw: Amount,
+    val amountEffective: Amount,
     val contractTerms: PeerContractTerms,
     val id: String,
 ) : IncomingState()
 
 class IncomingAccepting(s: IncomingTerms) :
-    IncomingTerms(s.amount, s.contractTerms, s.id)
+    IncomingTerms(s.amountRaw, s.amountEffective, s.contractTerms, s.id)
 
 object IncomingAccepted : IncomingState()
 data class IncomingError(
@@ -43,15 +44,17 @@ data class PeerContractTerms(
 )
 
 @Serializable
-data class CheckPeerPullPaymentResponse(
-    val amount: Amount,
+data class PreparePeerPullDebitResponse(
     val contractTerms: PeerContractTerms,
+    val amountRaw: Amount,
+    val amountEffective: Amount,
     val peerPullPaymentIncomingId: String,
 )
 
 @Serializable
-data class CheckPeerPushPaymentResponse(
-    val amount: Amount,
+data class PreparePeerPushCreditResponse(
     val contractTerms: PeerContractTerms,
+    val amountRaw: Amount,
+    val amountEffective: Amount,
     val peerPushPaymentIncomingId: String,
 )

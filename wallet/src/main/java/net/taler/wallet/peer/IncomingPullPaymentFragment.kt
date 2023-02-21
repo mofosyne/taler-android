@@ -51,7 +51,7 @@ class IncomingPullPaymentFragment : Fragment() {
                 TalerSurface {
                     val state = peerManager.incomingPullState.collectAsStateLifecycleAware()
                     IncomingComposable(state, incomingPull) { terms ->
-                        peerManager.acceptPeerPullPayment(terms)
+                        peerManager.confirmPeerPullDebit(terms)
                     }
                 }
             }

@@ -279,11 +279,11 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
                 action.startsWith("pay-pull/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_pull_payment)
-                    model.peerManager.checkPeerPullPayment(u2)
+                    model.peerManager.preparePeerPullDebit(u2)
                 }
                 action.startsWith("pay-push/", ignoreCase = true) -> {
                     nav.navigate(R.id.action_global_prompt_push_payment)
-                    model.peerManager.checkPeerPushPayment(u2)
+                    model.peerManager.preparePeerPushCredit(u2)
                 }
                 else -> {
                     showError(R.string.error_unsupported_uri, "From: $from\nURI: $u2")

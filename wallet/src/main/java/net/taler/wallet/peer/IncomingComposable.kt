@@ -86,12 +86,12 @@ fun IncomingComposable(
         )
         when (val s = state.value) {
             IncomingChecking -> PeerPullCheckingComposable()
-            is IncomingTerms -> PeerPullTermsComposable(s, onAccept, data)
             is IncomingAccepting -> PeerPullTermsComposable(s, onAccept, data)
+            is IncomingTerms -> PeerPullTermsComposable(s, onAccept, data)
+            is IncomingError -> PeerPullErrorComposable(s)
             IncomingAccepted -> {
                 // we navigate away, don't show anything
             }
-            is IncomingError -> PeerPullErrorComposable(s)
         }
     }
 }
@@ -121,7 +121,9 @@ fun ColumnScope.PeerPullTermsComposable(
     Spacer(modifier = Modifier.weight(1f))
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier.align(End),
@@ -137,15 +139,18 @@ fun ColumnScope.PeerPullTermsComposable(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            val fee =
-                Amount.zero(terms.amount.currency) // terms.amount - terms.contractTerms.amount
-            if (!fee.isZero()) {
-                Text(
-                    modifier = Modifier.align(End),
-                    text = stringResource(id = R.string.payment_fee, fee),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+            // this gets used for credit and debit, so fee calculation differs
+            val fee = if (terms.amountRaw > terms.amountEffective) {
+                terms.amountRaw - terms.amountEffective
+            } else {
+                terms.amountEffective - terms.amountRaw
             }
+            if (!fee.isZero()) Text(
+                modifier = Modifier.align(End),
+                text = stringResource(id = R.string.amount_negative, fee),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+            )
             if (terms is IncomingAccepting) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -199,7 +204,8 @@ fun PeerPullCheckingPreview() {
 fun PeerPullTermsPreview() {
     Surface {
         val terms = IncomingTerms(
-            amount = Amount.fromDouble("TESTKUDOS", 42.23),
+            amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
+            amountEffective = Amount.fromDouble("TESTKUDOS", 42.423),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
                 amount = Amount.fromDouble("TESTKUDOS", 23.42),
@@ -218,7 +224,8 @@ fun PeerPullTermsPreview() {
 fun PeerPullAcceptingPreview() {
     Surface {
         val terms = IncomingTerms(
-            amount = Amount.fromDouble("TESTKUDOS", 42.23),
+            amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
+            amountEffective = Amount.fromDouble("TESTKUDOS", 42.123),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
                 amount = Amount.fromDouble("TESTKUDOS", 23.42),
@@ -237,7 +244,11 @@ fun PeerPullAcceptingPreview() {
 fun PeerPullPayErrorPreview() {
     Surface {
         @SuppressLint("UnrememberedMutableState")
-        val s = mutableStateOf(IncomingError(TalerErrorInfo(WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "msg")))
+        val s = mutableStateOf(
+            IncomingError(
+                info = TalerErrorInfo(WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "msg"),
+            )
+        )
         IncomingComposable(s, incomingPush) {}
     }
 }

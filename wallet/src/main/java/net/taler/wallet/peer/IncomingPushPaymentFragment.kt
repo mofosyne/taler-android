@@ -51,7 +51,7 @@ class IncomingPushPaymentFragment : Fragment() {
                 TalerSurface {
                     val state = peerManager.incomingPushState.collectAsStateLifecycleAware()
                     IncomingComposable(state, incomingPush) { terms ->
-                        peerManager.acceptPeerPushPayment(terms)
+                        peerManager.confirmPeerPushCredit(terms)
                     }
                 }
             }

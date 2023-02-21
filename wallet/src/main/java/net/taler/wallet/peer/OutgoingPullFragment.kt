@@ -78,6 +78,6 @@ class OutgoingPullFragment : Fragment() {
     }
 
     private fun onCreateInvoice(amount: Amount, summary: String, exchange: ExchangeItem) {
-        peerManager.initiatePullPayment(amount, summary, exchange)
+        peerManager.initiatePeerPullCredit(amount, summary, exchange)
     }
 }

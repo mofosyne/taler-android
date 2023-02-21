@@ -52,11 +52,11 @@ class PeerManager(
     private val _incomingPushState = MutableStateFlow<IncomingState>(IncomingChecking)
     val incomingPushState: StateFlow<IncomingState> = _incomingPushState
 
-    fun initiatePullPayment(amount: Amount, summary: String, exchange: ExchangeItem) {
+    fun initiatePeerPullCredit(amount: Amount, summary: String, exchange: ExchangeItem) {
         _outgoingPullState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
             val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
-            api.request("initiatePeerPullPayment", InitiatePeerPullPaymentResponse.serializer()) {
+            api.request("initiatePeerPullCredit", InitiatePeerPullPaymentResponse.serializer()) {
                 put("exchangeBaseUrl", exchange.exchangeBaseUrl)
                 put("partialContractTerms", JSONObject().apply {
                     put("amount", amount.toJSONString())
@@ -67,7 +67,7 @@ class PeerManager(
                 val qrCode = QrCodeManager.makeQrCode(it.talerUri)
                 _outgoingPullState.value = OutgoingResponse(it.talerUri, qrCode)
             }.onError { error ->
-                Log.e(TAG, "got initiatePeerPullPayment error result $error")
+                Log.e(TAG, "got initiatePeerPullCredit error result $error")
                 _outgoingPullState.value = OutgoingError(error)
             }
         }
@@ -77,11 +77,11 @@ class PeerManager(
         _outgoingPullState.value = OutgoingIntro
     }
 
-    fun initiatePeerPushPayment(amount: Amount, summary: String) {
+    fun initiatePeerPushDebit(amount: Amount, summary: String) {
         _outgoingPushState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
             val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
-            api.request("initiatePeerPushPayment", InitiatePeerPushPaymentResponse.serializer()) {
+            api.request("initiatePeerPushDebit", InitiatePeerPullCreditResponse.serializer()) {
                 put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {
                     put("amount", amount.toJSONString())
@@ -92,7 +92,7 @@ class PeerManager(
                 val qrCode = QrCodeManager.makeQrCode(response.talerUri)
                 _outgoingPushState.value = OutgoingResponse(response.talerUri, qrCode)
             }.onError { error ->
-                Log.e(TAG, "got initiatePeerPushPayment error result $error")
+                Log.e(TAG, "got initiatePeerPushDebit error result $error")
                 _outgoingPushState.value = OutgoingError(error)
             }
         }
@@ -102,65 +102,67 @@ class PeerManager(
         _outgoingPushState.value = OutgoingIntro
     }
 
-    fun checkPeerPullPayment(talerUri: String) {
+    fun preparePeerPullDebit(talerUri: String) {
         _incomingPullState.value = IncomingChecking
         scope.launch(Dispatchers.IO) {
-            api.request("checkPeerPullPayment", CheckPeerPullPaymentResponse.serializer()) {
+            api.request("preparePeerPullDebit", PreparePeerPullDebitResponse.serializer()) {
                 put("talerUri", talerUri)
             }.onSuccess { response ->
                 _incomingPullState.value = IncomingTerms(
-                    amount = response.amount,
+                    amountRaw = response.amountRaw,
+                    amountEffective = response.amountEffective,
                     contractTerms = response.contractTerms,
                     id = response.peerPullPaymentIncomingId,
                 )
             }.onError { error ->
-                Log.e(TAG, "got checkPeerPushPayment error result $error")
+                Log.e(TAG, "got preparePeerPullDebit error result $error")
                 _incomingPullState.value = IncomingError(error)
             }
         }
     }
 
-    fun acceptPeerPullPayment(terms: IncomingTerms) {
+    fun confirmPeerPullDebit(terms: IncomingTerms) {
         _incomingPullState.value = IncomingAccepting(terms)
         scope.launch(Dispatchers.IO) {
-            api.request<Unit>("acceptPeerPullPayment") {
+            api.request<Unit>("confirmPeerPullDebit") {
                 put("peerPullPaymentIncomingId", terms.id)
             }.onSuccess {
                 _incomingPullState.value = IncomingAccepted
             }.onError { error ->
-                Log.e(TAG, "got checkPeerPushPayment error result $error")
+                Log.e(TAG, "got confirmPeerPullDebit error result $error")
                 _incomingPullState.value = IncomingError(error)
             }
         }
     }
 
-    fun checkPeerPushPayment(talerUri: String) {
+    fun preparePeerPushCredit(talerUri: String) {
         _incomingPushState.value = IncomingChecking
         scope.launch(Dispatchers.IO) {
-            api.request("checkPeerPushPayment", CheckPeerPushPaymentResponse.serializer()) {
+            api.request("preparePeerPushCredit", PreparePeerPushCreditResponse.serializer()) {
                 put("talerUri", talerUri)
             }.onSuccess { response ->
                 _incomingPushState.value = IncomingTerms(
-                    amount = response.amount,
+                    amountRaw = response.amountRaw,
+                    amountEffective = response.amountEffective,
                     contractTerms = response.contractTerms,
                     id = response.peerPushPaymentIncomingId,
                 )
             }.onError { error ->
-                Log.e(TAG, "got checkPeerPushPayment error result $error")
+                Log.e(TAG, "got preparePeerPushCredit error result $error")
                 _incomingPushState.value = IncomingError(error)
             }
         }
     }
 
-    fun acceptPeerPushPayment(terms: IncomingTerms) {
+    fun confirmPeerPushCredit(terms: IncomingTerms) {
         _incomingPushState.value = IncomingAccepting(terms)
         scope.launch(Dispatchers.IO) {
-            api.request<Unit>("acceptPeerPushPayment") {
+            api.request<Unit>("confirmPeerPushCredit") {
                 put("peerPushPaymentIncomingId", terms.id)
             }.onSuccess {
                 _incomingPushState.value = IncomingAccepted
             }.onError { error ->
-                Log.e(TAG, "got checkPeerPushPayment error result $error")
+                Log.e(TAG, "got confirmPeerPushCredit error result $error")
                 _incomingPushState.value = IncomingError(error)
             }
         }

@@ -41,7 +41,7 @@ data class InitiatePeerPullPaymentResponse(
 )
 
 @Serializable
-data class InitiatePeerPushPaymentResponse(
+data class InitiatePeerPullCreditResponse(
     val exchangeBaseUrl: String,
     val talerUri: String,
 )

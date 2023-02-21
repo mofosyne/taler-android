@@ -72,6 +72,6 @@ class OutgoingPushFragment : Fragment() {
     }
 
     private fun onSend(amount: Amount, summary: String) {
-        peerManager.initiatePeerPushPayment(amount, summary)
+        peerManager.initiatePeerPushDebit(amount, summary)
     }
 }
