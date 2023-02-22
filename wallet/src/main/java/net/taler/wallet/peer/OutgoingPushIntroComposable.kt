@@ -16,8 +16,8 @@
 
 package net.taler.wallet.peer
 
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,10 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutgoingPushIntroComposable(
+    state: OutgoingState,
     amount: Amount,
     onSend: (amount: Amount, summary: String) -> Unit,
 ) {
@@ -54,27 +55,28 @@ fun OutgoingPushIntroComposable(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(16.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = CenterHorizontally,
+        verticalArrangement = spacedBy(16.dp),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(16.dp),
-        ) {
+        Text(
+            text = amount.toString(),
+            softWrap = false,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        if (state is OutgoingChecked) {
+            val fee = state.amountEffective - state.amountRaw
             Text(
-                modifier = Modifier,
-                text = amount.toString(),
+                text = stringResource(id = R.string.payment_fee, fee),
                 softWrap = false,
-                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.error,
             )
         }
 
         var subject by rememberSaveable { mutableStateOf("") }
         OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             value = subject,
             onValueChange = { input ->
@@ -93,19 +95,16 @@ fun OutgoingPushIntroComposable(
         )
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 5.dp, end = 16.dp),
+                .fillMaxWidth(),
             color = if (subject.isBlank()) MaterialTheme.colorScheme.error else Color.Unspecified,
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )
         Text(
-            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
             text = stringResource(R.string.send_peer_warning),
         )
         Button(
-            modifier = Modifier.padding(16.dp),
-            enabled = subject.isNotBlank(),
+            enabled = state is OutgoingChecked && subject.isNotBlank(),
             onClick = {
                 onSend(amount, subject)
             },
@@ -117,8 +116,20 @@ fun OutgoingPushIntroComposable(
 
 @Preview
 @Composable
-fun PeerPushIntroComposablePreview() {
+fun PeerPushIntroComposableCheckingPreview() {
     Surface {
-        OutgoingPushIntroComposable(Amount.fromDouble("TESTKUDOS", 42.23)) { _, _ -> }
+        val state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking
+        OutgoingPushIntroComposable(state, Amount.fromDouble("TESTKUDOS", 42.23)) { _, _ -> }
+    }
+}
+
+@Preview
+@Composable
+fun PeerPushIntroComposableCheckedPreview() {
+    Surface {
+        val amountEffective = Amount.fromDouble("TESTKUDOS", 42.23)
+        val amountRaw = Amount.fromDouble("TESTKUDOS", 42.42)
+        val state = OutgoingChecked(amountEffective, amountRaw)
+        OutgoingPushIntroComposable(state, amountEffective) { _, _ -> }
     }
 }

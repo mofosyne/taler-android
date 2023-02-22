@@ -58,7 +58,9 @@ fun OutgoingPushResultComposable(state: OutgoingState, onClose: () -> Unit) {
             text = stringResource(id = R.string.send_peer_payment_instruction),
         )
         when (state) {
-            OutgoingIntro -> error("Result composable with PullPaymentIntro")
+            OutgoingIntro, OutgoingChecking, is OutgoingChecked -> {
+                error("Result composable with ${state::class.simpleName}")
+            }
             is OutgoingCreating -> PeerPushCreatingComposable()
             is OutgoingResponse -> PeerPushResponseComposable(state)
             is OutgoingError -> PeerPushErrorComposable(state)

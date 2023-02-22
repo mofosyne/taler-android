@@ -77,6 +77,23 @@ class PeerManager(
         _outgoingPullState.value = OutgoingIntro
     }
 
+    fun checkPeerPushDebit(amount: Amount) {
+        _outgoingPushState.value = OutgoingChecking
+        scope.launch(Dispatchers.IO) {
+            api.request("checkPeerPushDebit", CheckPeerPushDebitResponse.serializer()) {
+                put("amount", amount.toJSONString())
+            }.onSuccess { response ->
+                _outgoingPushState.value = OutgoingChecked(
+                    amountRaw = response.amountRaw,
+                    amountEffective = response.amountEffective,
+                )
+            }.onError { error ->
+                Log.e(TAG, "got checkPeerPushDebit error result $error")
+                _outgoingPushState.value = OutgoingError(error)
+            }
+        }
+    }
+
     fun initiatePeerPushDebit(amount: Amount, summary: String) {
         _outgoingPushState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {

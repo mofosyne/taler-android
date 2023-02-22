@@ -18,10 +18,16 @@ package net.taler.wallet.peer
 
 import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
+import net.taler.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
 
 sealed class OutgoingState
 object OutgoingIntro : OutgoingState()
+object OutgoingChecking : OutgoingState()
+data class OutgoingChecked(
+    val amountRaw: Amount,
+    val amountEffective: Amount,
+) : OutgoingState()
 object OutgoingCreating : OutgoingState()
 data class OutgoingResponse(
     val talerUri: String,
@@ -38,6 +44,12 @@ data class InitiatePeerPullPaymentResponse(
      * Taler URI for the other party to make the payment that was requested.
      */
     val talerUri: String,
+)
+
+@Serializable
+data class CheckPeerPushDebitResponse(
+    val amountRaw: Amount,
+    val amountEffective: Amount,
 )
 
 @Serializable

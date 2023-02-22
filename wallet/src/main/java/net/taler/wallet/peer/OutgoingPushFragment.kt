@@ -45,15 +45,18 @@ class OutgoingPushFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 TalerSurface {
-                    val state = peerManager.pushState.collectAsStateLifecycleAware()
-                    if (state.value is OutgoingIntro) {
-                        OutgoingPushIntroComposable(
-                            amount = amount,
-                            onSend = this@OutgoingPushFragment::onSend,
-                        )
-                    } else {
-                        OutgoingPushResultComposable(state.value) {
-                            findNavController().popBackStack()
+                    when (val state = peerManager.pushState.collectAsStateLifecycleAware().value) {
+                        is OutgoingIntro, OutgoingChecking, is OutgoingChecked -> {
+                            OutgoingPushIntroComposable(
+                                state = state,
+                                amount = amount,
+                                onSend = this@OutgoingPushFragment::onSend,
+                            )
+                        }
+                        OutgoingCreating, is OutgoingResponse, is OutgoingError -> {
+                            OutgoingPushResultComposable(state) {
+                                findNavController().popBackStack()
+                            }
                         }
                     }
                 }

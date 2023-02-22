@@ -82,18 +82,14 @@ class SendFundsFragment : Fragment() {
         activity?.setTitle(R.string.transactions_send_funds)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!requireActivity().isChangingConfigurations) peerManager.resetPushPayment()
-    }
-
-    fun onDeposit(amount: Amount) {
+    private fun onDeposit(amount: Amount) {
         val bundle = bundleOf("amount" to amount.toJSONString())
         findNavController().navigate(R.id.action_sendFunds_to_nav_deposit, bundle)
     }
 
-    fun onPeerPush(amount: Amount) {
+    private fun onPeerPush(amount: Amount) {
         val bundle = bundleOf("amount" to amount.toJSONString())
+        peerManager.checkPeerPushDebit(amount)
         findNavController().navigate(R.id.action_sendFunds_to_nav_peer_push, bundle)
     }
 }
