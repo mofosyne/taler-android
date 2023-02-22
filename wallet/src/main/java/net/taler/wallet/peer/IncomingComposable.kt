@@ -52,16 +52,19 @@ import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 
 data class IncomingData(
+    val isCredit: Boolean,
     @StringRes val intro: Int,
     @StringRes val button: Int,
 )
 
 val incomingPush = IncomingData(
+    isCredit = true,
     intro = R.string.receive_peer_payment_intro,
     button = R.string.receive_peer_payment_title,
 )
 
 val incomingPull = IncomingData(
+    isCredit = false,
     intro = R.string.pay_peer_intro,
     button = R.string.payment_button_confirm,
 )
@@ -140,14 +143,19 @@ fun ColumnScope.PeerPullTermsComposable(
                 )
             }
             // this gets used for credit and debit, so fee calculation differs
-            val fee = if (terms.amountRaw > terms.amountEffective) {
+            val fee = if (data.isCredit) {
                 terms.amountRaw - terms.amountEffective
             } else {
                 terms.amountEffective - terms.amountRaw
             }
+            val feeStr = if (data.isCredit) {
+                stringResource(R.string.amount_negative, fee)
+            } else {
+                stringResource(R.string.amount_positive, fee)
+            }
             if (!fee.isZero()) Text(
                 modifier = Modifier.align(End),
-                text = stringResource(id = R.string.amount_negative, fee),
+                text = feeStr,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.error,
             )
