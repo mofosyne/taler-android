@@ -90,14 +90,23 @@ class TransactionManager(
     }
 
     /**
-     * Returns true if given [transactionId] was found for given [currency] and selected.
+     * Returns true if given [transactionId] was found and selected, false otherwise.
      */
-    fun selectTransaction(currency: String, transactionId: String): Boolean {
-        val t = allTransactions[currency]?.find {
-            it.transactionId == transactionId
-        } ?: return false
-        selectedTransaction = t
-        return true
+    suspend fun selectTransaction(transactionId: String): Boolean {
+        var transaction: Transaction? = null
+        api.request("getTransactionById", Transaction.serializer()) {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error getting transaction $it")
+        }.onSuccess { result ->
+            transaction = result
+        }
+        return if (transaction != null) {
+            selectedTransaction = transaction
+            true
+        } else {
+            false
+        }
     }
 
     fun deleteTransaction(transactionId: String) = scope.launch {

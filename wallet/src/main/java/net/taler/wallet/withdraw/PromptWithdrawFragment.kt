@@ -92,11 +92,8 @@ class PromptWithdrawFragment : Fragment() {
             model.showProgressBar.value = false
             withdrawManager.withdrawStatus.value = null
             lifecycleScope.launch {
-                // FIXME this is hacky and blocks the UI thread, not good for many transactions
-                // load new transactions first and wait for result
-                transactionManager.loadTransactions().join()
                 // now select new transaction based on currency and ID
-                if (transactionManager.selectTransaction(status.currency, status.transactionId)) {
+                if (transactionManager.selectTransaction(status.transactionId)) {
                     findNavController().navigate(R.id.action_promptWithdraw_to_nav_transactions_detail_withdrawal)
                 } else {
                     findNavController().navigate(R.id.action_promptWithdraw_to_nav_main)
