@@ -69,7 +69,7 @@ class OutgoingPullFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.receive_peer_title)
+        activity?.setTitle(R.string.send_peer_title)
     }
 
     override fun onDestroy() {
