@@ -62,6 +62,7 @@ import net.taler.wallet.exchanges.ExchangeItem
 class ReceiveFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager get() = model.exchangeManager
+    private val peerManager get() = model.peerManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,6 +108,7 @@ class ReceiveFundsFragment : Fragment() {
 
     private fun onPeerPull(amount: Amount) {
         val bundle = bundleOf("amount" to amount.toJSONString())
+        peerManager.checkPeerPullCredit(amount)
         findNavController().navigate(R.id.action_receiveFunds_to_nav_peer_pull, bundle)
     }
 }

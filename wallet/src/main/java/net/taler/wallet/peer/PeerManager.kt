@@ -28,8 +28,11 @@ import net.taler.common.Amount
 import net.taler.common.QrCodeManager
 import net.taler.common.Timestamp
 import net.taler.wallet.TAG
+import net.taler.wallet.backend.TalerErrorCode.UNKNOWN
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeItem
+import net.taler.wallet.exchanges.ExchangeManager
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit.DAYS
 
@@ -37,6 +40,7 @@ const val MAX_LENGTH_SUBJECT = 100
 
 class PeerManager(
     private val api: WalletBackendApi,
+    private val exchangeManager: ExchangeManager,
     private val scope: CoroutineScope,
 ) {
 
@@ -51,6 +55,32 @@ class PeerManager(
 
     private val _incomingPushState = MutableStateFlow<IncomingState>(IncomingChecking)
     val incomingPushState: StateFlow<IncomingState> = _incomingPushState
+
+    fun checkPeerPullCredit(amount: Amount) {
+        _outgoingPullState.value = OutgoingChecking
+        scope.launch(Dispatchers.IO) {
+            val exchangeItem = exchangeManager.findExchange(amount.currency)
+            if (exchangeItem == null) {
+                _outgoingPullState.value = OutgoingError(
+                    TalerErrorInfo(UNKNOWN, "No exchange found for ${amount.currency}")
+                )
+                return@launch
+            }
+            api.request("checkPeerPullCredit", CheckPeerPullCreditResponse.serializer()) {
+                put("exchangeBaseUrl", exchangeItem.exchangeBaseUrl)
+                put("amount", amount.toJSONString())
+            }.onSuccess {
+                _outgoingPullState.value = OutgoingChecked(
+                    amountRaw = it.amountRaw,
+                    amountEffective = it.amountEffective,
+                    exchangeItem = exchangeItem,
+                )
+            }.onError { error ->
+                Log.e(TAG, "got checkPeerPullCredit error result $error")
+                _outgoingPullState.value = OutgoingError(error)
+            }
+        }
+    }
 
     fun initiatePeerPullCredit(amount: Amount, summary: String, exchange: ExchangeItem) {
         _outgoingPullState.value = OutgoingCreating
@@ -86,6 +116,7 @@ class PeerManager(
                 _outgoingPushState.value = OutgoingChecked(
                     amountRaw = response.amountRaw,
                     amountEffective = response.amountEffective,
+                    // FIXME add exchangeItem once available in API
                 )
             }.onError { error ->
                 Log.e(TAG, "got checkPeerPushDebit error result $error")

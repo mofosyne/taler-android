@@ -16,21 +16,19 @@
 
 package net.taler.wallet.peer
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,34 +39,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.exchanges.ExchangeItem
+import net.taler.wallet.transactions.AmountType
+import net.taler.wallet.transactions.TransactionAmountComposable
+import net.taler.wallet.transactions.TransactionInfoComposable
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutgoingPullIntroComposable(
     amount: Amount,
-    exchangeState: State<ExchangeItem?>,
+    state: OutgoingState,
     onCreateInvoice: (amount: Amount, subject: String, exchange: ExchangeItem) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(16.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = CenterHorizontally,
     ) {
         var subject by rememberSaveable { mutableStateOf("") }
         val focusRequester = remember { FocusRequester() }
-        val exchangeItem = exchangeState.value
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,30 +101,33 @@ fun OutgoingPullIntroComposable(
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(id = R.string.amount_chosen),
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.amount_chosen),
+            amount = amount,
+            amountType = AmountType.Positive,
         )
-        Text(
-            modifier = Modifier.padding(16.dp),
-            fontSize = 24.sp,
-            color = colorResource(R.color.green),
-            text = amount.toString(),
-        )
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.withdraw_exchange),
-        )
-        Text(
-            modifier = Modifier.padding(16.dp),
-            fontSize = 24.sp,
-            text = if (exchangeItem == null) "" else cleanExchange(exchangeItem.exchangeBaseUrl),
+        if (state is OutgoingChecked) {
+            val fee = state.amountRaw - state.amountEffective
+            if (!fee.isZero()) TransactionAmountComposable(
+                label = stringResource(id = R.string.withdraw_fees),
+                amount = fee,
+                amountType = AmountType.Negative,
+            )
+        }
+        val exchangeItem = (state as? OutgoingChecked)?.exchangeItem
+        TransactionInfoComposable(
+            label = stringResource(id = R.string.withdraw_exchange),
+            info = if (exchangeItem == null) "" else cleanExchange(exchangeItem.exchangeBaseUrl),
         )
         Button(
             modifier = Modifier.padding(16.dp),
-            enabled = subject.isNotBlank() && exchangeItem != null,
+            enabled = subject.isNotBlank() && state is OutgoingChecked,
             onClick = {
-                onCreateInvoice(amount, subject, exchangeItem ?: error("clickable without exchange"))
+                onCreateInvoice(
+                    amount,
+                    subject,
+                    exchangeItem ?: error("clickable without exchange")
+                )
             },
         ) {
             Text(text = stringResource(R.string.receive_peer_create_button))
@@ -134,11 +137,25 @@ fun OutgoingPullIntroComposable(
 
 @Preview
 @Composable
-fun PreviewReceiveFundsIntro() {
+fun PreviewReceiveFundsCheckingIntro() {
     Surface {
-        @SuppressLint("UnrememberedMutableState")
-        val exchangeFlow =
-            mutableStateOf(ExchangeItem("https://example.org", "TESTKUDOS", emptyList()))
-        OutgoingPullIntroComposable(Amount.fromDouble("TESTKUDOS", 42.23), exchangeFlow) { _, _, _ -> }
+        OutgoingPullIntroComposable(
+            Amount.fromDouble("TESTKUDOS", 42.23),
+            if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking,
+        ) { _, _, _ -> }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewReceiveFundsCheckedIntro() {
+    Surface {
+        val amountRaw = Amount.fromDouble("TESTKUDOS", 42.42)
+        val amountEffective = Amount.fromDouble("TESTKUDOS", 42.23)
+        val exchangeItem = ExchangeItem("https://example.org", "TESTKUDOS", emptyList())
+        OutgoingPullIntroComposable(
+            Amount.fromDouble("TESTKUDOS", 42.23),
+            OutgoingChecked(amountRaw, amountEffective, exchangeItem)
+        ) { _, _, _ -> }
     }
 }

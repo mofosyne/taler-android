@@ -99,7 +99,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
-    val peerManager: PeerManager = PeerManager(api, viewModelScope)
+    val peerManager: PeerManager = PeerManager(api, exchangeManager, viewModelScope)
     val settingsManager: SettingsManager = SettingsManager(app.applicationContext, viewModelScope)
     val accountManager: AccountManager = AccountManager(api, viewModelScope)
     val depositManager: DepositManager = DepositManager(api, viewModelScope)

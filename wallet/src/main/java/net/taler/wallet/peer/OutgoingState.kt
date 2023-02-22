@@ -20,6 +20,7 @@ import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
+import net.taler.wallet.exchanges.ExchangeItem
 
 sealed class OutgoingState
 object OutgoingIntro : OutgoingState()
@@ -27,6 +28,7 @@ object OutgoingChecking : OutgoingState()
 data class OutgoingChecked(
     val amountRaw: Amount,
     val amountEffective: Amount,
+    val exchangeItem: ExchangeItem? = null,
 ) : OutgoingState()
 object OutgoingCreating : OutgoingState()
 data class OutgoingResponse(
@@ -37,6 +39,13 @@ data class OutgoingResponse(
 data class OutgoingError(
     val info: TalerErrorInfo,
 ) : OutgoingState()
+
+@Serializable
+data class CheckPeerPullCreditResponse(
+    val exchangeBaseUrl: String,
+    val amountRaw: Amount,
+    val amountEffective: Amount,
+)
 
 @Serializable
 data class InitiatePeerPullPaymentResponse(

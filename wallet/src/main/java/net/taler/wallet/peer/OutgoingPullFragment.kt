@@ -44,22 +44,21 @@ class OutgoingPullFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
-        val exchangeFlow = exchangeManager.findExchangeForCurrency(amount.currency)
         return ComposeView(requireContext()).apply {
             setContent {
                 TalerSurface {
-                    val state = peerManager.pullState.collectAsStateLifecycleAware()
-                    if (state.value is OutgoingIntro) {
-                        val exchangeState =
-                            exchangeFlow.collectAsStateLifecycleAware(initial = null)
-                        OutgoingPullIntroComposable(
-                            amount = amount,
-                            exchangeState = exchangeState,
-                            onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
-                        )
-                    } else {
-                        OutgoingPullResultComposable(state.value) {
-                            findNavController().popBackStack()
+                    when (val state = peerManager.pullState.collectAsStateLifecycleAware().value) {
+                        is OutgoingIntro, OutgoingChecking, is OutgoingChecked -> {
+                            OutgoingPullIntroComposable(
+                                amount = amount,
+                                state = state,
+                                onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
+                            )
+                        }
+                        OutgoingCreating, is OutgoingResponse, is OutgoingError -> {
+                            OutgoingPullResultComposable(state) {
+                                findNavController().popBackStack()
+                            }
                         }
                     }
                 }
