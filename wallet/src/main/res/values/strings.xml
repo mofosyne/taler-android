@@ -151,6 +151,13 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>
     <string name="send_peer_payment_amount_received">Amount received</string>
     <string name="send_peer_payment_amount_sent">Amount sent</string>
+    <string name="send_peer_expiration_period">Expires in</string>
+    <string name="send_peer_expiration_1d">1 day</string>
+    <string name="send_peer_expiration_7d">7 days</string>
+    <string name="send_peer_expiration_30d">30 days</string>
+    <string name="send_peer_expiration_custom">Custom</string>
+    <string name="send_peer_expiration_days">Days</string>
+    <string name="send_peer_expiration_hours">Hours</string>
     <string name="send_peer_purpose">Purpose</string>
 
     <string name="pay_peer_title">Pay invoice</string>

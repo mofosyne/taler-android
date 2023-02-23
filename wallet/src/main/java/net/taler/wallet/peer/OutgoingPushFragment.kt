@@ -74,7 +74,7 @@ class OutgoingPushFragment : Fragment() {
         if (!requireActivity().isChangingConfigurations) peerManager.resetPushPayment()
     }
 
-    private fun onSend(amount: Amount, summary: String) {
-        peerManager.initiatePeerPushDebit(amount, summary)
+    private fun onSend(amount: Amount, summary: String, hours: Long) {
+        peerManager.initiatePeerPushDebit(amount, summary, hours)
     }
 }

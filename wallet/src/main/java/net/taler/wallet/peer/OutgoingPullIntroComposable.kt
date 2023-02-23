@@ -50,6 +50,7 @@ import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
+import net.taler.wallet.peer.ExpirationOption.DAYS_1
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,7 @@ import kotlin.random.Random
 fun OutgoingPullIntroComposable(
     amount: Amount,
     state: OutgoingState,
-    onCreateInvoice: (amount: Amount, subject: String, exchange: ExchangeItem) -> Unit,
+    onCreateInvoice: (amount: Amount, subject: String, hours: Long, exchange: ExchangeItem) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -72,7 +73,6 @@ fun OutgoingPullIntroComposable(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                 .focusRequester(focusRequester),
             singleLine = true,
             value = subject,
@@ -96,7 +96,7 @@ fun OutgoingPullIntroComposable(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 5.dp, end = 16.dp),
+                .padding(top = 5.dp),
             color = if (subject.isBlank()) MaterialTheme.colorScheme.error else Color.Unspecified,
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
@@ -119,6 +119,19 @@ fun OutgoingPullIntroComposable(
             label = stringResource(id = R.string.withdraw_exchange),
             info = if (exchangeItem == null) "" else cleanExchange(exchangeItem.exchangeBaseUrl),
         )
+        Text(
+            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            text = stringResource(R.string.send_peer_expiration_period),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        var option by rememberSaveable { mutableStateOf(DAYS_1) }
+        var hours by rememberSaveable { mutableStateOf(1L) }
+        ExpirationComposable(
+            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
+            option = option,
+            hours = hours,
+            onOptionChange = { option = it }
+        ) { hours = it }
         Button(
             modifier = Modifier.padding(16.dp),
             enabled = subject.isNotBlank() && state is OutgoingChecked,
@@ -126,6 +139,7 @@ fun OutgoingPullIntroComposable(
                 onCreateInvoice(
                     amount,
                     subject,
+                    hours,
                     exchangeItem ?: error("clickable without exchange")
                 )
             },
@@ -142,7 +156,7 @@ fun PreviewReceiveFundsCheckingIntro() {
         OutgoingPullIntroComposable(
             Amount.fromDouble("TESTKUDOS", 42.23),
             if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking,
-        ) { _, _, _ -> }
+        ) { _, _, _, _ -> }
     }
 }
 
@@ -156,6 +170,6 @@ fun PreviewReceiveFundsCheckedIntro() {
         OutgoingPullIntroComposable(
             Amount.fromDouble("TESTKUDOS", 42.23),
             OutgoingChecked(amountRaw, amountEffective, exchangeItem)
-        ) { _, _, _ -> }
+        ) { _, _, _, _ -> }
     }
 }

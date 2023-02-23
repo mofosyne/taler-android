@@ -34,7 +34,7 @@ import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.exchanges.ExchangeManager
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit.DAYS
+import java.util.concurrent.TimeUnit.HOURS
 
 const val MAX_LENGTH_SUBJECT = 100
 
@@ -82,10 +82,10 @@ class PeerManager(
         }
     }
 
-    fun initiatePeerPullCredit(amount: Amount, summary: String, exchange: ExchangeItem) {
+    fun initiatePeerPullCredit(amount: Amount, summary: String, expirationHours: Long, exchange: ExchangeItem) {
         _outgoingPullState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
-            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
+            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + HOURS.toMillis(expirationHours))
             api.request("initiatePeerPullCredit", InitiatePeerPullPaymentResponse.serializer()) {
                 put("exchangeBaseUrl", exchange.exchangeBaseUrl)
                 put("partialContractTerms", JSONObject().apply {
@@ -125,10 +125,10 @@ class PeerManager(
         }
     }
 
-    fun initiatePeerPushDebit(amount: Amount, summary: String) {
+    fun initiatePeerPushDebit(amount: Amount, summary: String, expirationHours: Long) {
         _outgoingPushState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
-            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + DAYS.toMillis(3))
+            val expiry = Timestamp.fromMillis(System.currentTimeMillis() + HOURS.toMillis(expirationHours))
             api.request("initiatePeerPushDebit", InitiatePeerPullCreditResponse.serializer()) {
                 put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {

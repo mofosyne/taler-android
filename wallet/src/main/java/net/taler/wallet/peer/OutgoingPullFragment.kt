@@ -76,7 +76,7 @@ class OutgoingPullFragment : Fragment() {
         if (!requireActivity().isChangingConfigurations) peerManager.resetPullPayment()
     }
 
-    private fun onCreateInvoice(amount: Amount, summary: String, exchange: ExchangeItem) {
-        peerManager.initiatePeerPullCredit(amount, summary, exchange)
+    private fun onCreateInvoice(amount: Amount, summary: String, hours: Long, exchange: ExchangeItem) {
+        peerManager.initiatePeerPullCredit(amount, summary, hours, exchange)
     }
 }
