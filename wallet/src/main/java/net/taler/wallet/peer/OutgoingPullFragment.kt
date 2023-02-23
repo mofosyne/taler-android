@@ -57,7 +57,7 @@ class OutgoingPullFragment : Fragment() {
                         }
                         OutgoingCreating, is OutgoingResponse, is OutgoingError -> {
                             OutgoingPullResultComposable(state) {
-                                findNavController().popBackStack()
+                                findNavController().navigate(R.id.action_nav_peer_pull_to_nav_main)
                             }
                         }
                     }
@@ -68,7 +68,7 @@ class OutgoingPullFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.send_peer_title)
+        activity?.setTitle(R.string.receive_peer_title)
     }
 
     override fun onDestroy() {
