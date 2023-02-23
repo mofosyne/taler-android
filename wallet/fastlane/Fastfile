@@ -30,6 +30,8 @@ platform :android do
         build_type: "Release",
         flavor: "google",
         gradle_path: '../gradlew',
+        print_command: false,
+        flags: "--no-build-cache --no-configuration-cache",
         properties: {
             "android.injected.signing.store.file" => ENV["TALER_KEYSTORE_PATH"],
             "android.injected.signing.store.password" => ENV["TALER_KEYSTORE_PASS"],
