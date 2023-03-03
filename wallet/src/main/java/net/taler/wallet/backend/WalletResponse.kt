@@ -26,6 +26,9 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable
@@ -53,7 +56,7 @@ sealed class WalletResponse<T> {
     }
 }
 
-@Serializable(with = TalerErrorInfoDeserializer::class)
+@Serializable(with = TalerErrorInfoSerializer::class)
 data class TalerErrorInfo(
     // Numeric error code defined defined in the
     // GANA gnu-taler-error-codes registry.
@@ -81,7 +84,7 @@ data class TalerErrorInfo(
         extra[key]?.jsonPrimitive?.content
 }
 
-class TalerErrorInfoDeserializer : KSerializer<TalerErrorInfo> {
+class TalerErrorInfoSerializer : KSerializer<TalerErrorInfo> {
     private val stringToJsonElementSerializer = MapSerializer(String.serializer(), JsonElement.serializer())
 
     override val descriptor: SerialDescriptor
@@ -110,6 +113,11 @@ class TalerErrorInfoDeserializer : KSerializer<TalerErrorInfo> {
     }
 
     override fun serialize(encoder: Encoder, value: TalerErrorInfo) {
-        error("not supported")
+        encoder.encodeSerializableValue(JsonObject.serializer(), buildJsonObject {
+            put("code", JsonPrimitive(value.code.code))
+            put("hint", JsonPrimitive(value.hint))
+            put("message", JsonPrimitive(value.message))
+            value.extra.forEach { (key, value) -> put(key, value) }
+        })
     }
 }
