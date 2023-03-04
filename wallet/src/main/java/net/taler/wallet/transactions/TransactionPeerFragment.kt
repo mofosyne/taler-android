@@ -28,6 +28,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,9 +56,13 @@ class TransactionPeerFragment : TransactionDetailFragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
-                val t = transaction ?: error("No transaction")
-                TransactionPeerComposable(t) {
-                    onDeleteButtonClicked(t)
+                val t: Transaction? by transactionManager.selectedTransaction.observeAsState(null)
+                if (t != null) {
+                    TransactionPeerComposable(t!!) {
+                        onDeleteButtonClicked(t!!)
+                    }
+                } else {
+                    error("No transaction")
                 }
             }
         }

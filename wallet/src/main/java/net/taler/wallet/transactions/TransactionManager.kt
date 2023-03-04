@@ -41,9 +41,9 @@ class TransactionManager(
     val progress: LiveData<Boolean> = mProgress
 
     var selectedCurrency: String? = null
-    var selectedTransaction: Transaction? = null
 
     val searchQuery = MutableLiveData<String>(null)
+    val selectedTransaction = MutableLiveData<Transaction?>(null)
     private val allTransactions = HashMap<String, List<Transaction>>()
     private val mTransactions = HashMap<String, MutableLiveData<TransactionsResult>>()
     val transactions: LiveData<TransactionsResult>
@@ -84,6 +84,13 @@ class TransactionManager(
             mProgress.value = false
             liveData.value = TransactionsResult.Success(transactions)
 
+            // update selected transaction
+            transactions.find {
+                it.transactionId == selectedTransaction.value?.transactionId
+            }?.let {
+                selectedTransaction.postValue(it)
+            }
+
             // update all transactions on UiThread if there was a currency
             if (searchQuery == null) allTransactions[currency] = transactions
         }
@@ -102,11 +109,15 @@ class TransactionManager(
             transaction = result
         }
         return if (transaction != null) {
-            selectedTransaction = transaction
+            selectedTransaction.postValue(transaction)
             true
         } else {
             false
         }
+    }
+
+    fun selectTransaction(transaction: Transaction) {
+        selectedTransaction.postValue(transaction)
     }
 
     fun deleteTransaction(transactionId: String) = scope.launch {

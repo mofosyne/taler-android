@@ -175,7 +175,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
     override fun onTransactionClicked(transaction: Transaction) {
         if (actionMode != null) return // don't react on clicks while in action mode
         if (transaction.detailPageNav != 0) {
-            transactionManager.selectedTransaction = transaction
+            transactionManager.selectTransaction(transaction)
             findNavController().navigate(transaction.detailPageNav)
         }
     }

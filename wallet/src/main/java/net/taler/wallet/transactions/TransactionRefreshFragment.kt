@@ -40,19 +40,21 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val t = transaction as TransactionRefresh
-        ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
+        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
+            if (t !is TransactionRefresh) return@observe
+            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
 
-        ui.effectiveAmountLabel.visibility = GONE
-        ui.effectiveAmountView.visibility = GONE
-        ui.confirmWithdrawalButton.visibility = GONE
-        ui.chosenAmountLabel.visibility = GONE
-        ui.chosenAmountView.visibility = GONE
-        val fee = t.amountEffective
-        ui.feeView.text = getString(R.string.amount_negative, fee.toString())
-        ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
-        ui.deleteButton.setOnClickListener {
-            onDeleteButtonClicked(t)
+            ui.effectiveAmountLabel.visibility = GONE
+            ui.effectiveAmountView.visibility = GONE
+            ui.confirmWithdrawalButton.visibility = GONE
+            ui.chosenAmountLabel.visibility = GONE
+            ui.chosenAmountView.visibility = GONE
+            val fee = t.amountEffective
+            ui.feeView.text = getString(R.string.amount_negative, fee.toString())
+            ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
+            ui.deleteButton.setOnClickListener {
+                onDeleteButtonClicked(t)
+            }
         }
     }
 

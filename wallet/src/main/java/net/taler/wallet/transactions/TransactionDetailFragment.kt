@@ -37,8 +37,7 @@ import net.taler.wallet.launchInAppBrowser
 abstract class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-    private val transactionManager by lazy { model.transactionManager }
-    protected val transaction: Transaction? get() = transactionManager.selectedTransaction
+    val transactionManager by lazy { model.transactionManager }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +47,11 @@ abstract class TransactionDetailFragment : Fragment() {
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        requireActivity().apply {
-            transaction?.generalTitleRes?.let {
-                title = getString(it)
+        transactionManager.selectedTransaction.observe(viewLifecycleOwner) {
+            requireActivity().apply {
+                it?.generalTitleRes?.let {
+                    title = getString(it)
+                }
             }
         }
     }

@@ -51,12 +51,13 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val t = transaction as TransactionWithdrawal
-        ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
+        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
+            if (t !is TransactionWithdrawal) return@observe
+            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
 
-        ui.effectiveAmountLabel.text = getString(R.string.withdraw_total)
-        ui.effectiveAmountView.text = t.amountEffective.toString()
-        setupConfirmWithdrawalButton(t)
+            ui.effectiveAmountLabel.text = getString(R.string.withdraw_total)
+            ui.effectiveAmountView.text = t.amountEffective.toString()
+            setupConfirmWithdrawalButton(t)
         setupActionButton(t)
         ui.chosenAmountLabel.text = getString(R.string.amount_chosen)
         ui.chosenAmountView.text =
@@ -65,21 +66,22 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         ui.feeView.text = getString(R.string.amount_negative, fee.toString())
         ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
         if (t.pending) {
-            ui.deleteButton.setIconResource(R.drawable.ic_cancel)
-            ui.deleteButton.setText(R.string.cancel)
-        }
-        ui.deleteButton.setOnClickListener {
-            onDeleteButtonClicked(t)
+                ui.deleteButton.setIconResource(R.drawable.ic_cancel)
+                ui.deleteButton.setText(R.string.cancel)
+            }
+            ui.deleteButton.setOnClickListener {
+                onDeleteButtonClicked(t)
+            }
         }
     }
 
     override val deleteDialogTitle: Int
-        get() = if (transaction?.pending == true) R.string.cancel else super.deleteDialogTitle
+        get() = if (transactionManager.selectedTransaction.value?.pending == true) R.string.cancel else super.deleteDialogTitle
     override val deleteDialogMessage: Int
-        get() = if (transaction?.pending == true) R.string.transactions_cancel_dialog_message
+        get() = if (transactionManager.selectedTransaction.value?.pending == true) R.string.transactions_cancel_dialog_message
         else super.deleteDialogMessage
     override val deleteDialogButton: Int
-        get() = if (transaction?.pending == true) R.string.ok else super.deleteDialogButton
+        get() = if (transactionManager.selectedTransaction.value?.pending == true) R.string.ok else super.deleteDialogButton
 
     private fun setupConfirmWithdrawalButton(t: TransactionWithdrawal) {
         if (t.pending && !t.confirmed) {

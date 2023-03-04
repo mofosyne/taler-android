@@ -37,22 +37,24 @@ class TransactionPaymentFragment : TransactionDetailFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val t = transaction as TransactionPayment
-        ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
+        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
+            if (t !is TransactionPayment) return@observe
+            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
 
-        ui.amountPaidWithFeesView.text = t.amountEffective.toString()
-        val fee = t.amountEffective - t.amountRaw
-        bindOrderAndFee(
-            ui.orderSummaryView,
-            ui.orderAmountView,
-            ui.orderIdView,
-            ui.feeView,
-            t.info,
-            t.amountRaw,
-            fee
-        )
-        ui.deleteButton.setOnClickListener {
-            onDeleteButtonClicked(t)
+            ui.amountPaidWithFeesView.text = t.amountEffective.toString()
+            val fee = t.amountEffective - t.amountRaw
+            bindOrderAndFee(
+                ui.orderSummaryView,
+                ui.orderAmountView,
+                ui.orderIdView,
+                ui.feeView,
+                t.info,
+                t.amountRaw,
+                fee
+            )
+            ui.deleteButton.setOnClickListener {
+                onDeleteButtonClicked(t)
+            }
         }
     }
 

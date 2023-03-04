@@ -39,25 +39,27 @@ class TransactionRefundFragment : TransactionDetailFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val t = transaction as TransactionRefund
-        ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
+        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
+            if (t !is TransactionRefund) return@observe
+            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
 
-        ui.amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
-        ui.amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
-        ui.amountPaidWithFeesView.text =
-            getString(R.string.amount_positive, t.amountEffective.toString())
-        val fee = t.amountRaw - t.amountEffective
-        bindOrderAndFee(
-            ui.orderSummaryView,
-            ui.orderAmountView,
-            ui.orderIdView,
-            ui.feeView,
-            t.info,
-            t.amountRaw,
-            fee
-        )
-        ui.deleteButton.setOnClickListener {
-            onDeleteButtonClicked(t)
+            ui.amountPaidWithFeesLabel.text = getString(R.string.transaction_refund)
+            ui.amountPaidWithFeesView.setTextColor(getColor(requireContext(), R.color.green))
+            ui.amountPaidWithFeesView.text =
+                getString(R.string.amount_positive, t.amountEffective.toString())
+            val fee = t.amountRaw - t.amountEffective
+            bindOrderAndFee(
+                ui.orderSummaryView,
+                ui.orderAmountView,
+                ui.orderIdView,
+                ui.feeView,
+                t.info,
+                t.amountRaw,
+                fee
+            )
+            ui.deleteButton.setOnClickListener {
+                onDeleteButtonClicked(t)
+            }
         }
     }
 
