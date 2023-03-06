@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -53,13 +52,9 @@ class TransactionTipFragment : TransactionDetailFragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
-                val t by transactionManager.selectedTransaction.observeAsState(null)
-                if (t != null && t is TransactionTip) {
-                    TransactionTipComposable(t as TransactionTip) {
-                        onDeleteButtonClicked(t!!)
-                    }
-                } else {
-                    error("No or wrong transaction")
+                val t = transactionManager.selectedTransaction.observeAsState(null).value
+                if (t is TransactionTip) TransactionTipComposable(t) {
+                    onDeleteButtonClicked(t)
                 }
             }
         }

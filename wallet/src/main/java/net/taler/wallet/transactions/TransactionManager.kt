@@ -43,7 +43,8 @@ class TransactionManager(
     var selectedCurrency: String? = null
 
     val searchQuery = MutableLiveData<String>(null)
-    val selectedTransaction = MutableLiveData<Transaction?>(null)
+    private val mSelectedTransaction = MutableLiveData<Transaction?>(null)
+    val selectedTransaction: LiveData<Transaction?> = mSelectedTransaction
     private val allTransactions = HashMap<String, List<Transaction>>()
     private val mTransactions = HashMap<String, MutableLiveData<TransactionsResult>>()
     val transactions: LiveData<TransactionsResult>
@@ -84,11 +85,12 @@ class TransactionManager(
             mProgress.value = false
             liveData.value = TransactionsResult.Success(transactions)
 
-            // update selected transaction
-            transactions.find {
-                it.transactionId == selectedTransaction.value?.transactionId
+            // update selected transaction on UiThread (if it exists)
+            val selected = selectedTransaction.value
+            if (selected != null) transactions.find {
+                it.transactionId == selected.transactionId
             }?.let {
-                selectedTransaction.postValue(it)
+                mSelectedTransaction.value = it
             }
 
             // update all transactions on UiThread if there was a currency
@@ -99,6 +101,7 @@ class TransactionManager(
     /**
      * Returns true if given [transactionId] was found and selected, false otherwise.
      */
+    @UiThread
     suspend fun selectTransaction(transactionId: String): Boolean {
         var transaction: Transaction? = null
         api.request("getTransactionById", Transaction.serializer()) {
@@ -109,7 +112,7 @@ class TransactionManager(
             transaction = result
         }
         return if (transaction != null) {
-            selectedTransaction.postValue(transaction)
+            mSelectedTransaction.value = transaction
             true
         } else {
             false
@@ -117,7 +120,7 @@ class TransactionManager(
     }
 
     fun selectTransaction(transaction: Transaction) {
-        selectedTransaction.postValue(transaction)
+        mSelectedTransaction.postValue(transaction)
     }
 
     fun deleteTransaction(transactionId: String) = scope.launch {

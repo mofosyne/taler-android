@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import net.taler.wallet.compose.TalerSurface
@@ -35,13 +34,9 @@ class TransactionDepositFragment : TransactionDetailFragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
-                val t: Transaction? by transactionManager.selectedTransaction.observeAsState()
-                if (t != null) {
-                    TransactionDepositComposable(t as TransactionDeposit) {
-                        onDeleteButtonClicked(t!!)
-                    }
-                } else {
-                    error("No transaction")
+                val t = transactionManager.selectedTransaction.observeAsState().value
+                if (t is TransactionDeposit) TransactionDepositComposable(t) {
+                    onDeleteButtonClicked(t)
                 }
             }
         }
