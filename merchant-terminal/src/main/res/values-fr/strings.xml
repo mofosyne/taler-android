@@ -10,7 +10,7 @@
     <string name="config_docs">Veuillez vous référer à <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">la documentation</a> pour le format de configuration.</string>
     <string name="refund_confirm">Approuver le remboursement</string>
     <string name="refund_error_backend">Erreur lors du traitement du remboursement</string>
-    <string name="menu_settings">Réglages</string>
+    <string name="menu_settings">Paramètres</string>
     <string name="app_name">GNU Taler Point de vente</string>
     <string name="app_name_short">Terminal marchand</string>
     <string name="menu_order">Commandes</string>
