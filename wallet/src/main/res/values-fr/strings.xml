@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="menu_retry_pending_operations">Réessayer les opérations en attente</string>
-    <string name="balances_empty_state">Il n\'y a pas d\'argent éléctronique dans votre portefeuille. 
+    <string name="balances_empty_state">Il n\'y a pas d\'argent numérique dans votre portefeuille.
 \n
 \nVous pouvez obtenir de l\'argent de test auprès de la banque de démonstration :
 \n
 \nhttps://bank.demo.taler.net</string>
     <string name="withdraw_error_message">Pour l\'instant il n\'est pas possible de retirer. Veuillez réessayer plus tard !</string>
     <string name="settings_dev_mode">Mode développeur</string>
-    <string name="menu_settings">Réglages</string>
+    <string name="menu_settings">Paramètres</string>
     <string name="settings_reset">Réinitialiser le portefeuille (dangereux!)</string>
     <string name="app_name">Portefeuille Taler</string>
     <string name="google_play_title" tools:keep="@string/google_play_title">Portefeuille Taler (expérimental)</string>
-    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler facilite et accélère les transactions en ligne respectueuses de la vie privée.</string>
+    <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler rend les transactions en ligne respectueuses de la vie privée, rapides et faciles.</string>
     <string name="button_scan_qr_code">Scanner le QR code Taler</string>
     <string name="balances_title">Soldes</string>
     <string name="amount_positive">+ %s</string>
     <string name="amount_chosen">Montant choisi</string>
     <string name="balances_inbound_label">entrant</string>
-    <string name="transactions_title">Opérations de transaction</string>
+    <string name="transactions_title">Transactions</string>
     <string name="transactions_empty">Vous n\'avez aucune transaction</string>
     <string name="transactions_error">Impossible de charger les transactions\n\n%s</string>
-    <string name="transactions_detail_title">Opération de transaction</string>
+    <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_balance">Solde : %s</string>
     <string name="transactions_delete">Supprimer</string>
     <string name="transactions_select_all">Tout sélectionner</string>
     <string name="transaction_paid">Payé</string>
     <string name="transaction_order_total">Total</string>
-    <string name="transaction_order">Acheter</string>
-    <string name="transaction_order_id">Reçu numéro %1$s</string>
+    <string name="transaction_order">Achat</string>
+    <string name="transaction_order_id">Reçu #%1$s</string>
     <string name="transaction_refund">Remboursement</string>
-    <string name="transaction_refresh">Frais d\'expiration de taux de change</string>
+    <string name="transaction_refresh">Frais de change pour la monnaie expirée</string>
     <string name="payment_fee">+%s frais de transaction</string>
     <string name="payment_button_confirm">Confirmer le paiement</string>
     <string name="nav_exchange_fees">Frais de change</string>
     <string name="amount_negative">- %s</string>
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Portefeuille</string>
-    <string name="nav_prompt_withdraw">Retirer de l\'argent électronique</string>
+    <string name="nav_prompt_withdraw">Retirer de l\'argent numérique</string>
     <string name="nav_exchange_tos">Conditions générale d\'utilisation du change</string>
     <string name="nav_error">Erreur</string>
-    <string name="button_back">Retour</string>
+    <string name="button_back">Retour en arrière</string>
     <string name="payment_label_order_summary">Achat</string>
     <string name="payment_balance_insufficient">Solde insuffisant !</string>
     <string name="payment_already_paid_title">Déjà payé</string>
-    <string name="payment_already_paid">Vous avez déjà payé cet achat.</string>
+    <string name="payment_already_paid">Vous avez déjà payé pour cet achat.</string>
     <string name="withdraw_total">Retirer</string>
     <string name="withdraw_fees">Frais</string>
     <string name="withdraw_exchange">Change</string>
@@ -74,24 +74,24 @@
     <string name="refund_error">Erreur lors du traitement du remboursement</string>
     <string name="refund_success">Remboursement reçu : %s</string>
     <string name="payment_error">Erreur : %s</string>
-    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Cette application est un portefeuille pour GNU Taler. Elle est très expérimentale et n\'est pas encore prête à être utilisée en production. GNU Taler est un système de paiement préservant la vie privée. Les clients peuvent rester anonymes, mais les commerçants ne peuvent pas cacher leurs revenus avec GNU Taler. Cela permet d\'éviter l\'évasion fiscale et le blanchiment d\'argent. Le principal cas d\'utilisation de GNU Taler est celui des paiements ; il ne s\'agit pas d\'une réserve de valeur. Les paiements sont toujours garantis par une devise existante. Les paiements sont effectués après avoir échangé l\'argent existant en monnaie électronique avec l\'aide d\'un service d\'échange, c\'est-à-dire un fournisseur de services de paiement pour Taler. Pour effectuer un paiement, les clients n\'ont besoin que d\'un portefeuille chargé. Un commerçant peut accepter des paiements sans que ses clients ne s\'inscrivent sur son site web. GNU Taler est immunisé contre de nombreux types de fraude, tels que le hameçonnage des informations relatives aux cartes de crédit ou la fraude par rétro-facturation. En cas de perte ou de vol, seule la quantité limitée d\'argent restant dans le portefeuille peut disparaître.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Cette application est un portefeuille pour GNU Taler. Cette dernière est expérimentale et n\'est pas encore prête à être utilisée en production. GNU Taler est un système de paiement préservant la vie privée. Les clients peuvent rester anonymes, mais les commerçants ne peuvent pas cacher leurs revenus avec GNU Taler. Cela permet d\'éviter l\'évasion fiscale et le blanchiment d\'argent. Le principal cas d\'utilisation de GNU Taler est celui des paiements ; il ne s\'agit pas d\'une réserve de valeur. Les paiements sont toujours garantis par une devise existante. Les paiements sont effectués après avoir échangé l\'argent existant en monnaie électronique avec l\'aide d\'un service d\'échange, qui est un prestataire de services de paiement pour Taler. Pour effectuer un paiement, les clients n\'ont besoin que d\'un portefeuille chargé. Un commerçant peut accepter des paiements sans demander à ses clients de s\'inscrire sur son site web. GNU Taler est immunisé contre de nombreux types de fraude, tels que l\'hameçonnage de cartes de crédit ou la fraude par rétrofacturation. En cas de perte ou de vol, seul le montant limité d\'argent restant dans le portefeuille peut être perdu.</string>
     <string name="payment_label_amount_total">Montant total :</string>
     <string name="exchange_fee_coin_expiration_label">Expiration de monnaie prochaine :</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
-    <string name="offline">L\'opération nécessite un accès Internet. Veuillez vérifier que votre connection internet fonctionne et réessayez.</string>
+    <string name="offline">L\'opération nécessite un accès Internet. Veuillez vous assurer que votre connexion internet fonctionne et réessayez.</string>
     <string name="error_unsupported_uri">Erreur : Cet URI Taler n\'est pas pris en charge.</string>
     <string name="transactions_empty_search">Aucune transaction trouvée. Essayez une recherche différente.</string>
     <string name="transaction_refund_from">Remboursement %s</string>
     <string name="transaction_pending">EN ATTENTE</string>
     <string name="payment_title">Paiement</string>
-    <string name="payment_aborted">Abandonné</string>
+    <string name="payment_aborted">Annulé</string>
     <string name="payment_initiated">Paiement initié</string>
-    <string name="nav_exchange_select">Sélectionnez Change</string>
-    <string name="enter_uri">Entrez l\'URI de Taler</string>
+    <string name="nav_exchange_select">Sélectionner le change</string>
+    <string name="enter_uri">Entrer l\'URI de Taler</string>
     <string name="paste">Coller</string>
     <string name="paste_invalid">Le presse-papiers contient un type de données non valide</string>
-    <string name="uri_invalid">Pas un URI Taler valide</string>
+    <string name="uri_invalid">URI Taler non valide</string>
     <string name="search">Rechercher</string>
     <string name="menu">Menu</string>
     <string name="or">ou</string>
@@ -107,7 +107,7 @@
 \n
 \n%2$s</string>
     <string name="withdraw_manual_check_fees">Vérifier les frais</string>
-    <string name="host_apdu_service_desc">Paiements Taler CCP</string>
+    <string name="host_apdu_service_desc">Paiements Taler NFC</string>
     <string name="withdraw_manual_title">Effectuer un transfert manuel vers la bourse</string>
     <string name="exchange_settings_title">Échanges</string>
     <string name="exchange_settings_summary">Gérer la liste des échanges connus par ce portefeuille</string>
@@ -134,4 +134,35 @@
     <string name="settings_version_protocol_merchant">Versions commerçantes compatibles</string>
     <string name="settings_version_core">Version Wallet Core</string>
     <string name="settings_version_protocol_exchange">Versions Echange compatibles</string>
+    <string name="transaction_action_kyc">Compléter le KYC</string>
+    <string name="transactions_cancel_dialog_message">Êtes-vous sûr de vouloir annuler ce retrait \? Les fonds encore en transit peuvent être perdus.</string>
+    <string name="transaction_deposit">Dépôt</string>
+    <string name="receive_withdraw">Retrait du compte bancaire</string>
+    <string name="receive_peer">Facture d\'un autre portefeuille</string>
+    <string name="receive_peer_title">Demande de paiement</string>
+    <string name="receive_peer_create_button">Créer une facture</string>
+    <string name="transactions_delete_dialog_title">Supprimer une transaction</string>
+    <string name="transactions_delete_dialog_message">Êtes-vous sûr de vouloir supprimer cette transaction de votre portefeuille \?</string>
+    <string name="receive_amount_invalid">Montant invalide</string>
+    <string name="receive_intro">Choisir où recevoir l\'argent :</string>
+    <string name="receive_peer_invoice_instruction">Laissez le payeur scanner ce QR code pour payer :</string>
+    <string name="copy" tools:override="true">Copier</string>
+    <string name="transactions_balance">Solde</string>
+    <string name="transaction_peer_pull_debit">Facture payée</string>
+    <string name="transaction_peer_push_credit">Paiement push</string>
+    <string name="copy_uri">Copier l\'URI de Taler</string>
+    <string name="transaction_peer_push_debit">Paiement push</string>
+    <string name="transaction_peer_pull_credit">Facture</string>
+    <string name="receive_amount">Montant à recevoir</string>
+    <string name="send_amount">Montant à envoyer</string>
+    <string name="send_intro">Choisir où envoyer l\'argent :</string>
+    <string name="transactions_detail_title_currency">%s Transactions</string>
+    <string name="currency">Devise</string>
+    <string name="transactions_receive_funds">Recevoir
+\ndes fonds</string>
+    <string name="transactions_send_funds">Envoyer
+\ndes fonds</string>
+    <string name="char_count">%1$d/%2$d</string>
+    <string name="transactions_delete_selected_dialog_message">Êtes-vous sûr de vouloir supprimer les transactions sélectionnées de votre portefeuille \?</string>
+    <string name="receive_peer_invoice_uri">Sinon, copier et envoyer cet URI :</string>
 </resources>
