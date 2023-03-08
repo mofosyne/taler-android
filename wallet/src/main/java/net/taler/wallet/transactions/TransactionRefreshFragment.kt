@@ -47,7 +47,7 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
 
             ui.effectiveAmountLabel.visibility = GONE
             ui.effectiveAmountView.visibility = GONE
-            ui.confirmWithdrawalButton.visibility = GONE
+            ui.actionButton.visibility = GONE
             ui.chosenAmountLabel.visibility = GONE
             ui.chosenAmountView.visibility = GONE
             val fee = t.amountEffective

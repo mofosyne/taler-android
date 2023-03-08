@@ -48,41 +48,21 @@
             android:id="@+id/effectiveAmountView"
             style="@style/TransactionContent"
             android:textColor="@color/green"
-            app:layout_constraintBottom_toTopOf="@+id/confirmWithdrawalButton"
+            app:layout_constraintBottom_toTopOf="@+id/actionButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/effectiveAmountLabel"
             tools:text="23.42 TESTKUDOS" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/confirmWithdrawalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_account_balance"
-            android:text="@string/withdraw_button_confirm_bank"
-            android:textColor="?colorOnPrimary"
-            app:iconTint="?colorOnPrimary"
-            app:drawableTint="?attr/colorOnPrimarySurface"
-            app:layout_constraintBottom_toTopOf="@+id/actionButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/effectiveAmountView"
-            tools:ignore="RtlHardcoded" />
-
-        <Button
+        <androidx.compose.ui.platform.ComposeView
             android:id="@+id/actionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:textColor="?colorOnTertiary"
-            android:backgroundTint="?colorTertiary"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/chosenAmountLabel"
+            app:layout_constraintBottom_toTopOf="@+id/chosenAmountLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/confirmWithdrawalButton"
-            tools:text="@string/transaction_action_kyc"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@+id/effectiveAmountView" />
 
         <TextView
             android:id="@+id/chosenAmountLabel"

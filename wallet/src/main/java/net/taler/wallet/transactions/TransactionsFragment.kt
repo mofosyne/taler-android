@@ -42,12 +42,12 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentTransactionsBinding
-import net.taler.wallet.handleKyc
 import net.taler.wallet.launchInAppBrowser
+import net.taler.wallet.transactions.ActionListener.Type.COMPLETE_KYC
+import net.taler.wallet.transactions.ActionListener.Type.CONFIRM_WITH_BANK
 
-interface OnTransactionClickListener {
+interface OnTransactionClickListener: ActionListener {
     fun onTransactionClicked(transaction: Transaction)
-    fun onActionButtonClicked(transaction: Transaction)
 }
 
 class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.Callback {
@@ -180,18 +180,21 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         }
     }
 
-    override fun onActionButtonClicked(transaction: Transaction) {
-        if (transaction.error != null) {
-            transaction.handleKyc({ error("Unhandled Action Button Event") }) { error ->
-                error.getStringExtra("kycUrl")?.let {
-                    launchInAppBrowser(requireContext(), it)
+    override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {
+        when (type) {
+            COMPLETE_KYC -> {
+                tx.error?.getStringExtra("kycUrl")?.let {  kycUrl ->
+                    launchInAppBrowser(requireContext(), kycUrl)
                 }
             }
-        } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
-            if (transaction.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
-                transaction.withdrawalDetails.bankConfirmationUrl != null) {
-                launchInAppBrowser(requireContext(), transaction.withdrawalDetails.bankConfirmationUrl)
+            CONFIRM_WITH_BANK -> {
+                if (tx !is TransactionWithdrawal) return
+                if (tx.withdrawalDetails !is WithdrawalDetails.TalerBankIntegrationApi) return
+                tx.withdrawalDetails.bankConfirmationUrl?.let { url ->
+                    launchInAppBrowser(requireContext(), url)
+                }
             }
+            else -> {}
         }
     }
 

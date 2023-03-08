@@ -25,6 +25,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat.getColor
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
@@ -32,11 +33,10 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.android.material.button.MaterialButton
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
-import net.taler.wallet.handleKyc
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
@@ -81,7 +81,7 @@ internal class TransactionAdapter(
         private val icon: ImageView = v.findViewById(R.id.icon)
         private val title: TextView = v.findViewById(R.id.title)
         private val extraInfoView: TextView = v.findViewById(R.id.extraInfoView)
-        private val actionButton: MaterialButton = v.findViewById(R.id.actionButton)
+        private val actionButton: ComposeView = v.findViewById(R.id.actionButton)
         private val time: TextView = v.findViewById(R.id.time)
         private val amount: TextView = v.findViewById(R.id.amount)
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
@@ -129,20 +129,10 @@ internal class TransactionAdapter(
         }
 
         private fun bindActionButton(t: Transaction) {
-            actionButton.setOnClickListener { listener.onActionButtonClicked(t) }
-            if (t.error != null) {
-                actionButton.visibility = t.handleKyc({ GONE }) {
-                    actionButton.setText(R.string.transaction_action_kyc)
-                    VISIBLE
+            actionButton.setContent {
+                TalerSurface {
+                    ActionButton(tx = t, listener = listener, isSmall = true)
                 }
-            } else if (t is TransactionWithdrawal && !t.confirmed) {
-                actionButton.setIconResource(R.drawable.ic_account_balance)
-                actionButton.visibility =
-                    if (t.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
-                        t.withdrawalDetails.bankConfirmationUrl != null) {
-                        actionButton.setText(R.string.withdraw_button_confirm_bank)
-                        VISIBLE
-                    } else GONE
             }
         }
 

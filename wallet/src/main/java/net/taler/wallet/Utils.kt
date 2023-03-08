@@ -35,9 +35,6 @@ import androidx.core.content.getSystemService
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 import net.taler.common.startActivitySafe
-import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
-import net.taler.wallet.backend.TalerErrorInfo
-import net.taler.wallet.transactions.Transaction
 
 const val CURRENCY_BTC = "BITCOINBTC"
 
@@ -110,14 +107,6 @@ fun Context.getAttrColor(attr: Int): Int {
     return value.data
 }
 
-fun <T> Transaction.handleKyc(notRequired: () -> T, required: (TalerErrorInfo) -> T): T {
-    return error?.let { error ->
-        when (error.code) {
-            WALLET_WITHDRAWAL_KYC_REQUIRED -> required(error)
-            else -> notRequired()
-        }
-    } ?: notRequired()
-}
 
 fun launchInAppBrowser(context: Context, url: String) {
     val builder = CustomTabsIntent.Builder()

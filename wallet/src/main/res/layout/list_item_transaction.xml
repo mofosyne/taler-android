@@ -62,19 +62,13 @@
         tools:text="@string/withdraw_waiting_confirm"
         tools:visibility="visible" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/actionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:visibility="gone"
-        android:textColor="?colorOnPrimary"
-        app:iconTint="?colorOnPrimary"
-        app:backgroundTint="?colorPrimary"
         app:layout_constraintStart_toStartOf="@id/title"
-        app:layout_constraintTop_toBottomOf="@id/extraInfoView"
-        tools:text="Complete KYC"
-        tools:visibility="visible"/>
+        app:layout_constraintTop_toBottomOf="@id/extraInfoView" />
 
     <TextView
         android:id="@+id/time"
