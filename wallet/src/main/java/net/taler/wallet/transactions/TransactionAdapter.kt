@@ -37,6 +37,7 @@ import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.handleKyc
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 
 internal class TransactionAdapter(
@@ -101,7 +102,7 @@ internal class TransactionAdapter(
             bindActionButton(transaction)
             time.text = transaction.timestamp.ms.toRelativeTime(context)
             bindAmount(transaction)
-            pendingView.visibility = if (transaction.pending) VISIBLE else GONE
+            pendingView.visibility = if (transaction.extendedStatus == Pending) VISIBLE else GONE
             val bgColor = getColor(context,
                 if (selected) R.color.selectedBackground
                 else android.R.color.transparent)
@@ -150,11 +151,11 @@ internal class TransactionAdapter(
             when (transaction.amountType) {
                 AmountType.Positive -> {
                     amount.text = context.getString(R.string.amount_positive, amountStr)
-                    amount.setTextColor(if (transaction.pending) amountColor else green)
+                    amount.setTextColor(if (transaction.extendedStatus == Pending) amountColor else green)
                 }
                 AmountType.Negative -> {
                     amount.text = context.getString(R.string.amount_negative, amountStr)
-                    amount.setTextColor(if (transaction.pending) amountColor else red)
+                    amount.setTextColor(if (transaction.extendedStatus == Pending) amountColor else red)
                 }
                 AmountType.Neutral -> {
                     amount.text = amountStr

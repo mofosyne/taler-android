@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import java.util.LinkedList
 
 sealed class TransactionsResult {
@@ -75,7 +76,7 @@ class TransactionManager(
             val transactions = LinkedList(result.transactions)
             // TODO remove when fixed in wallet-core
             val comparator = compareBy<Transaction>(
-                { it.pending },
+                { it.extendedStatus == Pending },
                 { it.timestamp.ms },
                 { it.transactionId }
             )

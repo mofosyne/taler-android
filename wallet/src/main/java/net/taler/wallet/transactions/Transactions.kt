@@ -40,7 +40,7 @@ data class Transactions(val transactions: List<Transaction>)
 sealed class Transaction {
     abstract val transactionId: String
     abstract val timestamp: Timestamp
-    abstract val pending: Boolean
+    abstract val extendedStatus: ExtendedStatus
     abstract val error: TalerErrorInfo?
     abstract val amountRaw: Amount
     abstract val amountEffective: Amount
@@ -59,6 +59,35 @@ sealed class Transaction {
     abstract val generalTitleRes: Int
 }
 
+enum class ExtendedStatus {
+    @SerialName("pending")
+    Pending,
+
+    @SerialName("done")
+    Done,
+
+    @SerialName("aborting")
+    Aborting,
+
+    @SerialName("aborted")
+    Aborted,
+
+    @SerialName("suspended")
+    Suspended,
+
+    @SerialName("failed")
+    Failed,
+
+    @SerialName("kyc-required")
+    KycRequired,
+
+    @SerialName("aml-required")
+    AmlRequired,
+
+    @SerialName("deleted")
+    Deleted;
+}
+
 sealed class AmountType {
     object Positive : AmountType()
     object Negative : AmountType()
@@ -70,7 +99,7 @@ sealed class AmountType {
 class TransactionWithdrawal(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     val withdrawalDetails: WithdrawalDetails,
     override val error: TalerErrorInfo? = null,
@@ -86,7 +115,7 @@ class TransactionWithdrawal(
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
     override val generalTitleRes = R.string.withdraw_title
     val confirmed: Boolean
-        get() = !pending && (
+        get() = extendedStatus != ExtendedStatus.Pending && (
                 (withdrawalDetails is TalerBankIntegrationApi && withdrawalDetails.confirmed) ||
                         withdrawalDetails is ManualTransfer
                 )
@@ -128,7 +157,7 @@ sealed class WithdrawalDetails {
 class TransactionPayment(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val info: TransactionInfo,
     val status: PaymentStatus,
     override val error: TalerErrorInfo? = null,
@@ -183,7 +212,7 @@ enum class PaymentStatus {
 class TransactionRefund(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val refundedTransactionId: String,
     val info: TransactionInfo,
     /**
@@ -211,7 +240,7 @@ class TransactionRefund(
 class TransactionTip(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val merchantBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -234,7 +263,7 @@ class TransactionTip(
 class TransactionRefresh(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -257,7 +286,7 @@ class TransactionRefresh(
 class TransactionDeposit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -290,7 +319,7 @@ data class PeerInfoShort(
 class TransactionPeerPullDebit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -317,7 +346,7 @@ class TransactionPeerPullDebit(
 class TransactionPeerPullCredit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -345,7 +374,7 @@ class TransactionPeerPullCredit(
 class TransactionPeerPushDebit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -374,7 +403,7 @@ class TransactionPeerPushDebit(
 class TransactionPeerPushCredit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val pending: Boolean,
+    override val extendedStatus: ExtendedStatus,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,

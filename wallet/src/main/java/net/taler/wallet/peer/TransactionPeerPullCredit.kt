@@ -31,6 +31,7 @@ import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.compose.QrCodeUriComposable
 import net.taler.wallet.transactions.AmountType
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.PeerInfoShort
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
@@ -61,7 +62,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
-    if (t.pending) {
+    if (t.extendedStatus == Pending) {
         QrCodeUriComposable(
             talerUri = t.talerUri,
             clipBoardLabel = "Invoice",
@@ -82,7 +83,7 @@ fun TransactionPeerPullCreditPreview() {
     val t = TransactionPeerPullCredit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        pending = true,
+        extendedStatus = Pending,
         exchangeBaseUrl = "https://exchange.example.org/",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),

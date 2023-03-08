@@ -24,6 +24,7 @@ import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.transactions.AmountType
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.PeerInfoShort
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
@@ -62,7 +63,7 @@ fun TransactionPeerPullDebitPreview() {
     val t = TransactionPeerPullDebit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        pending = true,
+        extendedStatus = Pending,
         exchangeBaseUrl = "https://exchange.example.org/",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),

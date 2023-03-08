@@ -37,6 +37,7 @@ import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.DeleteTransactionComposable
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionDeposit
 
@@ -83,7 +84,7 @@ fun TransactionDepositComposablePreview() {
     val t = TransactionDeposit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        pending = true,
+        extendedStatus = Pending,
         depositGroupId = "fooBar",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),

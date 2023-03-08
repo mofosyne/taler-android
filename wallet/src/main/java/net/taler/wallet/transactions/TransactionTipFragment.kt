@@ -42,6 +42,7 @@ import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 
 class TransactionTipFragment : TransactionDetailFragment() {
 
@@ -109,7 +110,7 @@ fun TransactionTipPreview() {
     val t = TransactionTip(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        pending = true,
+        extendedStatus = Pending,
         merchantBaseUrl = "https://merchant.example.org/",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),

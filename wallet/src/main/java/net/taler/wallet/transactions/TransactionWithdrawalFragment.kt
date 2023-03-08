@@ -31,6 +31,7 @@ import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentTransactionWithdrawalBinding
 import net.taler.wallet.handleKyc
 import net.taler.wallet.launchInAppBrowser
+import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.withdraw.createManualTransferRequired
@@ -65,7 +66,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
             val fee = t.amountRaw - t.amountEffective
             ui.feeView.text = getString(R.string.amount_negative, fee.toString())
             ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
-            if (t.pending) {
+            if (t.extendedStatus == Pending) {
                 ui.deleteButton.setIconResource(R.drawable.ic_cancel)
                 ui.deleteButton.setText(R.string.cancel)
             }
@@ -75,7 +76,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         }
     }
 
-    private val isPending get() = transactionManager.selectedTransaction.value?.pending == true
+    private val isPending get() = transactionManager.selectedTransaction.value?.extendedStatus == Pending
 
     override val deleteDialogTitle: Int
         get() = if (isPending) R.string.cancel else super.deleteDialogTitle
@@ -86,7 +87,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
         get() = if (isPending) R.string.ok else super.deleteDialogButton
 
     private fun setupConfirmWithdrawalButton(t: TransactionWithdrawal) {
-        if (t.pending && !t.confirmed) {
+        if (t.extendedStatus == Pending && !t.confirmed) {
             if (t.withdrawalDetails is TalerBankIntegrationApi &&
                 t.withdrawalDetails.bankConfirmationUrl != null
             ) {
