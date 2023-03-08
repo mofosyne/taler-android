@@ -55,10 +55,10 @@ class CategoriesFragment : Fragment(), CategorySelectionListener {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        orderManager.categories.observe(viewLifecycleOwner, { categories ->
+        orderManager.categories.observe(viewLifecycleOwner) { categories ->
             adapter.setItems(categories)
             ui.progressBar.visibility = INVISIBLE
-        })
+        }
     }
 
     override fun onCategorySelected(category: Category) {

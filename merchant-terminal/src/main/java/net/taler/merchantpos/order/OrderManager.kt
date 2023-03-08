@@ -32,7 +32,7 @@ import net.taler.merchantpos.order.RestartState.ENABLED
 class OrderManager(private val context: Context) : ConfigurationReceiver {
 
     companion object {
-        val TAG = OrderManager::class.java.simpleName
+        val TAG: String = OrderManager::class.java.simpleName
     }
 
     private lateinit var currency: String

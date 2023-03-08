@@ -14,7 +14,11 @@
     <string name="order_undo">Undo</string>
     <string name="order_previous">Prev</string>
     <string name="order_next">Next</string>
+    <string name="order_custom">Add custom product</string>
     <string name="order_complete">Complete</string>
+    <string name="order_custom_product">Custom product name</string>
+    <string name="order_custom_product_default">Tip</string>
+    <string name="order_custom_add_button">Add</string>
 
     <string name="config_label">Merchant settings</string>
     <string name="config_url">Configuration URL</string>

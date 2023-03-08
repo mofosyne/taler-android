@@ -44,15 +44,14 @@ class OrderFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         ui = FragmentOrderBinding.inflate(inflater, container, false)
         return ui.root
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         orderManager.currentOrderId.observe(viewLifecycleOwner) { orderId ->
             val liveOrder = orderManager.getOrder(orderId)
             onOrderSwitched(orderId, liveOrder)
@@ -61,6 +60,9 @@ class OrderFragment : Fragment() {
             childFragmentManager.beginTransaction()
                 .replace(R.id.fragment1, OrderStateFragment())
                 .commit()
+        }
+        ui.customButton.setOnClickListener {
+            CustomDialogFragment().show(childFragmentManager, CustomDialogFragment.TAG)
         }
     }
 
@@ -75,13 +77,13 @@ class OrderFragment : Fragment() {
 
     private fun onOrderSwitched(orderId: Int, liveOrder: LiveOrder) {
         // order title
-        liveOrder.order.observe(viewLifecycleOwner, { order ->
+        liveOrder.order.observe(viewLifecycleOwner) { order ->
             if (order == null) return@observe
             activity?.title = getString(R.string.order_label_title, order.title)
-        })
+        }
         // restart button
         ui.restartButton.setOnClickListener { liveOrder.restartOrUndo() }
-        liveOrder.restartState.observe(viewLifecycleOwner, { state ->
+        liveOrder.restartState.observe(viewLifecycleOwner) { state ->
             beginDelayedTransition(view as ViewGroup)
             if (state == UNDO) {
                 ui.restartButton.setText(R.string.order_undo)
@@ -92,19 +94,19 @@ class OrderFragment : Fragment() {
                 ui.restartButton.isEnabled = state == ENABLED
                 ui.completeButton.isEnabled = state == ENABLED
             }
-        })
+        }
         // -1 and +1 buttons
-        liveOrder.modifyOrderAllowed.observe(viewLifecycleOwner, { allowed ->
+        liveOrder.modifyOrderAllowed.observe(viewLifecycleOwner) { allowed ->
             ui.minusButton.isEnabled = allowed
             ui.plusButton.isEnabled = allowed
-        })
+        }
         ui.minusButton.setOnClickListener { liveOrder.decreaseSelectedOrderLine() }
         ui.plusButton.setOnClickListener { liveOrder.increaseSelectedOrderLine() }
         // previous and next button
         ui.prevButton.isEnabled = orderManager.hasPreviousOrder(orderId)
-        orderManager.hasNextOrder(orderId).observe(viewLifecycleOwner, { hasNextOrder ->
+        orderManager.hasNextOrder(orderId).observe(viewLifecycleOwner) { hasNextOrder ->
             ui.nextButton.isEnabled = hasNextOrder
-        })
+        }
         ui.prevButton.setOnClickListener { orderManager.previousOrder() }
         ui.nextButton.setOnClickListener { orderManager.nextOrder() }
         // complete button

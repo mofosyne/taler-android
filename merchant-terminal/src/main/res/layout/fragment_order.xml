@@ -121,6 +121,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/prevButton" />
 
+    <ImageButton
+        android:id="@+id/customButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:backgroundTint="?colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/nextButton"
+        app:srcCompat="@drawable/ic_dialpad"
+        android:contentDescription="@string/order_custom" />
+
     <Button
         android:id="@+id/completeButton"
         android:layout_width="wrap_content"
@@ -132,6 +143,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/nextButton" />
+        app:layout_constraintStart_toEndOf="@+id/customButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -73,7 +73,7 @@ data class Order(val id: Int, val currency: String, val availableCategories: Map
         val categories = HashMap<Category, Int>()
         products.forEach { product ->
             val categoryId = product.categories[0]
-            val category = availableCategories.getValue(categoryId)
+            val category = availableCategories[categoryId] ?: return@forEach // custom products
             val oldQuantity = categories[category] ?: 0
             categories[category] = oldQuantity + product.quantity
         }
