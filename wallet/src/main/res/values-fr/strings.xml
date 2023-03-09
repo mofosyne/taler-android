@@ -6,7 +6,7 @@
 \nVous pouvez obtenir de l\'argent de test auprès de la banque de démonstration :
 \n
 \nhttps://bank.demo.taler.net</string>
-    <string name="withdraw_error_message">Pour l\'instant il n\'est pas possible de retirer. Veuillez réessayer plus tard !</string>
+    <string name="withdraw_error_message">Le retrait n\'est actuellement pas possible. Veuillez réessayer plus tard !</string>
     <string name="settings_dev_mode">Mode développeur</string>
     <string name="menu_settings">Paramètres</string>
     <string name="settings_reset">Réinitialiser le portefeuille (dangereux!)</string>
@@ -190,4 +190,15 @@
     <string name="send_deposit">Vers un compte bancaire</string>
     <string name="send_deposit_title">Dépôt sur un compte bancaire</string>
     <string name="send_deposit_iban">IBAN</string>
+    <string name="withdraw_restrict_age_unrestricted">Sans restriction</string>
+    <string name="withdraw_manual_ready_subject">Sujet</string>
+    <string name="withdraw_manual_ready_cancel">Annuler le retrait</string>
+    <string name="withdraw_manual_bitcoin_title">Le change de Bitcoin prêt pour les retraits</string>
+    <string name="withdraw_manual_bitcoin_intro">Effectuez maintenant une transaction fractionnée avec les trois sorties suivantes.</string>
+    <string name="withdraw_manual_ready_bank_button">Ouvrir dans l\'application bancaire</string>
+    <string name="withdraw_manual_ready_title">Le change est prêt pour le retrait !</string>
+    <string name="withdraw_manual_ready_intro">Pour compléter le processus, vous devez virer %s sur le compte bancaire de change</string>
+    <string name="withdraw_manual_ready_details_intro">Détails du virement bancaire</string>
+    <string name="withdraw_manual_ready_iban">IBAN</string>
+    <string name="withdraw_manual_ready_warning">Assurez-vous d\'utiliser le bon sujet, sinon l\'argent n\'arrivera pas dans ce portefeuille.</string>
 </resources>
