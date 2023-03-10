@@ -35,14 +35,17 @@ import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.DeleteTransactionComposable
+import net.taler.wallet.transactions.ErrorTransactionButton
 import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionDeposit
 
 @Composable
-fun TransactionDepositComposable(t: TransactionDeposit, onDelete: () -> Unit) {
+fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onDelete: () -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -75,6 +78,9 @@ fun TransactionDepositComposable(t: TransactionDeposit, onDelete: () -> Unit) {
             )
         }
         DeleteTransactionComposable(onDelete)
+        if (devMode == true && t.error != null) {
+            ErrorTransactionButton(transaction = t)
+        }
     }
 }
 
@@ -89,8 +95,9 @@ fun TransactionDepositComposablePreview() {
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),
         targetPaytoUri = "https://exchange.example.org/peer/pull/credit",
+        error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionDepositComposable(t) {}
+        TransactionDepositComposable(t, true) {}
     }
 }

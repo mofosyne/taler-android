@@ -41,6 +41,8 @@ import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.transactions.ExtendedStatus.Pending
 
@@ -54,7 +56,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
-                if (t is TransactionTip) TransactionTipComposable(t) {
+                if (t is TransactionTip) TransactionTipComposable(t, devMode.value) {
                     onDeleteButtonClicked(t)
                 }
             }
@@ -63,7 +65,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
 }
 
 @Composable
-fun TransactionTipComposable(t: TransactionTip, onDelete: () -> Unit) {
+fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onDelete: () -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -101,6 +103,9 @@ fun TransactionTipComposable(t: TransactionTip, onDelete: () -> Unit) {
             info = t.merchantBaseUrl,
         )
         DeleteTransactionComposable(onDelete)
+        if (devMode == true && t.error != null) {
+            ErrorTransactionButton(transaction = t)
+        }
     }
 }
 
@@ -114,8 +119,9 @@ fun TransactionTipPreview() {
         merchantBaseUrl = "https://merchant.example.org/",
         amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
         amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
+        error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionTipComposable(t) {}
+        TransactionTipComposable(t, true) {}
     }
 }

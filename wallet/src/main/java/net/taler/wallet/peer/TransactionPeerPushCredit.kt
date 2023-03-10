@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.PeerInfoShort
@@ -71,8 +73,9 @@ fun TransactionPeerPushCreditPreview() {
             expiration = Timestamp.fromMillis(System.currentTimeMillis() + 60 * 60 * 1000),
             summary = "test invoice",
         ),
+        error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionPeerComposable(t) {}
+        TransactionPeerComposable(t, true) {}
     }
 }
