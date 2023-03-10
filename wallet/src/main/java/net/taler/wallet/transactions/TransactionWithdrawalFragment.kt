@@ -73,6 +73,12 @@ class TransactionWithdrawalFragment : TransactionDetailFragment() {
             ui.deleteButton.setOnClickListener {
                 onDeleteButtonClicked(t)
             }
+            if (devMode.value == true && t.error != null) {
+                ui.showErrorButton.visibility = VISIBLE
+                ui.showErrorButton.setOnClickListener {
+                    onShowErrorButtonClicked(t)
+                }
+            }
         }
     }
 

@@ -28,9 +28,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorInfo
+import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.getAttrColor
 import net.taler.wallet.launchInAppBrowser
 
@@ -38,6 +41,7 @@ abstract class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     val transactionManager by lazy { model.transactionManager }
+    val devMode by lazy { model.devMode }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +124,28 @@ abstract class TransactionDetailFragment : Fragment() {
     private fun deleteTransaction(t: Transaction) {
         transactionManager.deleteTransaction(t.transactionId)
         findNavController().popBackStack()
+    }
+
+    private val json = Json { prettyPrint = true }
+
+    protected fun onShowErrorButtonClicked(t: Transaction) {
+        t.error?.let { err ->
+            val message = json.encodeToString(TalerErrorInfo.serializer(), err)
+            MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
+                .setTitle(getString(R.string.nav_error))
+                .setMessage(message)
+                .setNeutralButton(R.string.close) { dialog, _ ->
+                    dialog.cancel()
+                }
+                .setPositiveButton(R.string.copy) { _, _ ->
+                    copyToClipBoard(
+                        requireContext(),
+                        getString(R.string.nav_error),
+                        message,
+                    )
+                }
+                .show()
+        }
     }
 
 }

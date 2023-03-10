@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -54,6 +55,12 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
             ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
             ui.deleteButton.setOnClickListener {
                 onDeleteButtonClicked(t)
+            }
+            if (devMode.value == true && t.error != null) {
+                ui.showErrorButton.visibility = VISIBLE
+                ui.showErrorButton.setOnClickListener {
+                    onShowErrorButtonClicked(t)
+                }
             }
         }
     }
