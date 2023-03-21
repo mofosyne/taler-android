@@ -28,11 +28,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.getAttrColor
 import net.taler.wallet.launchInAppBrowser
@@ -102,8 +102,10 @@ abstract class TransactionDetailFragment : Fragment() {
 
     @StringRes
     protected open val deleteDialogTitle = R.string.transactions_delete
+
     @StringRes
     protected open val deleteDialogMessage = R.string.transactions_delete_dialog_message
+
     @StringRes
     protected open val deleteDialogButton = R.string.transactions_delete
 
@@ -126,26 +128,26 @@ abstract class TransactionDetailFragment : Fragment() {
         findNavController().popBackStack()
     }
 
-    private val json = Json { prettyPrint = true }
-
     protected fun onShowErrorButtonClicked(t: Transaction) {
-        t.error?.let { err ->
-            val message = json.encodeToString(TalerErrorInfo.serializer(), err)
-            MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
-                .setTitle(getString(R.string.nav_error))
-                .setMessage(message)
-                .setNeutralButton(R.string.close) { dialog, _ ->
-                    dialog.cancel()
-                }
-                .setPositiveButton(R.string.copy) { _, _ ->
-                    copyToClipBoard(
-                        requireContext(),
-                        getString(R.string.nav_error),
-                        message,
-                    )
-                }
-                .show()
-        }
+        val err = t.error
+        require(err != null) { "Transaction had no error." }
+
+        val json = Json { prettyPrint = true }
+        val message = json.encodeToString(err)
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
+            .setTitle(getString(R.string.nav_error))
+            .setMessage(message)
+            .setNeutralButton(R.string.close) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(R.string.copy) { _, _ ->
+                copyToClipBoard(
+                    requireContext(),
+                    getString(R.string.nav_error),
+                    message,
+                )
+            }
+            .show()
     }
 
 }
