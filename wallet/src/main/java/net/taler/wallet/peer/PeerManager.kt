@@ -37,6 +37,7 @@ import org.json.JSONObject
 import java.util.concurrent.TimeUnit.HOURS
 
 const val MAX_LENGTH_SUBJECT = 100
+val DEFAULT_EXPIRY = ExpirationOption.DAYS_1
 
 class PeerManager(
     private val api: WalletBackendApi,

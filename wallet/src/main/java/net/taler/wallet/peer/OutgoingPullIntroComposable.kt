@@ -50,7 +50,6 @@ import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
-import net.taler.wallet.peer.ExpirationOption.DAYS_1
 import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,8 +123,8 @@ fun OutgoingPullIntroComposable(
             text = stringResource(R.string.send_peer_expiration_period),
             style = MaterialTheme.typography.bodyMedium,
         )
-        var option by rememberSaveable { mutableStateOf(DAYS_1) }
-        var hours by rememberSaveable { mutableStateOf(1L) }
+        var option by rememberSaveable { mutableStateOf(DEFAULT_EXPIRY) }
+        var hours by rememberSaveable { mutableStateOf(DEFAULT_EXPIRY.hours) }
         ExpirationComposable(
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
             option = option,
