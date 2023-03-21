@@ -35,67 +35,72 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.copyToClipBoard
 
-val json = Json { prettyPrint = true }
-
 @Composable
 fun ErrorTransactionButton(
     modifier: Modifier = Modifier,
-    transaction: Transaction
+    error: TalerErrorInfo,
 ) {
     val showDialog = remember { mutableStateOf(false) }
 
-    if (transaction.error != null && showDialog.value) {
-        val message = json.encodeToString(TalerErrorInfo.serializer(), transaction.error!!)
-        AlertDialog(onDismissRequest = {
-            showDialog.value = false
-        },
-        title = {
-            Text(stringResource(R.string.nav_error))
-        },
-        text = {
-            Column {
-                Text(
-                    fontFamily = FontFamily.Monospace,
-                    text = message,
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
+    if (showDialog.value) {
+        @Suppress("OPT_IN_USAGE")
+        val json = Json {
+            prettyPrint = true
+            prettyPrintIndent = "  "
+        }
+        val message = json.encodeToString(error)
+        AlertDialog(
+            onDismissRequest = {
                 showDialog.value = false
-            }) {
-                Text(stringResource(R.string.close))
-            }
-        },
-        confirmButton = {
-            val context = LocalContext.current
-            TextButton(onClick = {
-                copyToClipBoard(context, context.getString(R.string.nav_error), message)
-            }) {
-                Text(stringResource(R.string.copy))
-            }
-        })
+            },
+            title = {
+                Text(stringResource(R.string.nav_error))
+            },
+            text = {
+                Column {
+                    Text(
+                        fontFamily = FontFamily.Monospace,
+                        text = message,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDialog.value = false
+                }) {
+                    Text(stringResource(R.string.close))
+                }
+            },
+            confirmButton = {
+                val context = LocalContext.current
+                TextButton(onClick = {
+                    copyToClipBoard(context, context.getString(R.string.nav_error), message)
+                }) {
+                    Text(stringResource(R.string.copy))
+                }
+            })
     }
 
     Button(
-       modifier = modifier,
-       colors = ButtonDefaults.buttonColors(
-           contentColor = MaterialTheme.colorScheme.onError,
-           containerColor = MaterialTheme.colorScheme.error,
-       ),
-       onClick = {
-           showDialog.value = true
-       }
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            contentColor = MaterialTheme.colorScheme.onError,
+            containerColor = MaterialTheme.colorScheme.error,
+        ),
+        onClick = {
+            showDialog.value = true
+        }
     ) {
         val label = stringResource(R.string.nav_error)
         Icon(
-            Icons.Default.Error,
-            label,
+            imageVector = Icons.Default.Error,
+            contentDescription = label,
             modifier = Modifier.size(ButtonDefaults.IconSize),
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))

@@ -88,7 +88,7 @@ fun TransactionPeerComposable(t: Transaction, devMode: Boolean?, onDelete: () ->
         }
         DeleteTransactionComposable(onDelete)
         if (devMode == true && t.error != null) {
-            ErrorTransactionButton(transaction = t)
+            ErrorTransactionButton(error = t.error!!)
         }
     }
 }

@@ -132,7 +132,11 @@ abstract class TransactionDetailFragment : Fragment() {
         val err = t.error
         require(err != null) { "Transaction had no error." }
 
-        val json = Json { prettyPrint = true }
+        @Suppress("OPT_IN_USAGE")
+        val json = Json {
+            prettyPrint = true
+            prettyPrintIndent = "  "
+        }
         val message = json.encodeToString(err)
         MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setTitle(getString(R.string.nav_error))

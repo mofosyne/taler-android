@@ -79,7 +79,7 @@ fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onDel
         }
         DeleteTransactionComposable(onDelete)
         if (devMode == true && t.error != null) {
-            ErrorTransactionButton(transaction = t)
+            ErrorTransactionButton(error = t.error)
         }
     }
 }
