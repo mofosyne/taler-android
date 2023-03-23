@@ -21,3 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 #noinspection ShrinkerUnresolvedReference
+
+-dontobfuscate
+-keep class net.taler.wallet.** {*;}
