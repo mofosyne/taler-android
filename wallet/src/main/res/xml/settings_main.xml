@@ -24,13 +24,6 @@
         app:summary="@string/exchange_settings_summary"
         app:title="@string/exchange_settings_title" />
 
-    <Preference
-        app:fragment="net.taler.wallet.settings.BackupSettingsFragment"
-        app:icon="@drawable/ic_baseline_backup"
-        app:isPreferenceVisible="false"
-        app:key="pref_backup"
-        app:title="Backup"
-        tools:isPreferenceVisible="true" />
 
     <SwitchPreferenceCompat
         app:icon="@drawable/ic_developer_mode"
@@ -96,6 +89,13 @@
         app:selectable="false"
         app:summary="@string/settings_version_unknown"
         app:title="@string/settings_version_protocol_merchant"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
+        app:isPreferenceVisible="false"
+        app:key="pref_test"
+        app:summary="@string/settings_test_summary"
+        app:title="@string/settings_test"
         tools:isPreferenceVisible="true" />
 
     <Preference

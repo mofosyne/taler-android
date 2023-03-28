@@ -50,9 +50,6 @@ import net.taler.wallet.tip.TipManager
 import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit.DAYS
-import java.util.concurrent.TimeUnit.MINUTES
-import kotlin.random.Random
 
 const val TAG = "taler-wallet"
 
@@ -96,13 +93,6 @@ class MainViewModel(
 
     private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
-
-    private val mLastBackup = MutableLiveData(
-        // fake backup time until we actually do backup
-        System.currentTimeMillis() -
-                Random.nextLong(MINUTES.toMillis(5), DAYS.toMillis(2))
-    )
-    val lastBackup: LiveData<Long> = mLastBackup
 
     override fun onVersionReceived(versionInfo: WalletCoreVersion) {
         exchangeVersion = versionInfo.exchange
@@ -205,6 +195,20 @@ class MainViewModel(
     @UiThread
     fun scanCode() {
         mScanCodeEvent.value = true.toEvent()
+    }
+
+    fun runIntegrationTest() {
+        viewModelScope.launch {
+            api.request<Unit>("runIntegrationTest") {
+                put("amountToWithdraw", "KUDOS:42")
+                put("amountToSpend", "KUDOS:23")
+                put("bankBaseUrl", "https://bank.demo.taler.net/")
+                put("bankAccessApiBaseUrl", "https://bank.demo.taler.net/demobanks/default/access-api/")
+                put("exchangeBaseUrl", "https://exchange.demo.taler.net/")
+                put("merchantBaseUrl", "https://backend.demo.taler.net/")
+                put("merchantAuthToken", "secret-token:sandbox")
+            }
+        }
     }
 
 }

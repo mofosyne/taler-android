@@ -27,7 +27,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.showError
-import net.taler.common.toRelativeTime
 import net.taler.qtart.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.BuildConfig.FLAVOR
 import net.taler.wallet.BuildConfig.VERSION_CODE
@@ -44,7 +43,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val settingsManager get() = model.settingsManager
     private val withdrawManager by lazy { model.withdrawManager }
 
-    private lateinit var prefBackup: Preference
     private lateinit var prefDevMode: SwitchPreferenceCompat
     private lateinit var prefWithdrawTest: Preference
     private lateinit var prefLogcat: Preference
@@ -53,10 +51,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefVersionCore: Preference
     private lateinit var prefVersionExchange: Preference
     private lateinit var prefVersionMerchant: Preference
+    private lateinit var prefTest: Preference
     private lateinit var prefReset: Preference
     private val devPrefs by lazy {
         listOf(
-            prefBackup,
             prefWithdrawTest,
             prefLogcat,
             prefExportDb,
@@ -64,20 +62,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefVersionCore,
             prefVersionExchange,
             prefVersionMerchant,
-            prefReset
+            prefTest,
+            prefReset,
         )
     }
 
     private val logLauncher = registerForActivityResult(CreateDocument("text/plain")) { uri ->
         settingsManager.exportLogcat(uri)
     }
-    private val dbExportLauncher = registerForActivityResult(CreateDocument("application/json")) { uri ->
-        settingsManager.exportDb(uri)
-    }
+    private val dbExportLauncher =
+        registerForActivityResult(CreateDocument("application/json")) { uri ->
+            settingsManager.exportDb(uri)
+        }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
-        prefBackup = findPreference("pref_backup")!!
         prefDevMode = findPreference("pref_dev_mode")!!
         prefWithdrawTest = findPreference("pref_testkudos")!!
         prefLogcat = findPreference("pref_logcat")!!
@@ -86,16 +85,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         prefVersionCore = findPreference("pref_version_core")!!
         prefVersionExchange = findPreference("pref_version_protocol_exchange")!!
         prefVersionMerchant = findPreference("pref_version_protocol_merchant")!!
+        prefTest = findPreference("pref_test")!!
         prefReset = findPreference("pref_reset")!!
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        model.lastBackup.observe(viewLifecycleOwner) {
-            val time = it.toRelativeTime(requireContext())
-            prefBackup.summary = getString(R.string.backup_last, time)
-        }
 
         model.devMode.observe(viewLifecycleOwner) { enabled ->
             prefDevMode.isChecked = enabled
@@ -136,6 +131,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        prefTest.setOnPreferenceClickListener {
+            model.runIntegrationTest()
+            true
+        }
         prefReset.setOnPreferenceClickListener {
             showResetDialog()
             true

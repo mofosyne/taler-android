@@ -344,7 +344,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         pref: Preference,
     ): Boolean {
         when (pref.key) {
-            "pref_backup" -> nav.navigate(R.id.action_nav_settings_to_nav_settings_backup)
             "pref_exchanges" -> nav.navigate(R.id.action_nav_settings_to_nav_settings_exchanges)
         }
         return true
