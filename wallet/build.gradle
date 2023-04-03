@@ -19,7 +19,7 @@ plugins {
     id "kotlinx-serialization"
 }
 
-def qtart_version = "0.9.3-dev.5"
+def qtart_version = "0.9.3-dev.6"
 
 static def versionCodeEpoch() {
     return (new Date().getTime() / 1000).toInteger()
@@ -43,7 +43,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 32
         versionCode 26
-        versionName "0.9.2+p3"
+        versionName "0.9.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
