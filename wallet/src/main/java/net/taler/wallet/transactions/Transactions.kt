@@ -136,12 +136,6 @@ enum class ExtendedStatus {
     @SerialName("failed")
     Failed,
 
-    @SerialName("kyc-required")
-    KycRequired,
-
-    @SerialName("aml-required")
-    AmlRequired,
-
     @SerialName("deleted")
     Deleted;
 }
