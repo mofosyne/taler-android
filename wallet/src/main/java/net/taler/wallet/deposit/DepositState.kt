@@ -26,6 +26,7 @@ sealed class DepositState {
 
     object Start : DepositState()
     object CheckingFees : DepositState()
+    object IbanInvalid : DepositState()
     class FeesChecked(
         override val totalDepositCost: Amount,
         override val effectiveDepositAmount: Amount,

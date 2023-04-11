@@ -47,6 +47,32 @@ class DepositManager(
 
     @UiThread
     fun onDepositButtonClicked(amount: Amount, receiverName: String, iban: String, bic: String) {
+        if (depositState.value is DepositState.FeesChecked) {
+            // fees already checked, so IBAN was validated, can make deposit directly
+            makeIbanDeposit(amount, receiverName, iban, bic)
+        } else {
+            // validate IBAN first
+            mDepositState.value = DepositState.CheckingFees
+            scope.launch {
+                api.request("validateIban", ValidateIbanResponse.serializer()) {
+                    put("iban", iban)
+                }.onError {
+                    Log.e(TAG, "Error validateIban $it")
+                    mDepositState.value = DepositState.Error(it.userFacingMsg)
+                }.onSuccess { response ->
+                    if (response.valid) {
+                        // only prepare/make deposit, if IBAN is valid
+                        makeIbanDeposit(amount, receiverName, iban, bic)
+                    } else {
+                        mDepositState.value = DepositState.IbanInvalid
+                    }
+                }
+            }
+        }
+    }
+
+    @UiThread
+    private fun makeIbanDeposit(amount: Amount, receiverName: String, iban: String, bic: String) {
         val paytoUri: String = PaytoUriIban(
             iban = iban,
             bic = bic,
@@ -66,7 +92,7 @@ class DepositManager(
     }
 
     private fun makeDeposit(amount: Amount, uri: String) {
-        if (depositState.value.showFees) makeDeposit(
+        if (depositState.value is DepositState.FeesChecked) makeDeposit(
             paytoUri = uri,
             amount = amount,
             totalDepositCost = depositState.value.totalDepositCost
@@ -124,6 +150,11 @@ class DepositManager(
         mDepositState.value = DepositState.Start
     }
 }
+
+@Serializable
+data class ValidateIbanResponse(
+    val valid: Boolean,
+)
 
 @Serializable
 data class PrepareDepositResponse(

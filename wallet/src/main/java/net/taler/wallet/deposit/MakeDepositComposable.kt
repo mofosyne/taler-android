@@ -91,6 +91,7 @@ fun MakeDepositComposable(
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
+        val ibanError = state is DepositState.IbanInvalid
         OutlinedTextField(
             modifier = Modifier
                 .padding(16.dp),
@@ -99,11 +100,20 @@ fun MakeDepositComposable(
             onValueChange = { input ->
                 iban = input.uppercase()
             },
-            isError = iban.isBlank(),
+            isError = ibanError,
+            supportingText = {
+                if (ibanError) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.send_deposit_iban_error),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
             label = {
                 Text(
                     text = stringResource(R.string.send_deposit_iban),
-                    color = if (iban.isBlank()) {
+                    color = if (ibanError) {
                         MaterialTheme.colorScheme.error
                     } else Color.Unspecified,
                 )
@@ -190,10 +200,12 @@ fun MakeDepositComposable(
                 onMakeDeposit(amount, name, iban, bic)
             },
         ) {
-            Text(text = stringResource(
-                if (state.showFees) R.string.send_deposit_create_button
-                else R.string.send_deposit_check_fees_button
-            ))
+            Text(
+                text = stringResource(
+                    if (state is DepositState.FeesChecked) R.string.send_deposit_create_button
+                    else R.string.send_deposit_check_fees_button
+                )
+            )
         }
     }
 }
