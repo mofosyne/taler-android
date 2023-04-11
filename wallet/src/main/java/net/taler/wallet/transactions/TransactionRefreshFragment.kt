@@ -19,50 +19,31 @@ package net.taler.wallet.transactions
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import net.taler.common.toAbsoluteTime
-import net.taler.wallet.R
-import net.taler.wallet.cleanExchange
-import net.taler.wallet.databinding.FragmentTransactionWithdrawalBinding
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.withdraw.TransactionWithdrawalComposable
 
 class TransactionRefreshFragment : TransactionDetailFragment() {
-
-    private lateinit var ui: FragmentTransactionWithdrawalBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        ui = FragmentTransactionWithdrawalBinding.inflate(inflater, container, false)
-        return ui.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
-            if (t !is TransactionRefresh) return@observe
-            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
-
-            ui.effectiveAmountLabel.visibility = GONE
-            ui.effectiveAmountView.visibility = GONE
-            ui.confirmWithdrawalButton.visibility = GONE
-            ui.chosenAmountLabel.visibility = GONE
-            ui.chosenAmountView.visibility = GONE
-            val fee = t.amountEffective
-            ui.feeView.text = getString(R.string.amount_negative, fee.toString())
-            ui.exchangeView.text = cleanExchange(t.exchangeBaseUrl)
-            ui.deleteButton.setOnClickListener {
-                onDeleteButtonClicked(t)
-            }
-            if (devMode.value == true && t.error != null) {
-                ui.showErrorButton.visibility = VISIBLE
-                ui.showErrorButton.setOnClickListener {
-                    onShowErrorButtonClicked(t)
+    ): View = ComposeView(requireContext()).apply {
+        setContent {
+            TalerSurface {
+                val t = transactionManager.selectedTransaction.observeAsState().value
+                if (t is TransactionRefresh) {
+                    TransactionWithdrawalComposable(t, devMode.value, null) {
+                        onDeleteButtonClicked(t)
+                    }
                 }
             }
         }
     }
+
+
 
 }
