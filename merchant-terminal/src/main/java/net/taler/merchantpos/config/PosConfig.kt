@@ -31,8 +31,8 @@ data class Config(
     val username: String,
     val password: String
 ) {
-    fun isValid() = !configUrl.isBlank()
-    fun hasPassword() = !password.isBlank()
+    fun isValid() = configUrl.isNotBlank()
+    fun hasPassword() = password.isNotBlank()
 }
 
 @Serializable

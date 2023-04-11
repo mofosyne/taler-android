@@ -45,9 +45,7 @@ class ConfigFetcherFragment : Fragment() {
         return ui.root
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configManager.fetchConfig(configManager.config, false)
         configManager.configUpdateResult.observe(viewLifecycleOwner) { result ->
             when (result) {

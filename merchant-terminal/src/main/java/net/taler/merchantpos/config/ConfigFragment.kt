@@ -49,7 +49,7 @@ class ConfigFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         ui = FragmentMerchantConfigBinding.inflate(inflater, container, false)
         return ui.root
     }
@@ -74,11 +74,11 @@ class ConfigFragment : Fragment() {
                 password = ui.passwordView.editText!!.text.toString()
             )
             configManager.fetchConfig(config, true, ui.savePasswordCheckBox.isChecked)
-            configManager.configUpdateResult.observe(viewLifecycleOwner, { result ->
+            configManager.configUpdateResult.observe(viewLifecycleOwner) { result ->
                 if (onConfigUpdate(result)) {
                     configManager.configUpdateResult.removeObservers(viewLifecycleOwner)
                 }
-            })
+            }
         }
         ui.forgetPasswordButton.setOnClickListener {
             configManager.forgetPassword()
@@ -93,8 +93,8 @@ class ConfigFragment : Fragment() {
         super.onStart()
         // focus password if this is the only empty field
         if (ui.passwordView.editText!!.text.isBlank()
-            && !ui.configUrlView.editText!!.text.isBlank()
-            && !ui.usernameView.editText!!.text.isBlank()
+            && ui.configUrlView.editText!!.text.isNotBlank()
+            && ui.usernameView.editText!!.text.isNotBlank()
         ) {
             ui.passwordView.requestFocus()
         }

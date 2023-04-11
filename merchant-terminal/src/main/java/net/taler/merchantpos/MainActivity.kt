@@ -75,8 +75,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener {
 
     override fun onStart() {
         super.onStart()
-        if (!model.configManager.config.isValid() && nav.currentDestination?.id != R.id.nav_settings) {
-            nav.navigate(R.id.action_global_merchantSettings)
+        if (!model.configManager.config.isValid()) {
+            if (nav.currentDestination?.id != R.id.nav_settings) nav.navigate(R.id.action_global_merchantSettings)
         } else if (model.configManager.merchantConfig == null && nav.currentDestination?.id != R.id.configFetcher) {
             nav.navigate(R.id.action_global_configFetcher)
         }

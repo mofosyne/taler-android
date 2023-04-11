@@ -74,7 +74,7 @@ class ConfigManager(
     private val configurationReceivers = ArrayList<ConfigurationReceiver>()
 
     var config = Config(
-        configUrl = prefs.getString(SETTINGS_CONFIG_URL, CONFIG_URL_DEMO)!!,
+        configUrl = prefs.getString(SETTINGS_CONFIG_URL, "")!!,
         username = prefs.getString(SETTINGS_USERNAME, CONFIG_USERNAME_DEMO)!!,
         password = prefs.getString(SETTINGS_PASSWORD, CONFIG_PASSWORD_DEMO)!!
     )
