@@ -21,13 +21,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     //noinspection GradleDependency
     buildToolsVersion "$build_tools_version"
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
