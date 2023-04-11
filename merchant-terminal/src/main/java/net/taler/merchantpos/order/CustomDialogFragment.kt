@@ -20,10 +20,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import net.taler.common.Amount
+import net.taler.common.AmountParserException
 import net.taler.merchantpos.MainViewModel
+import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigProduct
 import net.taler.merchantpos.databinding.FragmentCustomDialogBinding
 
@@ -52,9 +56,16 @@ class CustomDialogFragment : DialogFragment() {
         ui.addButton.setOnClickListener {
             val currentOrderId =
                 viewModel.orderManager.currentOrderId.value ?: return@setOnClickListener
+            val amount = try {
+                Amount.fromString(currency, ui.amountLayout.editText!!.text.toString())
+            } catch (e: AmountParserException) {
+                Toast.makeText(requireContext(), R.string.refund_error_invalid_amount, LENGTH_LONG)
+                    .show()
+                return@setOnClickListener
+            }
             val product = ConfigProduct(
                 description = ui.productNameLayout.editText!!.text.toString(),
-                price = Amount.fromString(currency, ui.amountLayout.editText!!.text.toString()),
+                price = amount,
                 categories = listOf(Int.MIN_VALUE),
             )
             viewModel.orderManager.addProduct(currentOrderId, product)
