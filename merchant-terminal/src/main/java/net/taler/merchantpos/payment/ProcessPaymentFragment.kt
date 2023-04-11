@@ -55,9 +55,9 @@ class ProcessPaymentFragment : Fragment() {
         val introRes =
             if (hasNfc(requireContext())) R.string.payment_intro_nfc else R.string.payment_intro
         ui.payIntroView.setText(introRes)
-        paymentManager.payment.observe(viewLifecycleOwner, { payment ->
+        paymentManager.payment.observe(viewLifecycleOwner) { payment ->
             onPaymentStateChanged(payment)
-        })
+        }
         ui.cancelPaymentButton.setOnClickListener {
             onPaymentCancel()
         }

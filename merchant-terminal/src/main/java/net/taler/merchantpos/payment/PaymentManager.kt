@@ -36,10 +36,9 @@ import net.taler.merchantpos.R
 import net.taler.merchantpos.config.ConfigManager
 import net.taler.merchantpos.order.Order
 import java.util.concurrent.TimeUnit.HOURS
-import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
-private val TIMEOUT = MINUTES.toMillis(2)
+private const val TIMEOUT = Long.MAX_VALUE
 private val CHECK_INTERVAL = SECONDS.toMillis(1)
 
 class PaymentManager(
@@ -85,7 +84,10 @@ class PaymentManager(
 
     private fun checkPayment(orderId: String) = scope.launch {
         val merchantConfig = configManager.merchantConfig!!
-        api.checkOrder(merchantConfig, orderId).handle(::onNetworkError) { response ->
+        api.checkOrder(merchantConfig, orderId).handle({ error ->
+            // don't call onNetworkError() to not cancel payment, just keep trying
+            Log.d(TAG, "Network error: $error")
+        }) { response ->
             assertUiThread()
             if (!isActive) return@handle // don't continue if job was cancelled
             val currentValue = requireNotNull(mPayment.value)
