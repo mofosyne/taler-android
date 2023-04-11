@@ -19,50 +19,32 @@ package net.taler.wallet.transactions
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import net.taler.common.toAbsoluteTime
-import net.taler.wallet.databinding.FragmentTransactionPaymentBinding
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.ComposeView
+import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.launchInAppBrowser
+import net.taler.wallet.payment.TransactionPaymentComposable
 
 class TransactionPaymentFragment : TransactionDetailFragment() {
-
-    private lateinit var ui: FragmentTransactionPaymentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        ui = FragmentTransactionPaymentBinding.inflate(inflater, container, false)
-        return ui.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        transactionManager.selectedTransaction.observe(viewLifecycleOwner) { t ->
-            if (t !is TransactionPayment) return@observe
-            ui.timeView.text = t.timestamp.ms.toAbsoluteTime(requireContext())
-
-            ui.amountPaidWithFeesView.text = t.amountEffective.toString()
-            val fee = t.amountEffective - t.amountRaw
-            bindOrderAndFee(
-                ui.orderSummaryView,
-                ui.orderAmountView,
-                ui.orderIdView,
-                ui.feeView,
-                t.info,
-                t.amountRaw,
-                fee
-            )
-            ui.deleteButton.setOnClickListener {
-                onDeleteButtonClicked(t)
-            }
-            if (devMode.value == true && t.error != null) {
-                ui.showErrorButton.visibility = VISIBLE
-                ui.showErrorButton.setOnClickListener {
-                    onShowErrorButtonClicked(t)
-                }
+    ): View = ComposeView(requireContext()).apply {
+        setContent {
+            TalerSurface {
+                val t = transactionManager.selectedTransaction.observeAsState().value
+                if (t is TransactionPayment) TransactionPaymentComposable(t, devMode.value,
+                    onFulfill = { url ->
+                        launchInAppBrowser(requireContext(), url)
+                    },
+                    onDelete = {
+                        onDeleteButtonClicked(t)
+                    }
+                )
             }
         }
     }
-
 }

@@ -236,14 +236,12 @@
     <fragment
         android:id="@+id/nav_transactions_detail_payment"
         android:name="net.taler.wallet.transactions.TransactionPaymentFragment"
-        android:label="@string/transactions_detail_title"
-        tools:layout="@layout/fragment_transaction_payment" />
+        android:label="@string/transactions_detail_title" />
 
     <fragment
         android:id="@+id/nav_transactions_detail_refund"
         android:name="net.taler.wallet.transactions.TransactionRefundFragment"
-        android:label="@string/transactions_detail_title"
-        tools:layout="@layout/fragment_transaction_payment" />
+        android:label="@string/transactions_detail_title" />
 
     <fragment
         android:id="@+id/nav_transactions_detail_refresh"
@@ -263,8 +261,7 @@
     <fragment
         android:id="@+id/nav_transactions_detail_peer"
         android:name="net.taler.wallet.transactions.TransactionPeerFragment"
-        android:label="@string/transactions_detail_title"
-        tools:layout="@layout/fragment_transaction_payment" />
+        android:label="@string/transactions_detail_title" />
 
     <fragment
         android:id="@+id/alreadyAccepted"
