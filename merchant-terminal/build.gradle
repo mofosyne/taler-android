@@ -15,8 +15,8 @@ android {
         applicationId "net.taler.merchantpos"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 4
-        versionName "0.2.2"
+        versionCode 5
+        versionName "0.2.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
