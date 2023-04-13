@@ -123,7 +123,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             findNavController().navigate(R.id.sendFunds)
         }
         ui.receiveButton.setOnClickListener {
-            findNavController().navigate(R.id.receiveFunds)
+            findNavController().navigate(R.id.action_global_receiveFunds)
         }
         ui.mainFab.setOnClickListener {
             model.scanCode()

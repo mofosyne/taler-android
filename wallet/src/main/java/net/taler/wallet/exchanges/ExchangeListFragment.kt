@@ -99,7 +99,7 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     override fun onPeerReceive(item: ExchangeItem) {
         transactionManager.selectedCurrency = item.currency
-        findNavController().navigate(R.id.receiveFunds)
+        findNavController().navigate(R.id.action_global_receiveFunds)
     }
 
 }

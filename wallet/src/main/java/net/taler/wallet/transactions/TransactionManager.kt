@@ -41,6 +41,8 @@ class TransactionManager(
     private val mProgress = MutableLiveData<Boolean>()
     val progress: LiveData<Boolean> = mProgress
 
+    // FIXME if the app gets killed, this will not be restored and thus be unexpected null
+    //  we should keep this in a savable, maybe using Hilt and SavedStateViewModel
     var selectedCurrency: String? = null
 
     val searchQuery = MutableLiveData<String>(null)
