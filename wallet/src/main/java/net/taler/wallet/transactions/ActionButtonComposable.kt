@@ -17,7 +17,6 @@
 package net.taler.wallet.transactions
 
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
@@ -28,11 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
-import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
+import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 
 interface ActionListener {
     enum class Type {
@@ -47,28 +45,27 @@ interface ActionListener {
 @Composable
 fun ActionButton(
     modifier: Modifier = Modifier,
-    tx: Transaction,
+    tx: TransactionWithdrawal,
     listener: ActionListener,
-    isSmall: Boolean = false,
 ) {
     if (tx.error != null) {
         // There is an error!
-        when (tx.error!!.code) {
+        when (tx.error.code) {
             TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED -> {
-                KycButton(modifier, tx, listener, isSmall)
+                KycButton(modifier, tx, listener)
             }
             else -> {}
         }
-    } else if (tx is TransactionWithdrawal && !tx.confirmed) {
+    } else if (!tx.confirmed) {
         // There is a transaction!
         if (tx.withdrawalDetails is TalerBankIntegrationApi &&
             tx.withdrawalDetails.bankConfirmationUrl != null
         ) {
             // The transaction can be completed with a link!
-            ConfirmBankButton(modifier, tx, listener, isSmall)
+            ConfirmBankButton(modifier, tx, listener)
         } else if (tx.withdrawalDetails is ManualTransfer) {
             // The transaction must be completed manually!
-            ConfirmManualButton(modifier, tx, listener, isSmall)
+            ConfirmManualButton(modifier, tx, listener)
         }
     }
 }
@@ -76,14 +73,12 @@ fun ActionButton(
 @Composable
 private fun KycButton(
     modifier: Modifier = Modifier,
-    tx: Transaction,
+    tx: TransactionWithdrawal,
     listener: ActionListener,
-    isSmall: Boolean = false,
 ) {
-    val minSize = if (isSmall) 1.dp else 0.dp
     Button(
         onClick = { listener.onActionButtonClicked(tx, ActionListener.Type.COMPLETE_KYC) },
-        modifier = modifier.defaultMinSize(minSize, minSize),
+        modifier = modifier,
     ) {
         Text(stringResource(R.string.transaction_action_kyc))
     }
@@ -94,12 +89,10 @@ private fun ConfirmBankButton(
     modifier: Modifier = Modifier,
     tx: TransactionWithdrawal,
     listener: ActionListener,
-    isSmall: Boolean = false,
 ) {
-    val minSize = if (isSmall) 1.dp else 0.dp
     Button(
         onClick = { listener.onActionButtonClicked(tx, ActionListener.Type.CONFIRM_WITH_BANK) },
-        modifier = modifier.defaultMinSize(minSize, minSize),
+        modifier = modifier,
     ) {
         val label = stringResource(R.string.withdraw_button_confirm_bank)
         Icon(
@@ -117,12 +110,10 @@ private fun ConfirmManualButton(
     modifier: Modifier = Modifier,
     tx: TransactionWithdrawal,
     listener: ActionListener,
-    isSmall: Boolean = false,
 ) {
-    val minSize = if (isSmall) 1.dp else 0.dp
     Button(
         onClick = { listener.onActionButtonClicked(tx, ActionListener.Type.CONFIRM_MANUAL) },
-        modifier = modifier.defaultMinSize(minSize, minSize),
+        modifier = modifier,
     ) {
         val label = stringResource(R.string.withdraw_manual_ready_details_intro)
         Icon(

@@ -38,6 +38,16 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
+    private val isPending get() = transactionManager.selectedTransaction.value?.extendedStatus == ExtendedStatus.Pending
+
+    override val deleteDialogTitle: Int
+        get() = if (isPending) R.string.cancel else super.deleteDialogTitle
+    override val deleteDialogMessage: Int
+        get() = if (isPending) R.string.transactions_cancel_dialog_message
+        else super.deleteDialogMessage
+    override val deleteDialogButton: Int
+        get() = if (isPending) R.string.ok else super.deleteDialogButton
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,17 +56,20 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                if (t is TransactionWithdrawal) {
-                    TransactionWithdrawalComposable(t, devMode.value, this@TransactionWithdrawalFragment) {
-                        onDeleteButtonClicked(t)
-                    }
+                val devMode = devMode.observeAsState().value ?: false
+                if (t is TransactionWithdrawal) TransactionWithdrawalComposable(
+                    t = t,
+                    devMode = devMode,
+                    actionListener = this@TransactionWithdrawalFragment,
+                ) {
+                    onDeleteButtonClicked(t)
                 }
             }
         }
     }
 
     override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {
-        when(type) {
+        when (type) {
             ActionListener.Type.COMPLETE_KYC -> {
                 tx.error?.getStringExtra("kycUrl")?.let { kycUrl ->
                     launchInAppBrowser(requireContext(), kycUrl)

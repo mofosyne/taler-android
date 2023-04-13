@@ -17,17 +17,23 @@
 package net.taler.wallet.withdraw
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,15 +53,14 @@ import net.taler.wallet.transactions.ExtendedStatus
 import net.taler.wallet.transactions.Transaction
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
-import net.taler.wallet.transactions.TransactionRefresh
 import net.taler.wallet.transactions.TransactionWithdrawal
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 
 @Composable
 fun TransactionWithdrawalComposable(
-    t: Transaction,
-    devMode: Boolean?,
-    listener: ActionListener?,
+    t: TransactionWithdrawal,
+    devMode: Boolean,
+    actionListener: ActionListener,
     onDelete: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -71,43 +76,50 @@ fun TransactionWithdrawalComposable(
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
             style = MaterialTheme.typography.bodyLarge,
         )
-        if (t !is TransactionRefresh) {
-            TransactionAmountComposable(
-                label = stringResource(id = R.string.withdraw_total),
-                amount = t.amountEffective,
-                amountType = AmountType.Positive,
-            )
-        }
-        listener?.let {
-            ActionButton(tx = t, listener = it)
-        }
-        if (t !is TransactionRefresh) {
-            TransactionAmountComposable(
-                label = stringResource(id = R.string.amount_chosen),
-                amount = t.amountRaw,
-                amountType = AmountType.Neutral,
-            )
-        }
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = t.amountEffective,
+            amountType = AmountType.Positive,
+        )
+        ActionButton(tx = t, listener = actionListener)
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.amount_chosen),
+            amount = t.amountRaw,
+            amountType = AmountType.Neutral,
+        )
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_fees),
-            amount = when (t) {
-                is TransactionWithdrawal -> t.amountRaw - t.amountEffective
-                else -> t.amountEffective
-            },
+            amount = t.amountRaw - t.amountEffective,
             amountType = AmountType.Negative,
         )
-        when (t) {
-            is TransactionWithdrawal -> t.exchangeBaseUrl
-            else -> null
-        }?.let { url ->
-            TransactionInfoComposable(
-                label = stringResource(id = R.string.withdraw_exchange),
-                info = cleanExchange(url),
-            )
+        TransactionInfoComposable(
+            label = stringResource(id = R.string.withdraw_exchange),
+            info = cleanExchange(t.exchangeBaseUrl),
+        )
+        if (t.extendedStatus == ExtendedStatus.Pending) {
+            Button(
+                modifier = Modifier.padding(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                onClick = onDelete,
+            ) {
+                Row(verticalAlignment = CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_cancel),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onError,
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = stringResource(R.string.cancel),
+                        color = MaterialTheme.colorScheme.onError,
+                    )
+                }
+            }
+        } else {
+            DeleteTransactionComposable(onDelete)
         }
-        DeleteTransactionComposable(onDelete)
-        if (devMode == true && t.error != null) {
-            ErrorTransactionButton(error = t.error!!)
+        if (devMode && t.error != null) {
+            ErrorTransactionButton(error = t.error)
         }
     }
 }
@@ -127,26 +139,9 @@ fun TransactionWithdrawalComposablePreview() {
     )
     val listener = object : ActionListener {
         override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {
-            TODO("Not yet implemented")
         }
     }
     Surface {
         TransactionWithdrawalComposable(t, true, listener) {}
-    }
-}
-
-@Preview
-@Composable
-fun TransactionRefreshComposablePreview() {
-    val t = TransactionRefresh(
-        transactionId = "transactionId",
-        timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = ExtendedStatus.Pending,
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
-        error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
-    )
-    Surface {
-        TransactionWithdrawalComposable(t, true, null) {}
     }
 }
