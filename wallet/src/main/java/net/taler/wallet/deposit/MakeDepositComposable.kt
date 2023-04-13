@@ -68,6 +68,7 @@ fun MakeDepositComposable(
         var name by rememberSaveable { mutableStateOf(presetName ?: "") }
         var iban by rememberSaveable { mutableStateOf(presetIban ?: "") }
         var bic by rememberSaveable { mutableStateOf("") }
+        var bicInvalid by rememberSaveable { mutableStateOf(false) }
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(
             modifier = Modifier
@@ -125,7 +126,18 @@ fun MakeDepositComposable(
             value = bic,
             enabled = !state.showFees,
             onValueChange = { input ->
+                bicInvalid = false
                 bic = input
+            },
+            isError = bicInvalid,
+            supportingText = {
+                if (bicInvalid) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.send_deposit_bic_error),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             },
             label = {
                 Text(
@@ -197,7 +209,11 @@ fun MakeDepositComposable(
             enabled = iban.isNotBlank(),
             onClick = {
                 focusManager.clearFocus()
-                onMakeDeposit(amount, name, iban, bic)
+                if (isValidBic(bic)) {
+                    onMakeDeposit(amount, name, iban, bic)
+                } else {
+                    bicInvalid = true
+                }
             },
         ) {
             Text(
@@ -209,6 +225,14 @@ fun MakeDepositComposable(
         }
     }
 }
+
+private val bicRegex = Regex("[a-zA-Z\\d]{8,11}")
+
+/**
+ * performs some minimal verification, nothing perfect.
+ * Allows for empty string.
+ */
+private fun isValidBic(bic: String): Boolean = bic.isEmpty() || bicRegex.matches(bic)
 
 @Preview
 @Composable

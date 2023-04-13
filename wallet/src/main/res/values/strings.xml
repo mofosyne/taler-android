@@ -139,6 +139,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_deposit_title">Deposit to a bank account</string>
     <string name="send_deposit_iban">IBAN</string>
     <string name="send_deposit_iban_error">IBAN is invalid</string>
+    <string name="send_deposit_bic_error">BIC is invalid</string>
     <string name="send_deposit_bic">BIC/SWIFT</string>
     <string name="send_deposit_name">Account holder</string>
     <string name="send_deposit_bitcoin_address">Bitcoin address</string>
