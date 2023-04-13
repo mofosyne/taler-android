@@ -107,6 +107,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_peer_pull_debit">Invoice paid</string>
     <string name="transaction_peer_push_credit">Push payment</string>
     <string name="transaction_action_kyc">Complete KYC</string>
+    <string name="transaction_dummy_title">Unknown Transaction</string>
 
     <string name="payment_title">Payment</string>
     <string name="payment_fee">+%s payment fee</string>

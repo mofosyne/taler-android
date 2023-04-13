@@ -17,24 +17,81 @@
 package net.taler.wallet.transactions
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Transient
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonElement
 import net.taler.common.Amount
 import net.taler.common.ContractMerchant
 import net.taler.common.ContractProduct
 import net.taler.common.Timestamp
 import net.taler.wallet.R
+import net.taler.wallet.TAG
+import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
+import java.util.UUID
 
 @Serializable
-data class Transactions(val transactions: List<Transaction>)
+data class Transactions(
+    @Serializable(with = TransactionListSerializer::class)
+    val transactions: List<Transaction>,
+)
+
+class TransactionListSerializer : KSerializer<List<Transaction>> {
+    private val serializer = ListSerializer(TransactionSerializer())
+    override val descriptor: SerialDescriptor = serializer.descriptor
+
+    override fun deserialize(decoder: Decoder): List<Transaction> {
+        return decoder.decodeSerializableValue(serializer)
+    }
+
+    override fun serialize(encoder: Encoder, value: List<Transaction>) {
+        throw NotImplementedError()
+    }
+}
+
+class TransactionSerializer : KSerializer<Transaction> {
+
+    private val serializer = Transaction.serializer()
+    override val descriptor: SerialDescriptor = serializer.descriptor
+    private val jsonSerializer = MapSerializer(String.serializer(), JsonElement.serializer())
+
+    override fun deserialize(decoder: Decoder): Transaction {
+        return try {
+            decoder.decodeSerializableValue(serializer)
+        } catch (e: SerializationException) {
+            Log.e(TAG, "Error deserializing transaction.", e)
+            DummyTransaction(
+                transactionId = UUID.randomUUID().toString(),
+                timestamp = Timestamp.now(),
+                error = TalerErrorInfo(
+                    code = TalerErrorCode.UNKNOWN,
+                    message = e.message,
+                    extra = decoder.decodeSerializableValue(jsonSerializer)
+                ),
+            )
+        }
+    }
+
+    override fun serialize(encoder: Encoder, value: Transaction) {
+        throw NotImplementedError()
+    }
+}
 
 @Serializable
 sealed class Transaction {
@@ -419,4 +476,24 @@ class TransactionPeerPushCredit(
     }
 
     override val generalTitleRes = R.string.transaction_peer_push_credit
+}
+
+/**
+ * This represents a transaction that we can not parse for some reason.
+ */
+class DummyTransaction(
+    override val transactionId: String,
+    override val timestamp: Timestamp,
+    override val error: TalerErrorInfo,
+) : Transaction() {
+    override val extendedStatus: ExtendedStatus = ExtendedStatus.Failed
+    override val amountRaw: Amount = Amount.zero("TESTKUDOS")
+    override val amountEffective: Amount = Amount.zero("TESTKUDOS")
+    override val icon: Int = R.drawable.ic_bug_report
+    override val detailPageNav: Int = R.id.nav_transactions_detail_dummy
+    override val amountType: AmountType = AmountType.Neutral
+    override val generalTitleRes: Int = R.string.transaction_dummy_title
+    override fun getTitle(context: Context): String {
+        return context.getString(R.string.transaction_dummy_title)
+    }
 }
