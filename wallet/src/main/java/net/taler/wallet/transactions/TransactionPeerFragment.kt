@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,18 +35,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.getAttrColor
 import net.taler.wallet.peer.TransactionPeerPullCreditComposable
 import net.taler.wallet.peer.TransactionPeerPullDebitComposable
 import net.taler.wallet.peer.TransactionPeerPushCreditComposable
@@ -131,35 +124,4 @@ fun TransactionInfoComposable(label: String, info: String) {
         text = info,
         fontSize = 24.sp,
     )
-}
-
-@Composable
-fun TransactionLinkComposable(label: String, info: String, onClick: () -> Unit) {
-    Text(
-        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-        text = label,
-        style = MaterialTheme.typography.bodyMedium,
-    )
-    val context = LocalContext.current
-    val linkColor = Color(context.getAttrColor(android.R.attr.textColorLink))
-    val annotatedString = buildAnnotatedString {
-        pushStringAnnotation(tag = "url", annotation = info)
-        withStyle(style = SpanStyle(color = linkColor)) {
-            append(info)
-        }
-        pop()
-    }
-    ClickableText(
-        modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-        text = annotatedString,
-        style = TextStyle(fontSize = 24.sp, textAlign = TextAlign.Center),
-    ) { offset ->
-        annotatedString.getStringAnnotations(
-            tag = "url",
-            start = offset,
-            end = offset,
-        ).firstOrNull()?.let {
-            onClick()
-        }
-    }
 }

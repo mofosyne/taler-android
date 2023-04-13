@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.payment
+package net.taler.wallet.refund
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,20 +38,18 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.payment.PurchaseDetails
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.DeleteTransactionComposable
 import net.taler.wallet.transactions.ErrorTransactionButton
 import net.taler.wallet.transactions.ExtendedStatus
-import net.taler.wallet.transactions.PaymentStatus
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfo
-import net.taler.wallet.transactions.TransactionInfoComposable
-import net.taler.wallet.transactions.TransactionLinkComposable
-import net.taler.wallet.transactions.TransactionPayment
+import net.taler.wallet.transactions.TransactionRefund
 
 @Composable
-fun TransactionPaymentComposable(
-    t: TransactionPayment,
+fun TransactionRefundComposable(
+    t: TransactionRefund,
     devMode: Boolean,
     onFulfill: (url: String) -> Unit,
     onDelete: () -> Unit,
@@ -70,9 +68,9 @@ fun TransactionPaymentComposable(
             style = MaterialTheme.typography.bodyLarge,
         )
         TransactionAmountComposable(
-            label = stringResource(id = R.string.transaction_paid),
+            label = stringResource(id = R.string.transaction_refund),
             amount = t.amountEffective,
-            amountType = AmountType.Negative,
+            amountType = AmountType.Positive,
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_order_total),
@@ -81,7 +79,7 @@ fun TransactionPaymentComposable(
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_fees),
-            amount = t.amountEffective - t.amountRaw,
+            amount = t.amountRaw - t.amountEffective,
             amountType = AmountType.Negative,
         )
         PurchaseDetails(info = t.info) {
@@ -94,43 +92,10 @@ fun TransactionPaymentComposable(
     }
 }
 
-@Composable
-fun PurchaseDetails(
-    info: TransactionInfo,
-    onClick: () -> Unit,
-) {
-    Column(
-        horizontalAlignment = CenterHorizontally,
-    ) {
-        // Summary and fulfillment message
-        val text = if (info.fulfillmentMessage == null) {
-            info.summary
-        } else {
-            "${info.summary}\n\n${info.fulfillmentMessage}"
-        }
-        if (info.fulfillmentUrl != null) {
-            TransactionLinkComposable(
-                label = stringResource(id = R.string.transaction_order),
-                info = text,
-            ) { onClick() }
-        } else {
-            TransactionInfoComposable(
-                label = stringResource(id = R.string.transaction_order),
-                info = text,
-            )
-        }
-        // Order ID
-        Text(
-            stringResource(id = R.string.transaction_order_id, info.orderId),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-}
-
 @Preview
 @Composable
-fun TransactionPaymentComposablePreview() {
-    val t = TransactionPayment(
+fun TransactionRefundComposablePreview() {
+    val t = TransactionRefund(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         extendedStatus = ExtendedStatus.Pending,
@@ -142,12 +107,12 @@ fun TransactionPaymentComposablePreview() {
             fulfillmentUrl = "https://bank.demo.taler.net/",
             products = listOf(),
         ),
-        status = PaymentStatus.Paid,
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),
+        refundedTransactionId = "transactionId",
+        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
+        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {
-        TransactionPaymentComposable(t = t, devMode = true, onFulfill = {}) {}
+        TransactionRefundComposable(t = t, devMode = true, onFulfill = {}) {}
     }
 }
