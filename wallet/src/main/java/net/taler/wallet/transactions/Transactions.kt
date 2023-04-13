@@ -264,7 +264,6 @@ class TransactionRefresh(
     override val transactionId: String,
     override val timestamp: Timestamp,
     override val extendedStatus: ExtendedStatus,
-    val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
