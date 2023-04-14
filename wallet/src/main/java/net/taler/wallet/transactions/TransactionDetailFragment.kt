@@ -17,25 +17,16 @@
 package net.taler.wallet.transactions
 
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.compose.copyToClipBoard
-import net.taler.wallet.getAttrColor
-import net.taler.wallet.launchInAppBrowser
 
 abstract class TransactionDetailFragment : Fragment() {
 
@@ -72,34 +63,6 @@ abstract class TransactionDetailFragment : Fragment() {
         }
     }
 
-    protected fun bindOrderAndFee(
-        orderSummaryView: TextView,
-        orderAmountView: TextView,
-        orderIdView: TextView,
-        feeView: TextView,
-        info: TransactionInfo,
-        raw: Amount,
-        fee: Amount,
-    ) {
-        orderAmountView.text = raw.toString()
-        feeView.text = getString(R.string.amount_negative, fee.toString())
-        orderSummaryView.text = if (info.fulfillmentMessage == null) {
-            info.summary
-        } else {
-            "${info.summary}\n\n${info.fulfillmentMessage}"
-        }
-        if (info.fulfillmentUrl?.startsWith("http", ignoreCase = true) == true) {
-            val content = SpannableString(info.summary)
-            content.setSpan(UnderlineSpan(), 0, info.summary.length, 0)
-            orderSummaryView.text = content
-            orderSummaryView.setTextColor(requireContext().getAttrColor(android.R.attr.textColorLink))
-            orderSummaryView.setOnClickListener {
-                launchInAppBrowser(requireContext(), info.fulfillmentUrl)
-            }
-        }
-        orderIdView.text = getString(R.string.transaction_order_id, info.orderId)
-    }
-
     @StringRes
     protected open val deleteDialogTitle = R.string.transactions_delete
 
@@ -127,31 +90,4 @@ abstract class TransactionDetailFragment : Fragment() {
         transactionManager.deleteTransaction(t.transactionId)
         findNavController().popBackStack()
     }
-
-    protected fun onShowErrorButtonClicked(t: Transaction) {
-        val err = t.error
-        require(err != null) { "Transaction had no error." }
-
-        @Suppress("OPT_IN_USAGE")
-        val json = Json {
-            prettyPrint = true
-            prettyPrintIndent = "  "
-        }
-        val message = json.encodeToString(err)
-        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
-            .setTitle(getString(R.string.nav_error))
-            .setMessage(message)
-            .setNeutralButton(R.string.close) { dialog, _ ->
-                dialog.cancel()
-            }
-            .setPositiveButton(R.string.copy) { _, _ ->
-                copyToClipBoard(
-                    requireContext(),
-                    getString(R.string.nav_error),
-                    message,
-                )
-            }
-            .show()
-    }
-
 }
