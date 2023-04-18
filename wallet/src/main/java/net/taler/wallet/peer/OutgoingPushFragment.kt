@@ -20,10 +20,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
@@ -34,6 +36,13 @@ class OutgoingPushFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val peerManager get() = model.peerManager
 
+    // hacky way to change back action until we have navigation for compose
+    private val backPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            findNavController().navigate(R.id.action_nav_peer_push_to_nav_main)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,11 +51,17 @@ class OutgoingPushFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner, backPressedCallback
+        )
+
         return ComposeView(requireContext()).apply {
             setContent {
                 TalerSurface {
                     when (val state = peerManager.pushState.collectAsStateLifecycleAware().value) {
                         is OutgoingIntro, OutgoingChecking, is OutgoingChecked -> {
+                            backPressedCallback.isEnabled = false
                             OutgoingPushIntroComposable(
                                 state = state,
                                 amount = amount,
@@ -54,6 +69,7 @@ class OutgoingPushFragment : Fragment() {
                             )
                         }
                         OutgoingCreating, is OutgoingResponse, is OutgoingError -> {
+                            backPressedCallback.isEnabled = true
                             OutgoingPushResultComposable(state) {
                                 findNavController().navigate(R.id.action_nav_peer_push_to_nav_main)
                             }
