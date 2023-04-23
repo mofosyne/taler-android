@@ -220,4 +220,17 @@
     <string name="transactions_delete_selected_dialog_message">¿Estás seguro de que deseas eliminar las transacciones seleccionadas de tu cartera\?</string>
     <string name="send_deposit_bitcoin_address">Dirección Bitcoin</string>
     <string name="send_deposit_bitcoin_create_button">Transferir Bitcoin</string>
+    <string name="transaction_dummy_title">Transacción desconocida</string>
+    <string name="send_deposit_bic_error">BIC es inválido</string>
+    <string name="send_peer_expiration_period">Expira en</string>
+    <string name="send_peer_expiration_1d">1 día</string>
+    <string name="send_peer_expiration_7d">7 días</string>
+    <string name="settings_test_summary">Realizar transacciones de prueba con la configuración del demo</string>
+    <string name="settings_test">Ejecutar pruebas de integración</string>
+    <string name="button_scan_qr_code_label">Escanear código QR</string>
+    <string name="send_deposit_iban_error">IBAN es inválido</string>
+    <string name="send_peer_expiration_30d">30 días</string>
+    <string name="send_peer_expiration_custom">Personalizado</string>
+    <string name="send_peer_expiration_days">Días</string>
+    <string name="send_peer_expiration_hours">Horas</string>
 </resources>
