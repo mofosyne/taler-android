@@ -7,7 +7,7 @@
     <string name="config_button_save">Guardar</string>
     <string name="config_bank_url_error">La dirección es inválida.</string>
     <string name="config_username_error">Por favor inserta tu nombre de usuario!</string>
-    <string name="config_error">Error recuperando la configuración : %s</string>
+    <string name="config_error">Error recuperando la configuración</string>
     <string name="config_error_auth">Usuario o contraseña inválido!</string>
     <string name="config_demo_hint">Para realizar pruebas, puedes &lt;a href=%s&gt;crear una cuenta de test en el banco demo&lt;/a&gt;.</string>
     <string name="balance_current_label">Balance actual</string>
@@ -39,4 +39,5 @@
     <string name="about_license">Licencia: %s</string>
     <string name="about_copyright">Copyright: %s</string>
     <string name="about_supported_bank_api">Banco Versión API: %s</string>
+    <string name="withdraw_error_currency_mismatch">Error. El banco reportó una divisa diferente</string>
 </resources>
