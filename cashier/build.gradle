@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId "net.taler.cashier"
         minSdkVersion 23
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 2
         versionName "0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
