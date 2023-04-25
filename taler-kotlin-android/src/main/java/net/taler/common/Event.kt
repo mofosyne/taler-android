@@ -49,7 +49,7 @@ fun <T> T.toEvent() = Event(this)
  * [onEvent] is *only* called if the [Event]'s contents has not been consumed.
  */
 class EventObserver<T>(private val onEvent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        event?.getIfNotConsumed()?.let { onEvent(it) }
+    override fun onChanged(value: Event<T>) {
+        value.getIfNotConsumed()?.let { onEvent(it) }
     }
 }
