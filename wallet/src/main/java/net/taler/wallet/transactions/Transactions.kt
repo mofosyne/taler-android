@@ -116,6 +116,7 @@ sealed class Transaction {
     abstract val generalTitleRes: Int
 }
 
+@Serializable
 enum class ExtendedStatus {
     @SerialName("pending")
     Pending,
