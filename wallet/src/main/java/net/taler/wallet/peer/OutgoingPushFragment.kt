@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
@@ -31,6 +32,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
+import net.taler.wallet.showError
 
 class OutgoingPushFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -75,6 +77,17 @@ class OutgoingPushFragment : Fragment() {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launchWhenStarted {
+            peerManager.pushState.collect {
+                if (it is OutgoingError && model.devMode.value == true) {
+                    showError(it.info)
                 }
             }
         }

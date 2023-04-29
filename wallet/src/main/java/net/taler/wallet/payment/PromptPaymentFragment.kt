@@ -35,6 +35,7 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentPromptPaymentBinding
+import net.taler.wallet.showError
 
 /**
  * Show a payment and ask the user to accept/decline.
@@ -118,7 +119,10 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             }
             is PayStatus.Error -> {
                 showLoading(false)
-                ui.details.errorView.text = getString(R.string.payment_error, payStatus.error)
+                if (model.devMode.value == true) {
+                    showError(payStatus.error)
+                }
+                ui.details.errorView.text = getString(R.string.payment_error, payStatus.error.userFacingMsg)
                 ui.details.errorView.fadeIn()
             }
             is PayStatus.None -> {

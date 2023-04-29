@@ -22,10 +22,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 
 sealed class RefundStatus {
-    data class Error(val msg: String) : RefundStatus()
+    data class Error(val error: TalerErrorInfo) : RefundStatus()
     data class Success(val response: RefundResponse) : RefundStatus()
 }
 
@@ -48,7 +49,7 @@ class RefundManager(
             api.request("applyRefund", RefundResponse.serializer()) {
                 put("talerRefundUri", refundUri)
             }.onError {
-                liveData.postValue(RefundStatus.Error(it.userFacingMsg))
+                liveData.postValue(RefundStatus.Error(it))
             }.onSuccess {
                 liveData.postValue(RefundStatus.Success(it))
             }

@@ -58,7 +58,7 @@ class DepositManager(
                     put("iban", iban)
                 }.onError {
                     Log.e(TAG, "Error validateIban $it")
-                    mDepositState.value = DepositState.Error(it.userFacingMsg)
+                    mDepositState.value = DepositState.Error(it)
                 }.onSuccess { response ->
                     if (response.valid) {
                         // only prepare/make deposit, if IBAN is valid
@@ -112,7 +112,7 @@ class DepositManager(
                 put("amount", amount.toJSONString())
             }.onError {
                 Log.e(TAG, "Error prepareDeposit $it")
-                mDepositState.value = DepositState.Error(it.userFacingMsg)
+                mDepositState.value = DepositState.Error(it)
             }.onSuccess {
                 mDepositState.value = DepositState.FeesChecked(
                     totalDepositCost = it.totalDepositCost,
@@ -138,7 +138,7 @@ class DepositManager(
                 put("amount", amount.toJSONString())
             }.onError {
                 Log.e(TAG, "Error createDepositGroup $it")
-                mDepositState.value = DepositState.Error(it.userFacingMsg)
+                mDepositState.value = DepositState.Error(it)
             }.onSuccess {
                 mDepositState.value = DepositState.Success
             }

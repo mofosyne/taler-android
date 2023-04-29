@@ -200,7 +200,7 @@ fun MakeDepositComposable(
                 modifier = Modifier.padding(16.dp),
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.error,
-                text = (state as? DepositState.Error)?.msg ?: "",
+                text = (state as? DepositState.Error)?.error?.userFacingMsg ?: "",
             )
         }
         val focusManager = LocalFocusManager.current

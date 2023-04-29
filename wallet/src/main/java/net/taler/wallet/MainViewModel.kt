@@ -34,6 +34,7 @@ import net.taler.common.toEvent
 import net.taler.wallet.accounts.AccountManager
 import net.taler.wallet.backend.NotificationPayload
 import net.taler.wallet.backend.NotificationReceiver
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletCoreVersion
@@ -121,7 +122,6 @@ class MainViewModel(
         val response = api.request("getBalances", BalanceResponse.serializer())
         showProgressBar.value = false
         response.onError {
-            // TODO expose in UI
             Log.e(TAG, "Error retrieving balances: $it")
         }
         response.onSuccess {

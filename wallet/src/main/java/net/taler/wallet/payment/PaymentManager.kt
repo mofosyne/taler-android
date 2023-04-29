@@ -52,7 +52,7 @@ sealed class PayStatus {
 
     // TODO bring user to fulfilment URI
     object AlreadyPaid : PayStatus()
-    data class Error(val error: String) : PayStatus()
+    data class Error(val error: TalerErrorInfo) : PayStatus()
     data class Success(val currency: String) : PayStatus()
 }
 
@@ -121,7 +121,7 @@ class PaymentManager(
 
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
-        mPayStatus.value = PayStatus.Error(error.userFacingMsg)
+        mPayStatus.value = PayStatus.Error(error)
     }
 
 }

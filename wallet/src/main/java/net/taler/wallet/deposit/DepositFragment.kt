@@ -32,6 +32,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
+import net.taler.wallet.showError
 
 class DepositFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -80,7 +81,11 @@ class DepositFragment : Fragment() {
         lifecycleScope.launchWhenStarted {
             depositManager.depositState.collect { state ->
                 if (state is DepositState.Error) {
-                    showError(state.msg)
+                    if (model.devMode.value == false) {
+                        showError(state.error.userFacingMsg)
+                    } else {
+                        showError(state.error)
+                    }
                 } else if (state is DepositState.Success) {
                     findNavController().navigate(R.id.action_nav_deposit_to_nav_main)
                 }
