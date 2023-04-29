@@ -33,6 +33,7 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentExchangeListBinding
+import net.taler.wallet.showError
 
 open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
@@ -68,6 +69,11 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
         exchangeManager.exchanges.observe(viewLifecycleOwner) { exchanges ->
             onExchangeUpdate(exchanges)
         }
+        exchangeManager.errorEvent.observe(viewLifecycleOwner, EventObserver { error ->
+            if (model.devMode.value == true) {
+                showError(error)
+            }
+        })
         exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
             if (error) onAddExchangeFailed()
         })

@@ -24,12 +24,13 @@ import androidx.lifecycle.switchMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.taler.wallet.TAG
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.transactions.ExtendedStatus.Pending
 import java.util.LinkedList
 
 sealed class TransactionsResult {
-    class Error(val msg: String) : TransactionsResult()
+    class Error(val error: TalerErrorInfo) : TransactionsResult()
     class Success(val transactions: List<Transaction>) : TransactionsResult()
 }
 
@@ -72,7 +73,7 @@ class TransactionManager(
             if (searchQuery != null) put("search", searchQuery)
             put("currency", currency)
         }.onError {
-            liveData.postValue(TransactionsResult.Error(it.userFacingMsg))
+            liveData.postValue(TransactionsResult.Error(it))
             mProgress.postValue(false)
         }.onSuccess { result ->
             val transactions = LinkedList(result.transactions)

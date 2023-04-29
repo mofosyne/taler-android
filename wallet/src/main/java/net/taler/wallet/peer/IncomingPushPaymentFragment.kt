@@ -29,6 +29,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
+import net.taler.wallet.showError
 
 class IncomingPushPaymentFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
@@ -43,6 +44,8 @@ class IncomingPushPaymentFragment : Fragment() {
             peerManager.incomingPushState.collect {
                 if (it is IncomingAccepted) {
                     findNavController().navigate(R.id.action_promptPushPayment_to_nav_main)
+                } else if (it is IncomingError) {
+                    showError(it.info)
                 }
             }
         }

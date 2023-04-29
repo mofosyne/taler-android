@@ -28,6 +28,7 @@ import kotlinx.serialization.Serializable
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.TAG
+import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 
 @Serializable
@@ -49,6 +50,9 @@ class ExchangeManager(
     private val mAddError = MutableLiveData<Event<Boolean>>()
     val addError: LiveData<Event<Boolean>> = mAddError
 
+    private val mErrorEvent = MutableLiveData<Event<TalerErrorInfo>>()
+    val errorEvent: LiveData<Event<TalerErrorInfo>> = mErrorEvent
+
     var withdrawalExchange: ExchangeItem? = null
 
     private fun list(): LiveData<List<ExchangeItem>> {
@@ -56,6 +60,7 @@ class ExchangeManager(
         scope.launch {
             val response = api.request("listExchanges", ExchangeListResponse.serializer())
             response.onError {
+                mErrorEvent.value = it.toEvent()
                 throw AssertionError("Wallet core failed to return exchanges! ${it.userFacingMsg}")
             }.onSuccess {
                 Log.d(TAG, "Exchange list: ${it.exchanges}")
@@ -71,8 +76,9 @@ class ExchangeManager(
         api.request<Unit>("addExchange") {
             put("exchangeBaseUrl", exchangeUrl)
         }.onError {
-            mProgress.value = false
             Log.e(TAG, "Error adding exchange: $it")
+            mProgress.value = false
+            mErrorEvent.value = it.toEvent()
             mAddError.value = true.toEvent()
         }.onSuccess {
             mProgress.value = false

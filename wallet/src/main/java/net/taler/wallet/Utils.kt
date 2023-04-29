@@ -32,8 +32,13 @@ import android.widget.Toast.LENGTH_LONG
 import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
+import net.taler.common.showError
 import net.taler.common.startActivitySafe
 import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
@@ -124,4 +129,24 @@ fun launchInAppBrowser(context: Context, url: String) {
     val intent = builder.build().intent
     intent.data = Uri.parse(url)
     context.startActivitySafe(intent)
+}
+
+fun Fragment.showError(error: TalerErrorInfo) {
+    @Suppress("OPT_IN_USAGE")
+    val json = Json {
+        prettyPrint = true
+        prettyPrintIndent = "  "
+    }
+    val message = json.encodeToString(error)
+    this@showError.showError(message)
+}
+
+fun FragmentActivity.showError(error: TalerErrorInfo) {
+    @Suppress("OPT_IN_USAGE")
+    val json = Json {
+        prettyPrint = true
+        prettyPrintIndent = "  "
+    }
+    val message = json.encodeToString(error)
+    this@showError.showError(message)
 }

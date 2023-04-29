@@ -17,6 +17,7 @@
 package net.taler.wallet.deposit
 
 import net.taler.common.Amount
+import net.taler.wallet.backend.TalerErrorInfo
 
 sealed class DepositState {
 
@@ -43,6 +44,6 @@ sealed class DepositState {
 
     object Success : DepositState()
 
-    class Error(val msg: String) : DepositState()
+    class Error(val error: TalerErrorInfo) : DepositState()
 
 }
