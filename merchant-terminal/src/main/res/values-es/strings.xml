@@ -65,4 +65,8 @@
     <string name="refund_error_max_amount">Mayor que la cantidad del pedido de %s</string>
     <string name="refund_intro_nfc">Por favor permite al cliente escanear el código QR o usar NFC para ofrecer reembolso</string>
     <string name="payment_claimed">A la espera de que el cliente confirme el pago…</string>
+    <string name="order_custom_product">Nombre de producto personalizado</string>
+    <string name="order_custom_product_default">Consejo</string>
+    <string name="order_custom_add_button">Añadir</string>
+    <string name="order_custom">Añadir producto personalizado</string>
 </resources>
