@@ -7,7 +7,7 @@
     <string name="config_bank_url_error">Bu adres geçersiz.</string>
     <string name="config_username_error">Lütfen kullanıcı adınızı giriniz!</string>
     <string name="app_name">Taler Kasiyer</string>
-    <string name="config_error">Konfigürasyon alınırken hata oluştu: %s</string>
+    <string name="config_error">Konfigürasyon alınırken hata oluştu</string>
     <string name="config_error_auth">Geçersiz kullanıcı adı yada şifre!</string>
     <string name="config_demo_hint">Test için &lt;a href=%s&gt;demo bankasında bir test hesabı oluşturabilirsiniz&lt;/a&gt;.</string>
     <string name="balance_current_label">Mevcut bakiye</string>
@@ -39,4 +39,5 @@
     <string name="about_copyright">Telif Hakkı: %s</string>
     <string name="about_supported_bank_api">Banka API Sürümü: %s</string>
     <string name="about_version">Sürüm: %s</string>
+    <string name="withdraw_error_currency_mismatch">Hata: Banka farklı bir para birimi bildirdi</string>
 </resources>
