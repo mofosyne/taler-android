@@ -7,7 +7,7 @@
     <string name="config_button_save">Enregistrer</string>
     <string name="config_bank_url_error">L\'adresse est invalide.</string>
     <string name="config_username_error">Veuillez saisir votre identifiant !</string>
-    <string name="config_error">Erreur lors de la récupération de la configuration : %s</string>
+    <string name="config_error">Erreur lors de la récupération de la configuration</string>
     <string name="config_error_auth">Identifiant ou mot de passe invalide !</string>
     <string name="config_demo_hint" tools:ignore="StringFormatInvalid">Pour les tests, vous pouvez &lt;a href=%s&gt;créer un compte de test dans la banque de démonstration&lt;/a&gt; .</string>
     <string name="balance_current_label">Solde actuel</string>
@@ -39,4 +39,5 @@
     <string name="about_copyright">Droits d\'auteur : %s</string>
     <string name="about_supported_bank_api">Version Bank API : %s</string>
     <string name="about_title">GNU Taler Cashier</string>
+    <string name="withdraw_error_currency_mismatch">Erreur : La banque a déclaré une devise différente</string>
 </resources>
