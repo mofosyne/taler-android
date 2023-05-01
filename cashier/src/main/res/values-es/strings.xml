@@ -39,5 +39,5 @@
     <string name="about_license">Licencia: %s</string>
     <string name="about_copyright">Copyright: %s</string>
     <string name="about_supported_bank_api">Banco Versión API: %s</string>
-    <string name="withdraw_error_currency_mismatch">Error. El banco reportó una divisa diferente</string>
+    <string name="withdraw_error_currency_mismatch">Error: El banco reportó una divisa diferente</string>
 </resources>
