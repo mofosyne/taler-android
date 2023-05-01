@@ -3,7 +3,7 @@
     <string name="config_username">Nombre de usuario</string>
     <string name="config_password">Contraseña</string>
     <string name="app_name">Cajero Taler</string>
-    <string name="config_bank_url">Banco dirección API</string>
+    <string name="config_bank_url">Dirección API del banco</string>
     <string name="config_button_save">Guardar</string>
     <string name="config_bank_url_error">La dirección es inválida.</string>
     <string name="config_username_error">Por favor inserta tu nombre de usuario!</string>
