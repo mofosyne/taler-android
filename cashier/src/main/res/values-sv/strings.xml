@@ -5,7 +5,7 @@
     <string name="config_password">Lösenord</string>
     <string name="config_button_save">Spara</string>
     <string name="config_username_error">Vänligen ange ditt användarnamn!</string>
-    <string name="config_error">Fel vid hämtning av konfiguration: %s</string>
+    <string name="config_error">Fel vid hämtning av konfiguration</string>
     <string name="config_error_auth">Ogiltigt användarnamn eller lösenord!</string>
     <string name="balance_current_label">Nuvarande saldo</string>
     <string name="balance_error">FEL: %s</string>
@@ -39,4 +39,5 @@
     <string name="config_bank_url_error">Adressen är ogiltig.</string>
     <string name="config_demo_hint">För testning kan du &lt;a href=%s&gt;skapa ett testkonto i demobanken&lt;/a&gt; .</string>
     <string name="withdraw_error_fetch">Fel vid kommunikation med bank: %s</string>
+    <string name="withdraw_error_currency_mismatch">Fel: Banken har rapporterat en annan valuta</string>
 </resources>
