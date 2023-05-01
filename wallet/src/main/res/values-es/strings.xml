@@ -185,7 +185,7 @@
     <string name="send_deposit_iban">IBAN</string>
     <string name="send_deposit_bic">BIC/SWIFT</string>
     <string name="receive_peer_payment_title">Recibir pago</string>
-    <string name="currency">Moneda</string>
+    <string name="currency">Divisa</string>
     <string name="send_peer">A otra cartera</string>
     <string name="send_peer_title">Enviar dinero a otra cartera</string>
     <string name="transaction_peer_push_debit">Pagos push</string>
