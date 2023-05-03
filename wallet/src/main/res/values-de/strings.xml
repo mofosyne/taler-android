@@ -6,12 +6,12 @@
     <string name="exchange_settings_title">Taler-Exchanges</string>
     <string name="balances_inbound_label">Eingehend</string>
     <string name="or">oder</string>
-    <string name="offline">Internetzugang erforderlich. Bitte stellen Sie sicher, daß Ihre Internetverbindung funktioniert und versuchen Sie es noch einmal.</string>
+    <string name="offline">Internetzugang erforderlich. Bitte stellen Sie sicher, dass Ihre Internetverbindung funktioniert, und versuchen Sie es noch einmal.</string>
     <string name="error_unsupported_uri">Fehler: Dieser Taler-URI wird nicht unterstützt.</string>
     <string name="menu_settings">Einstellungen</string>
     <string name="menu_retry_pending_operations">Wiederholen Sie ausstehende Vorgänge</string>
     <string name="balances_title">Salden</string>
-    <string name="app_name">Taler-Wallet</string>
+    <string name="app_name">Taler Wallet</string>
     <string name="transactions_title">Transaktionen</string>
     <string name="transactions_empty">Sie haben keine Transaktionen</string>
     <string name="transactions_empty_search">Keine Transaktion gefunden. Versuchen Sie eine andere Suche.</string>
