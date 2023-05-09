@@ -21,7 +21,7 @@ import android.util.Log
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations.map
+import androidx.lifecycle.map
 import net.taler.merchantpos.R
 import net.taler.merchantpos.config.Category
 import net.taler.merchantpos.config.ConfigProduct
@@ -150,7 +150,7 @@ class OrderManager(private val context: Context) : ConfigurationReceiver {
         return currentOrderId != orders.keys.first()
     }
 
-    fun hasNextOrder(currentOrderId: Int) = map(order(currentOrderId).restartState) { state ->
+    fun hasNextOrder(currentOrderId: Int) = order(currentOrderId).restartState.map { state ->
         state == ENABLED || currentOrderId != orders.keys.last()
     }
 

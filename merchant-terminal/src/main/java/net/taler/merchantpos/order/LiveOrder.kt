@@ -19,7 +19,7 @@ package net.taler.merchantpos.order
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import net.taler.common.Amount
 import net.taler.common.CombinedLiveData
 import net.taler.merchantpos.config.Category
@@ -52,7 +52,7 @@ internal class MutableLiveOrder(
         get() = productsByCategory.keys.map { it.id to it }.toMap()
     override val order: MutableLiveData<Order?> =
         MutableLiveData(Order(id, currency, availableCategories))
-    override val orderTotal: LiveData<Amount> = Transformations.map(order) { it?.total }
+    override val orderTotal: LiveData<Amount> = order.map { it?.total ?: Amount.zero(currency) }
     override val restartState = MutableLiveData(DISABLED)
     private val selectedOrderLine = MutableLiveData<ConfigProduct?>()
     override val selectedProductKey: String?
