@@ -163,15 +163,15 @@
 \n
 \n%2$s</string>
     <string name="withdraw_manual_check_fees">Comprova la comissió</string>
-    <string name="withdraw_manual_ready_title"/>
-    <string name="withdraw_manual_ready_intro"/>
-    <string name="withdraw_manual_ready_details_intro"/>
-    <string name="withdraw_manual_bitcoin_title"/>
-    <string name="withdraw_manual_bitcoin_intro"/>
-    <string name="withdraw_manual_ready_iban"/>
-    <string name="withdraw_manual_ready_subject"/>
-    <string name="withdraw_manual_ready_bank_button"/>
-    <string name="withdraw_manual_ready_cancel"/>
+    <string name="withdraw_manual_ready_title">L\'intercanvi està llest perquè retiris els diners!</string>
+    <string name="withdraw_manual_ready_intro">Per completar el procés necessites transferir %s al teu compte bancari</string>
+    <string name="withdraw_manual_ready_details_intro">Detalls de transferència bancària</string>
+    <string name="withdraw_manual_bitcoin_title">L\'intercanvi de Bitcoin està llest perquè retiris els dieners</string>
+    <string name="withdraw_manual_bitcoin_intro">Ara fes una transacció dividida amb aquestes tres sortides.</string>
+    <string name="withdraw_manual_ready_iban">IBAN</string>
+    <string name="withdraw_manual_ready_subject"></string>
+    <string name="withdraw_manual_ready_bank_button">Obre en una app bancària</string>
+    <string name="withdraw_manual_ready_cancel">Cancel·la la retidada de diners</string>
     <string name="withdraw_manual_ready_warning"/>
     <string name="withdraw_error_title"/>
     <string name="withdraw_error_message"/>
