@@ -44,6 +44,10 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 
 class TransactionRefreshFragment : TransactionDetailFragment() {
 
@@ -57,7 +61,7 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
                 val t = transactionManager.selectedTransaction.observeAsState().value
                 val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionRefresh) TransactionRefreshComposable(t, devMode) {
-                    onDeleteButtonClicked(t)
+                    onTransitionButton(t, it)
                 }
             }
         }
@@ -68,7 +72,7 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
 private fun TransactionRefreshComposable(
     t: TransactionRefresh,
     devMode: Boolean,
-    onDelete: () -> Unit,
+    onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -88,7 +92,9 @@ private fun TransactionRefreshComposable(
             amount = t.amountEffective,
             amountType = AmountType.Negative,
         )
-        DeleteTransactionComposable(onDelete)
+        t.txActions.forEach {
+            TransitionComposable(it, onTransition)
+        }
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -101,7 +107,8 @@ private fun TransactionRefreshComposablePreview() {
     val t = TransactionRefresh(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = ExtendedStatus.Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),

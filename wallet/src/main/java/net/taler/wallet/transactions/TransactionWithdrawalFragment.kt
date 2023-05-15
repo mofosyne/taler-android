@@ -38,16 +38,6 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
 
-    private val isPending get() = transactionManager.selectedTransaction.value?.extendedStatus == ExtendedStatus.Pending
-
-    override val deleteDialogTitle: Int
-        get() = if (isPending) R.string.cancel else super.deleteDialogTitle
-    override val deleteDialogMessage: Int
-        get() = if (isPending) R.string.transactions_cancel_dialog_message
-        else super.deleteDialogMessage
-    override val deleteDialogButton: Int
-        get() = if (isPending) R.string.ok else super.deleteDialogButton
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,7 +52,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
                     devMode = devMode,
                     actionListener = this@TransactionWithdrawalFragment,
                 ) {
-                    onDeleteButtonClicked(t)
+                    onTransitionButton(t, it)
                 }
             }
         }

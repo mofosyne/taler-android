@@ -38,14 +38,19 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.AmountType
-import net.taler.wallet.transactions.DeleteTransactionComposable
 import net.taler.wallet.transactions.ErrorTransactionButton
-import net.taler.wallet.transactions.ExtendedStatus.Pending
+import net.taler.wallet.transactions.TransactionAction
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionDeposit
+import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionState
+import net.taler.wallet.transactions.TransitionsComposable
 
 @Composable
-fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onDelete: () -> Unit) {
+fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onTransition: (t: TransactionAction) -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -77,7 +82,7 @@ fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onDel
                 amountType = AmountType.Negative,
             )
         }
-        DeleteTransactionComposable(onDelete)
+        TransitionsComposable(t, onTransition)
         if (devMode == true && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -90,7 +95,8 @@ fun TransactionDepositComposablePreview() {
     val t = TransactionDeposit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         depositGroupId = "fooBar",
         amountRaw = Amount.fromString("TESTKUDOS", "42.1337"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.23"),

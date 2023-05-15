@@ -85,10 +85,16 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transactions_detail_title">Transaction</string>
     <string name="transactions_detail_title_currency">%s Transactions</string>
     <string name="transactions_delete">Delete</string>
+    <string name="transactions_retry">Retry</string>
+    <string name="transactions_abort">Abort</string>
+    <string name="transactions_suspend">Suspend</string>
+    <string name="transactions_resume">Resume</string>
     <string name="transactions_select_all">Select All</string>
     <string name="transactions_delete_dialog_title">Delete Transaction</string>
     <string name="transactions_delete_dialog_message">Are you sure you want to remove this transaction from your wallet?</string>
     <string name="transactions_delete_selected_dialog_message">Are you sure you want to remove the selected transactions from your wallet?</string>
+    <string name="transactions_abort_dialog_title">Abort Transaction</string>
+    <string name="transactions_abort_dialog_message">Are you sure you want to abort this transaction? Funds still in transit might get lost.</string>
     <string name="transactions_cancel_dialog_message">Are you sure you want to cancel this withdrawal? Funds still in transit might get lost.</string>
 
     <!-- Transactions -->

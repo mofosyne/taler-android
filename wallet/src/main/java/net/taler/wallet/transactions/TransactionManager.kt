@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.transactions.ExtendedStatus.Pending
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 import java.util.LinkedList
 
 sealed class TransactionsResult {
@@ -79,7 +79,7 @@ class TransactionManager(
             val transactions = LinkedList(result.transactions)
             // TODO remove when fixed in wallet-core
             val comparator = compareBy<Transaction>(
-                { it.extendedStatus == Pending },
+                { it.txState.major == Pending },
                 { it.timestamp.ms },
                 { it.transactionId }
             )
@@ -138,7 +138,48 @@ class TransactionManager(
         }
     }
 
+    fun retryTransaction(transactionId: String) = scope.launch {
+        api.request<Unit>("retryTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error retryTransaction $it")
+        }.onSuccess {
+            loadTransactions()
+        }
+    }
+
+    fun abortTransaction(transactionId: String) = scope.launch {
+        api.request<Unit>("abortTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error abortTransaction $it")
+        }.onSuccess {
+            loadTransactions()
+        }
+    }
+
+    fun suspendTransaction(transactionId: String) = scope.launch {
+        api.request<Unit>("suspendTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error suspendTransaction $it")
+        }.onSuccess {
+            loadTransactions()
+        }
+    }
+
+    fun resumeTransaction(transactionId: String) = scope.launch {
+        api.request<Unit>("resumeTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error resumeTransaction $it")
+        }.onSuccess {
+            loadTransactions()
+        }
+    }
+
     fun deleteTransactions(transactionIds: List<String>) {
+        // TODO: do NOT delete non-deletable transactions
         transactionIds.forEach { id ->
             deleteTransaction(id)
         }

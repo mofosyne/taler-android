@@ -44,7 +44,10 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.transactions.ExtendedStatus.Pending
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 
 class TransactionTipFragment : TransactionDetailFragment() {
 
@@ -57,7 +60,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
                 if (t is TransactionTip) TransactionTipComposable(t, devMode.value) {
-                    onDeleteButtonClicked(t)
+                    onTransitionButton(t, it)
                 }
             }
         }
@@ -65,7 +68,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
 }
 
 @Composable
-fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onDelete: () -> Unit) {
+fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onTransition: (t: TransactionAction) -> Unit) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -102,7 +105,9 @@ fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onDelete: () 
             label = stringResource(id = R.string.tip_merchant_url),
             info = t.merchantBaseUrl,
         )
-        DeleteTransactionComposable(onDelete)
+        t.txActions.forEach {
+            TransitionComposable(it, onTransition)
+        }
         if (devMode == true && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -115,7 +120,8 @@ fun TransactionTipPreview() {
     val t = TransactionTip(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         merchantBaseUrl = "https://merchant.example.org/",
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),

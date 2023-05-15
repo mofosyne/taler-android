@@ -42,6 +42,8 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.transactions.TransactionMajorState.Failed
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import java.util.UUID
@@ -97,7 +99,8 @@ class TransactionSerializer : KSerializer<Transaction> {
 sealed class Transaction {
     abstract val transactionId: String
     abstract val timestamp: Timestamp
-    abstract val extendedStatus: ExtendedStatus
+    abstract val txState: TransactionState
+    abstract val txActions: List<TransactionAction>
     abstract val error: TalerErrorInfo?
     abstract val amountRaw: Amount
     abstract val amountEffective: Amount
@@ -140,6 +143,28 @@ enum class ExtendedStatus {
     Deleted;
 }
 
+@Serializable
+enum class TransactionAction {
+    // Common States
+    @SerialName("delete")
+    Delete,
+
+    @SerialName("suspend")
+    Suspend,
+
+    @SerialName("resume")
+    Resume,
+
+    @SerialName("abort")
+    Abort,
+
+    @SerialName("fail")
+    Fail,
+
+    @SerialName("retry")
+    Retry,
+}
+
 sealed class AmountType {
     object Positive : AmountType()
     object Negative : AmountType()
@@ -151,7 +176,8 @@ sealed class AmountType {
 class TransactionWithdrawal(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val exchangeBaseUrl: String,
     val withdrawalDetails: WithdrawalDetails,
     override val error: TalerErrorInfo? = null,
@@ -167,7 +193,7 @@ class TransactionWithdrawal(
     override fun getTitle(context: Context) = cleanExchange(exchangeBaseUrl)
     override val generalTitleRes = R.string.withdraw_title
     val confirmed: Boolean
-        get() = extendedStatus != ExtendedStatus.Pending && (
+        get() = txState.major != Pending && (
                 (withdrawalDetails is TalerBankIntegrationApi && withdrawalDetails.confirmed) ||
                         withdrawalDetails is ManualTransfer
                 )
@@ -209,7 +235,8 @@ sealed class WithdrawalDetails {
 class TransactionPayment(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val info: TransactionInfo,
     val status: PaymentStatus,
     override val error: TalerErrorInfo? = null,
@@ -264,7 +291,8 @@ enum class PaymentStatus {
 class TransactionRefund(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val refundedTransactionId: String,
     val info: TransactionInfo,
     /**
@@ -292,7 +320,8 @@ class TransactionRefund(
 class TransactionTip(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val merchantBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -315,7 +344,8 @@ class TransactionTip(
 class TransactionRefresh(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -337,7 +367,8 @@ class TransactionRefresh(
 class TransactionDeposit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -370,7 +401,8 @@ data class PeerInfoShort(
 class TransactionPeerPullDebit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -397,7 +429,8 @@ class TransactionPeerPullDebit(
 class TransactionPeerPullCredit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -425,7 +458,8 @@ class TransactionPeerPullCredit(
 class TransactionPeerPushDebit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -454,7 +488,8 @@ class TransactionPeerPushDebit(
 class TransactionPeerPushCredit(
     override val transactionId: String,
     override val timestamp: Timestamp,
-    override val extendedStatus: ExtendedStatus,
+    override val txState: TransactionState,
+    override val txActions: List<TransactionAction>,
     val exchangeBaseUrl: String,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
@@ -481,7 +516,8 @@ class DummyTransaction(
     override val timestamp: Timestamp,
     override val error: TalerErrorInfo,
 ) : Transaction() {
-    override val extendedStatus: ExtendedStatus = ExtendedStatus.Failed
+    override val txState: TransactionState = TransactionState(Failed)
+    override val txActions: List<TransactionAction> = listOf(TransactionAction.Delete)
     override val amountRaw: Amount = Amount.zero("TESTKUDOS")
     override val amountEffective: Amount = Amount.zero("TESTKUDOS")
     override val icon: Int = R.drawable.ic_bug_report

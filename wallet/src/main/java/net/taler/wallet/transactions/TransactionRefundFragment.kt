@@ -41,8 +41,8 @@ class TransactionRefundFragment : TransactionDetailFragment() {
                     onFulfill = { url ->
                         launchInAppBrowser(requireContext(), url)
                     },
-                    onDelete = {
-                        onDeleteButtonClicked(t)
+                    onTransition = {
+                        onTransitionButton(t, it)
                     }
                 )
             }
