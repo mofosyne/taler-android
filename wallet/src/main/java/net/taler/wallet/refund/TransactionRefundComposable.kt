@@ -40,19 +40,24 @@ import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.payment.PurchaseDetails
 import net.taler.wallet.transactions.AmountType
-import net.taler.wallet.transactions.DeleteTransactionComposable
 import net.taler.wallet.transactions.ErrorTransactionButton
-import net.taler.wallet.transactions.ExtendedStatus
+import net.taler.wallet.transactions.TransactionAction
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfo
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionRefund
+import net.taler.wallet.transactions.TransactionState
+import net.taler.wallet.transactions.TransitionsComposable
 
 @Composable
 fun TransactionRefundComposable(
     t: TransactionRefund,
     devMode: Boolean,
     onFulfill: (url: String) -> Unit,
-    onDelete: () -> Unit,
+    onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -85,7 +90,7 @@ fun TransactionRefundComposable(
         PurchaseDetails(info = t.info) {
             onFulfill(t.info.fulfillmentUrl ?: "")
         }
-        DeleteTransactionComposable(onDelete)
+        TransitionsComposable(t, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -98,7 +103,8 @@ fun TransactionRefundComposablePreview() {
     val t = TransactionRefund(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = ExtendedStatus.Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         info = TransactionInfo(
             orderId = "123",
             merchant = ContractMerchant(name = "Taler"),

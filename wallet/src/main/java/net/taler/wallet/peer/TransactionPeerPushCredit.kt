@@ -26,12 +26,16 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.AmountType
-import net.taler.wallet.transactions.ExtendedStatus.Pending
 import net.taler.wallet.transactions.PeerInfoShort
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
+import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionPeerComposable
 import net.taler.wallet.transactions.TransactionPeerPushCredit
+import net.taler.wallet.transactions.TransactionState
 
 @Composable
 fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit) {
@@ -65,7 +69,8 @@ fun TransactionPeerPushCreditPreview() {
     val t = TransactionPeerPushCredit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         exchangeBaseUrl = "https://exchange.example.org/",
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),

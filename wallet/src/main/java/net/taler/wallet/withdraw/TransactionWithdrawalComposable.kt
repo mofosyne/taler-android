@@ -17,23 +17,17 @@
 package net.taler.wallet.withdraw
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,13 +41,18 @@ import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
 import net.taler.wallet.transactions.AmountType
-import net.taler.wallet.transactions.DeleteTransactionComposable
 import net.taler.wallet.transactions.ErrorTransactionButton
-import net.taler.wallet.transactions.ExtendedStatus
 import net.taler.wallet.transactions.Transaction
+import net.taler.wallet.transactions.TransactionAction
+import net.taler.wallet.transactions.TransactionAction.Abort
+import net.taler.wallet.transactions.TransactionAction.Retry
+import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
+import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionState
 import net.taler.wallet.transactions.TransactionWithdrawal
+import net.taler.wallet.transactions.TransitionsComposable
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 
 @Composable
@@ -61,7 +60,7 @@ fun TransactionWithdrawalComposable(
     t: TransactionWithdrawal,
     devMode: Boolean,
     actionListener: ActionListener,
-    onDelete: () -> Unit,
+    onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -96,28 +95,7 @@ fun TransactionWithdrawalComposable(
             label = stringResource(id = R.string.withdraw_exchange),
             info = cleanExchange(t.exchangeBaseUrl),
         )
-        if (t.extendedStatus == ExtendedStatus.Pending) {
-            Button(
-                modifier = Modifier.padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                onClick = onDelete,
-            ) {
-                Row(verticalAlignment = CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_cancel),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onError,
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        text = stringResource(R.string.cancel),
-                        color = MaterialTheme.colorScheme.onError,
-                    )
-                }
-            }
-        } else {
-            DeleteTransactionComposable(onDelete)
-        }
+        TransitionsComposable(t, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -130,7 +108,8 @@ fun TransactionWithdrawalComposablePreview() {
     val t = TransactionWithdrawal(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        extendedStatus = ExtendedStatus.Pending,
+        txState = TransactionState(Pending),
+        txActions = listOf(Retry, Suspend, Abort),
         exchangeBaseUrl = "https://exchange.demo.taler.net/",
         withdrawalDetails = ManualTransfer(exchangePaytoUris = emptyList()),
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
