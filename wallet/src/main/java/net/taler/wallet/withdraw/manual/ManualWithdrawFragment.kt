@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
+import net.taler.common.AmountParserException
 import net.taler.common.hideKeyboard
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
@@ -73,14 +74,13 @@ class ManualWithdrawFragment : Fragment() {
             return
         }
         ui.amountLayout.error = null
-        val value: Double
+        val amount: Amount
         try {
-            value = ui.amountView.text.toString().replace(',', '.').toDouble()
-        } catch (e: NumberFormatException) {
+            amount = Amount.fromString(currency, ui.amountView.text.toString())
+        } catch (e: AmountParserException) {
             ui.amountLayout.error = getString(R.string.withdraw_amount_error)
             return
         }
-        val amount = Amount.fromDouble(currency, value)
         ui.amountView.hideKeyboard()
 
         withdrawManager.getWithdrawalDetails(exchangeItem.exchangeBaseUrl, amount)

@@ -212,11 +212,11 @@ fun PeerPullCheckingPreview() {
 fun PeerPullTermsPreview() {
     Surface {
         val terms = IncomingTerms(
-            amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-            amountEffective = Amount.fromDouble("TESTKUDOS", 42.423),
+            amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+            amountEffective = Amount.fromString("TESTKUDOS", "42.423"),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
-                amount = Amount.fromDouble("TESTKUDOS", 23.42),
+                amount = Amount.fromString("TESTKUDOS", "23.42"),
             ),
             id = "ID123",
         )
@@ -232,11 +232,11 @@ fun PeerPullTermsPreview() {
 fun PeerPullAcceptingPreview() {
     Surface {
         val terms = IncomingTerms(
-            amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-            amountEffective = Amount.fromDouble("TESTKUDOS", 42.123),
+            amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+            amountEffective = Amount.fromString("TESTKUDOS", "42.123"),
             contractTerms = PeerContractTerms(
                 summary = "This is a long test summary that can be more than one line long for sure",
-                amount = Amount.fromDouble("TESTKUDOS", 23.42),
+                amount = Amount.fromString("TESTKUDOS", "23.42"),
             ),
             id = "ID123",
         )

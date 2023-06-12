@@ -102,8 +102,8 @@ private fun TransactionRefreshComposablePreview() {
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         extendedStatus = ExtendedStatus.Pending,
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     Surface {

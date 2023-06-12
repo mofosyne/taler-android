@@ -67,8 +67,8 @@ fun TransactionPeerPushCreditPreview() {
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         extendedStatus = Pending,
         exchangeBaseUrl = "https://exchange.example.org/",
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         info = PeerInfoShort(
             expiration = Timestamp.fromMillis(System.currentTimeMillis() + 60 * 60 * 1000),
             summary = "test invoice",

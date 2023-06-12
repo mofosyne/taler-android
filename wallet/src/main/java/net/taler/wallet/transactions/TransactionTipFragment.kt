@@ -117,8 +117,8 @@ fun TransactionTipPreview() {
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         extendedStatus = Pending,
         merchantBaseUrl = "https://merchant.example.org/",
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {

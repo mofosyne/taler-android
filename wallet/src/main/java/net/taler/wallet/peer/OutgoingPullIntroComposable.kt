@@ -153,7 +153,7 @@ fun OutgoingPullIntroComposable(
 fun PreviewReceiveFundsCheckingIntro() {
     Surface {
         OutgoingPullIntroComposable(
-            Amount.fromDouble("TESTKUDOS", 42.23),
+            Amount.fromString("TESTKUDOS", "42.23"),
             if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking,
         ) { _, _, _, _ -> }
     }
@@ -163,11 +163,11 @@ fun PreviewReceiveFundsCheckingIntro() {
 @Composable
 fun PreviewReceiveFundsCheckedIntro() {
     Surface {
-        val amountRaw = Amount.fromDouble("TESTKUDOS", 42.42)
-        val amountEffective = Amount.fromDouble("TESTKUDOS", 42.23)
+        val amountRaw = Amount.fromString("TESTKUDOS", "42.42")
+        val amountEffective = Amount.fromString("TESTKUDOS", "42.23")
         val exchangeItem = ExchangeItem("https://example.org", "TESTKUDOS", emptyList())
         OutgoingPullIntroComposable(
-            Amount.fromDouble("TESTKUDOS", 42.23),
+            Amount.fromString("TESTKUDOS", "42.23"),
             OutgoingChecked(amountRaw, amountEffective, exchangeItem)
         ) { _, _, _, _ -> }
     }

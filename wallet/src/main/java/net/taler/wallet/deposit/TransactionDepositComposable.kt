@@ -92,8 +92,8 @@ fun TransactionDepositComposablePreview() {
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         extendedStatus = Pending,
         depositGroupId = "fooBar",
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.1337"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.23"),
         targetPaytoUri = "https://exchange.example.org/peer/pull/credit",
         error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )

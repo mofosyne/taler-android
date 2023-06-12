@@ -108,8 +108,8 @@ fun TransactionRefundComposablePreview() {
             products = listOf(),
         ),
         refundedTransactionId = "transactionId",
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.23),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.1337),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {

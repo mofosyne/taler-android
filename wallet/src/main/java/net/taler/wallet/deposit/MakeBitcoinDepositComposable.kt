@@ -22,9 +22,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -149,12 +149,12 @@ fun MakeBitcoinDepositComposable(
 fun PreviewMakeBitcoinDepositComposable() {
     Surface {
         val state = DepositState.FeesChecked(
-            effectiveDepositAmount = Amount.fromDouble(CURRENCY_BTC, 42.00),
-            totalDepositCost = Amount.fromDouble(CURRENCY_BTC, 42.23),
+            effectiveDepositAmount = Amount.fromString(CURRENCY_BTC, "42.00"),
+            totalDepositCost = Amount.fromString(CURRENCY_BTC, "42.23"),
         )
         MakeBitcoinDepositComposable(
             state = state,
-            amount = Amount.fromDouble(CURRENCY_BTC, 42.23)) { _, _ ->
+            amount = Amount.fromString(CURRENCY_BTC, "42.23")) { _, _ ->
         }
     }
 }

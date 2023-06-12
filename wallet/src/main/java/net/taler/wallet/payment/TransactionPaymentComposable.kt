@@ -143,8 +143,8 @@ fun TransactionPaymentComposablePreview() {
             products = listOf(),
         ),
         status = PaymentStatus.Paid,
-        amountRaw = Amount.fromDouble("TESTKUDOS", 42.1337),
-        amountEffective = Amount.fromDouble("TESTKUDOS", 42.23),
+        amountRaw = Amount.fromString("TESTKUDOS", "42.1337"),
+        amountEffective = Amount.fromString("TESTKUDOS", "42.23"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {

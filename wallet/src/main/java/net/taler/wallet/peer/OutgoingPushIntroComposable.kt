@@ -142,7 +142,7 @@ fun OutgoingPushIntroComposable(
 fun PeerPushIntroComposableCheckingPreview() {
     Surface {
         val state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking
-        OutgoingPushIntroComposable(state, Amount.fromDouble("TESTKUDOS", 42.23)) { _, _, _ -> }
+        OutgoingPushIntroComposable(state, Amount.fromString("TESTKUDOS", "42.23")) { _, _, _ -> }
     }
 }
 
@@ -150,8 +150,8 @@ fun PeerPushIntroComposableCheckingPreview() {
 @Composable
 fun PeerPushIntroComposableCheckedPreview() {
     Surface {
-        val amountEffective = Amount.fromDouble("TESTKUDOS", 42.42)
-        val amountRaw = Amount.fromDouble("TESTKUDOS", 42.23)
+        val amountEffective = Amount.fromString("TESTKUDOS", "42.42")
+        val amountRaw = Amount.fromString("TESTKUDOS", "42.23")
         val state = OutgoingChecked(amountRaw, amountEffective)
         OutgoingPushIntroComposable(state, amountEffective) { _, _, _ -> }
     }

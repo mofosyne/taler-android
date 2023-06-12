@@ -239,12 +239,12 @@ private fun isValidBic(bic: String): Boolean = bic.isEmpty() || bicRegex.matches
 fun PreviewMakeDepositComposable() {
     Surface {
         val state = DepositState.FeesChecked(
-            effectiveDepositAmount = Amount.fromDouble("TESTKUDOS", 42.00),
-            totalDepositCost = Amount.fromDouble("TESTKUDOS", 42.23),
+            effectiveDepositAmount = Amount.fromString("TESTKUDOS", "42.00"),
+            totalDepositCost = Amount.fromString("TESTKUDOS", "42.23"),
         )
         MakeDepositComposable(
             state = state,
-            amount = Amount.fromDouble("TESTKUDOS", 42.23)) { _, _, _, _ ->
+            amount = Amount.fromString("TESTKUDOS", "42.23")) { _, _, _, _ ->
         }
     }
 }

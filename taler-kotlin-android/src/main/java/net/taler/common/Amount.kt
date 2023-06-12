@@ -65,12 +65,6 @@ public data class Amount(
         private const val MAX_FRACTION_LENGTH = 8
         public const val MAX_FRACTION: Int = 99_999_999
 
-        public fun fromDouble(currency: String, value: Double): Amount {
-            val intPart = floor(value).toLong()
-            val fraPart = floor((value - intPart) * FRACTIONAL_BASE).toInt()
-            return Amount(currency, intPart, fraPart)
-        }
-
         public fun zero(currency: String): Amount {
             return Amount(checkCurrency(currency), 0, 0)
         }
