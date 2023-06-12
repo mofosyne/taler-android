@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
@@ -54,14 +55,6 @@ class PromptTipFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         tipManager.tipStatus.observe(viewLifecycleOwner, ::onPaymentStatusChanged)
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (!requireActivity().isChangingConfigurations) {
-            // tipManager.abortTip()
-        }
     }
 
     private fun showLoading(show: Boolean) {
@@ -84,7 +77,7 @@ class PromptTipFragment : Fragment() {
             )
             ui.confirmWithdrawButton.isEnabled = true
             ui.confirmWithdrawButton.setOnClickListener {
-                tipManager.confirmTip(
+                tipManager.acceptTip(
                     payStatus.walletTipId,
                     payStatus.tipAmountRaw.currency
                 )
@@ -109,8 +102,10 @@ class PromptTipFragment : Fragment() {
         }
         is TipStatus.Error -> {
             showLoading(false)
-            ui.introView.text = getString(R.string.payment_error, payStatus.error)
-            ui.introView.fadeIn()
+            // TODO pass TalerErrorInfo for JSON rendering
+            showError(getString(R.string.payment_error, payStatus.error.userFacingMsg))
+            ui.confirmProgressBar.fadeOut()
+            ui.confirmWithdrawButton.fadeIn()
         }
         is TipStatus.None -> {
             // No tip active

@@ -47,7 +47,7 @@ sealed class TipStatus {
     ) : TipStatus()
 
     // TODO bring user to fulfilment URI (not yet in wallet API)
-    data class Error(val error: String) : TipStatus()
+    data class Error(val error: TalerErrorInfo) : TipStatus()
     data class Success(val currency: String) : TipStatus()
 }
 
@@ -76,7 +76,7 @@ class TipManager(
         }
     }
 
-    fun confirmTip(tipId: String, currency: String) = scope.launch {
+    fun acceptTip(tipId: String, currency: String) = scope.launch {
         mTipStatus.value = TipStatus.Accepting
         api.request("acceptTip", ConfirmTipResult.serializer()) {
             put("walletTipId", tipId)
@@ -94,7 +94,7 @@ class TipManager(
 
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
-        mTipStatus.value = TipStatus.Error(error.userFacingMsg)
+        mTipStatus.value = TipStatus.Error(error)
     }
 
 }
