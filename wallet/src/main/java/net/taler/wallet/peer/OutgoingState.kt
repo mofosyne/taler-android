@@ -62,7 +62,10 @@ data class CheckPeerPushDebitResponse(
 )
 
 @Serializable
-data class InitiatePeerPullCreditResponse(
+data class InitiatePeerPushDebitResponse(
     val exchangeBaseUrl: String,
+    @Deprecated("Will be removed in future version")
     val talerUri: String,
+    // TODO bring the user to that transaction and only show QR when in Pending/Ready state
+    val transactionId: String,
 )

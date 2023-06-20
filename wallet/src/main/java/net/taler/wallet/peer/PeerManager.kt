@@ -130,7 +130,7 @@ class PeerManager(
         _outgoingPushState.value = OutgoingCreating
         scope.launch(Dispatchers.IO) {
             val expiry = Timestamp.fromMillis(System.currentTimeMillis() + HOURS.toMillis(expirationHours))
-            api.request("initiatePeerPushDebit", InitiatePeerPullCreditResponse.serializer()) {
+            api.request("initiatePeerPushDebit", InitiatePeerPushDebitResponse.serializer()) {
                 put("amount", amount.toJSONString())
                 put("partialContractTerms", JSONObject().apply {
                     put("amount", amount.toJSONString())
@@ -138,6 +138,7 @@ class PeerManager(
                     put("purse_expiration", JSONObject(Json.encodeToString(expiry)))
                 })
             }.onSuccess { response ->
+                // TODO bring the user to that transaction and only show QR when in Pending/Ready state
                 val qrCode = QrCodeManager.makeQrCode(response.talerUri)
                 _outgoingPushState.value = OutgoingResponse(response.talerUri, qrCode)
             }.onError { error ->
