@@ -87,6 +87,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transactions_delete">Delete</string>
     <string name="transactions_retry">Retry</string>
     <string name="transactions_abort">Abort</string>
+    <string name="transactions_fail">Fail</string>
     <string name="transactions_suspend">Suspend</string>
     <string name="transactions_resume">Resume</string>
     <string name="transactions_select_all">Select All</string>

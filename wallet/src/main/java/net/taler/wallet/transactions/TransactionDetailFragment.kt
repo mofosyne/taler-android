@@ -83,7 +83,7 @@ abstract class TransactionDetailFragment : Fragment() {
 
     protected fun onTransitionButton(t: Transaction, tt: TransactionAction) {
         when (tt) {
-            Delete, Abort -> {
+            Delete, Abort, Fail -> {
                 MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
                     .setTitle(dialogTitle(tt)!!)
                     .setMessage(dialogMessage(tt)!!)
@@ -94,6 +94,7 @@ abstract class TransactionDetailFragment : Fragment() {
                         when (tt) {
                             Delete -> deleteTransaction(t)
                             Abort -> abortTransaction(t)
+                            Fail -> failTransaction(t)
                             else -> {}
                         }
                         dialog.dismiss()
@@ -120,6 +121,10 @@ abstract class TransactionDetailFragment : Fragment() {
 
     private fun abortTransaction(t: Transaction) {
         transactionManager.abortTransaction(t.transactionId)
+    }
+
+    private fun failTransaction(t: Transaction) {
+        transactionManager.failTransaction(t.transactionId)
     }
 
     private fun suspendTransaction(t: Transaction) {
