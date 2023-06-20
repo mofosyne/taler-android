@@ -37,7 +37,7 @@ import net.taler.wallet.transactions.TransactionAction.*
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TransitionsComposable(t: Transaction, onTransition: (t: TransactionAction) -> Unit) {
-        FlowRow {
+    FlowRow {
         t.txActions.forEach {
             TransitionComposable(it, onTransition)
         }
@@ -47,16 +47,16 @@ fun TransitionsComposable(t: Transaction, onTransition: (t: TransactionAction) -
 @Composable
 fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -> Unit) {
     // TODO: handle more transitions!
-    if (t !in arrayOf(Delete, Retry, Abort, Resume, Suspend)) return
+    if (t !in arrayOf(Delete, Retry, Abort, Fail, Resume, Suspend)) return
     Button(
         modifier = Modifier.padding(16.dp),
         colors = ButtonDefaults.buttonColors(containerColor = when(t) {
             Delete -> MaterialTheme.colorScheme.error
             Retry -> MaterialTheme.colorScheme.primary
             Abort -> MaterialTheme.colorScheme.error
+            Fail -> MaterialTheme.colorScheme.error
             Resume -> MaterialTheme.colorScheme.primary
             Suspend -> MaterialTheme.colorScheme.primary
-            else -> error("Unsupported")
         }),
         onClick = { onClick(t) },
     ) {
@@ -66,18 +66,18 @@ fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -
                     Delete -> painterResource(id = R.drawable.ic_delete)
                     Retry -> painterResource(id = R.drawable.ic_retry)
                     Abort -> painterResource(id = R.drawable.ic_cancel)
+                    Fail -> painterResource(id = R.drawable.ic_fail)
                     Resume -> painterResource(id = R.drawable.ic_resume)
                     Suspend -> painterResource(id = R.drawable.ic_suspend)
-                    else -> error("Unsupported")
                 },
                 contentDescription = null,
                 tint = when (t) {
                     Delete -> MaterialTheme.colorScheme.onError
                     Retry -> MaterialTheme.colorScheme.onPrimary
                     Abort -> MaterialTheme.colorScheme.onError
+                    Fail -> MaterialTheme.colorScheme.onError
                     Resume -> MaterialTheme.colorScheme.onPrimary
                     Suspend -> MaterialTheme.colorScheme.onPrimary
-                    else -> error("Unsupported")
                 },
             )
             Text(
@@ -86,17 +86,17 @@ fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -
                     Delete -> stringResource(R.string.transactions_delete)
                     Retry -> stringResource(R.string.transactions_retry)
                     Abort -> stringResource(R.string.transactions_abort)
+                    Fail -> stringResource(id = R.string.transactions_fail)
                     Resume -> stringResource(R.string.transactions_resume)
                     Suspend -> stringResource(R.string.transactions_suspend)
-                    else -> error("Unsupported")
                 },
                 color = when (t) {
                     Delete -> MaterialTheme.colorScheme.onError
                     Retry -> MaterialTheme.colorScheme.onPrimary
                     Abort -> MaterialTheme.colorScheme.onError
+                    Fail -> MaterialTheme.colorScheme.onError
                     Resume -> MaterialTheme.colorScheme.onPrimary
                     Suspend -> MaterialTheme.colorScheme.onPrimary
-                    else -> error("Unsupported")
                 },
             )
         }

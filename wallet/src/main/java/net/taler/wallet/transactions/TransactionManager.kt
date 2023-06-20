@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.transactions.TransactionAction.Delete
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import java.util.LinkedList
 
@@ -158,6 +159,16 @@ class TransactionManager(
         }
     }
 
+    fun failTransaction(transactionId: String) = scope.launch {
+        api.request<Unit>("failTransaction") {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error failTransaction $it")
+        }.onSuccess {
+            loadTransactions()
+        }
+    }
+
     fun suspendTransaction(transactionId: String) = scope.launch {
         api.request<Unit>("suspendTransaction") {
             put("transactionId", transactionId)
@@ -179,9 +190,12 @@ class TransactionManager(
     }
 
     fun deleteTransactions(transactionIds: List<String>) {
-        // TODO: do NOT delete non-deletable transactions
-        transactionIds.forEach { id ->
-            deleteTransaction(id)
+        allTransactions[selectedCurrency]?.filter { transaction ->
+            transaction.transactionId in transactionIds
+        }?.forEach { toBeDeletedTx ->
+            if (Delete in toBeDeletedTx.txActions) {
+                deleteTransaction(toBeDeletedTx.transactionId)
+            }
         }
     }
 
