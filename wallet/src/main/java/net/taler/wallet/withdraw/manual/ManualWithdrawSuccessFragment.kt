@@ -18,6 +18,7 @@ package net.taler.wallet.withdraw.manual
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TAG
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.withdraw.WithdrawStatus
 
@@ -51,7 +53,9 @@ class ManualWithdrawSuccessFragment : Fragment() {
         val tid = status.transactionId
         val onCancelClick = if (tid == null) null else {
             {
-                transactionManager.deleteTransaction(tid)
+                transactionManager.deleteTransaction(tid) {
+                    Log.e(TAG, "Error deleteTransaction $it")
+                }
                 findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
             }
         }
