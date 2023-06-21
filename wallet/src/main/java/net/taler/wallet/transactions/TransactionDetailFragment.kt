@@ -17,6 +17,7 @@
 package net.taler.wallet.transactions
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -26,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TAG
 import net.taler.wallet.transactions.TransactionAction.*
 
 abstract class TransactionDetailFragment : Fragment() {
@@ -111,27 +113,39 @@ abstract class TransactionDetailFragment : Fragment() {
     }
 
     private fun deleteTransaction(t: Transaction) {
-        transactionManager.deleteTransaction(t.transactionId)
+        transactionManager.deleteTransaction(t.transactionId) {
+            Log.e(TAG, "Error deleteTransaction $it")
+        }
         findNavController().popBackStack()
     }
 
     private fun retryTransaction(t: Transaction) {
-        transactionManager.retryTransaction(t.transactionId)
+        transactionManager.retryTransaction(t.transactionId) {
+            Log.e(TAG, "Error retryTransaction $it")
+        }
     }
 
     private fun abortTransaction(t: Transaction) {
-        transactionManager.abortTransaction(t.transactionId)
+        transactionManager.abortTransaction(t.transactionId) {
+            Log.e(TAG, "Error abortTransaction $it")
+        }
     }
 
     private fun failTransaction(t: Transaction) {
-        transactionManager.failTransaction(t.transactionId)
+        transactionManager.failTransaction(t.transactionId) {
+            Log.e(TAG, "Error failTransaction $it")
+        }
     }
 
     private fun suspendTransaction(t: Transaction) {
-        transactionManager.suspendTransaction(t.transactionId)
+        transactionManager.suspendTransaction(t.transactionId) {
+            Log.e(TAG, "Error suspendTransaction $it")
+        }
     }
 
     private fun resumeTransaction(t: Transaction) {
-        transactionManager.resumeTransaction(t.transactionId)
+        transactionManager.resumeTransaction(t.transactionId) {
+            Log.e(TAG, "Error resumeTransaction $it")
+        }
     }
 }

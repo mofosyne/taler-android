@@ -17,6 +17,7 @@
 package net.taler.wallet.transactions
 
 import android.os.Bundle
+import android.util.Log
 import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
@@ -41,6 +42,7 @@ import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TAG
 import net.taler.wallet.databinding.FragmentTransactionsBinding
 import net.taler.wallet.handleKyc
 import net.taler.wallet.launchInAppBrowser
@@ -246,7 +248,9 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                             dialog.cancel()
                         }
                         .setNegativeButton(R.string.transactions_delete) { dialog, _ ->
-                            transactionManager.deleteTransactions(transactionIds)
+                            transactionManager.deleteTransactions(transactionIds) {
+                                Log.e(TAG, "Error deleteTransaction $it")
+                            }
                             dialog.dismiss()
                         }
                         .show()
