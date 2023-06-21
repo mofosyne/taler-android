@@ -68,18 +68,21 @@ abstract class TransactionDetailFragment : Fragment() {
     private fun dialogTitle(t: TransactionAction): Int? = when (t) {
         Delete -> R.string.transactions_delete_dialog_title
         Abort -> R.string.transactions_abort_dialog_title
+        Fail -> R.string.transactions_fail_dialog_title
         else -> null
     }
 
     private fun dialogMessage(t: TransactionAction): Int? = when (t) {
         Delete -> R.string.transactions_delete_dialog_message
         Abort -> R.string.transactions_abort_dialog_message
+        Fail -> R.string.transactions_fail_dialog_message
         else -> null
     }
 
     private fun dialogButton(t: TransactionAction): Int? = when (t) {
         Delete -> R.string.transactions_delete
         Abort -> R.string.transactions_abort
+        Fail -> R.string.transactions_fail
         else -> null
     }
 
