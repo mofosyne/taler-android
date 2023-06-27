@@ -57,7 +57,7 @@ class TransactionPeerFragment : TransactionDetailFragment() {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
                 if (t != null) TransactionPeerComposable(t, devMode.value) {
-                    onTransitionButton(t, it)
+                    onTransitionButtonClicked(t, it)
                 }
             }
         }

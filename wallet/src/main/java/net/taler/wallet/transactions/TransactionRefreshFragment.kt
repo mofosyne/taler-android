@@ -61,7 +61,7 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
                 val t = transactionManager.selectedTransaction.observeAsState().value
                 val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionRefresh) TransactionRefreshComposable(t, devMode) {
-                    onTransitionButton(t, it)
+                    onTransitionButtonClicked(t, it)
                 }
             }
         }

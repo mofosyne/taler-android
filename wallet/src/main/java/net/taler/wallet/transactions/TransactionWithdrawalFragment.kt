@@ -52,7 +52,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
                     devMode = devMode,
                     actionListener = this@TransactionWithdrawalFragment,
                 ) {
-                    onTransitionButton(t, it)
+                    onTransitionButtonClicked(t, it)
                 }
             }
         }
