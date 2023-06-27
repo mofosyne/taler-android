@@ -65,37 +65,37 @@ abstract class TransactionDetailFragment : Fragment() {
         }
     }
 
-    private fun dialogTitle(t: TransactionAction): Int? = when (t) {
+    private fun dialogTitle(t: TransactionAction): Int = when (t) {
         Delete -> R.string.transactions_delete_dialog_title
         Abort -> R.string.transactions_abort_dialog_title
         Fail -> R.string.transactions_fail_dialog_title
-        else -> null
+        else -> error("unsupported")
     }
 
-    private fun dialogMessage(t: TransactionAction): Int? = when (t) {
+    private fun dialogMessage(t: TransactionAction): Int = when (t) {
         Delete -> R.string.transactions_delete_dialog_message
         Abort -> R.string.transactions_abort_dialog_message
         Fail -> R.string.transactions_fail_dialog_message
-        else -> null
+        else -> error("unsupported")
     }
 
-    private fun dialogButton(t: TransactionAction): Int? = when (t) {
+    private fun dialogButton(t: TransactionAction): Int = when (t) {
         Delete -> R.string.transactions_delete
         Abort -> R.string.transactions_abort
         Fail -> R.string.transactions_fail
-        else -> null
+        else -> error("unsupported")
     }
 
-    protected fun onTransitionButton(t: Transaction, tt: TransactionAction) {
+    protected fun onTransitionButtonClicked(t: Transaction, tt: TransactionAction) {
         when (tt) {
             Delete, Abort, Fail -> {
                 MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
-                    .setTitle(dialogTitle(tt)!!)
-                    .setMessage(dialogMessage(tt)!!)
+                    .setTitle(dialogTitle(tt))
+                    .setMessage(dialogMessage(tt))
                     .setNeutralButton(R.string.cancel) { dialog, _ ->
                         dialog.cancel()
                     }
-                    .setNegativeButton(dialogButton(tt)!!) { dialog, _ ->
+                    .setNegativeButton(dialogButton(tt)) { dialog, _ ->
                         when (tt) {
                             Delete -> deleteTransaction(t)
                             Abort -> abortTransaction(t)

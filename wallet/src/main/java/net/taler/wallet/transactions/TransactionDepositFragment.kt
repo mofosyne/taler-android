@@ -36,7 +36,7 @@ class TransactionDepositFragment : TransactionDetailFragment() {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
                 if (t is TransactionDeposit) TransactionDepositComposable(t, devMode.value) {
-                    onTransitionButton(t, it)
+                    onTransitionButtonClicked(t, it)
                 }
             }
         }

@@ -60,7 +60,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
                 if (t is TransactionTip) TransactionTipComposable(t, devMode.value) {
-                    onTransitionButton(t, it)
+                    onTransitionButtonClicked(t, it)
                 }
             }
         }

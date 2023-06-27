@@ -42,7 +42,7 @@ class TransactionPaymentFragment : TransactionDetailFragment() {
                         launchInAppBrowser(requireContext(), url)
                     },
                     onTransition = {
-                        onTransitionButton(t, it)
+                        onTransitionButtonClicked(t, it)
                     }
                 )
             }
