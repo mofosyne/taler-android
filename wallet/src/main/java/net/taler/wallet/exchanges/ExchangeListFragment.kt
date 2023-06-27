@@ -69,13 +69,17 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
         exchangeManager.exchanges.observe(viewLifecycleOwner) { exchanges ->
             onExchangeUpdate(exchanges)
         }
-        exchangeManager.errorEvent.observe(viewLifecycleOwner, EventObserver { error ->
+        exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
+            onAddExchangeFailed()
             if (model.devMode.value == true) {
                 showError(error)
             }
         })
-        exchangeManager.addError.observe(viewLifecycleOwner, EventObserver { error ->
-            if (error) onAddExchangeFailed()
+        exchangeManager.listError.observe(viewLifecycleOwner, EventObserver { error ->
+            onListExchangeFailed()
+            if (model.devMode.value == true) {
+                showError(error)
+            }
         })
     }
 
@@ -92,6 +96,10 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
 
     private fun onAddExchangeFailed() {
         Toast.makeText(requireContext(), R.string.exchange_add_error, LENGTH_LONG).show()
+    }
+
+    private fun onListExchangeFailed() {
+        Toast.makeText(requireContext(), R.string.exchange_list_error, LENGTH_LONG).show()
     }
 
     override fun onExchangeSelected(item: ExchangeItem) {
