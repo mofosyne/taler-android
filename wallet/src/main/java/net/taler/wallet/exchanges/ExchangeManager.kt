@@ -47,11 +47,11 @@ class ExchangeManager(
     private val mExchanges = MutableLiveData<List<ExchangeItem>>()
     val exchanges: LiveData<List<ExchangeItem>> get() = list()
 
-    private val mAddError = MutableLiveData<Event<Boolean>>()
-    val addError: LiveData<Event<Boolean>> = mAddError
+    private val mAddError = MutableLiveData<Event<TalerErrorInfo>>()
+    val addError: LiveData<Event<TalerErrorInfo>> = mAddError
 
-    private val mErrorEvent = MutableLiveData<Event<TalerErrorInfo>>()
-    val errorEvent: LiveData<Event<TalerErrorInfo>> = mErrorEvent
+    private val mListError = MutableLiveData<Event<TalerErrorInfo>>()
+    val listError: LiveData<Event<TalerErrorInfo>> = mListError
 
     var withdrawalExchange: ExchangeItem? = null
 
@@ -60,8 +60,7 @@ class ExchangeManager(
         scope.launch {
             val response = api.request("listExchanges", ExchangeListResponse.serializer())
             response.onError {
-                mErrorEvent.value = it.toEvent()
-                throw AssertionError("Wallet core failed to return exchanges! ${it.userFacingMsg}")
+                mListError.value = it.toEvent()
             }.onSuccess {
                 Log.d(TAG, "Exchange list: ${it.exchanges}")
                 mProgress.value = false
@@ -78,8 +77,7 @@ class ExchangeManager(
         }.onError {
             Log.e(TAG, "Error adding exchange: $it")
             mProgress.value = false
-            mErrorEvent.value = it.toEvent()
-            mAddError.value = true.toEvent()
+            mAddError.value = it.toEvent()
         }.onSuccess {
             mProgress.value = false
             Log.d(TAG, "Exchange $exchangeUrl added")
