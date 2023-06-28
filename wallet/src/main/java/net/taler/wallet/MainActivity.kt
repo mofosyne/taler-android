@@ -139,7 +139,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
             if (it) barcodeLauncher.launch(scanOptions)
         })
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -296,10 +295,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         model.showProgressBar.value = false
         when (status) {
             is RefundStatus.Error -> {
-                if (model.devMode.value == false) {
-                    showError(R.string.refund_error, status.error.userFacingMsg)
-                } else {
+                if (model.devMode.value == true) {
                     showError(status.error)
+                } else {
+                    showError(R.string.refund_error, status.error.userFacingMsg)
                 }
             }
             is RefundStatus.Success -> {

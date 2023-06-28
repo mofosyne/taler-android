@@ -60,6 +60,7 @@ class ExchangeManager(
         scope.launch {
             val response = api.request("listExchanges", ExchangeListResponse.serializer())
             response.onError {
+                mProgress.value = false
                 mListError.value = it.toEvent()
             }.onSuccess {
                 Log.d(TAG, "Exchange list: ${it.exchanges}")

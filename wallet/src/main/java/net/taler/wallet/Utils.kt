@@ -138,7 +138,7 @@ fun Fragment.showError(error: TalerErrorInfo) {
         prettyPrintIndent = "  "
     }
     val message = json.encodeToString(error)
-    this@showError.showError(message)
+    showError(message)
 }
 
 fun FragmentActivity.showError(error: TalerErrorInfo) {
@@ -148,5 +148,5 @@ fun FragmentActivity.showError(error: TalerErrorInfo) {
         prettyPrintIndent = "  "
     }
     val message = json.encodeToString(error)
-    this@showError.showError(message)
+    showError(message)
 }
