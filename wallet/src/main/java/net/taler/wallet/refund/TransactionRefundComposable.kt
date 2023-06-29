@@ -90,7 +90,7 @@ fun TransactionRefundComposable(
         PurchaseDetails(info = t.info) {
             onFulfill(t.info.fulfillmentUrl ?: "")
         }
-        TransitionsComposable(t, onTransition)
+        TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }

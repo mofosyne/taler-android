@@ -95,7 +95,7 @@ fun TransactionWithdrawalComposable(
             label = stringResource(id = R.string.withdraw_exchange),
             info = cleanExchange(t.exchangeBaseUrl),
         )
-        TransitionsComposable(t, onTransition)
+        TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }

@@ -92,9 +92,7 @@ private fun TransactionRefreshComposable(
             amount = t.amountEffective,
             amountType = AmountType.Negative,
         )
-        t.txActions.forEach {
-            TransitionComposable(it, onTransition)
-        }
+        TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }

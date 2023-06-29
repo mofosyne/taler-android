@@ -86,7 +86,7 @@ fun TransactionPeerComposable(t: Transaction, devMode: Boolean?, onTransition: (
             is TransactionPeerPushDebit -> TransactionPeerPushDebitComposable(t)
             else -> error("unexpected transaction: ${t::class.simpleName}")
         }
-        TransitionsComposable(t, onTransition)
+        TransitionsComposable(t, devMode == true, onTransition)
         if (devMode == true && t.error != null) {
             ErrorTransactionButton(error = t.error!!)
         }

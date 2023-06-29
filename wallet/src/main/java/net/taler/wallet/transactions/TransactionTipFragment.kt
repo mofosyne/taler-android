@@ -105,9 +105,7 @@ fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onTransition:
             label = stringResource(id = R.string.tip_merchant_url),
             info = t.merchantBaseUrl,
         )
-        t.txActions.forEach {
-            TransitionComposable(it, onTransition)
-        }
+        TransitionsComposable(t, devMode == true, onTransition)
         if (devMode == true && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
