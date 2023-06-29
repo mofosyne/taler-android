@@ -36,18 +36,20 @@ import net.taler.wallet.transactions.TransactionAction.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TransitionsComposable(t: Transaction, onTransition: (t: TransactionAction) -> Unit) {
+fun TransitionsComposable(t: Transaction, devMode: Boolean, onTransition: (t: TransactionAction) -> Unit) {
     FlowRow {
         t.txActions.forEach {
-            TransitionComposable(it, onTransition)
+            if (it in arrayOf(Resume, Suspend)) {
+                if(devMode) TransitionComposable(it, onTransition)
+            } else {
+                TransitionComposable(it, onTransition)
+            }
         }
     }
 }
 
 @Composable
 fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -> Unit) {
-    // TODO: handle more transitions!
-    if (t !in arrayOf(Delete, Retry, Abort, Fail, Resume, Suspend)) return
     Button(
         modifier = Modifier.padding(16.dp),
         colors = ButtonDefaults.buttonColors(containerColor = when(t) {
@@ -86,7 +88,7 @@ fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -
                     Delete -> stringResource(R.string.transactions_delete)
                     Retry -> stringResource(R.string.transactions_retry)
                     Abort -> stringResource(R.string.transactions_abort)
-                    Fail -> stringResource(id = R.string.transactions_fail)
+                    Fail -> stringResource(R.string.transactions_fail)
                     Resume -> stringResource(R.string.transactions_resume)
                     Suspend -> stringResource(R.string.transactions_suspend)
                 },

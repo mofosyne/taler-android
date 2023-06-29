@@ -82,7 +82,7 @@ fun TransactionDepositComposable(t: TransactionDeposit, devMode: Boolean?, onTra
                 amountType = AmountType.Negative,
             )
         }
-        TransitionsComposable(t, onTransition)
+        TransitionsComposable(t, devMode == true, onTransition)
         if (devMode == true && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
