@@ -53,6 +53,7 @@ class WalletBackendApi(
         }.onSuccess { response ->
             versionReceiver.onVersionReceived(response.versionInfo)
         }.onError { error ->
+            // TODO expose this to the UI as it can happen when using an older DB version
             error("Error on init message: $error")
         }
     }
