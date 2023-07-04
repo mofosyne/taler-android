@@ -120,30 +120,6 @@ sealed class Transaction {
 }
 
 @Serializable
-enum class ExtendedStatus {
-    @SerialName("pending")
-    Pending,
-
-    @SerialName("done")
-    Done,
-
-    @SerialName("aborting")
-    Aborting,
-
-    @SerialName("aborted")
-    Aborted,
-
-    @SerialName("suspended")
-    Suspended,
-
-    @SerialName("failed")
-    Failed,
-
-    @SerialName("deleted")
-    Deleted;
-}
-
-@Serializable
 enum class TransactionAction {
     // Common States
     @SerialName("delete")
@@ -238,7 +214,6 @@ class TransactionPayment(
     override val txState: TransactionState,
     override val txActions: List<TransactionAction>,
     val info: TransactionInfo,
-    val status: PaymentStatus,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -270,21 +245,6 @@ class TransactionInfo(
      */
     val fulfillmentMessage_i18n: Map<String, String>? = null,
 )
-
-@Serializable
-enum class PaymentStatus {
-    @SerialName("aborted")
-    Aborted,
-
-    @SerialName("failed")
-    Failed,
-
-    @SerialName("paid")
-    Paid,
-
-    @SerialName("accepted")
-    Accepted
-}
 
 @Serializable
 @SerialName("refund")

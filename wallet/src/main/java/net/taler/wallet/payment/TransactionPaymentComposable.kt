@@ -40,7 +40,6 @@ import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.ErrorTransactionButton
-import net.taler.wallet.transactions.PaymentStatus
 import net.taler.wallet.transactions.TransactionAction
 import net.taler.wallet.transactions.TransactionAction.Abort
 import net.taler.wallet.transactions.TransactionAction.Retry
@@ -148,7 +147,6 @@ fun TransactionPaymentComposablePreview() {
             fulfillmentUrl = "https://bank.demo.taler.net/",
             products = listOf(),
         ),
-        status = PaymentStatus.Paid,
         amountRaw = Amount.fromString("TESTKUDOS", "42.1337"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.23"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),

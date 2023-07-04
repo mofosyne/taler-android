@@ -36,7 +36,17 @@ import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
+import net.taler.wallet.transactions.TransactionMajorState.Aborted
+import net.taler.wallet.transactions.TransactionMajorState.Aborting
+import net.taler.wallet.transactions.TransactionMajorState.Deleted
+import net.taler.wallet.transactions.TransactionMajorState.Dialog
+import net.taler.wallet.transactions.TransactionMajorState.Done
+import net.taler.wallet.transactions.TransactionMajorState.Failed
+import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionMajorState.Suspended
+import net.taler.wallet.transactions.TransactionMajorState.SuspendedAborting
+import net.taler.wallet.transactions.TransactionMajorState.Unknown
 
 internal class TransactionAdapter(
     private val listener: OnTransactionClickListener
@@ -115,12 +125,24 @@ internal class TransactionAdapter(
                 extraInfoView.setText(R.string.withdraw_waiting_confirm)
                 extraInfoView.setTextColor(amountColor)
                 extraInfoView.visibility = VISIBLE
-            } else if (transaction is TransactionPayment && transaction.status != PaymentStatus.Paid && transaction.status != PaymentStatus.Accepted) {
-                extraInfoView.setText(if (transaction.status == PaymentStatus.Aborted) R.string.payment_aborted else R.string.payment_failed)
-                extraInfoView.setTextColor(amountColor)
-                extraInfoView.visibility = VISIBLE
             } else {
-                extraInfoView.visibility = GONE
+                when (transaction.txState.major) {
+                    Aborted -> R.string.payment_aborted
+                    Failed -> R.string.payment_failed
+                    None -> null
+                    Pending -> null
+                    Done -> null
+                    Aborting -> null
+                    Suspended -> null
+                    Dialog -> null
+                    SuspendedAborting -> null
+                    Deleted -> null
+                    Unknown -> null
+                }?.let {
+                    extraInfoView.setText(it)
+                } ?: {
+                    extraInfoView.visibility = GONE
+                }
             }
         }
 
