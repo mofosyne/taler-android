@@ -65,4 +65,8 @@
     <string name="config_fetching">Kurulum getiriliyor…</string>
     <string name="config_save_password">Şifreyi hatırla</string>
     <string name="menu_history">Geçmiş</string>
+    <string name="order_custom">Özel ürün ekle</string>
+    <string name="order_custom_product">Özel ürünün ismi</string>
+    <string name="order_custom_product_default">Bahşiş</string>
+    <string name="order_custom_add_button">Ekle</string>
 </resources>
