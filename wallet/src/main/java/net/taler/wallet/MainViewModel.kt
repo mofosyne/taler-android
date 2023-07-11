@@ -34,7 +34,6 @@ import net.taler.common.toEvent
 import net.taler.wallet.accounts.AccountManager
 import net.taler.wallet.backend.NotificationPayload
 import net.taler.wallet.backend.NotificationReceiver
-import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletCoreVersion
@@ -199,7 +198,7 @@ class MainViewModel(
 
     fun runIntegrationTest() {
         viewModelScope.launch {
-            api.request<Unit>("runIntegrationTest") {
+            api.request<Unit>("runIntegrationTestV2") {
                 put("amountToWithdraw", "KUDOS:42")
                 put("amountToSpend", "KUDOS:23")
                 put("bankBaseUrl", "https://bank.demo.taler.net/")
