@@ -42,6 +42,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.refund.RefundPaymentInfo
 import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
@@ -254,7 +255,7 @@ class TransactionRefund(
     override val txState: TransactionState,
     override val txActions: List<TransactionAction>,
     val refundedTransactionId: String,
-    val info: TransactionInfo,
+    val paymentInfo: RefundPaymentInfo? = null,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -265,7 +266,8 @@ class TransactionRefund(
     @Transient
     override val amountType = AmountType.Positive
     override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_refund_from, info.merchant.name)
+        val merchantName = paymentInfo?.merchant?.name ?: "null"
+        return context.getString(R.string.transaction_refund_from, merchantName)
     }
 
     override val generalTitleRes = R.string.refund_title

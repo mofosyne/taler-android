@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.launchInAppBrowser
 import net.taler.wallet.refund.TransactionRefundComposable
 
 class TransactionRefundFragment : TransactionDetailFragment() {
@@ -36,14 +35,9 @@ class TransactionRefundFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                if (t is TransactionRefund) TransactionRefundComposable(t, devMode,
-                    onFulfill = { url ->
-                        launchInAppBrowser(requireContext(), url)
-                    },
-                    onTransition = {
-                        onTransitionButtonClicked(t, it)
-                    }
-                )
+                if (t is TransactionRefund) TransactionRefundComposable(t, devMode) {
+                    onTransitionButtonClicked(t, it)
+                }
             }
         }
     }

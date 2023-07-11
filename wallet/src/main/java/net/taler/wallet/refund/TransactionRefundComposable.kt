@@ -31,14 +31,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
-import net.taler.common.ContractMerchant
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.payment.PurchaseDetails
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.ErrorTransactionButton
 import net.taler.wallet.transactions.TransactionAction
@@ -46,7 +44,7 @@ import net.taler.wallet.transactions.TransactionAction.Abort
 import net.taler.wallet.transactions.TransactionAction.Retry
 import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
-import net.taler.wallet.transactions.TransactionInfo
+import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionRefund
 import net.taler.wallet.transactions.TransactionState
@@ -56,7 +54,6 @@ import net.taler.wallet.transactions.TransitionsComposable
 fun TransactionRefundComposable(
     t: TransactionRefund,
     devMode: Boolean,
-    onFulfill: (url: String) -> Unit,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -87,9 +84,10 @@ fun TransactionRefundComposable(
             amount = t.amountRaw - t.amountEffective,
             amountType = AmountType.Negative,
         )
-        PurchaseDetails(info = t.info) {
-            onFulfill(t.info.fulfillmentUrl ?: "")
-        }
+        TransactionInfoComposable(
+            label = stringResource(id = R.string.transaction_order),
+            info = t.paymentInfo?.summary ?: "",
+        )
         TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
@@ -105,13 +103,9 @@ fun TransactionRefundComposablePreview() {
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
         txState = TransactionState(Pending),
         txActions = listOf(Retry, Suspend, Abort),
-        info = TransactionInfo(
-            orderId = "123",
-            merchant = ContractMerchant(name = "Taler"),
+        paymentInfo = RefundPaymentInfo(
+            merchant = MerchantInfo(name = "Taler"),
             summary = "Some Product that was bought and can have quite a long label",
-            fulfillmentMessage = "This is some fulfillment message",
-            fulfillmentUrl = "https://bank.demo.taler.net/",
-            products = listOf(),
         ),
         refundedTransactionId = "transactionId",
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
@@ -119,6 +113,6 @@ fun TransactionRefundComposablePreview() {
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {
-        TransactionRefundComposable(t = t, devMode = true, onFulfill = {}) {}
+        TransactionRefundComposable(t = t, devMode = true) {}
     }
 }
