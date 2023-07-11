@@ -37,19 +37,11 @@ import net.taler.common.toRelativeTime
 import net.taler.wallet.R
 import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 import net.taler.wallet.transactions.TransactionMajorState.Aborted
-import net.taler.wallet.transactions.TransactionMajorState.Aborting
-import net.taler.wallet.transactions.TransactionMajorState.Deleted
-import net.taler.wallet.transactions.TransactionMajorState.Dialog
-import net.taler.wallet.transactions.TransactionMajorState.Done
 import net.taler.wallet.transactions.TransactionMajorState.Failed
-import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
-import net.taler.wallet.transactions.TransactionMajorState.Suspended
-import net.taler.wallet.transactions.TransactionMajorState.SuspendedAborting
-import net.taler.wallet.transactions.TransactionMajorState.Unknown
 
 internal class TransactionAdapter(
-    private val listener: OnTransactionClickListener
+    private val listener: OnTransactionClickListener,
 ) : Adapter<TransactionViewHolder>() {
 
     private var transactions: List<Transaction> = ArrayList()
@@ -109,9 +101,11 @@ internal class TransactionAdapter(
             time.text = transaction.timestamp.ms.toRelativeTime(context)
             bindAmount(transaction)
             pendingView.visibility = if (transaction.txState.major == Pending) VISIBLE else GONE
-            val bgColor = getColor(context,
+            val bgColor = getColor(
+                context,
                 if (selected) R.color.selectedBackground
-                else android.R.color.transparent)
+                else android.R.color.transparent
+            )
             root.setBackgroundColor(bgColor)
         }
 
@@ -127,21 +121,17 @@ internal class TransactionAdapter(
                 extraInfoView.visibility = VISIBLE
             } else {
                 when (transaction.txState.major) {
-                    Aborted -> R.string.payment_aborted
-                    Failed -> R.string.payment_failed
-                    None -> null
-                    Pending -> null
-                    Done -> null
-                    Aborting -> null
-                    Suspended -> null
-                    Dialog -> null
-                    SuspendedAborting -> null
-                    Deleted -> null
-                    Unknown -> null
-                }?.let {
-                    extraInfoView.setText(it)
-                } ?: {
-                    extraInfoView.visibility = GONE
+                    Aborted -> {
+                        extraInfoView.setText(R.string.payment_aborted)
+                        extraInfoView.visibility = VISIBLE
+                    }
+
+                    Failed -> {
+                        extraInfoView.setText(R.string.payment_failed)
+                        extraInfoView.visibility = VISIBLE
+                    }
+
+                    else -> extraInfoView.visibility = GONE
                 }
             }
         }
@@ -153,10 +143,12 @@ internal class TransactionAdapter(
                     amount.text = context.getString(R.string.amount_positive, amountStr)
                     amount.setTextColor(if (transaction.txState.major == Pending) amountColor else green)
                 }
+
                 AmountType.Negative -> {
                     amount.text = context.getString(R.string.amount_negative, amountStr)
                     amount.setTextColor(if (transaction.txState.major == Pending) amountColor else red)
                 }
+
                 AmountType.Neutral -> {
                     amount.text = amountStr
                     amount.setTextColor(amountColor)
@@ -176,7 +168,7 @@ internal class TransactionAdapter(
 
 internal class TransactionLookup(
     private val list: RecyclerView,
-    private val adapter: TransactionAdapter
+    private val adapter: TransactionAdapter,
 ) : ItemDetailsLookup<String>() {
     override fun getItemDetails(e: MotionEvent): ItemDetails<String>? {
         list.findChildViewUnder(e.x, e.y)?.let { view ->

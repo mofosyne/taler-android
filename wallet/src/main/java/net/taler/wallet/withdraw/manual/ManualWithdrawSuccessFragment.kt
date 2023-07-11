@@ -31,6 +31,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.showError
 import net.taler.wallet.withdraw.WithdrawStatus
 
 class ManualWithdrawSuccessFragment : Fragment() {
@@ -55,6 +56,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
             {
                 transactionManager.deleteTransaction(tid) {
                     Log.e(TAG, "Error deleteTransaction $it")
+                    showError(it)
                 }
                 findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
             }
@@ -65,6 +67,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
                     is WithdrawStatus.ManualTransferRequiredBitcoin -> {
                         ScreenBitcoin(status, onBankAppClick, onCancelClick)
                     }
+
                     is WithdrawStatus.ManualTransferRequiredIBAN -> {
                         ScreenIBAN(status, onBankAppClick, onCancelClick)
                     }

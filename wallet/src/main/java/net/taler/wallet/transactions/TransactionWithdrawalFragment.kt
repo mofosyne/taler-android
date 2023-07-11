@@ -28,6 +28,7 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.launchInAppBrowser
+import net.taler.wallet.showError
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.withdraw.TransactionWithdrawalComposable
@@ -46,7 +47,6 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionWithdrawal) TransactionWithdrawalComposable(
                     t = t,
                     devMode = devMode,
@@ -63,8 +63,9 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
             ActionListener.Type.COMPLETE_KYC -> {
                 tx.error?.getStringExtra("kycUrl")?.let { kycUrl ->
                     launchInAppBrowser(requireContext(), kycUrl)
-                }
+                } ?: tx.error?.let { showError(it) }
             }
+
             ActionListener.Type.CONFIRM_WITH_BANK -> {
                 if (tx !is TransactionWithdrawal) return
                 if (tx.withdrawalDetails !is TalerBankIntegrationApi) return
@@ -72,6 +73,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
                     launchInAppBrowser(requireContext(), url)
                 }
             }
+
             ActionListener.Type.CONFIRM_MANUAL -> {
                 if (tx !is TransactionWithdrawal) return
                 if (tx.withdrawalDetails !is ManualTransfer) return

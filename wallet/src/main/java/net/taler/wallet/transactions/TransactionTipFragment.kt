@@ -59,7 +59,7 @@ class TransactionTipFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
-                if (t is TransactionTip) TransactionTipComposable(t, devMode.value) {
+                if (t is TransactionTip) TransactionTipComposable(t, devMode) {
                     onTransitionButtonClicked(t, it)
                 }
             }
@@ -68,7 +68,11 @@ class TransactionTipFragment : TransactionDetailFragment() {
 }
 
 @Composable
-fun TransactionTipComposable(t: TransactionTip, devMode: Boolean?, onTransition: (t: TransactionAction) -> Unit) {
+fun TransactionTipComposable(
+    t: TransactionTip,
+    devMode: Boolean?,
+    onTransition: (t: TransactionAction) -> Unit,
+) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier

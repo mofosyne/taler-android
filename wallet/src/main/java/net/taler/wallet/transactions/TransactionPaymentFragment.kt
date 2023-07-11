@@ -36,7 +36,6 @@ class TransactionPaymentFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionPayment) TransactionPaymentComposable(t, devMode,
                     onFulfill = { url ->
                         launchInAppBrowser(requireContext(), url)

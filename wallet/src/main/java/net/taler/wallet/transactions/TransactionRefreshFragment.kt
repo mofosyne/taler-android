@@ -59,7 +59,6 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionRefresh) TransactionRefreshComposable(t, devMode) {
                     onTransitionButtonClicked(t, it)
                 }

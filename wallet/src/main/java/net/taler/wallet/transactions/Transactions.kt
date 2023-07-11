@@ -42,7 +42,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.transactions.TransactionMajorState.Failed
+import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
@@ -255,10 +255,6 @@ class TransactionRefund(
     override val txActions: List<TransactionAction>,
     val refundedTransactionId: String,
     val info: TransactionInfo,
-    /**
-     * Part of the refund that couldn't be applied because the refund permissions were expired
-     */
-    val amountInvalid: Amount? = null,
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
@@ -476,8 +472,8 @@ class DummyTransaction(
     override val timestamp: Timestamp,
     override val error: TalerErrorInfo,
 ) : Transaction() {
-    override val txState: TransactionState = TransactionState(Failed)
-    override val txActions: List<TransactionAction> = listOf(TransactionAction.Delete)
+    override val txState: TransactionState = TransactionState(None)
+    override val txActions: List<TransactionAction> = emptyList()
     override val amountRaw: Amount = Amount.zero("TESTKUDOS")
     override val amountEffective: Amount = Amount.zero("TESTKUDOS")
     override val icon: Int = R.drawable.ic_bug_report

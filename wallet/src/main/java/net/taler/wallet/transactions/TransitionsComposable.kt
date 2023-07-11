@@ -16,6 +16,7 @@
 
 package net.taler.wallet.transactions
 
+import androidx.compose.foundation.layout.Arrangement.Center
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -36,11 +37,15 @@ import net.taler.wallet.transactions.TransactionAction.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TransitionsComposable(t: Transaction, devMode: Boolean, onTransition: (t: TransactionAction) -> Unit) {
-    FlowRow {
+fun TransitionsComposable(
+    t: Transaction,
+    devMode: Boolean,
+    onTransition: (t: TransactionAction) -> Unit,
+) {
+    FlowRow(horizontalArrangement = Center) {
         t.txActions.forEach {
             if (it in arrayOf(Resume, Suspend)) {
-                if(devMode) TransitionComposable(it, onTransition)
+                if (devMode) TransitionComposable(it, onTransition)
             } else {
                 TransitionComposable(it, onTransition)
             }
@@ -52,14 +57,16 @@ fun TransitionsComposable(t: Transaction, devMode: Boolean, onTransition: (t: Tr
 fun TransitionComposable(t: TransactionAction, onClick: (t: TransactionAction) -> Unit) {
     Button(
         modifier = Modifier.padding(16.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = when(t) {
-            Delete -> MaterialTheme.colorScheme.error
-            Retry -> MaterialTheme.colorScheme.primary
-            Abort -> MaterialTheme.colorScheme.error
-            Fail -> MaterialTheme.colorScheme.error
-            Resume -> MaterialTheme.colorScheme.primary
-            Suspend -> MaterialTheme.colorScheme.primary
-        }),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = when (t) {
+                Delete -> MaterialTheme.colorScheme.error
+                Retry -> MaterialTheme.colorScheme.primary
+                Abort -> MaterialTheme.colorScheme.error
+                Fail -> MaterialTheme.colorScheme.error
+                Resume -> MaterialTheme.colorScheme.primary
+                Suspend -> MaterialTheme.colorScheme.primary
+            }
+        ),
         onClick = { onClick(t) },
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

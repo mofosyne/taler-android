@@ -46,6 +46,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.databinding.FragmentTransactionsBinding
 import net.taler.wallet.handleKyc
 import net.taler.wallet.launchInAppBrowser
+import net.taler.wallet.showError
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -191,8 +192,12 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             }
         } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
             if (transaction.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
-                transaction.withdrawalDetails.bankConfirmationUrl != null) {
-                launchInAppBrowser(requireContext(), transaction.withdrawalDetails.bankConfirmationUrl)
+                transaction.withdrawalDetails.bankConfirmationUrl != null
+            ) {
+                launchInAppBrowser(
+                    context = requireContext(),
+                    url = transaction.withdrawalDetails.bankConfirmationUrl,
+                )
             }
         }
     }
@@ -203,6 +208,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             ui.emptyState.text = getString(R.string.transactions_error, result.error.userFacingMsg)
             ui.emptyState.fadeIn()
         }
+
         is TransactionsResult.Success -> {
             if (result.transactions.isEmpty()) {
                 val isSearch = transactionManager.searchQuery.value != null
@@ -241,7 +247,10 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         when (item.itemId) {
             R.id.transaction_delete -> {
                 tracker?.selection?.toList()?.let { transactionIds ->
-                    MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
+                    MaterialAlertDialogBuilder(
+                        requireContext(),
+                        R.style.MaterialAlertDialog_Material3,
+                    )
                         .setTitle(R.string.transactions_delete)
                         .setMessage(R.string.transactions_delete_selected_dialog_message)
                         .setNeutralButton(R.string.cancel) { dialog, _ ->
@@ -250,6 +259,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                         .setNegativeButton(R.string.transactions_delete) { dialog, _ ->
                             transactionManager.deleteTransactions(transactionIds) {
                                 Log.e(TAG, "Error deleteTransaction $it")
+                                showError(it)
                             }
                             dialog.dismiss()
                         }
@@ -257,6 +267,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                 }
                 mode.finish()
             }
+
             R.id.transaction_select_all -> transactionAdapter.selectAll()
         }
         return true

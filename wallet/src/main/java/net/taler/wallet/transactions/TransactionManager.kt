@@ -128,66 +128,72 @@ class TransactionManager(
         mSelectedTransaction.postValue(transaction)
     }
 
-    fun deleteTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("deleteTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            // re-load transactions as our list is stale otherwise
-            loadTransactions()
+    fun deleteTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("deleteTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                // re-load transactions as our list is stale otherwise
+                loadTransactions()
+            }
         }
-    }
 
-    fun retryTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("retryTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            loadTransactions()
+    fun retryTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("retryTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                loadTransactions()
+            }
         }
-    }
 
-    fun abortTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("abortTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            loadTransactions()
+    fun abortTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("abortTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                loadTransactions()
+            }
         }
-    }
 
-    fun failTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("failTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            loadTransactions()
+    fun failTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("failTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                loadTransactions()
+            }
         }
-    }
 
-    fun suspendTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("suspendTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            loadTransactions()
+    fun suspendTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("suspendTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                loadTransactions()
+            }
         }
-    }
 
-    fun resumeTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) = scope.launch {
-        api.request<Unit>("resumeTransaction") {
-            put("transactionId", transactionId)
-        }.onError {
-            onError(it)
-        }.onSuccess {
-            loadTransactions()
+    fun resumeTransaction(transactionId: String, onError: (it: TalerErrorInfo) -> Unit) =
+        scope.launch {
+            api.request<Unit>("resumeTransaction") {
+                put("transactionId", transactionId)
+            }.onError {
+                onError(it)
+            }.onSuccess {
+                loadTransactions()
+            }
         }
-    }
 
     fun deleteTransactions(transactionIds: List<String>, onError: (it: TalerErrorInfo) -> Unit) {
         allTransactions[selectedCurrency]?.filter { transaction ->

@@ -36,7 +36,6 @@ class TransactionRefundFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                val devMode = devMode.observeAsState().value ?: false
                 if (t is TransactionRefund) TransactionRefundComposable(t, devMode,
                     onFulfill = { url ->
                         launchInAppBrowser(requireContext(), url)

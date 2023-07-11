@@ -56,7 +56,7 @@ class TransactionPeerFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
-                if (t != null) TransactionPeerComposable(t, devMode.value) {
+                if (t != null) TransactionPeerComposable(t, devMode) {
                     onTransitionButtonClicked(t, it)
                 }
             }
@@ -65,7 +65,11 @@ class TransactionPeerFragment : TransactionDetailFragment() {
 }
 
 @Composable
-fun TransactionPeerComposable(t: Transaction, devMode: Boolean?, onTransition: (t: TransactionAction) -> Unit) {
+fun TransactionPeerComposable(
+    t: Transaction,
+    devMode: Boolean,
+    onTransition: (t: TransactionAction) -> Unit,
+) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -86,8 +90,8 @@ fun TransactionPeerComposable(t: Transaction, devMode: Boolean?, onTransition: (
             is TransactionPeerPushDebit -> TransactionPeerPushDebitComposable(t)
             else -> error("unexpected transaction: ${t::class.simpleName}")
         }
-        TransitionsComposable(t, devMode == true, onTransition)
-        if (devMode == true && t.error != null) {
+        TransitionsComposable(t, devMode, onTransition)
+        if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error!!)
         }
     }
