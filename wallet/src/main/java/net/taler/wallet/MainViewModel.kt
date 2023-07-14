@@ -103,7 +103,11 @@ class MainViewModel(
         if (payload.type == "waiting-for-retry") return // ignore ping)
         Log.i(TAG, "Received notification from wallet-core: $payload")
 
-        loadBalances()
+        // Only update balances when we're told they changed
+        if (payload.type == "balance-change") {
+            loadBalances()
+        }
+
         if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {
             // TODO notification API should give us a currency to update
             // update currently selected transaction list
