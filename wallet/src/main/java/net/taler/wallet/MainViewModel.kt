@@ -54,9 +54,7 @@ import org.json.JSONObject
 const val TAG = "taler-wallet"
 
 private val transactionNotifications = listOf(
-    "proposal-accepted",
-    "refresh-revealed",
-    "withdraw-group-finished"
+    "transaction-state-transition",
 )
 
 class MainViewModel(
