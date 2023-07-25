@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Anastasis</string>
+
+    <!-- HomeScreen -->
+    <string name="home_title">Home</string>
+    <string name="backup_secret">Backup a secret</string>
+    <string name="recover_secret">Recover a secret</string>
+    <string name="restore_session">Restore session</string>
+
+    <string name="backup_country_title">Where do you live?</string>
+    <string name="country">Country</string>
+    <string name="continent">Continent</string>
+    <string name="backup_user_attributes_title">Who are you?</string>
+    <string name="backup_auth_methods_title">Authentication methods</string>
+</resources>

@@ -11,6 +11,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/anastasis" />
             <option value="$PROJECT_DIR$/cashier" />
             <option value="$PROJECT_DIR$/merchant-lib" />
             <option value="$PROJECT_DIR$/merchant-terminal" />

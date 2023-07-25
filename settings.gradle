@@ -1,3 +1,3 @@
-include ':cashier', ':merchant-terminal', ':wallet'
+include ':cashier', ':merchant-terminal', ':wallet', ':anastasis'
 include ':taler-kotlin-android'
 include ':merchant-lib'
