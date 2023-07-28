@@ -86,6 +86,7 @@ internal class TransactionAdapter(
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
         private val amountColor = amount.currentTextColor
+        private val extraInfoColor = extraInfoView.currentTextColor
         private val red = getColor(context, R.color.red)
         private val green = getColor(context, R.color.green)
 
@@ -110,29 +111,57 @@ internal class TransactionAdapter(
         }
 
         private fun bindExtraInfo(transaction: Transaction) {
-            if (transaction.error != null) {
-                extraInfoView.text =
-                    context.getString(R.string.payment_error, transaction.error!!.userFacingMsg)
-                extraInfoView.setTextColor(red)
-                extraInfoView.visibility = VISIBLE
-            } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
-                extraInfoView.setText(R.string.withdraw_waiting_confirm)
-                extraInfoView.setTextColor(amountColor)
-                extraInfoView.visibility = VISIBLE
-            } else {
-                when (transaction.txState.major) {
-                    Aborted -> {
-                        extraInfoView.setText(R.string.payment_aborted)
-                        extraInfoView.visibility = VISIBLE
-                    }
-
-                    Failed -> {
-                        extraInfoView.setText(R.string.payment_failed)
-                        extraInfoView.visibility = VISIBLE
-                    }
-
-                    else -> extraInfoView.visibility = GONE
+            when {
+                transaction.txState.major == Aborted -> {
+                    extraInfoView.setText(R.string.payment_aborted)
+                    extraInfoView.setTextColor(red)
+                    extraInfoView.visibility = VISIBLE
                 }
+
+                transaction.txState.major == Failed -> {
+                    extraInfoView.setText(R.string.payment_failed)
+                    extraInfoView.setTextColor(red)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction.error != null -> {
+                    extraInfoView.text =
+                        context.getString(R.string.payment_error, transaction.error!!.userFacingMsg)
+                    extraInfoView.setTextColor(red)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction is TransactionWithdrawal && !transaction.confirmed -> {
+                    extraInfoView.setText(R.string.withdraw_waiting_confirm)
+                    extraInfoView.setTextColor(amountColor)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction is TransactionPeerPushCredit && transaction.info.summary != null -> {
+                    extraInfoView.text = transaction.info.summary
+                    extraInfoView.setTextColor(extraInfoColor)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction is TransactionPeerPushDebit && transaction.info.summary != null -> {
+                    extraInfoView.text = transaction.info.summary
+                    extraInfoView.setTextColor(extraInfoColor)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction is TransactionPeerPullCredit && transaction.info.summary != null -> {
+                    extraInfoView.text = transaction.info.summary
+                    extraInfoView.setTextColor(extraInfoColor)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                transaction is TransactionPeerPullDebit && transaction.info.summary != null -> {
+                    extraInfoView.text = transaction.info.summary
+                    extraInfoView.setTextColor(extraInfoColor)
+                    extraInfoView.visibility = VISIBLE
+                }
+
+                else -> extraInfoView.visibility = GONE
             }
         }
 
