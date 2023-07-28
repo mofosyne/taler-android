@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.backend
+package net.taler.common
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -40,7 +40,7 @@ import net.taler.common.Amount
 import net.taler.common.AmountParserException
 import net.taler.common.showError
 import net.taler.common.startActivitySafe
-import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
+import net.taler.common.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.transactions.Transaction
 

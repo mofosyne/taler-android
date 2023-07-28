@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.JsonPrimitive
 import net.taler.common.QrCodeManager
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
+import net.taler.common.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.QrCodeUriComposable
 import net.taler.wallet.compose.TalerSurface

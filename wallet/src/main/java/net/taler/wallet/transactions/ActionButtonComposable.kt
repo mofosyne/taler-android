@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorCode
+import net.taler.common.TalerErrorCode
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 

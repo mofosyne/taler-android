@@ -6,13 +6,10 @@ sealed class Routes(
 ) {
     object Home: Routes("home")
 
-    // Backup
-    object BackupContinent: Routes("backup_continent")
-    object BackupCountry: Routes("backup_country")
-    object BackupUserAttributes: Routes("backup_user_attributes")
-
-    // Recovery
-    object RecoveryCountry: Routes("recovery_country")
+    // Common
+    object SelectContinent: Routes("select_continent")
+    object SelectCountry: Routes("select_country")
+    object SelectUserAttributes: Routes("select_user_attributes")
 
     // Restore
     object RestoreInit: Routes("restore")

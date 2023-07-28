@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.jsonArray
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.ApiResponse
+import net.taler.common.ApiResponse
 import net.taler.wallet.backend.WalletBackendApi
 import org.json.JSONObject
 

@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.decodeFromJsonElement
-import net.taler.wallet.backend.TalerErrorCode.NONE
+import net.taler.common.ApiResponse
+import net.taler.common.TalerErrorCode.NONE
 import org.json.JSONObject
 
 const val WALLET_DB = "talerwalletdb.sql"

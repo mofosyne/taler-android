@@ -8,19 +8,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import net.taler.anastasis.models.ContinentInfo
-import net.taler.anastasis.models.CountryInfo
-import net.taler.anastasis.models.UserAttributeSpec
-import net.taler.anastasis.ui.backup.BackupContinentScreen
-import net.taler.anastasis.ui.backup.BackupCountryScreen
-import net.taler.anastasis.ui.backup.BackupUserAttributesScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import net.taler.anastasis.ui.common.SelectContinentScreen
+import net.taler.anastasis.ui.common.SelectCountryScreen
+import net.taler.anastasis.ui.common.SelectUserAttributesScreen
 import net.taler.anastasis.ui.home.HomeScreen
 import net.taler.anastasis.ui.theme.AnastasisTheme
+import net.taler.anastasis.viewmodels.ReducerViewModel
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,66 +38,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainNavHost() {
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = Routes.Home.route,
-    ) {
-        composable(Routes.Home.route) {
-            HomeScreen(navController = navController)
+fun MainNavHost(
+    viewModel: ReducerViewModel = hiltViewModel(),
+) {
+    val navRoute by viewModel.navRoute.collectAsState()
+    when (navRoute) {
+        Routes.Home.route -> {
+            HomeScreen()
         }
-        composable(Routes.BackupContinent.route) {
-            BackupContinentScreen(
-                navController = navController,
-                continents = listOf(
-                    ContinentInfo("Europe"),
-                    ContinentInfo("India"),
-                    ContinentInfo("Asia"),
-                    ContinentInfo("North America")
-                ),
-                onSelectContinent = {},
-            )
+        Routes.SelectContinent.route -> {
+            SelectContinentScreen()
         }
-        composable(Routes.BackupCountry.route) {
-            BackupCountryScreen(
-                navController = navController,
-                countries = listOf(
-                    CountryInfo("ch", "Switzerland", "Europe"),
-                    CountryInfo("de", "Germany", "Europe"),
-                ),
-                onSelectCountry = {},
-            )
+        Routes.SelectCountry.route -> {
+            SelectCountryScreen()
         }
-        composable(Routes.BackupUserAttributes.route) {
-            BackupUserAttributesScreen(
-                navController = navController,
-                userAttributes = listOf(
-                    UserAttributeSpec(
-                        type = "string",
-                        name = "full_name",
-                        label = "Full name",
-                        widget = "anastasis_gtk_ia_full_name",
-                        uuid = "9e8f463f-575f-42cb-85f3-759559997331",
-                        validationLogic = null,
-                        validationRegex = null,
-                    ),
-                    UserAttributeSpec(
-                        type = "date",
-                        name = "birthdate",
-                        label = "Birthdate",
-                        uuid = "83d655c7-bdb6-484d-904e-80c1058c8854",
-                        widget = "anastasis_gtk_ia_birthdate",
-                        validationLogic = null,
-                        validationRegex = null,
-                    ),
-                ),
-            )
+        Routes.SelectUserAttributes.route -> {
+            SelectUserAttributesScreen()
         }
-        composable(Routes.RecoveryCountry.route) {
-            Text("This is the recover screen!")
-        }
-        composable(Routes.RestoreInit.route) {
+        Routes.RestoreInit.route -> {
             Text("This is the restore session screen!")
         }
     }

@@ -32,7 +32,7 @@ import net.taler.common.AmountParserException
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.accounts.AccountManager
-import net.taler.wallet.backend.NotificationPayload
+import net.taler.common.NotificationPayload
 import net.taler.wallet.backend.NotificationReceiver
 import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi

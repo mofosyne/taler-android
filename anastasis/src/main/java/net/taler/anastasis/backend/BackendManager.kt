@@ -14,29 +14,19 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.backend
+package net.taler.anastasis.backend
 
 import android.util.Log
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.taler.common.ApiMessage
 import net.taler.common.ApiResponse
-import net.taler.common.NotificationPayload
 import net.taler.qtart.TalerWalletCore
-import net.taler.wallet.BuildConfig
+import net.taler.anastasis.BuildConfig
 import org.json.JSONObject
-import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
-fun interface NotificationReceiver {
-    fun onNotificationReceived(payload: NotificationPayload)
-}
-
-class BackendManager(
-    private val notificationReceiver: NotificationReceiver,
-) {
+class BackendManager {
 
     companion object {
         private const val TAG = "BackendManager"
@@ -44,16 +34,12 @@ class BackendManager(
         val json = Json {
             ignoreUnknownKeys = true
         }
-        @JvmStatic
-        private val initialized = AtomicBoolean(false)
     }
 
     private val walletCore = TalerWalletCore()
     private val requestManager = RequestManager()
 
     init {
-        // TODO using Dagger/Hilt and @Singleton would be nice as well
-        if (initialized.getAndSet(true)) error("Already initialized")
         walletCore.setMessageHandler { onMessageReceived(it) }
         if (BuildConfig.DEBUG) walletCore.setStdoutHandler {
             Log.d(TAG_CORE, it)
@@ -80,9 +66,7 @@ class BackendManager(
     private fun onMessageReceived(msg: String) {
         Log.d(TAG, "message received: $msg")
         when (val message = json.decodeFromString<ApiMessage>(msg)) {
-            is ApiMessage.Notification -> {
-                notificationReceiver.onNotificationReceived(message.payload)
-            }
+            is ApiMessage.Notification -> {}
             is ApiResponse -> {
                 val id = message.id
                 val cont = requestManager.getAndRemoveContinuation(id)

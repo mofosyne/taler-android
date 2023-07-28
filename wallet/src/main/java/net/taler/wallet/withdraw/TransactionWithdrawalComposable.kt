@@ -35,7 +35,7 @@ import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorCode
+import net.taler.common.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.ActionButton

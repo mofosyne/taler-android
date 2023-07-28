@@ -39,7 +39,7 @@ import net.taler.common.ContractProduct
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.TalerErrorCode
+import net.taler.common.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.refund.RefundPaymentInfo

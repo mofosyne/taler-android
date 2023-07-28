@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.backup
+package net.taler.anastasis.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,38 +40,44 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.Routes
-import net.taler.anastasis.models.UserAttributeSpec
+import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.components.DatePickerField
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.ReducerViewModel
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupUserAttributesScreen(
-    navController: NavController,
-    userAttributes: List<UserAttributeSpec>,
+fun SelectUserAttributesScreen(
+    viewModel: ReducerViewModel = hiltViewModel(),
 ) {
+    val reducerState by viewModel.reducerState.collectAsState()
+    val userAttributes = when (val state = reducerState) {
+        is ReducerState.Backup -> state.requiredAttributes
+        is ReducerState.Recovery -> state.requiredAttributes
+        else -> null
+    } ?: emptyList()
+
     val values = remember { mutableStateMapOf<String, String>() }
 
     WizardPage(
-        title = stringResource(R.string.backup_user_attributes_title),
+        title = stringResource(R.string.select_user_attributes_title),
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(Routes.Home.route)
+                viewModel.goHome()
             }) {
                 Icon(Icons.Default.ArrowBack, "back")
             }
         },
         onPrevClicked = {
-            navController.navigate(Routes.BackupCountry.route)
+            viewModel.reducerManager.back()
         },
-        onNextClicked = {},
+        onNextClicked = {
+            viewModel.reducerManager.enterUserAttributes(values)
+        },
     ) {
         LazyColumn(
             modifier = Modifier
@@ -82,8 +89,8 @@ fun BackupUserAttributesScreen(
                 when (attr.type) {
                     "string" -> OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = values[attr.uuid] ?: "",
-                        onValueChange = { values[attr.uuid] = it },
+                        value = values[attr.name] ?: "",
+                        onValueChange = { values[attr.name] = it },
                         label = { Text(attr.label) },
                     )
                     "date" -> @Composable {
@@ -109,33 +116,4 @@ fun BackupUserAttributesScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun BackupUserAttributesScreenPreview() {
-    val navController = rememberNavController()
-    BackupUserAttributesScreen(
-        navController = navController,
-        userAttributes = listOf(
-            UserAttributeSpec(
-                type = "string",
-                name = "full_name",
-                label = "Full name",
-                widget = "anastasis_gtk_ia_full_name",
-                uuid = "9e8f463f-575f-42cb-85f3-759559997331",
-                validationLogic = null,
-                validationRegex = null,
-            ),
-            UserAttributeSpec(
-                type = "date",
-                name = "birthdate",
-                label = "Birthdate",
-                uuid = "83d655c7-bdb6-484d-904e-80c1058c8854",
-                widget = "anastasis_gtk_ia_birthdate",
-                validationLogic = null,
-                validationRegex = null,
-            ),
-        ),
-    )
 }

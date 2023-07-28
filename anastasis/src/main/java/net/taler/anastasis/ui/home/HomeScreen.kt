@@ -16,18 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.Routes
 import net.taler.anastasis.ui.reusable.components.ActionCard
+import net.taler.anastasis.viewmodels.ReducerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    viewModel: ReducerViewModel = hiltViewModel(),
 ) {
     Scaffold(
         topBar = {
@@ -53,7 +51,7 @@ fun HomeScreen(
                 icon = { Icon(Icons.Outlined.Upload, null) },
                 headline = stringResource(R.string.backup_secret),
                 onClick = {
-                    navController.navigate(Routes.BackupContinent.route)
+                    viewModel.reducerManager.startBackup()
                 },
             )
 
@@ -66,7 +64,7 @@ fun HomeScreen(
                 icon = { Icon(Icons.Outlined.Download, null) },
                 headline = stringResource(R.string.recover_secret),
                 onClick = {
-                    navController.navigate(Routes.RecoveryCountry.route)
+                    viewModel.reducerManager.startRecovery()
                 },
             )
 
@@ -78,17 +76,8 @@ fun HomeScreen(
                     .fillMaxWidth(),
                 icon = { Icon(Icons.Outlined.Restore, null) },
                 headline = stringResource(R.string.restore_session),
-                onClick = {
-                    navController.navigate(Routes.RestoreInit.route)
-                },
+                onClick = {},
             )
         }
     }
-}
-
-@Composable
-@Preview
-fun HomeScreenPreview() {
-    val navController = rememberNavController()
-    HomeScreen(navController = navController)
 }

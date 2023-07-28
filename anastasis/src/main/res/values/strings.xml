@@ -7,9 +7,12 @@
     <string name="recover_secret">Recover a secret</string>
     <string name="restore_session">Restore session</string>
 
-    <string name="backup_country_title">Where do you live?</string>
+    <!-- Shared -->
     <string name="country">Country</string>
     <string name="continent">Continent</string>
-    <string name="backup_user_attributes_title">Who are you?</string>
-    <string name="backup_auth_methods_title">Authentication methods</string>
+
+    <!-- Common -->
+    <string name="select_country_title">Where do you live?</string>
+    <string name="select_user_attributes_title">Who are you?</string>
+    <string name="select_auth_methods_title">Authentication methods</string>
 </resources>

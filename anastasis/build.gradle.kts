@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-val qtartVersion = "0.9.3-dev.13"
+val qtartVersion = "0.9.3-dev.14"
 
 @Suppress("UnstableApiUsage")
 android {
@@ -57,6 +57,7 @@ android {
 dependencies {
     implementation(project(":taler-kotlin-android"))
     implementation("net.taler:qtart:$qtartVersion@aar")
+    implementation("net.java.dev.jna:jna:5.13.0@aar")
     implementation("androidx.core:core-ktx:1.10.1")
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -71,7 +72,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+kapt {
+    correctErrorTypes = true
 }

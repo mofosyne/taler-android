@@ -28,7 +28,7 @@ import net.taler.common.Amount
 import net.taler.common.QrCodeManager
 import net.taler.common.Timestamp
 import net.taler.wallet.TAG
-import net.taler.wallet.backend.TalerErrorCode.UNKNOWN
+import net.taler.common.TalerErrorCode.UNKNOWN
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeItem

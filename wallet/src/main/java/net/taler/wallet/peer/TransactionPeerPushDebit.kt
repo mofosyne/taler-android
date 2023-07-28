@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
+import net.taler.common.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.compose.QrCodeUriComposable
 import net.taler.wallet.transactions.AmountType
