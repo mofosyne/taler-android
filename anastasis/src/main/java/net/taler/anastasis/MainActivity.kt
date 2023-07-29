@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import net.taler.anastasis.ui.backup.SelectAuthMethodsScreen
 import net.taler.anastasis.ui.common.SelectContinentScreen
 import net.taler.anastasis.ui.common.SelectCountryScreen
 import net.taler.anastasis.ui.common.SelectUserAttributesScreen
@@ -54,6 +55,9 @@ fun MainNavHost(
         }
         Routes.SelectUserAttributes.route -> {
             SelectUserAttributesScreen()
+        }
+        Routes.SelectAuthMethods.route -> {
+            SelectAuthMethodsScreen()
         }
         Routes.RestoreInit.route -> {
             Text("This is the restore session screen!")

@@ -20,10 +20,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,21 +45,18 @@ fun SelectContinentScreen(
     val continents = when (val state = reducerState) {
         is ReducerState.Backup -> state.continents
         is ReducerState.Recovery -> state.continents
-        else -> null
+        else -> error("invalid reducer state type")
     } ?: emptyList()
 
     var selectedContinent by remember { mutableStateOf<ContinentInfo?>(null) }
 
     WizardPage(
-        title = stringResource(R.string.select_country_title),
-        navigationIcon = {
-            IconButton(onClick = {
-                viewModel.goHome()
-            }) {
-                Icon(Icons.Default.ArrowBack, "back")
-            }
-        },
+        title = stringResource(R.string.select_continent_title),
         showPrev = false,
+        enableNext = selectedContinent != null,
+        onBackClicked = {
+            viewModel.goHome()
+        },
         onNextClicked = {
             selectedContinent?.let {
                 viewModel.reducerManager.selectContinent(it)

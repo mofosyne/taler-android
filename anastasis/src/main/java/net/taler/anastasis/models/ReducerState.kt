@@ -305,7 +305,7 @@ sealed class AuthenticationProviderStatus {
         val annualFee: String,
         @SerialName("business_name")
         val businessName: String,
-        val currency: String,
+        val currency: String? = null,
         @SerialName("http_status")
         val httpStatus: Int,
         @SerialName("liability_limit")
@@ -335,30 +335,6 @@ sealed class AuthenticationProviderStatus {
 
 // TODO: ReducerStateBackupUserAttributesCollecting
 
-// TODO: ActionArgsEnterUserAttributes
-
-// TODO: ActionArgsAddProvider
-
-// TODO: ActionArgsDeleteProvider
-
-// TODO: ActionArgsAddAuthentication
-
-// TODO: ActionArgsDeleteAuthentication
-
-// TODO: ActionArgsDeletePolicy
-
-// TODO: ActionArgsEnterSecretName
-
-// TODO: ActionArgsEnterSecret
-
-// TODO: ActionArgsSelectContinent
-
-// TODO: ActionArgsSelectCountry
-
-// TODO: ActionArgsSelectChallenge
-
-// TODO: ActionArgsSolveChallengeRequest
-
 // TODO: SolveChallengeAnswerRequest
 
 // TODO: SolveChallengePinRequest
@@ -366,12 +342,6 @@ sealed class AuthenticationProviderStatus {
 // TODO: SolveChallengeHashRequest
 
 // TODO: PolicyMember
-
-// TODO: ActionArgsAddPolicy
-
-// TODO: ActionArgsUpdateExpiration
-
-// TODO: ActionArgsUpdateExpiration
 
 @Serializable
 data class SelectedVersionInfoProviders(
@@ -384,10 +354,6 @@ data class SelectedVersionInfo(
     val attributeMask: Int,
     val providers: SelectedVersionInfoProviders,
 )
-
-// TODO: ActionArgsChangeVersion
-
-// TODO: ActionArgsUpdatePolicy
 
 // TODO: DiscoveryCursor
 

@@ -11,6 +11,9 @@ sealed class Routes(
     object SelectCountry: Routes("select_country")
     object SelectUserAttributes: Routes("select_user_attributes")
 
+    // Backup
+    object SelectAuthMethods: Routes("select_auth_methods")
+
     // Restore
     object RestoreInit: Routes("restore")
 

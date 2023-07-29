@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.taler.anastasis.ui.theme.LocalSpacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,15 +33,14 @@ fun ActionCard(
     ElevatedCard(
         modifier = modifier,
         onClick = onClick,
-
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(LocalSpacing.current.medium)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (icon != null) {
                     icon()
                     Spacer(modifier = Modifier.width(12.dp))
                 }
-                Text(headline, style = MaterialTheme.typography.titleLarge)
+                Text(headline, style = MaterialTheme.typography.titleMedium)
             }
             subhead?.let {
                 Text(

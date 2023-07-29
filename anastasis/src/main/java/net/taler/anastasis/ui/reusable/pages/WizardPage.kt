@@ -26,17 +26,21 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.taler.anastasis.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WizardPage(
     modifier: Modifier = Modifier,
     title: String,
-    navigationIcon: @Composable () -> Unit = {},
+    enableNext: Boolean = true,
+    enablePrev: Boolean = true,
     showNext: Boolean = true,
     showPrev: Boolean = true,
+    onBackClicked: () -> Unit = {},
     onNextClicked: () -> Unit = {},
     onPrevClicked: () -> Unit = {},
     content: @Composable () -> Unit,
@@ -45,7 +49,11 @@ fun WizardPage(
         topBar = {
             LargeTopAppBar(
                 title = { Text(title) },
-                navigationIcon = navigationIcon,
+                navigationIcon = {
+                    IconButton(onClick = onBackClicked) {
+                        Icon(Icons.Default.ArrowBack, stringResource(R.string.back))
+                    }
+                }
             )
         },
     ) {
@@ -64,6 +72,7 @@ fun WizardPage(
             ) {
                 if (showPrev) {
                     TextButton(
+                        enabled = enablePrev,
                         onClick = onPrevClicked,
                     ) {
                         Icon(
@@ -72,7 +81,7 @@ fun WizardPage(
                             modifier = Modifier.size(ButtonDefaults.IconSize),
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text("Previous")
+                        Text(stringResource(R.string.previous))
                     }
                 }
 
@@ -80,9 +89,10 @@ fun WizardPage(
 
                 if (showNext) {
                     Button(
+                        enabled = enableNext,
                         onClick = onNextClicked,
                     ) {
-                        Text("Next")
+                        Text(stringResource(R.string.next))
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                         Icon(
                             Icons.Default.NavigateNext,
@@ -101,11 +111,6 @@ fun WizardPage(
 fun WizardPagePreview() {
     WizardPage(
         title = "Title",
-        navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.ArrowBack, null)
-            }
-        },
     ) {
         Box (
             modifier = Modifier.fillMaxSize(),

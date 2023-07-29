@@ -16,10 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
 import net.taler.anastasis.ui.reusable.components.ActionCard
+import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.ReducerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,14 +39,14 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .padding(it)
-                .padding(16.dp),
+                .padding(LocalSpacing.current.medium),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             // Backup
             ActionCard(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = LocalSpacing.current.small)
                     .fillMaxWidth(),
                 icon = { Icon(Icons.Outlined.Upload, null) },
                 headline = stringResource(R.string.backup_secret),
@@ -59,7 +59,7 @@ fun HomeScreen(
             ActionCard(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = LocalSpacing.current.small)
                     .fillMaxWidth(),
                 icon = { Icon(Icons.Outlined.Download, null) },
                 headline = stringResource(R.string.recover_secret),
@@ -72,7 +72,7 @@ fun HomeScreen(
             ActionCard(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = LocalSpacing.current.small)
                     .fillMaxWidth(),
                 icon = { Icon(Icons.Outlined.Restore, null) },
                 headline = stringResource(R.string.restore_session),

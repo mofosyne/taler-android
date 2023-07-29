@@ -20,10 +20,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,19 +45,16 @@ fun SelectCountryScreen(
     val countries = when (val state = reducerState) {
         is ReducerState.Backup -> state.countries
         is ReducerState.Recovery -> state.countries
-        else -> null
+        else -> error("invalid reducer state type")
     } ?: emptyList()
 
     var selectedCountry by remember { mutableStateOf<CountryInfo?>(null) }
 
     WizardPage(
         title = stringResource(R.string.select_country_title),
-        navigationIcon = {
-            IconButton(onClick = {
-                viewModel.goHome()
-            }) {
-                Icon(Icons.Default.ArrowBack, "back")
-            }
+        enableNext = selectedCountry != null,
+        onBackClicked = {
+            viewModel.goHome()
         },
         onPrevClicked = {
             viewModel.reducerManager.back()

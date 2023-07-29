@@ -46,12 +46,16 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
         viewModelScope.launch {
             _reducerState.collect {
                 Log.d("ReducerViewModel", it?.toString() ?: "nothing")
+                reducerManager.stopSyncingProviders()
                 _navRoute.value = when (it) {
                     is ReducerState.Backup -> when (it.backupState) {
                         BackupStates.ContinentSelecting -> Routes.SelectContinent.route
                         BackupStates.CountrySelecting -> Routes.SelectCountry.route
                         BackupStates.UserAttributesCollecting -> Routes.SelectUserAttributes.route
-                        BackupStates.AuthenticationsEditing -> TODO()
+                        BackupStates.AuthenticationsEditing -> {
+                            reducerManager.startSyncingProviders()
+                            Routes.SelectAuthMethods.route
+                        }
                         BackupStates.PoliciesReviewing -> TODO()
                         BackupStates.SecretEditing -> TODO()
                         BackupStates.TruthsPaying -> TODO()

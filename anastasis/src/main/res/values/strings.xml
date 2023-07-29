@@ -8,11 +8,33 @@
     <string name="restore_session">Restore session</string>
 
     <!-- Shared -->
+    <string name="back">Go back</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="menu">Menu</string>
     <string name="country">Country</string>
     <string name="continent">Continent</string>
+    <string name="question">Security question</string>
+    <string name="answer">Answer</string>
 
     <!-- Common -->
+    <string name="select_continent_title">Where do you live?</string>
     <string name="select_country_title">Where do you live?</string>
     <string name="select_user_attributes_title">Who are you?</string>
+
+    <!-- Backup -->
     <string name="select_auth_methods_title">Authentication methods</string>
+    <string name="auth_method_question">Add a question challenge</string>
+    <string name="auth_method_sms">Add a SMS challenge</string>
+    <string name="auth_method_email">Add an e-mail challenge</string>
+    <string name="auth_method_iban">Add an IBAN provider</string>
+    <string name="auth_method_mail">Add a physical mail provider</string>
+    <string name="auth_method_totp">Add a TOTP challenge</string>
+    <string name="backup_providers">Manage backup providers</string>
+    <string name="add_challenge">Add challenge</string>
+    <string name="edit_challenge">Edit challenge</string>
 </resources>

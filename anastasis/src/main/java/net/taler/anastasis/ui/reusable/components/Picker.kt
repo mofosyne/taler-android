@@ -49,7 +49,7 @@ fun Picker(
     onOptionChanged: (String) -> Unit,
 ) {
     var filteredOptions by remember { mutableStateOf(options.toList()) }
-    var inputValue by remember { mutableStateOf(options.first()) }
+    var inputValue by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
