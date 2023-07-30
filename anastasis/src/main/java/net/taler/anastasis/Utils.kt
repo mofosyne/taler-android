@@ -26,6 +26,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
@@ -47,6 +48,9 @@ object Utils {
 
     inline fun <reified T> Json.encodeToNativeJson(value: T): JSONObject =
         JSONObject(encodeToString(value))
+
+    inline fun <reified T> Json.encodeToNativeJson(value: Collection<T>): JSONArray =
+        JSONArray(encodeToString(value))
 
     fun encodeBase32 (input: String) = input
         .toByteArray(Charset.defaultCharset())

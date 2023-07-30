@@ -2,7 +2,9 @@ package net.taler.anastasis
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import net.taler.anastasis.ui.backup.ReviewPoliciesScreen
 import net.taler.anastasis.ui.backup.SelectAuthMethodsScreen
 import net.taler.anastasis.ui.common.SelectContinentScreen
 import net.taler.anastasis.ui.common.SelectCountryScreen
@@ -23,8 +26,17 @@ import net.taler.anastasis.viewmodels.ReducerViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    val viewModel: ReducerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.goBack()) finish()
+            }
+        })
+
         setContent {
             AnastasisTheme {
                 Surface(
@@ -58,6 +70,9 @@ fun MainNavHost(
         }
         Routes.SelectAuthMethods.route -> {
             SelectAuthMethodsScreen()
+        }
+        Routes.ReviewPoliciesScreen.route -> {
+            ReviewPoliciesScreen()
         }
         Routes.RestoreInit.route -> {
             Text("This is the restore session screen!")

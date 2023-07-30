@@ -20,6 +20,9 @@
     <string name="continent">Continent</string>
     <string name="question">Security question</string>
     <string name="answer">Answer</string>
+    <string name="policy_n">Policy %1$d</string>
+    <string name="provider">Provider</string>
+    <string name="unknown">Unknown</string>
 
     <!-- Common -->
     <string name="select_continent_title">Where do you live?</string>
@@ -28,13 +31,21 @@
 
     <!-- Backup -->
     <string name="select_auth_methods_title">Authentication methods</string>
-    <string name="auth_method_question">Add a question challenge</string>
-    <string name="auth_method_sms">Add a SMS challenge</string>
-    <string name="auth_method_email">Add an e-mail challenge</string>
-    <string name="auth_method_iban">Add an IBAN provider</string>
-    <string name="auth_method_mail">Add a physical mail provider</string>
-    <string name="auth_method_totp">Add a TOTP challenge</string>
+    <string name="review_policies_title">Recovery policies</string>
+    <string name="add_auth_method_question">Add a question challenge</string>
+    <string name="add_auth_method_sms">Add a SMS challenge</string>
+    <string name="add_auth_method_email">Add an e-mail challenge</string>
+    <string name="add_auth_method_iban">Add an IBAN provider</string>
+    <string name="add_auth_method_mail">Add a physical mail provider</string>
+    <string name="add_auth_method_totp">Add a TOTP challenge</string>
+    <string name="auth_method_question">Question</string>
+    <string name="auth_method_sms">SMS</string>
+    <string name="auth_method_email">E-mail</string>
+    <string name="auth_method_iban">IBAN</string>
+    <string name="auth_method_mail">Mail</string>
+    <string name="auth_method_totp">TOTP</string>
     <string name="backup_providers">Manage backup providers</string>
     <string name="add_challenge">Add challenge</string>
-    <string name="edit_challenge">Edit challenge</string>
+    <string name="add_policy">Add policy</string>
+    <string name="edit_policy">Edit policy</string>
 </resources>

@@ -24,11 +24,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.taler.anastasis.Utils
+import net.taler.anastasis.Utils.encodeToNativeJson
 import net.taler.anastasis.backend.AnastasisReducerApi
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.CountryInfo
+import net.taler.anastasis.models.Policy
 import net.taler.anastasis.models.ReducerArgs
 import net.taler.anastasis.models.ReducerState
 import org.json.JSONObject
@@ -58,6 +61,15 @@ class ReducerManager(
     fun back() = scope.launch {
         state.value?.let { initialState ->
             api.reduceAction(initialState, "back")
+                .onSuccess { newState ->
+                    state.value = newState
+                }
+        }
+    }
+
+    fun next() = scope.launch {
+        state.value?.let { initialState ->
+            api.reduceAction(initialState, "next")
                 .onSuccess { newState ->
                     state.value = newState
                 }
@@ -147,8 +159,39 @@ class ReducerManager(
     fun deleteAuthentication(index: Int) = scope.launch {
         state.value?.let { initialState ->
             api.reduceAction(initialState, "delete_authentication") {
-                put("index", index)
+                put("authentication_method", index)
             }.onSuccess { newState ->
+                state.value = newState
+            }
+        }
+    }
+
+    fun addPolicy(policy: Policy) = scope.launch {
+        state.value?.let { initialState ->
+            api.reduceAction(initialState, "add_policy") {
+                put("policy", Json.encodeToNativeJson(policy.methods))
+            }.onSuccess { newState ->
+                state.value = newState
+            }.onError { Log.d("ReducerManager", "$it") }
+        }
+    }
+
+    fun updatePolicy(index: Int, policy: Policy) = scope.launch {
+        state.value?.let { initialState ->
+            api.reduceAction(initialState, "update_policy") {
+                put("policy_index", index)
+                put("policy", Json.encodeToNativeJson(policy.methods))
+            }.onSuccess { newState ->
+                state.value = newState
+            }
+        }
+    }
+
+    fun deletePolicy(index: Int) = scope.launch {
+        state.value?.let { initialState ->
+            api.reduceAction(initialState, "delete_policy") {
+                put("policy_index", index)
+            }.onSuccess {  newState ->
                 state.value = newState
             }
         }

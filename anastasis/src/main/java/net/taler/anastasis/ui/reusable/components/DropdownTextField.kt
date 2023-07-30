@@ -34,45 +34,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.PopupProperties
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownTextField(
     modifier: Modifier = Modifier,
     label: String,
-    options: Set<String>,
-    onOptionChanged: (String) -> Unit,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    selectedIndex: Int? = null,
+    options: List<String>,
+    onOptionSelected: (index: Int) -> Unit,
 ) {
-    var filteredOptions by remember { mutableStateOf(options.toList()) }
-    var inputValue by remember { mutableStateOf(options.first()) }
     var expanded by remember { mutableStateOf(false) }
     var size by remember { mutableStateOf(Size.Zero) }
-    val focusRequester = remember { FocusRequester() }
 
     Box(
         modifier = Modifier
-            .wrapContentSize(Alignment.Center)
-            .focusRequester(focusRequester),
+            .wrapContentSize(Alignment.Center),
     ) {
         OutlinedTextField(
             modifier = modifier
                 .onGloballyPositioned { coordinates ->
                     size = coordinates.size.toSize()
                 },
-            value = inputValue,
-            onValueChange = { value ->
-                inputValue = value
-                expanded = true
-                filteredOptions = options.filter { it.contains(value) }
-            },
+            readOnly = true,
+            leadingIcon = leadingIcon,
+            value = if (selectedIndex != null) options[selectedIndex] else "",
+            onValueChange = {},
             singleLine = true,
             label = { Text(label) },
             trailingIcon = {
@@ -85,29 +78,23 @@ fun DropdownTextField(
             colors = ExposedDropdownMenuDefaults.textFieldColors()
         )
 
-        if (filteredOptions.isNotEmpty()) {
+        if (options.isNotEmpty()) {
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = {
                     expanded = false
                 },
-                /*
-                 * TODO: we should NOT disable focus, but this will be necessary
-                 *  until Google fixes ExposedDropdownMenuBox focus crash.
-                 */
-                properties = PopupProperties(focusable = false),
                 modifier = Modifier
                     .width(with(LocalDensity.current) { size.width.toDp() }),
             ) {
-                filteredOptions.forEach { s ->
+                options.forEachIndexed { i, s ->
                     DropdownMenuItem(
                         text = {
                             Text(text = s)
                         },
                         onClick = {
-                            inputValue = s
                             expanded = false
-                            onOptionChanged(s)
+                            onOptionSelected(i)
                         }
                     )
                 }
@@ -122,8 +109,8 @@ fun DropdownTextFieldComposable() {
     Surface {
         DropdownTextField(
             label = "Continent",
-            options = setOf("Europe", "India", "Asia", "North America"),
-            onOptionChanged = {},
+            options = listOf("Europe", "India", "Asia", "North America"),
+            onOptionSelected = {},
         )
     }
 }

@@ -53,12 +53,8 @@ fun SelectCountryScreen(
     WizardPage(
         title = stringResource(R.string.select_country_title),
         enableNext = selectedCountry != null,
-        onBackClicked = {
-            viewModel.goHome()
-        },
-        onPrevClicked = {
-            viewModel.reducerManager.back()
-        },
+        onBackClicked = { viewModel.goHome() },
+        onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
             selectedCountry?.let {
                 viewModel.reducerManager.selectCountry(it)
@@ -73,6 +69,7 @@ fun SelectCountryScreen(
         ) {
             Picker(
                 label = stringResource(R.string.country),
+                initialOption = selectedCountry?.name,
                 options = countries.map { it.name }.toSet(),
                 onOptionChanged = { option ->
                     countries.find { it.name == option }?.let { country ->

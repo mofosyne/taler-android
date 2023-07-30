@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
@@ -61,12 +62,8 @@ fun SelectUserAttributesScreen(
 
     WizardPage(
         title = stringResource(R.string.select_user_attributes_title),
-        onBackClicked = {
-            viewModel.goHome()
-        },
-        onPrevClicked = {
-            viewModel.reducerManager.back()
-        },
+        onBackClicked = { viewModel.goHome() },
+        onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
             viewModel.reducerManager.enterUserAttributes(values)
         },
@@ -74,6 +71,7 @@ fun SelectUserAttributesScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .nestedScroll(it)
                 .padding(LocalSpacing.current.medium),
             verticalArrangement = Arrangement.Top,
         ) {

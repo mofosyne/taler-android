@@ -45,11 +45,13 @@ import net.taler.anastasis.ui.theme.LocalSpacing
 fun Picker(
     modifier: Modifier = Modifier,
     label: String,
+    leadingIcon: (@Composable () -> Unit)? = null,
+    initialOption: String? = null,
     options: Set<String>,
     onOptionChanged: (String) -> Unit,
 ) {
     var filteredOptions by remember { mutableStateOf(options.toList()) }
-    var inputValue by remember { mutableStateOf("") }
+    var inputValue by remember { mutableStateOf(initialOption ?: "") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -58,6 +60,7 @@ fun Picker(
     ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
+            leadingIcon = leadingIcon,
             value = inputValue,
             onValueChange = { value ->
                 inputValue = value

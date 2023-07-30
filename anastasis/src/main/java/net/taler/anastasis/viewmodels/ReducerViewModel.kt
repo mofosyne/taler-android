@@ -56,7 +56,7 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
                             reducerManager.startSyncingProviders()
                             Routes.SelectAuthMethods.route
                         }
-                        BackupStates.PoliciesReviewing -> TODO()
+                        BackupStates.PoliciesReviewing -> Routes.ReviewPoliciesScreen.route
                         BackupStates.SecretEditing -> TODO()
                         BackupStates.TruthsPaying -> TODO()
                         BackupStates.PoliciesPaying -> TODO()
@@ -77,6 +77,34 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
                 }
             }
         }
+    }
+
+    fun goBack(): Boolean = when (val state = reducerState.value) {
+        is ReducerState.Backup -> when (state.backupState) {
+            BackupStates.ContinentSelecting -> {
+                goHome()
+                false
+            }
+            else -> {
+                reducerManager.back()
+                false
+            }
+        }
+        is ReducerState.Recovery -> when(state.recoveryState) {
+            RecoveryStates.ContinentSelecting -> {
+                goHome()
+                false
+            }
+            else -> {
+                reducerManager.back()
+                false
+            }
+        }
+        is ReducerState.Error -> {
+            reducerManager.back()
+            false
+        }
+        else -> true
     }
 
     fun goHome() {

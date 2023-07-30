@@ -54,9 +54,7 @@ fun SelectContinentScreen(
         title = stringResource(R.string.select_continent_title),
         showPrev = false,
         enableNext = selectedContinent != null,
-        onBackClicked = {
-            viewModel.goHome()
-        },
+        onBackClicked = { viewModel.goHome() },
         onNextClicked = {
             selectedContinent?.let {
                 viewModel.reducerManager.selectContinent(it)
@@ -71,6 +69,7 @@ fun SelectContinentScreen(
         ) {
             Picker(
                 label = stringResource(R.string.continent),
+                initialOption = selectedContinent?.name,
                 options = continents.map { it.name }.toSet(),
                 onOptionChanged = { option ->
                     continents.find { it.name == option }?.let { continent ->

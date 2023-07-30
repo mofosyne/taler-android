@@ -13,6 +13,7 @@ sealed class Routes(
 
     // Backup
     object SelectAuthMethods: Routes("select_auth_methods")
+    object ReviewPoliciesScreen: Routes("review_policies")
 
     // Restore
     object RestoreInit: Routes("restore")

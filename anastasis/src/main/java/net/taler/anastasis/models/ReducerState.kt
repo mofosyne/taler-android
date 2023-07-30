@@ -1,9 +1,19 @@
 package net.taler.anastasis.models
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.Sms
+import androidx.compose.material.icons.filled.Token
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import net.taler.anastasis.R
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 
@@ -159,12 +169,38 @@ data class CoreSecret(
 
 @Serializable
 data class AuthMethod(
-    val type: String,
+    val type: Type,
     val instructions: String,
     val challenge: String,
     @SerialName("mime_type")
     val mimeType: String? = null,
-)
+) {
+    @Serializable
+    enum class Type(
+        val icon: ImageVector,
+        val nameRes: Int,
+    ) {
+        @SerialName("question")
+        Question(Icons.Default.QuestionAnswer, R.string.auth_method_question),
+
+        @SerialName("sms")
+        Sms(Icons.Default.Sms, R.string.auth_method_sms),
+
+        @SerialName("email")
+        Email(Icons.Default.Email, R.string.auth_method_email),
+
+        @SerialName("iban")
+        Iban(Icons.Default.AccountBalance, R.string.auth_method_iban),
+
+        @SerialName("mail")
+        Mail(Icons.Default.Mail, R.string.auth_method_mail),
+
+        @SerialName("totp")
+        Totp(Icons.Default.Token, R.string.auth_method_totp),
+
+        Unknown(Icons.Default.QuestionMark, R.string.unknown),
+    }
+}
 
 @Serializable
 data class ChallengeInfo(
@@ -283,7 +319,7 @@ enum class RecoveryStates {
 
 @Serializable
 data class MethodSpec(
-    val type: String,
+    val type: AuthMethod.Type,
     @SerialName("usage_fee")
     val usageFee: String,
 )

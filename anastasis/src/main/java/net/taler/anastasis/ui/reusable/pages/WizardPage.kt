@@ -3,6 +3,7 @@ package net.taler.anastasis.ui.reusable.pages
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,15 +24,18 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.anastasis.R
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun WizardPage(
     modifier: Modifier = Modifier,
@@ -43,9 +47,13 @@ fun WizardPage(
     onBackClicked: () -> Unit = {},
     onNextClicked: () -> Unit = {},
     onPrevClicked: () -> Unit = {},
-    content: @Composable () -> Unit,
+    content: @Composable (nestedScrollConnection: NestedScrollConnection) -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     Scaffold(
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = { Text(title) },
@@ -53,7 +61,8 @@ fun WizardPage(
                     IconButton(onClick = onBackClicked) {
                         Icon(Icons.Default.ArrowBack, stringResource(R.string.back))
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior,
             )
         },
     ) {
@@ -63,7 +72,7 @@ fun WizardPage(
             Box(modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()) {
-                content()
+                content(scrollBehavior.nestedScrollConnection)
             }
             Divider()
             Row(

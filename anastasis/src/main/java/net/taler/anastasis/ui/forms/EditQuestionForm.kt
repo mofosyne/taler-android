@@ -14,87 +14,53 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.backup
+package net.taler.anastasis.ui.forms
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import net.taler.anastasis.R
-import net.taler.anastasis.Utils
 import net.taler.anastasis.models.AuthMethod
-
-@Composable
-fun EditMethodDialog(
-    type: String? = null,
-    method: AuthMethod? = null,
-    onMethodEdited: (method: AuthMethod) -> Unit,
-    onCancel: () -> Unit,
-) {
-    var localMethod by remember { mutableStateOf(method?.copy(
-        challenge = Utils.decodeBase32(method.challenge),
-    )) }
-    AlertDialog(
-        onDismissRequest = onCancel,
-        title = { Text(stringResource(R.string.add_challenge)) },
-        text = {
-               when(type ?: method?.type) {
-                   "question" -> EditQuestionForm(
-                       method = localMethod,
-                       onMethodEdited = {
-                           localMethod = it
-                       },
-                   )
-               }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onCancel()
-            }) {
-                Text(stringResource(R.string.cancel))
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                localMethod?.let { onMethodEdited(
-                    it.copy(
-                        challenge = Utils.encodeBase32(it.challenge)
-                    )
-                ) }
-            }) {
-                Text(stringResource(R.string.add))
-            }
-        }
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditQuestionForm(
+fun EditQuestionForm(
     method: AuthMethod? = null,
     onMethodEdited: (method: AuthMethod) -> Unit,
 ) {
     val localMethod = method ?: AuthMethod(
-        type = "question",
+        type = AuthMethod.Type.Question,
         instructions = "",
         challenge = "",
         mimeType = "plain/text",
     )
 
+    val focusRequester1 = remember { FocusRequester() }
+    val focusRequester2 = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Column {
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .focusRequester(focusRequester1)
+                .fillMaxWidth(),
             value = localMethod.instructions,
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusRequester2.requestFocus() }),
             onValueChange = {
                 onMethodEdited(localMethod.copy(instructions = it))
             },
@@ -102,13 +68,22 @@ private fun EditQuestionForm(
         )
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .focusRequester(focusRequester2)
+                .fillMaxWidth(),
             value = localMethod.challenge,
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             onValueChange = {
                 onMethodEdited(localMethod.copy(challenge = it))
             },
             label = { Text(stringResource(R.string.answer)) },
         )
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester1.requestFocus()
     }
 
 }
