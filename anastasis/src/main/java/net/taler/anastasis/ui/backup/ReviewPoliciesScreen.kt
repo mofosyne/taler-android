@@ -17,7 +17,6 @@
 package net.taler.anastasis.ui.backup
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,12 +25,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -57,6 +56,7 @@ import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.Policy
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.dialogs.EditPolicyDialog
+import net.taler.anastasis.ui.forms.EditPolicyForm
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.ReducerViewModel
@@ -141,9 +141,7 @@ fun ReviewPoliciesScreen(
                         providers = providers,
                         index = index,
                         onEdit = {
-                            editingPolicy = policy
-                            editingPolicyIndex = index
-                            showEditDialog = true
+                            viewModel.reducerManager.updatePolicy(index, it)
                         },
                     ) {
                         viewModel.reducerManager.deletePolicy(index)
@@ -158,17 +156,18 @@ fun ReviewPoliciesScreen(
 fun PolicyCard(
     modifier: Modifier = Modifier,
     methods: List<AuthMethod>,
-    providers: Map<String, AuthenticationProviderStatus>,
+    providers: Map<String, AuthenticationProviderStatus.Ok>,
     policy: Policy,
     index: Int,
-    onEdit: () -> Unit,
+    onEdit: (policy: Policy) -> Unit,
     onDelete: () -> Unit,
 ) {
     ElevatedCard(
         modifier = modifier,
     ) {
+        var editing by remember{ mutableStateOf(false) }
+
         Column(modifier = Modifier.padding(LocalSpacing.current.medium)) {
-            var expanded by remember { mutableStateOf(false) }
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
@@ -178,42 +177,42 @@ fun PolicyCard(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
-                Box {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = stringResource(R.string.menu),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                        )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                        ) {
-                            DropdownMenuItem(onClick = {
-                                onEdit()
-                                expanded = false
-                            }) {
-                                Text(stringResource(R.string.edit))
-                            }
-                            DropdownMenuItem(onClick = onDelete) {
-                                Text(stringResource(R.string.delete))
-                            }
-                        }
-                    }
+                IconButton(onClick = { editing = !editing }) {
+                    Icon(
+                        if (editing) Icons.Default.EditOff else Icons.Default.Edit,
+                        contentDescription = if (editing)
+                            stringResource(R.string.cancel) else stringResource(R.string.edit),
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                    )
                 }
             }
-            Column {
-                policy.methods.forEach { m ->
-                    val method = methods[m.authenticationMethod]
-                    val provider = providers[m.provider] as? AuthenticationProviderStatus.Ok
-                    if (provider != null) {
-                        PolicyMethodCard(
-                            modifier = Modifier
-                                .padding(top = LocalSpacing.current.small)
-                                .fillMaxWidth(),
-                            method = method,
-                            provider = provider,
-                        )
+
+            if (editing) {
+                EditPolicyForm(
+                    policy = policy,
+                    methods = methods,
+                    providers = providers,
+                    onPolicyEdited = { onEdit(it) },
+                )
+            } else {
+                Column {
+                    policy.methods.forEach { m ->
+                        val method = methods[m.authenticationMethod]
+                        val provider = providers[m.provider]
+                        if (provider != null) {
+                            PolicyMethodCard(
+                                modifier = Modifier
+                                    .padding(top = LocalSpacing.current.small)
+                                    .fillMaxWidth(),
+                                method = method,
+                                provider = provider,
+                            )
+                        }
                     }
                 }
             }
@@ -244,14 +243,14 @@ fun PolicyMethodCard(
                 Text(method.instructions, style = MaterialTheme.typography.labelLarge)
                 Spacer(Modifier.height(LocalSpacing.current.small))
                 Text(
-                    stringResource(R.string.provider),
+                    stringResource(R.string.provided_by, provider.businessName),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                 )
-                Text(
-                    provider.businessName,
-                    style = MaterialTheme.typography.labelMedium,
-                )
+//                Text(
+//                    provider.businessName,
+//                    style = MaterialTheme.typography.labelMedium,
+//                )
             }
         }
     }

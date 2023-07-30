@@ -16,16 +16,18 @@
 
 package net.taler.anastasis.ui.forms
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.Policy
@@ -42,25 +44,25 @@ fun EditPolicyForm(
 ) {
     val localPolicy = policy ?: Policy(methods = listOf())
     val localMethods = localPolicy.methods.associateBy { it.authenticationMethod }
-    val submitLocalMethods = { it: Map<Int, Policy.PolicyMethod> ->
+    val submitLocalMethods = { it: MutableMap<Int, Policy.PolicyMethod>.() -> Unit ->
         onPolicyEdited(
             localPolicy.copy(
-                methods = it.flatMap { entry ->
+                methods = localMethods.toMutableMap().apply(it).flatMap { entry ->
                     listOf(entry.value)
-                }
+                },
             )
         )
     }
 
-    LazyColumn(
+    Column(
         modifier = modifier,
     ) {
-        items(count = methods.size) { index ->
-            val method = methods[index]
+        methods.forEachIndexed { index, method ->
             // Get only the providers that support this method type
             val methodProviders = providers.filterValues { provider ->
                 method.type in provider.methods.map { it.type }
-            }.keys.toList()
+            }
+            val providerUrls = methodProviders.keys.toList()
             val selectedProvider = localMethods[index]?.provider
             val checked = selectedProvider != null
             Row(
@@ -68,49 +70,64 @@ fun EditPolicyForm(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
-                    enabled = checked,
+                    // enabled = checked,
                     checked = checked,
                     onCheckedChange = {
-                        if (it) selectedProvider?.let { prov ->
-                            submitLocalMethods(
-                                localMethods.toMutableMap().apply {
+                        if (it) {
+                            selectedProvider?.let { prov ->
+                                submitLocalMethods {
                                     this[index] = Policy.PolicyMethod(
                                         authenticationMethod = index,
                                         provider = prov,
                                     )
                                 }
-                            )
-                        } else {
-                            submitLocalMethods(
-                                localMethods.toMutableMap().apply {
-                                    remove(index)
+                            } ?: run {
+                                if (providerUrls.isNotEmpty()) {
+                                    submitLocalMethods {
+                                        this[index] = Policy.PolicyMethod(
+                                            authenticationMethod = index,
+                                            provider = providerUrls.first(),
+                                        )
+                                    }
                                 }
-                            )
+                            }
+                        } else {
+                            submitLocalMethods {
+                                remove(index)
+                            }
                         }
                     },
                 )
-                DropdownTextField(
-                    modifier = Modifier.padding(bottom = LocalSpacing.current.small),
-                    label = method.instructions,
-                    leadingIcon = {
-                        Icon(
-                            method.type.icon,
-                            contentDescription = stringResource(method.type.nameRes),
-                        )
-                    },
-                    selectedIndex = selectedProvider?.let{ methodProviders.indexOf(it) },
-                    options = methodProviders,
-                    onOptionSelected = {
-                        submitLocalMethods(
-                            localMethods.toMutableMap().apply {
+                Column {
+                    Spacer(Modifier.height(LocalSpacing.current.small))
+                    DropdownTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        label = method.instructions,
+                        enabled = checked,
+                        supportingText = selectedProvider?.let {
+                            providers[it]?.businessName
+                        }?.let {
+                            stringResource(R.string.provided_by, it)
+                        } ?: stringResource(R.string.disabled),
+                        leadingIcon = {
+                            Icon(
+                                method.type.icon,
+                                contentDescription = stringResource(method.type.nameRes),
+                            )
+                        },
+                        selectedIndex = selectedProvider?.let { providerUrls.indexOf(it) },
+                        options = providerUrls,
+                        onOptionSelected = {
+                            submitLocalMethods {
                                 this[index] = Policy.PolicyMethod(
                                     authenticationMethod = index,
-                                    provider = methodProviders[it],
+                                    provider = providerUrls[it],
                                 )
                             }
-                        )
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
     }

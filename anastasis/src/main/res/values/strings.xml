@@ -21,7 +21,8 @@
     <string name="question">Security question</string>
     <string name="answer">Answer</string>
     <string name="policy_n">Policy %1$d</string>
-    <string name="provider">Provider</string>
+    <string name="provided_by">Provided by %1$s</string>
+    <string name="disabled">Disabled</string>
     <string name="unknown">Unknown</string>
 
     <!-- Common -->

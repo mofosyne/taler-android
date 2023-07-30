@@ -45,8 +45,7 @@ fun EditPolicyDialog(
 
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text(stringResource(if (policy != null)
-            R.string.edit_policy else R.string.add_policy)) },
+        title = { Text(stringResource(R.string.add_policy)) },
         text = {
             EditPolicyForm(
                 modifier = Modifier.fillMaxWidth(),
@@ -69,8 +68,7 @@ fun EditPolicyDialog(
             TextButton(onClick = {
                 localPolicy?.let { onPolicyEdited(it) }
             }) {
-                Text(stringResource(if (policy != null)
-                    R.string.edit else R.string.add))
+                Text(stringResource(R.string.add))
             }
         }
     )

@@ -45,7 +45,9 @@ import androidx.compose.ui.unit.toSize
 fun DropdownTextField(
     modifier: Modifier = Modifier,
     label: String,
+    supportingText: String? = null,
     leadingIcon: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
     selectedIndex: Int? = null,
     options: List<String>,
     onOptionSelected: (index: Int) -> Unit,
@@ -64,12 +66,16 @@ fun DropdownTextField(
                 },
             readOnly = true,
             leadingIcon = leadingIcon,
+            enabled = enabled,
             value = if (selectedIndex != null) options[selectedIndex] else "",
+            supportingText = { Text(supportingText ?: "") },
             onValueChange = {},
             singleLine = true,
             label = { Text(label) },
             trailingIcon = {
-                Box(modifier = Modifier.clickable { expanded = !expanded }) {
+                Box(modifier = Modifier.clickable {
+                    if (enabled) expanded = !expanded
+                }) {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = expanded,
                     )
