@@ -15,6 +15,7 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
     <string name="menu">Menu</string>
     <string name="country">Country</string>
     <string name="continent">Continent</string>
@@ -24,6 +25,10 @@
     <string name="provided_by">Provided by %1$s</string>
     <string name="disabled">Disabled</string>
     <string name="unknown">Unknown</string>
+    <string name="error">Error</string>
+    <string name="field_empty">This field is required</string>
+    <string name="field_invalid">This field is invalid</string>
+    <string name="field_optional">This field is optional</string>
 
     <!-- Common -->
     <string name="select_continent_title">Where do you live?</string>
@@ -33,6 +38,7 @@
     <!-- Backup -->
     <string name="select_auth_methods_title">Authentication methods</string>
     <string name="review_policies_title">Recovery policies</string>
+    <string name="edit_secret_title">Provide secret to backup</string>
     <string name="add_auth_method_question">Add a question challenge</string>
     <string name="add_auth_method_sms">Add a SMS challenge</string>
     <string name="add_auth_method_email">Add an e-mail challenge</string>
@@ -49,4 +55,7 @@
     <string name="add_challenge">Add challenge</string>
     <string name="add_policy">Add policy</string>
     <string name="edit_policy">Edit policy</string>
+    <string name="secret_name">Secret name</string>
+    <string name="secret_unique">This should be unique</string>
+    <string name="secret_text">Secret text</string>
 </resources>

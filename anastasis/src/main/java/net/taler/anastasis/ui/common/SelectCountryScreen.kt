@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.models.CountryInfo
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.components.Picker
 import net.taler.anastasis.ui.reusable.pages.WizardPage
@@ -48,15 +47,25 @@ fun SelectCountryScreen(
         else -> error("invalid reducer state type")
     } ?: emptyList()
 
-    var selectedCountry by remember { mutableStateOf<CountryInfo?>(null) }
+    val selectedCountry = when (val state = reducerState) {
+        is ReducerState.Backup -> state.selectedCountry
+        is ReducerState.Recovery -> state.selectedCountry
+        else -> error("invalid reducer state type")
+    }
+
+    var localCountry by remember {
+        mutableStateOf(selectedCountry?.let { selected ->
+            countries.find { it.code == selected }
+        })
+    }
 
     WizardPage(
         title = stringResource(R.string.select_country_title),
-        enableNext = selectedCountry != null,
+        enableNext = localCountry != null,
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
-            selectedCountry?.let {
+            localCountry?.let {
                 viewModel.reducerManager.selectCountry(it)
             }
         },
@@ -69,11 +78,11 @@ fun SelectCountryScreen(
         ) {
             Picker(
                 label = stringResource(R.string.country),
-                initialOption = selectedCountry?.name,
+                initialOption = localCountry?.name,
                 options = countries.map { it.name }.toSet(),
                 onOptionChanged = { option ->
                     countries.find { it.name == option }?.let { country ->
-                        selectedCountry = country
+                        localCountry = country
                     }
                 },
             )

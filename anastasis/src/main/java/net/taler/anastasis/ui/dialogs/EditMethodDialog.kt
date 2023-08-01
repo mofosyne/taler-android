@@ -26,7 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import net.taler.anastasis.R
-import net.taler.anastasis.Utils
+import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.ui.forms.EditQuestionForm
 

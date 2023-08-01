@@ -40,32 +40,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.LocalDate
-import net.taler.anastasis.Utils
+import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.theme.LocalSpacing
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(
     modifier: Modifier = Modifier,
     label: String,
-    yy: Int,
-    mm: Int,
-    dd: Int,
-    onDateSelected: (yy: Int, mm: Int, dd: Int) -> Unit,
+    isError: Boolean = false,
+    supportingText: (@Composable () -> Unit)? = null,
+    date: LocalDate?,
+    onDateSelected: (date: LocalDate) -> Unit,
 ) {
+    val now = Utils.currentDate
     val dialog = DatePickerDialog(
         LocalContext.current,
         { _: DatePicker, y: Int, m: Int, d: Int ->
-            onDateSelected(y, m, d)
-        }, yy, mm, dd,
+            onDateSelected(LocalDate(
+                year = y,
+                monthNumber = m + 1,
+                dayOfMonth = d,
+            ))
+        },
+        date?.year ?: now.year,
+        (date?.monthNumber ?: now.monthNumber) - 1,
+        date?.dayOfMonth ?: now.dayOfMonth,
     )
 
     OutlinedTextField(
         modifier = modifier,
-        value = Utils.formatDate(LocalDate(yy, mm, dd)),
+        value = date?.let { Utils.formatDate(it) } ?: "",
         label = { Text(label) },
         onValueChange = { },
+        isError = isError,
+        supportingText = supportingText,
         trailingIcon = {
             Button(
                 modifier = Modifier.padding(end = LocalSpacing.current.medium),
@@ -89,21 +98,12 @@ fun DatePickerField(
 @Preview
 @Composable
 fun DatePickerFieldPreview() {
-    val cal = Calendar.getInstance()
-    var yy by remember { mutableStateOf(cal.get(Calendar.YEAR)) }
-    var mm by remember { mutableStateOf(cal.get(Calendar.MONTH)) }
-    var dd by remember { mutableStateOf(cal.get(Calendar.DAY_OF_MONTH)) }
+    var date by remember { mutableStateOf(Utils.currentDate) }
     Surface {
         DatePickerField(
             label = "Birthdate",
-            yy = yy,
-            mm = mm,
-            dd = dd,
-            onDateSelected = { y, m, d ->
-                yy = y
-                mm = m
-                dd = d
-            },
+            date = date,
+            onDateSelected = { date = it },
         )
     }
 }

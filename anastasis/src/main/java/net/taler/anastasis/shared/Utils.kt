@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis
+package net.taler.anastasis.shared
 
 import android.os.Build
 import io.matthewnelson.encoding.base32.Base32
@@ -22,8 +22,11 @@ import io.matthewnelson.encoding.core.Decoder.Companion.decodeToByteArray
 import io.matthewnelson.encoding.core.Encoder.Companion.encodeToString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
@@ -37,14 +40,17 @@ import kotlin.time.Duration
 object Utils {
     fun formatDate(date: LocalDate): String {
         val javaDate = date.toJavaLocalDate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            return javaDate.format(formatter)
+            javaDate.format(formatter)
         } else {
             val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            return formatter.format(date)
+            formatter.format(date)
         }
     }
+
+    val currentDate: LocalDate
+        get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     inline fun <reified T> Json.encodeToNativeJson(value: T): JSONObject =
         JSONObject(encodeToString(value))
@@ -54,6 +60,9 @@ object Utils {
 
     fun encodeBase32 (input: String) = input
         .toByteArray(Charset.defaultCharset())
+        .encodeToString(Base32.Crockford)
+
+    fun encodeBase32 (input: ByteArray) = input
         .encodeToString(Base32.Crockford)
 
     fun decodeBase32 (input: String) = input

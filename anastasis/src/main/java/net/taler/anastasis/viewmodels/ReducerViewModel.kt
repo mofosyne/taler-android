@@ -16,7 +16,6 @@
 
 package net.taler.anastasis.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.taler.anastasis.Routes
 import net.taler.anastasis.backend.AnastasisReducerApi
+import net.taler.anastasis.backend.TalerErrorInfo
 import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
@@ -38,14 +38,15 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
 
     private val _reducerState = MutableStateFlow<ReducerState?>(null)
     val reducerState = _reducerState.asStateFlow()
+    private val _reducerError = MutableStateFlow<TalerErrorInfo?>(null)
+    val reducerError = _reducerError.asStateFlow()
     private val _navRoute = MutableStateFlow(Routes.Home.route)
     val navRoute = _navRoute.asStateFlow()
 
     init {
-        reducerManager = ReducerManager(_reducerState, api, viewModelScope)
+        reducerManager = ReducerManager(_reducerState, _reducerError, api, viewModelScope)
         viewModelScope.launch {
             _reducerState.collect {
-                Log.d("ReducerViewModel", it?.toString() ?: "nothing")
                 reducerManager.stopSyncingProviders()
                 _navRoute.value = when (it) {
                     is ReducerState.Backup -> when (it.backupState) {
@@ -72,7 +73,6 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
                         RecoveryStates.ChallengeSolving -> TODO()
                         RecoveryStates.RecoveryFinished -> TODO()
                     }
-                    is ReducerState.Error -> TODO()
                     else -> Routes.Home.route
                 }
             }
@@ -109,5 +109,9 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
 
     fun goHome() {
         _reducerState.value = null
+    }
+
+    fun cleanError() {
+        _reducerError.value = null
     }
 }

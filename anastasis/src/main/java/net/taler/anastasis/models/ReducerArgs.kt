@@ -18,6 +18,7 @@ package net.taler.anastasis.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.taler.common.Timestamp
 
 @Serializable
 sealed class ReducerArgs {
@@ -44,7 +45,17 @@ sealed class ReducerArgs {
 
     // TODO: ActionArgsEnterSecretName
 
-    // TODO: ActionArgsEnterSecret
+    @Serializable
+    data class EnterSecret(
+        val secret: Secret,
+        val expiration: Timestamp? = null,
+    ) {
+        @Serializable
+        data class Secret(
+            val value: String,
+            val mime: String? = null,
+        )
+    }
 
     @Serializable
     data class SelectContinent(

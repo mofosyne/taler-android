@@ -22,10 +22,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.decodeFromJsonElement
-import net.taler.anastasis.Utils.encodeToNativeJson
+import net.taler.anastasis.shared.Utils.encodeToNativeJson
 import net.taler.anastasis.models.ReducerState
 import net.taler.common.ApiResponse
 import net.taler.common.ApiResponse.*
+import net.taler.common.TalerErrorCode
 import net.taler.common.TalerErrorCode.NONE
 import org.json.JSONObject
 
@@ -74,10 +75,24 @@ class AnastasisReducerApi() {
         try {
             when (val response = sendRequest("anastasisReduce", body)) {
                 is Response -> {
-                    val t = json.decodeFromJsonElement<ReducerState>(response.result)
-                    WalletResponse.Success(t)
+                    when (val t = json.decodeFromJsonElement<ReducerState>(response.result)) {
+                        is ReducerState.Recovery, is ReducerState.Backup -> {
+                            WalletResponse.Success(t)
+                        }
+                        is ReducerState.Error -> {
+                            WalletResponse.Error(
+                                TalerErrorInfo(
+                                    code = TalerErrorCode.fromInt(t.code),
+                                    hint = t.hint,
+                                )
+                            )
+                        }
+                    }
                 }
-                is Error -> error("invalid reducer response")
+                is Error -> {
+                    val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
+                    WalletResponse.Error(error)
+                }
             }
         } catch (e: Exception) {
             val info = TalerErrorInfo(NONE, "", e.toString())
@@ -99,8 +114,19 @@ class AnastasisReducerApi() {
         try {
             when (val response = sendRequest("anastasisReduce", body)) {
                 is Response -> {
-                    val t = json.decodeFromJsonElement<ReducerState>(response.result)
-                    WalletResponse.Success(t)
+                    when (val t = json.decodeFromJsonElement<ReducerState>(response.result)) {
+                        is ReducerState.Recovery, is ReducerState.Backup -> {
+                            WalletResponse.Success(t)
+                        }
+                        is ReducerState.Error -> {
+                            WalletResponse.Error(
+                                TalerErrorInfo(
+                                    code = TalerErrorCode.fromInt(t.code),
+                                    hint = t.hint,
+                                )
+                            )
+                        }
+                    }
                 }
                 is Error -> error("invalid reducer response")
             }

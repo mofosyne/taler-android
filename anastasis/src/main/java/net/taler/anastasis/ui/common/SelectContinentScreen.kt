@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.components.Picker
 import net.taler.anastasis.ui.reusable.pages.WizardPage
@@ -48,15 +47,25 @@ fun SelectContinentScreen(
         else -> error("invalid reducer state type")
     } ?: emptyList()
 
-    var selectedContinent by remember { mutableStateOf<ContinentInfo?>(null) }
+    val selectedContinent = when (val state = reducerState) {
+        is ReducerState.Backup -> state.selectedContinent
+        is ReducerState.Recovery -> state.selectedContinent
+        else -> error("invalid reducer state type")
+    }
+
+    var localContinent by remember {
+        mutableStateOf(selectedContinent?.let { selected ->
+            continents.find { it.name == selected }
+        })
+    }
 
     WizardPage(
         title = stringResource(R.string.select_continent_title),
         showPrev = false,
-        enableNext = selectedContinent != null,
+        enableNext = localContinent != null,
         onBackClicked = { viewModel.goHome() },
         onNextClicked = {
-            selectedContinent?.let {
+            localContinent?.let {
                 viewModel.reducerManager.selectContinent(it)
             }
         },
@@ -69,11 +78,11 @@ fun SelectContinentScreen(
         ) {
             Picker(
                 label = stringResource(R.string.continent),
-                initialOption = selectedContinent?.name,
+                initialOption = localContinent?.name,
                 options = continents.map { it.name }.toSet(),
                 onOptionChanged = { option ->
                     continents.find { it.name == option }?.let { continent ->
-                        selectedContinent = continent
+                        localContinent = continent
                     }
                 },
             )

@@ -25,9 +25,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import net.taler.anastasis.Utils
-import net.taler.anastasis.Utils.encodeToNativeJson
+import net.taler.anastasis.shared.Utils
+import net.taler.anastasis.shared.Utils.encodeToNativeJson
 import net.taler.anastasis.backend.AnastasisReducerApi
+import net.taler.anastasis.backend.TalerErrorInfo
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.CountryInfo
@@ -39,6 +40,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ReducerManager(
     private val state: MutableStateFlow<ReducerState?>,
+    private val error: MutableStateFlow<TalerErrorInfo?>,
     private val api: AnastasisReducerApi,
     private val scope: CoroutineScope,
 ) {
@@ -49,6 +51,14 @@ class ReducerManager(
     private var providerSyncingJob: Job? = null
 
     // TODO: error handling!
+
+    private fun onSuccess(newState: ReducerState) {
+        state.value = newState
+    }
+
+    private fun onError(info: TalerErrorInfo) {
+        error.value = info
+    }
 
     fun startBackup() = scope.launch {
         state.value = api.startBackup()
@@ -61,18 +71,16 @@ class ReducerManager(
     fun back() = scope.launch {
         state.value?.let { initialState ->
             api.reduceAction(initialState, "back")
-                .onSuccess { newState ->
-                    state.value = newState
-                }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
     fun next() = scope.launch {
         state.value?.let { initialState ->
             api.reduceAction(initialState, "next")
-                .onSuccess { newState ->
-                    state.value = newState
-                }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -80,9 +88,9 @@ class ReducerManager(
         state.value?.let { initialState ->
             api.reduceAction(initialState, "select_continent") {
                 put("continent", continent.name)
-            }.onSuccess { newState ->
-                state.value = newState
             }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -92,9 +100,9 @@ class ReducerManager(
                 put("country_code", country.code)
                 // TODO: stop hardcoding currency!
                 put("currency", "EUR")
-            }.onSuccess { newState ->
-                state.value = newState
             }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -102,9 +110,9 @@ class ReducerManager(
         state.value?.let {  initialState ->
             api.reduceAction(initialState, "enter_user_attributes") {
                 put("identity_attributes", JSONObject(userAttributes))
-            }.onSuccess { newState ->
-                state.value = newState
             }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -150,9 +158,8 @@ class ReducerManager(
     fun addAuthentication(args: ReducerArgs.AddAuthentication) = scope.launch {
         state.value?.let { initialState ->
             api.reduceAction(initialState, "add_authentication", args)
-                .onSuccess { newState ->
-                    state.value = newState
-                }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -160,9 +167,9 @@ class ReducerManager(
         state.value?.let { initialState ->
             api.reduceAction(initialState, "delete_authentication") {
                 put("authentication_method", index)
-            }.onSuccess { newState ->
-                state.value = newState
             }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -170,9 +177,9 @@ class ReducerManager(
         state.value?.let { initialState ->
             api.reduceAction(initialState, "add_policy") {
                 put("policy", Json.encodeToNativeJson(policy.methods))
-            }.onSuccess { newState ->
-                state.value = newState
-            }.onError { Log.d("ReducerManager", "$it") }
+            }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -181,9 +188,9 @@ class ReducerManager(
             api.reduceAction(initialState, "update_policy") {
                 put("policy_index", index)
                 put("policy", Json.encodeToNativeJson(policy.methods))
-            }.onSuccess { newState ->
-                state.value = newState
             }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 
@@ -191,8 +198,26 @@ class ReducerManager(
         state.value?.let { initialState ->
             api.reduceAction(initialState, "delete_policy") {
                 put("policy_index", index)
-            }.onSuccess {  newState ->
-                state.value = newState
+            }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun backupSecret(
+        name: String,
+        args: ReducerArgs.EnterSecret,
+    ) = scope.launch {
+        state.value?.let { initialState ->
+            api.reduceAction(initialState, "enter_secret", args).onSuccess { newState ->
+                scope.launch {
+                    api.reduceAction(newState, "enter_secret_name") {
+                        put("name", name)
+                    }.onSuccess { newNewState ->
+                        this@ReducerManager.onSuccess(newNewState)
+                        this@ReducerManager.next()
+                    }.onError { onError(it) }
+                }
             }
         }
     }

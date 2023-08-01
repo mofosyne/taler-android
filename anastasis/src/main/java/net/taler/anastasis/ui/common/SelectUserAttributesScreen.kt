@@ -31,20 +31,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.datetime.toLocalDate
 import net.taler.anastasis.R
+import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.ReducerState
+import net.taler.anastasis.models.UserAttributeSpec
+import net.taler.anastasis.shared.FieldStatus
 import net.taler.anastasis.ui.reusable.components.DatePickerField
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.ReducerViewModel
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +59,15 @@ fun SelectUserAttributesScreen(
         else -> error("invalid reducer state type")
     } ?: emptyList()
 
-    val values = remember { mutableStateMapOf<String, String>() }
+    val identityAttributes = when(val state = reducerState) {
+        is ReducerState.Backup -> state.identityAttributes
+        is ReducerState.Recovery -> state.identityAttributes
+        else -> error("invalid reducer state type")
+    } ?: emptyMap()
+
+    val values = remember { mutableStateMapOf(
+        *identityAttributes.toList().toTypedArray()
+    ) }
 
     WizardPage(
         title = stringResource(R.string.select_user_attributes_title),
@@ -67,43 +76,72 @@ fun SelectUserAttributesScreen(
         onNextClicked = {
             viewModel.reducerManager.enterUserAttributes(values)
         },
-    ) {
+        enableNext = userAttributes.fold(true) { a, b ->
+            a && (fieldStatus(b, values[b.name]) == FieldStatus.Valid)
+        }
+    ) { scrollConnection ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(it)
-                .padding(LocalSpacing.current.medium),
+                .nestedScroll(scrollConnection),
             verticalArrangement = Arrangement.Top,
         ) {
             items(items = userAttributes) { attr ->
+                val status = fieldStatus(attr, values[attr.name])
+                val supportingText: @Composable () -> Unit = @Composable {
+                    status.msgRes?.let {
+                        Text(stringResource(it))
+                    } ?: if (attr.optional == true) {
+                        Text(stringResource(R.string.field_optional))
+                    } else null
+                }
                 when (attr.type) {
                     "string" -> OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(
+                                start = LocalSpacing.current.medium,
+                                end = LocalSpacing.current.medium,
+                            )
+                            .fillMaxWidth(),
                         value = values[attr.name] ?: "",
                         onValueChange = { values[attr.name] = it },
+                        isError = status.error,
+                        supportingText = supportingText,
                         label = { Text(attr.label) },
                     )
-                    "date" -> @Composable {
-                        val cal = Calendar.getInstance()
-                        var yy by remember { mutableStateOf(cal.get(Calendar.YEAR)) }
-                        var mm by remember { mutableStateOf(cal.get(Calendar.MONTH)) }
-                        var dd by remember { mutableStateOf(cal.get(Calendar.DAY_OF_MONTH)) }
-                        DatePickerField(
-                            modifier = Modifier.fillMaxWidth(),
-                            label = attr.label,
-                            yy = yy,
-                            mm = mm,
-                            dd = dd,
-                            onDateSelected = { y, m, d ->
-                                yy = y
-                                mm = m
-                                dd = d
-                            },
-                        )
-                    }
+                    "date" -> DatePickerField(
+                        modifier = Modifier
+                            .padding(
+                                start = LocalSpacing.current.medium,
+                                end = LocalSpacing.current.medium,
+                            )
+                            .fillMaxWidth(),
+                        label = attr.label,
+                        isError = status.error,
+                        supportingText = supportingText,
+                        date = values[attr.name]?.toLocalDate(),
+                        onDateSelected = { date ->
+                            values[attr.name] = Utils.formatDate(date)
+                        },
+                    )
                 }
                 Spacer(Modifier.height(LocalSpacing.current.small))
             }
         }
     }
+}
+
+fun fieldStatus(
+    field: UserAttributeSpec,
+    value: String? = null,
+): FieldStatus = if (value == null) {
+    FieldStatus.Null
+} else {
+    if (value.isNotBlank()) {
+        field.validationRegex?.toRegex()?.let {
+            if (value.matches(it))
+                FieldStatus.Valid else FieldStatus.Invalid
+        } ?: FieldStatus.Valid
+    } else if (field.optional == true)
+        FieldStatus.Valid else FieldStatus.Blank
 }

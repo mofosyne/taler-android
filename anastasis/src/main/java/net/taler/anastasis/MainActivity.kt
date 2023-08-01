@@ -20,6 +20,7 @@ import net.taler.anastasis.ui.backup.SelectAuthMethodsScreen
 import net.taler.anastasis.ui.common.SelectContinentScreen
 import net.taler.anastasis.ui.common.SelectCountryScreen
 import net.taler.anastasis.ui.common.SelectUserAttributesScreen
+import net.taler.anastasis.ui.dialogs.ErrorDialog
 import net.taler.anastasis.ui.home.HomeScreen
 import net.taler.anastasis.ui.theme.AnastasisTheme
 import net.taler.anastasis.viewmodels.ReducerViewModel
@@ -54,6 +55,13 @@ class MainActivity : ComponentActivity() {
 fun MainNavHost(
     viewModel: ReducerViewModel = hiltViewModel(),
 ) {
+    val error by viewModel.reducerError.collectAsState()
+    error?.let {
+        ErrorDialog(error = it) {
+            viewModel.cleanError()
+        }
+    }
+
     val navRoute by viewModel.navRoute.collectAsState()
     when (navRoute) {
         Routes.Home.route -> {

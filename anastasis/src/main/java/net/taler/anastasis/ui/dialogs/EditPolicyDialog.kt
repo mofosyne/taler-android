@@ -17,6 +17,8 @@
 package net.taler.anastasis.ui.dialogs
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,13 +44,16 @@ fun EditPolicyDialog(
     onCancel: () -> Unit,
 ) {
     var localPolicy by remember { mutableStateOf(policy) }
+    val scrollState = rememberScrollState()
 
     AlertDialog(
         onDismissRequest = onCancel,
         title = { Text(stringResource(R.string.add_policy)) },
         text = {
             EditPolicyForm(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
                 policy = localPolicy,
                 methods = methods,
                 providers = providers,

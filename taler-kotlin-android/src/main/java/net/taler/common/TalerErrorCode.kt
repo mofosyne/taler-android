@@ -3868,6 +3868,12 @@ enum class TalerErrorCode(val code: Int) {
      * (A value of 0 indicates that the error is generated client-side).
      */
     END(9999);
+
+    companion object {
+        fun fromInt(code: Int) = enumValues<TalerErrorCode>().firstOrNull {
+            code == it.code
+        } ?: UNKNOWN
+    }
 }
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -3879,9 +3885,7 @@ object TalerErrorCodeSerializer : KSerializer<TalerErrorCode> {
 
     override fun deserialize(decoder: Decoder): TalerErrorCode {
         val code = decoder.decodeInt()
-        return enumValues<TalerErrorCode>().firstOrNull {
-            code == it.code
-        } ?: TalerErrorCode.UNKNOWN
+        return TalerErrorCode.fromInt(code)
     }
 
     override fun serialize(encoder: Encoder, value: TalerErrorCode) {
