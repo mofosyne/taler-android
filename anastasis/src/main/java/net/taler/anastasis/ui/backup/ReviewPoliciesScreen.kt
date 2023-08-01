@@ -71,11 +71,14 @@ fun ReviewPoliciesScreen(
         ?: error("invalid reducer type")
 
     val policies = reducerState.policies ?: emptyList()
-    // Get only providers with "ok" status
-    val providers = reducerState.authenticationProviders?.filter {
-        it.value is AuthenticationProviderStatus.Ok
-    }?.mapValues { it.value as AuthenticationProviderStatus.Ok } ?: emptyMap()
     val methods = reducerState.authenticationMethods ?: emptyList()
+
+    // Get only providers with "ok" status
+    val providers = remember(reducerState.authenticationProviders) {
+        reducerState.authenticationProviders?.filter {
+            it.value is AuthenticationProviderStatus.Ok
+        }?.mapValues { it.value as AuthenticationProviderStatus.Ok } ?: emptyMap()
+    }
 
     var showEditDialog by remember { mutableStateOf(false) }
     var editingPolicy by remember { mutableStateOf<Policy?>(null) }
@@ -129,14 +132,13 @@ fun ReviewPoliciesScreen(
                     .fillMaxWidth()
             ) {
                 items(count = policies.size) { index ->
-                    val policy = policies[index]
                     PolicyCard(
                         modifier = Modifier.padding(
                             start = LocalSpacing.current.small,
                             end = LocalSpacing.current.small,
                             bottom = LocalSpacing.current.small,
                         ),
-                        policy = policy,
+                        policy = policies[index],
                         methods = methods,
                         providers = providers,
                         index = index,

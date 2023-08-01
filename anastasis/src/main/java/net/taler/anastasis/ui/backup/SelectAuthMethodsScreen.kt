@@ -71,17 +71,18 @@ fun SelectAuthMethodsScreen(
     val selectedMethods = reducerState.authenticationMethods ?: emptyList()
 
     // Get only known methods of providers with "ok" status
-    val availableMethods = authProviders.flatMap { entry ->
-        if (entry.value is AuthenticationProviderStatus.Ok) {
-            (entry.value as AuthenticationProviderStatus.Ok).methods.map { it.type }
-                .filter { it != AuthMethod.Type.Unknown }
-        } else emptyList()
-    }.distinct()
+    val availableMethods = remember(authProviders) {
+        authProviders.flatMap { entry ->
+            if (entry.value is AuthenticationProviderStatus.Ok) {
+                (entry.value as AuthenticationProviderStatus.Ok).methods.map { it.type }
+                    .filter { it != AuthMethod.Type.Unknown }
+            } else emptyList()
+        }.distinct()
+    }
 
     var showEditDialog by remember { mutableStateOf(false) }
     var methodType by remember { mutableStateOf<AuthMethod.Type?>(null) }
     var method by remember { mutableStateOf<AuthMethod?>(null) }
-
     val reset = {
         showEditDialog = false
         methodType = null

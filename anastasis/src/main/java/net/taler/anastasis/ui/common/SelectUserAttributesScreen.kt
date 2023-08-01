@@ -69,6 +69,12 @@ fun SelectUserAttributesScreen(
         *identityAttributes.toList().toTypedArray()
     ) }
 
+    val enableNext = remember(userAttributes, values) {
+        userAttributes.fold(true) { a, b ->
+            a && (fieldStatus(b, values[b.name]) == FieldStatus.Valid)
+        }
+    }
+
     WizardPage(
         title = stringResource(R.string.select_user_attributes_title),
         onBackClicked = { viewModel.goHome() },
@@ -76,9 +82,7 @@ fun SelectUserAttributesScreen(
         onNextClicked = {
             viewModel.reducerManager.enterUserAttributes(values)
         },
-        enableNext = userAttributes.fold(true) { a, b ->
-            a && (fieldStatus(b, values[b.name]) == FieldStatus.Valid)
-        }
+        enableNext = enableNext,
     ) { scrollConnection ->
         LazyColumn(
             modifier = Modifier
@@ -87,13 +91,13 @@ fun SelectUserAttributesScreen(
             verticalArrangement = Arrangement.Top,
         ) {
             items(items = userAttributes) { attr ->
-                val status = fieldStatus(attr, values[attr.name])
-                val supportingText: @Composable () -> Unit = @Composable {
-                    status.msgRes?.let {
-                        Text(stringResource(it))
-                    } ?: if (attr.optional == true) {
-                        Text(stringResource(R.string.field_optional))
-                    } else {}
+                val status = remember(attr, values) {
+                    fieldStatus(attr, values[attr.name])
+                }
+                val supportingRes = remember(attr, status) {
+                    status.msgRes ?: if (attr.optional == true) {
+                        R.string.field_optional
+                    } else null
                 }
                 when (attr.type) {
                     "string" -> OutlinedTextField(
@@ -106,7 +110,9 @@ fun SelectUserAttributesScreen(
                         value = values[attr.name] ?: "",
                         onValueChange = { values[attr.name] = it },
                         isError = status.error,
-                        supportingText = supportingText,
+                        supportingText = {
+                            supportingRes?.let { Text(stringResource(it)) }
+                        },
                         label = { Text(attr.label) },
                     )
                     "date" -> DatePickerField(
@@ -118,7 +124,9 @@ fun SelectUserAttributesScreen(
                             .fillMaxWidth(),
                         label = attr.label,
                         isError = status.error,
-                        supportingText = supportingText,
+                        supportingText = {
+                            supportingRes?.let { Text(stringResource(it)) }
+                        },
                         date = values[attr.name]?.toLocalDate(),
                         onDateSelected = { date ->
                             values[attr.name] = Utils.formatDate(date)

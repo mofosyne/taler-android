@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,7 +44,9 @@ fun EditPolicyForm(
     onPolicyEdited: (policy: Policy) -> Unit,
 ) {
     val localPolicy = policy ?: Policy(methods = listOf())
-    val localMethods = localPolicy.methods.associateBy { it.authenticationMethod }
+    val localMethods = remember(localPolicy.methods) {
+        localPolicy.methods.associateBy { it.authenticationMethod }
+    }
     val submitLocalMethods = { it: MutableMap<Int, Policy.PolicyMethod>.() -> Unit ->
         onPolicyEdited(
             localPolicy.copy(
@@ -59,8 +62,10 @@ fun EditPolicyForm(
     ) {
         methods.forEachIndexed { index, method ->
             // Get only the providers that support this method type
-            val methodProviders = providers.filterValues { provider ->
-                method.type in provider.methods.map { it.type }
+            val methodProviders = remember(providers) {
+                providers.filterValues { provider ->
+                    method.type in provider.methods.map { it.type }
+                }
             }
             val providerUrls = methodProviders.keys.toList()
             val selectedProvider = localMethods[index]?.provider

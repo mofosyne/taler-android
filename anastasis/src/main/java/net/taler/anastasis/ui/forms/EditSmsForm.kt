@@ -55,7 +55,9 @@ fun EditSmsForm(
     val context = LocalContext.current
     val focusRequester1 = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    val status = fieldStatus(localMethod.challenge)
+    val status = remember(localMethod.challenge) {
+        fieldStatus(localMethod.challenge)
+    }
 
     OutlinedTextField(
         modifier = Modifier
