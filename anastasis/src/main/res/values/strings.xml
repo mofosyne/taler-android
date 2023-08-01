@@ -21,6 +21,8 @@
     <string name="continent">Continent</string>
     <string name="question">Security question</string>
     <string name="answer">Answer</string>
+    <string name="email">E-mail</string>
+    <string name="sms">SMS</string>
     <string name="policy_n">Policy %1$d</string>
     <string name="provided_by">Provided by %1$s</string>
     <string name="disabled">Disabled</string>
@@ -51,6 +53,8 @@
     <string name="auth_method_iban">IBAN</string>
     <string name="auth_method_mail">Mail</string>
     <string name="auth_method_totp">TOTP</string>
+    <string name="auth_instruction_email">Email to %1$s</string>
+    <string name="auth_instruction_sms">Sms to %1$s</string>
     <string name="backup_providers">Manage backup providers</string>
     <string name="add_challenge">Add challenge</string>
     <string name="add_policy">Add policy</string>

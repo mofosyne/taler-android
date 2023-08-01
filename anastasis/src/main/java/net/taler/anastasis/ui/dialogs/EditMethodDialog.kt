@@ -28,7 +28,9 @@ import androidx.compose.ui.res.stringResource
 import net.taler.anastasis.R
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.AuthMethod
+import net.taler.anastasis.ui.forms.EditEmailForm
 import net.taler.anastasis.ui.forms.EditQuestionForm
+import net.taler.anastasis.ui.forms.EditSmsForm
 
 @Composable
 fun EditMethodDialog(
@@ -47,9 +49,15 @@ fun EditMethodDialog(
                when(type ?: method?.type) {
                    AuthMethod.Type.Question -> EditQuestionForm(
                        method = localMethod,
-                       onMethodEdited = {
-                           localMethod = it
-                       },
+                       onMethodEdited = { localMethod = it },
+                   )
+                   AuthMethod.Type.Sms -> EditSmsForm(
+                       method = localMethod,
+                       onMethodEdited = { localMethod = it }
+                   )
+                   AuthMethod.Type.Email -> EditEmailForm(
+                       method = localMethod,
+                       onMethodEdited = { localMethod = it }
                    )
                    else -> {}
                }

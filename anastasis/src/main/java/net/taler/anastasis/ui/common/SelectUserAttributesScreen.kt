@@ -93,7 +93,7 @@ fun SelectUserAttributesScreen(
                         Text(stringResource(it))
                     } ?: if (attr.optional == true) {
                         Text(stringResource(R.string.field_optional))
-                    } else null
+                    } else {}
                 }
                 when (attr.type) {
                     "string" -> OutlinedTextField(
@@ -131,7 +131,7 @@ fun SelectUserAttributesScreen(
     }
 }
 
-fun fieldStatus(
+private fun fieldStatus(
     field: UserAttributeSpec,
     value: String? = null,
 ): FieldStatus = if (value == null) {

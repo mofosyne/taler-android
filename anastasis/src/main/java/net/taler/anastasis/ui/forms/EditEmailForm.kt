@@ -16,7 +16,7 @@
 
 package net.taler.anastasis.ui.forms
 
-import androidx.compose.foundation.layout.Column
+import android.util.Patterns
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,61 +29,66 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
+import net.taler.anastasis.shared.FieldStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditQuestionForm(
+fun EditEmailForm(
     method: AuthMethod? = null,
     onMethodEdited: (method: AuthMethod) -> Unit,
 ) {
     val localMethod = method ?: AuthMethod(
-        type = AuthMethod.Type.Question,
-        instructions = "",
+        type = AuthMethod.Type.Email,
+        instructions = stringResource(R.string.auth_instruction_email, ""),
         challenge = "",
         mimeType = "text/plain",
     )
 
+    val context = LocalContext.current
     val focusRequester1 = remember { FocusRequester() }
-    val focusRequester2 = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val status = fieldStatus(localMethod.challenge)
 
-    Column {
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester1)
-                .fillMaxWidth(),
-            value = localMethod.instructions,
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusRequester2.requestFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(instructions = it))
-            },
-            label = { Text(stringResource(R.string.question)) },
-        )
-
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester2)
-                .fillMaxWidth(),
-            value = localMethod.challenge,
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(challenge = it))
-            },
-            label = { Text(stringResource(R.string.answer)) },
-        )
-    }
+    OutlinedTextField(
+        modifier = Modifier
+            .focusRequester(focusRequester1)
+            .fillMaxWidth(),
+        value = localMethod.challenge,
+        isError = status.error,
+        supportingText = {
+            status.msgRes?.let { Text(stringResource(it)) }
+        },
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        onValueChange = {
+            onMethodEdited(localMethod.copy(
+                instructions = context.getString(R.string.auth_instruction_email, it),
+                challenge = it,
+            ))
+        },
+        label = { Text(stringResource(R.string.email)) },
+    )
 
     LaunchedEffect(Unit) {
         focusRequester1.requestFocus()
     }
+}
 
+private fun fieldStatus(email: String): FieldStatus = if (email.isBlank()) {
+    FieldStatus.Blank
+} else if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+    FieldStatus.Valid
+} else {
+    FieldStatus.Invalid
 }
