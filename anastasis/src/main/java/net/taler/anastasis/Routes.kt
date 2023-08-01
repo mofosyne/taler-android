@@ -13,7 +13,9 @@ sealed class Routes(
 
     // Backup
     object SelectAuthMethods: Routes("select_auth_methods")
-    object ReviewPoliciesScreen: Routes("review_policies")
+    object ReviewPolicies: Routes("review_policies")
+    object EditSecret: Routes("edit_secret")
+    object BackupFinished: Routes("backup_finished")
 
     // Restore
     object RestoreInit: Routes("restore")

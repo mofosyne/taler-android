@@ -28,17 +28,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
+import net.taler.anastasis.models.BackupStates
+import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.components.Picker
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
+import net.taler.anastasis.viewmodels.ReducerViewModelI
 
 @Composable
 fun SelectContinentScreen(
-    viewModel: ReducerViewModel = hiltViewModel(),
+    viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
 ) {
     val reducerState by viewModel.reducerState.collectAsState()
     val continents = when (val state = reducerState) {
@@ -66,7 +71,7 @@ fun SelectContinentScreen(
         onBackClicked = { viewModel.goHome() },
         onNextClicked = {
             localContinent?.let {
-                viewModel.reducerManager.selectContinent(it)
+                viewModel.reducerManager?.selectContinent(it)
             }
         },
     ) {
@@ -88,4 +93,21 @@ fun SelectContinentScreen(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun SelectContinentScreenPreview() {
+    SelectContinentScreen(
+        viewModel = FakeReducerViewModel(
+            state = ReducerState.Backup(
+                backupState = BackupStates.ContinentSelecting,
+                selectedContinent = "Europe",
+                continents = listOf(
+                    ContinentInfo(name = "Europe"),
+                    ContinentInfo(name = "North America"),
+                )
+            )
+        )
+    )
 }

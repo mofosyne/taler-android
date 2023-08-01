@@ -18,7 +18,9 @@ package net.taler.common
 
 import kotlin.math.floor
 
-object CyptoUtils {
+object CryptoUtils {
+    private const val encTable = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+
     internal fun getValue(c: Char): Int {
         val a = when (c) {
             'o','O' -> '0'
@@ -39,6 +41,30 @@ object CyptoUtils {
             return A - 'A' + 10 - dec
         }
         throw Error("encoding error")
+    }
+
+    fun encodeCrock(bytes: ByteArray): String {
+        var sb = ""
+        val size = bytes.size
+        var bitBuf = 0
+        var numBits = 0
+        var pos = 0
+        while (pos < size || numBits > 0) {
+            if (pos < size && numBits < 5) {
+                val d = bytes[pos++]
+                bitBuf = bitBuf.shl(8).or(d.toInt())
+                numBits += 8
+            }
+            if (numBits < 5) {
+                // zero-padding
+                bitBuf = bitBuf.shl(5 - numBits)
+                numBits = 5
+            }
+            val v = bitBuf.ushr(numBits - 5).and(31)
+            sb += encTable[v]
+            numBits -= 5
+        }
+        return sb
     }
 
     fun decodeCrock(e: String): ByteArray {

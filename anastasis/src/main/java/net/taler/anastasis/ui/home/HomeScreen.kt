@@ -51,7 +51,7 @@ fun HomeScreen(
                 icon = { Icon(Icons.Outlined.Upload, null) },
                 headline = stringResource(R.string.backup_secret),
                 onClick = {
-                    viewModel.reducerManager.startBackup()
+                    viewModel.reducerManager?.startBackup()
                 },
             )
 
@@ -64,7 +64,7 @@ fun HomeScreen(
                 icon = { Icon(Icons.Outlined.Download, null) },
                 headline = stringResource(R.string.recover_secret),
                 onClick = {
-                    viewModel.reducerManager.startRecovery()
+                    viewModel.reducerManager?.startRecovery()
                 },
             )
 

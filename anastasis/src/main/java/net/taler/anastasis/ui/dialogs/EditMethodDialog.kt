@@ -26,11 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import net.taler.anastasis.R
-import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.ui.forms.EditEmailForm
 import net.taler.anastasis.ui.forms.EditQuestionForm
 import net.taler.anastasis.ui.forms.EditSmsForm
+import net.taler.common.CryptoUtils
 
 @Composable
 fun EditMethodDialog(
@@ -40,7 +40,7 @@ fun EditMethodDialog(
     onCancel: () -> Unit,
 ) {
     var localMethod by remember { mutableStateOf(method?.copy(
-        challenge = Utils.decodeBase32(method.challenge),
+        challenge = CryptoUtils.decodeCrock(method.challenge).toString(Charsets.UTF_8),
     )) }
     AlertDialog(
         onDismissRequest = onCancel,
@@ -73,7 +73,9 @@ fun EditMethodDialog(
             TextButton(onClick = {
                 localMethod?.let { onMethodEdited(
                     it.copy(
-                        challenge = Utils.encodeBase32(it.challenge)
+                        challenge = CryptoUtils.encodeCrock(
+                            it.challenge.toByteArray(Charsets.UTF_8),
+                        )
                     )
                 ) }
             }) {

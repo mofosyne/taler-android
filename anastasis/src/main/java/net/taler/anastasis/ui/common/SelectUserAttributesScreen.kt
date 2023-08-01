@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -34,23 +36,29 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.datetime.toLocalDate
 import net.taler.anastasis.R
-import net.taler.anastasis.shared.Utils
+import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.models.UserAttributeSpec
 import net.taler.anastasis.shared.FieldStatus
+import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.reusable.components.DatePickerField
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
+import net.taler.anastasis.viewmodels.ReducerViewModelI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectUserAttributesScreen(
-    viewModel: ReducerViewModel = hiltViewModel(),
+    viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
 ) {
     val reducerState by viewModel.reducerState.collectAsState()
     val userAttributes = when (val state = reducerState) {
@@ -69,18 +77,18 @@ fun SelectUserAttributesScreen(
         *identityAttributes.toList().toTypedArray()
     ) }
 
-    val enableNext = remember(userAttributes, values) {
-        userAttributes.fold(true) { a, b ->
-            a && (fieldStatus(b, values[b.name]) == FieldStatus.Valid)
-        }
+    val enableNext = userAttributes.fold(true) { a, b ->
+        a && (fieldStatus(b, values[b.name]) == FieldStatus.Valid)
     }
+
+    val focusManager = LocalFocusManager.current
 
     WizardPage(
         title = stringResource(R.string.select_user_attributes_title),
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
-            viewModel.reducerManager.enterUserAttributes(values)
+            viewModel.reducerManager?.enterUserAttributes(values)
         },
         enableNext = enableNext,
     ) { scrollConnection ->
@@ -91,9 +99,7 @@ fun SelectUserAttributesScreen(
             verticalArrangement = Arrangement.Top,
         ) {
             items(items = userAttributes) { attr ->
-                val status = remember(attr, values) {
-                    fieldStatus(attr, values[attr.name])
-                }
+                val status = fieldStatus(attr, values[attr.name])
                 val supportingRes = remember(attr, status) {
                     status.msgRes ?: if (attr.optional == true) {
                         R.string.field_optional
@@ -108,6 +114,8 @@ fun SelectUserAttributesScreen(
                             )
                             .fillMaxWidth(),
                         value = values[attr.name] ?: "",
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         onValueChange = { values[attr.name] = it },
                         isError = status.error,
                         supportingText = {
@@ -152,4 +160,36 @@ private fun fieldStatus(
         } ?: FieldStatus.Valid
     } else if (field.optional == true)
         FieldStatus.Valid else FieldStatus.Blank
+}
+
+@Preview
+@Composable
+fun SelectUserAttributesScreenPreview() {
+    SelectUserAttributesScreen(
+        viewModel = FakeReducerViewModel(
+            state = ReducerState.Backup(
+                backupState = BackupStates.UserAttributesCollecting,
+                identityAttributes = mapOf(
+                    "full_name" to "Max Musterman",
+                    "birthdate" to "2000-01-01",
+                ),
+                requiredAttributes = listOf(
+                    UserAttributeSpec(
+                        type = "string",
+                        name = "full_name",
+                        label = "Full name",
+                        widget = "anastasis_gtk_ia_full_name",
+                        uuid = "9e8f463f-575f-42cb-85f3-759559997331",
+                    ),
+                    UserAttributeSpec(
+                        type = "date",
+                        name = "birthdate",
+                        label = "Birthdate",
+                        widget = "anastasis_gtk_ia_birthdate",
+                        uuid = "83d655c7-bdb6-484d-904e-80c1058c8854",
+                    ),
+                ),
+            ),
+        ),
+    )
 }

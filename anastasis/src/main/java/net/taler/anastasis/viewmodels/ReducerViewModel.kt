@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import net.taler.anastasis.Routes
@@ -31,15 +32,25 @@ import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.reducers.ReducerManager
 import javax.inject.Inject
 
+interface ReducerViewModelI {
+    val reducerManager: ReducerManager?
+    val reducerState: StateFlow<ReducerState?>
+    val reducerError: StateFlow<TalerErrorInfo?>
+
+    fun goBack(): Boolean
+    fun goHome()
+    fun cleanError()
+}
+
 @HiltViewModel
-class ReducerViewModel @Inject constructor(): ViewModel() {
+class ReducerViewModel @Inject constructor(): ViewModel(), ReducerViewModelI {
     private val api = AnastasisReducerApi()
-    val reducerManager: ReducerManager
+    override val reducerManager: ReducerManager?
 
     private val _reducerState = MutableStateFlow<ReducerState?>(null)
-    val reducerState = _reducerState.asStateFlow()
+    override val reducerState = _reducerState.asStateFlow()
     private val _reducerError = MutableStateFlow<TalerErrorInfo?>(null)
-    val reducerError = _reducerError.asStateFlow()
+    override val reducerError = _reducerError.asStateFlow()
     private val _navRoute = MutableStateFlow(Routes.Home.route)
     val navRoute = _navRoute.asStateFlow()
 
@@ -57,11 +68,11 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
                             reducerManager.startSyncingProviders()
                             Routes.SelectAuthMethods.route
                         }
-                        BackupStates.PoliciesReviewing -> Routes.ReviewPoliciesScreen.route
-                        BackupStates.SecretEditing -> TODO()
+                        BackupStates.PoliciesReviewing -> Routes.ReviewPolicies.route
+                        BackupStates.SecretEditing -> Routes.EditSecret.route
                         BackupStates.TruthsPaying -> TODO()
                         BackupStates.PoliciesPaying -> TODO()
-                        BackupStates.BackupFinished -> TODO()
+                        BackupStates.BackupFinished -> Routes.BackupFinished.route
                     }
                     is ReducerState.Recovery -> when (it.recoveryState) {
                         RecoveryStates.ContinentSelecting -> Routes.SelectContinent.route
@@ -79,14 +90,14 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    fun goBack(): Boolean = when (val state = reducerState.value) {
+    override fun goBack(): Boolean = when (val state = reducerState.value) {
         is ReducerState.Backup -> when (state.backupState) {
             BackupStates.ContinentSelecting -> {
                 goHome()
                 false
             }
             else -> {
-                reducerManager.back()
+                reducerManager?.back()
                 false
             }
         }
@@ -96,22 +107,43 @@ class ReducerViewModel @Inject constructor(): ViewModel() {
                 false
             }
             else -> {
-                reducerManager.back()
+                reducerManager?.back()
                 false
             }
         }
         is ReducerState.Error -> {
-            reducerManager.back()
+            reducerManager?.back()
             false
         }
         else -> true
     }
 
-    fun goHome() {
+    override fun goHome() {
         _reducerState.value = null
     }
 
-    fun cleanError() {
+    override fun cleanError() {
+        _reducerError.value = null
+    }
+}
+
+class FakeReducerViewModel(
+    state: ReducerState,
+    error: TalerErrorInfo? = null,
+): ReducerViewModelI {
+    override val reducerManager = null
+    private val _reducerState = MutableStateFlow<ReducerState?>(state)
+    override val reducerState: StateFlow<ReducerState?> = _reducerState.asStateFlow()
+    private val _reducerError = MutableStateFlow(error)
+    override val reducerError: StateFlow<TalerErrorInfo?> = _reducerError.asStateFlow()
+
+    override fun goBack(): Boolean = false
+
+    override fun goHome() {
+        _reducerState.value = null
+    }
+
+    override fun cleanError() {
         _reducerError.value = null
     }
 }

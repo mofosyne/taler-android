@@ -218,7 +218,7 @@ class ReducerManager(
                         this@ReducerManager.next()
                     }.onError { onError(it) }
                 }
-            }
+            }.onError { onError(it) }
         }
     }
 }

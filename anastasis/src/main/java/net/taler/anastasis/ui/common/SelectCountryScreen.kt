@@ -28,17 +28,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
+import net.taler.anastasis.models.BackupStates
+import net.taler.anastasis.models.CountryInfo
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.components.Picker
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
+import net.taler.anastasis.viewmodels.ReducerViewModelI
 
 @Composable
 fun SelectCountryScreen(
-    viewModel: ReducerViewModel = hiltViewModel(),
+    viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
 ) {
     val reducerState by viewModel.reducerState.collectAsState()
     val countries = when (val state = reducerState) {
@@ -66,7 +71,7 @@ fun SelectCountryScreen(
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
             localCountry?.let {
-                viewModel.reducerManager.selectCountry(it)
+                viewModel.reducerManager?.selectCountry(it)
             }
         },
     ) {
@@ -88,4 +93,29 @@ fun SelectCountryScreen(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun SelectCountryScreenPreview() {
+    SelectCountryScreen(
+        viewModel = FakeReducerViewModel(
+            state = ReducerState.Backup(
+                backupState = BackupStates.ContinentSelecting,
+                selectedCountry = "ch",
+                countries = listOf(
+                    CountryInfo(
+                        code = "ch",
+                        name = "Switzerland",
+                        continent = "Europe",
+                    ),
+                    CountryInfo(
+                        code = "de",
+                        name = "Germany",
+                        continent = "Europe",
+                    )
+                )
+            )
+        )
+    )
 }

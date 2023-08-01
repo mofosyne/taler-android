@@ -45,23 +45,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
+import net.taler.anastasis.models.BackupStates
+import net.taler.anastasis.models.MethodSpec
 import net.taler.anastasis.models.ReducerArgs
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.dialogs.EditMethodDialog
 import net.taler.anastasis.ui.reusable.components.ActionCard
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
+import net.taler.anastasis.viewmodels.ReducerViewModelI
 
 @Composable
 fun SelectAuthMethodsScreen(
-    viewModel: ReducerViewModel = hiltViewModel(),
+    viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
 ) {
     val state by viewModel.reducerState.collectAsState()
     val reducerState = state as? ReducerState.Backup
@@ -99,7 +104,7 @@ fun SelectAuthMethodsScreen(
             onMethodEdited = {
                 reset()
                 Log.d("onMethodEdited", it.challenge)
-                viewModel.reducerManager.addAuthentication(
+                viewModel.reducerManager?.addAuthentication(
                     ReducerArgs.AddAuthentication(it)
                 )
             }
@@ -111,7 +116,7 @@ fun SelectAuthMethodsScreen(
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
-            viewModel.reducerManager.next()
+            viewModel.reducerManager?.next()
         }
     ) { scroll ->
         AuthMethods(
@@ -123,7 +128,7 @@ fun SelectAuthMethodsScreen(
                 showEditDialog = true
             },
             onDeleteMethod = {
-                viewModel.reducerManager.deleteAuthentication(it)
+                viewModel.reducerManager?.deleteAuthentication(it)
             },
         )
     }
@@ -230,4 +235,60 @@ private fun ChallengeCard(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun SelectAuthMethodsScreenPreview() {
+    SelectAuthMethodsScreen(
+        viewModel = FakeReducerViewModel(
+            state = ReducerState.Backup(
+                backupState = BackupStates.AuthenticationsEditing,
+                authenticationMethods = listOf(
+                    AuthMethod(
+                        type = AuthMethod.Type.Question,
+                        mimeType = "text/plain",
+                        challenge = "E1QPPS8A",
+                        instructions = "What is your favorite GNU package?",
+                    ),
+                    AuthMethod(
+                        type = AuthMethod.Type.Email,
+                        instructions = "E-mail to user@*le.com",
+                        challenge = "ENSPAWJ0CNW62VBGDHJJWRVFDM50",
+                    )
+                ),
+                authenticationProviders = mapOf(
+                    "http://localhost:8088/" to AuthenticationProviderStatus.Ok(
+                        httpStatus = 200,
+                        methods = listOf(
+                            MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
+                            MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
+                        ),
+                        annualFee = "EUR:0.99",
+                        truthUploadFee = "EUR:3.99",
+                        liabilityLimit = "EUR:1",
+                        currency = "EUR",
+                        storageLimitInMegabytes = 1,
+                        businessName = "Anastasis 4",
+                        providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
+                    ),
+                    "http://localhost:8089/" to AuthenticationProviderStatus.Ok(
+                        httpStatus = 200,
+                        methods = listOf(
+                            MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
+                            MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
+                        ),
+                        annualFee = "EUR:0.99",
+                        truthUploadFee = "EUR:3.99",
+                        liabilityLimit = "EUR:1",
+                        currency = "EUR",
+                        storageLimitInMegabytes = 1,
+                        businessName = "Anastasis 2",
+                        providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
+                    ),
+                ),
+
+            )
+        )
+    )
 }

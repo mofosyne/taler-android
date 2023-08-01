@@ -105,7 +105,7 @@ class Bech32 {
 
         fun generateFakeSegwitAddress(reservePub: String?, addr: String): List<String> {
             if (reservePub == null || reservePub.isEmpty()) return listOf()
-            val pub = CyptoUtils.decodeCrock(reservePub)
+            val pub = CryptoUtils.decodeCrock(reservePub)
             if (pub.size != 32) return listOf()
 
             val firstRnd = pub.copyOfRange(0, 4)
