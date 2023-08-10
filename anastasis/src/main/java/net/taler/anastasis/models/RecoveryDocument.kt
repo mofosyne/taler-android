@@ -48,9 +48,11 @@ data class EscrowMethod(
     val url: String,
     @SerialName("escrow_type")
     val escrowType: ChallengeType,
-    // TODO: uuid
-    // TODO: truth_key
-    // TODO: question_salt
+    val uuid: String,
+    @SerialName("truth_key")
+    val truthKey: String,
+    @SerialName("question_salt")
+    val questionSalt: String,
     @SerialName("provider_salt")
     val providerSalt: String,
     val instructions: String,

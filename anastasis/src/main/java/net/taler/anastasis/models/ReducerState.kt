@@ -111,7 +111,15 @@ sealed class ReducerState {
         val coreSecret: CoreSecret? = null,
         @SerialName("authentication_providers")
         val authenticationProviders: Map<String, AuthenticationProviderStatus>? = null,
-    ): ReducerState()
+        val discoveryState: DiscoveryState? = null,
+    ): ReducerState() {
+        @Serializable
+        data class DiscoveryState(
+            val state: String,
+            val aggregatedPolicies: List<AggregatedPolicyMetaInfo>,
+            val cursor: DiscoveryCursor? = null,
+        )
+    }
 
     @Serializable
     @SerialName("error")
@@ -205,7 +213,7 @@ data class AuthMethod(
 @Serializable
 data class ChallengeInfo(
     val instructions: String,
-    val type: String,
+    val type: AuthMethod.Type,
     val uuid: String,
 )
 
@@ -324,8 +332,6 @@ data class MethodSpec(
     val usageFee: String,
 )
 
-
-
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 @JsonClassDiscriminator("status")
@@ -380,21 +386,54 @@ sealed class AuthenticationProviderStatus {
 // TODO: PolicyMember
 
 @Serializable
-data class SelectedVersionInfoProviders(
-    val url: String,
+data class SelectedVersionInfo(
+    val attributeMask: Int? = null,
+    val providers: List<Provider>,
+) {
+    @Serializable
+    data class Provider(
+        val url: String,
+        val version: Int,
+    )
+}
+
+@Serializable
+data class DiscoveryCursor(
+    val position: Position
+) {
+    @Serializable
+    data class Position(
+        @SerialName("provider_url")
+        val providerUrl: String,
+        val mask: Int,
+        @SerialName("max_version")
+        val maxVersion: Int? = null,
+    )
+}
+
+@Serializable
+data class PolicyMetaInfo(
+    @SerialName("policy_hash")
+    val policyHash: String,
+    @SerialName("provider_url")
+    val providerUrl: String,
     val version: Int,
+    @SerialName("attribute_mask")
+    val attributeMask: Int,
+    @SerialName("server_time")
+    val serverTime: Timestamp,
+    @SerialName("secret_name")
+    val secretName: String? = null,
 )
 
 @Serializable
-data class SelectedVersionInfo(
+data class AggregatedPolicyMetaInfo(
+    @SerialName("secret_name")
+    val secretName: String? = null,
+    @SerialName("policy_hash")
+    val policyHash: String,
+    @SerialName("attribute_mask")
     val attributeMask: Int,
-    val providers: SelectedVersionInfoProviders,
+    @SerialName("providers")
+    val providers: List<SelectedVersionInfo.Provider>,
 )
-
-// TODO: DiscoveryCursor
-
-// TODO: PolicyMetaInfo
-
-// TODO: AggregatedPolicyMetaInfo
-
-// TODO: DiscoveryResult

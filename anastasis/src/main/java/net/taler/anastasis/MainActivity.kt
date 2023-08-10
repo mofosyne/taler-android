@@ -19,11 +19,14 @@ import net.taler.anastasis.ui.backup.BackupFinishedScreen
 import net.taler.anastasis.ui.backup.EditSecretScreen
 import net.taler.anastasis.ui.backup.ReviewPoliciesScreen
 import net.taler.anastasis.ui.backup.SelectAuthMethodsScreen
+import net.taler.anastasis.ui.common.LoadingScreen
 import net.taler.anastasis.ui.common.SelectContinentScreen
 import net.taler.anastasis.ui.common.SelectCountryScreen
 import net.taler.anastasis.ui.common.SelectUserAttributesScreen
 import net.taler.anastasis.ui.dialogs.ErrorDialog
 import net.taler.anastasis.ui.home.HomeScreen
+import net.taler.anastasis.ui.recovery.SelectChallengeScreen
+import net.taler.anastasis.ui.recovery.SelectSecretScreen
 import net.taler.anastasis.ui.theme.AnastasisTheme
 import net.taler.anastasis.viewmodels.ReducerViewModel
 
@@ -65,33 +68,54 @@ fun MainNavHost(
     }
 
     val navRoute by viewModel.navRoute.collectAsState()
-    when (navRoute) {
-        Routes.Home.route -> {
-            HomeScreen()
-        }
-        Routes.SelectContinent.route -> {
-            SelectContinentScreen()
-        }
-        Routes.SelectCountry.route -> {
-            SelectCountryScreen()
-        }
-        Routes.SelectUserAttributes.route -> {
-            SelectUserAttributesScreen()
-        }
-        Routes.SelectAuthMethods.route -> {
-            SelectAuthMethodsScreen()
-        }
-        Routes.ReviewPolicies.route -> {
-            ReviewPoliciesScreen()
-        }
-        Routes.EditSecret.route -> {
-            EditSecretScreen()
-        }
-        Routes.BackupFinished.route -> {
-            BackupFinishedScreen()
-        }
-        Routes.RestoreInit.route -> {
-            Text("This is the restore session screen!")
+    val tasks by viewModel.tasks.collectAsState()
+    if (tasks.isForegroundLoading) {
+        LoadingScreen()
+    } else {
+        when (navRoute) {
+            Routes.Home.route -> {
+                HomeScreen()
+            }
+
+            Routes.SelectContinent.route -> {
+                SelectContinentScreen()
+            }
+
+            Routes.SelectCountry.route -> {
+                SelectCountryScreen()
+            }
+
+            Routes.SelectUserAttributes.route -> {
+                SelectUserAttributesScreen()
+            }
+
+            Routes.SelectAuthMethods.route -> {
+                SelectAuthMethodsScreen()
+            }
+
+            Routes.ReviewPolicies.route -> {
+                ReviewPoliciesScreen()
+            }
+
+            Routes.EditSecret.route -> {
+                EditSecretScreen()
+            }
+
+            Routes.BackupFinished.route -> {
+                BackupFinishedScreen()
+            }
+
+            Routes.SelectSecret.route -> {
+                SelectSecretScreen()
+            }
+
+            Routes.SelectChallenge.route -> {
+                SelectChallengeScreen()
+            }
+
+            Routes.RestoreInit.route -> {
+                Text("This is the restore session screen!")
+            }
         }
     }
 }

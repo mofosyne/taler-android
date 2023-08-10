@@ -66,4 +66,9 @@
     <string name="secret_text">Secret text</string>
     <string name="backup_stored_providers">Your backup is being stored by the following providers:</string>
     <string name="backup_policy_detail">Version %1$d expires at %2$s</string>
+
+    <!-- Recovery -->
+    <string name="select_secret_title">Select secret</string>
+    <string name="select_challenge_title">Select challenge</string>
+    <string name="challenge_solve">Solve</string>
 </resources>

@@ -22,12 +22,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.decodeFromJsonElement
-import net.taler.anastasis.shared.Utils.encodeToNativeJson
+import net.taler.anastasis.models.DiscoveryCursor
 import net.taler.anastasis.models.ReducerState
+import net.taler.anastasis.shared.Utils.encodeToNativeJson
 import net.taler.common.ApiResponse
 import net.taler.common.ApiResponse.*
 import net.taler.common.TalerErrorCode
-import net.taler.common.TalerErrorCode.NONE
 import org.json.JSONObject
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -61,6 +61,19 @@ class AnastasisReducerApi() {
         }
     }
 
+    suspend inline fun discoverPolicies(
+        state: ReducerState,
+    ): WalletResponse<ReducerState> = withContext(Dispatchers.Default) {
+        val json = BackendManager.json
+        val cursor = (state as? ReducerState.Recovery)?.discoveryState?.cursor
+        val args = JSONObject().apply {
+            put("state", JSONObject(json.encodeToString(ReducerState.serializer(), state)))
+            if (cursor != null)
+                put("cursor", JSONObject(json.encodeToString(DiscoveryCursor.serializer(), cursor)))
+        }
+        handleResponse(sendRequest("anastasisDiscoverPolicies", args))
+    }
+
     suspend inline fun reduceAction(
         state: ReducerState,
         action: String,
@@ -72,32 +85,7 @@ class AnastasisReducerApi() {
             put("action", action)
             if (args != null) put("args", args.invoke(JSONObject()))
         }
-        try {
-            when (val response = sendRequest("anastasisReduce", body)) {
-                is Response -> {
-                    when (val t = json.decodeFromJsonElement<ReducerState>(response.result)) {
-                        is ReducerState.Recovery, is ReducerState.Backup -> {
-                            WalletResponse.Success(t)
-                        }
-                        is ReducerState.Error -> {
-                            WalletResponse.Error(
-                                TalerErrorInfo(
-                                    code = TalerErrorCode.fromInt(t.code),
-                                    hint = t.hint,
-                                )
-                            )
-                        }
-                    }
-                }
-                is Error -> {
-                    val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
-                    WalletResponse.Error(error)
-                }
-            }
-        } catch (e: Exception) {
-            val info = TalerErrorInfo(NONE, "", e.toString())
-            WalletResponse.Error(info)
-        }
+        handleResponse(sendRequest("anastasisReduce", body))
     }
 
     suspend inline fun <reified T> reduceAction(
@@ -111,28 +99,31 @@ class AnastasisReducerApi() {
             put("action", action)
             if (args != null) put("args", json.encodeToNativeJson(args))
         }
-        try {
-            when (val response = sendRequest("anastasisReduce", body)) {
-                is Response -> {
-                    when (val t = json.decodeFromJsonElement<ReducerState>(response.result)) {
-                        is ReducerState.Recovery, is ReducerState.Backup -> {
-                            WalletResponse.Success(t)
-                        }
-                        is ReducerState.Error -> {
-                            WalletResponse.Error(
-                                TalerErrorInfo(
-                                    code = TalerErrorCode.fromInt(t.code),
-                                    hint = t.hint,
-                                )
+        handleResponse(sendRequest("anastasisReduce", body))
+    }
+
+    fun handleResponse(response: ApiResponse): WalletResponse<ReducerState>  {
+        val json = BackendManager.json
+        return when (response) {
+            is Response -> {
+                when (val t = json.decodeFromJsonElement<ReducerState>(response.result)) {
+                    is ReducerState.Recovery, is ReducerState.Backup -> {
+                        WalletResponse.Success(t)
+                    }
+                    is ReducerState.Error -> {
+                        WalletResponse.Error(
+                            TalerErrorInfo(
+                                code = TalerErrorCode.fromInt(t.code),
+                                hint = t.hint,
                             )
-                        }
+                        )
                     }
                 }
-                is Error -> error("invalid reducer response")
             }
-        } catch (e: Exception) {
-            val info = TalerErrorInfo(NONE, "", e.toString())
-            WalletResponse.Error(info)
+            is Error -> {
+                val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
+                WalletResponse.Error(error)
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import net.taler.anastasis.Routes
 import net.taler.anastasis.backend.AnastasisReducerApi
 import net.taler.anastasis.backend.TalerErrorInfo
+import net.taler.anastasis.backend.Tasks
 import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
@@ -36,6 +37,7 @@ interface ReducerViewModelI {
     val reducerManager: ReducerManager?
     val reducerState: StateFlow<ReducerState?>
     val reducerError: StateFlow<TalerErrorInfo?>
+    val tasks: StateFlow<Tasks>
 
     fun goBack(): Boolean
     fun goHome()
@@ -51,14 +53,17 @@ class ReducerViewModel @Inject constructor(): ViewModel(), ReducerViewModelI {
     override val reducerState = _reducerState.asStateFlow()
     private val _reducerError = MutableStateFlow<TalerErrorInfo?>(null)
     override val reducerError = _reducerError.asStateFlow()
+    private val _tasks = MutableStateFlow(Tasks())
+    override val tasks = _tasks.asStateFlow()
     private val _navRoute = MutableStateFlow(Routes.Home.route)
     val navRoute = _navRoute.asStateFlow()
 
     init {
-        reducerManager = ReducerManager(_reducerState, _reducerError, api, viewModelScope)
+        reducerManager = ReducerManager(_reducerState, _reducerError, _tasks, api, viewModelScope)
         viewModelScope.launch {
             _reducerState.collect {
                 reducerManager.stopSyncingProviders()
+                reducerManager.stopDiscoveringPolicies()
                 _navRoute.value = when (it) {
                     is ReducerState.Backup -> when (it.backupState) {
                         BackupStates.ContinentSelecting -> Routes.SelectContinent.route
@@ -78,8 +83,14 @@ class ReducerViewModel @Inject constructor(): ViewModel(), ReducerViewModelI {
                         RecoveryStates.ContinentSelecting -> Routes.SelectContinent.route
                         RecoveryStates.CountrySelecting -> Routes.SelectCountry.route
                         RecoveryStates.UserAttributesCollecting -> Routes.SelectUserAttributes.route
-                        RecoveryStates.SecretSelecting -> TODO()
-                        RecoveryStates.ChallengeSelecting -> TODO()
+                        RecoveryStates.SecretSelecting -> {
+                            reducerManager.startDiscoveringPolicies()
+                            Routes.SelectSecret.route
+                        }
+                        RecoveryStates.ChallengeSelecting -> {
+                            reducerManager.startSyncingProviders()
+                            Routes.SelectChallenge.route
+                        }
                         RecoveryStates.ChallengePaying -> TODO()
                         RecoveryStates.ChallengeSolving -> TODO()
                         RecoveryStates.RecoveryFinished -> TODO()
@@ -136,6 +147,8 @@ class FakeReducerViewModel(
     override val reducerState: StateFlow<ReducerState?> = _reducerState.asStateFlow()
     private val _reducerError = MutableStateFlow(error)
     override val reducerError: StateFlow<TalerErrorInfo?> = _reducerError.asStateFlow()
+    private val _loading = MutableStateFlow(Tasks())
+    override val tasks = _loading.asStateFlow()
 
     override fun goBack(): Boolean = false
 

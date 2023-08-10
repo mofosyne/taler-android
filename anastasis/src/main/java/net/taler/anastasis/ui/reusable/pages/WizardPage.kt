@@ -3,7 +3,6 @@ package net.taler.anastasis.ui.reusable.pages
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.anastasis.R
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WizardPage(
     modifier: Modifier = Modifier,
@@ -47,6 +47,7 @@ fun WizardPage(
     onBackClicked: () -> Unit = {},
     onNextClicked: () -> Unit = {},
     onPrevClicked: () -> Unit = {},
+    isLoading: Boolean = false,
     content: @Composable (nestedScrollConnection: NestedScrollConnection) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -69,6 +70,8 @@ fun WizardPage(
         Column(
             modifier = modifier.padding(it),
         ) {
+            if(isLoading)
+                LinearProgressIndicator(Modifier.fillMaxWidth())
             Box(modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()) {
@@ -120,6 +123,7 @@ fun WizardPage(
 fun WizardPagePreview() {
     WizardPage(
         title = "Title",
+        isLoading = true,
     ) {
         Box (
             modifier = Modifier.fillMaxSize(),

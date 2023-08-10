@@ -17,6 +17,10 @@ sealed class Routes(
     object EditSecret: Routes("edit_secret")
     object BackupFinished: Routes("backup_finished")
 
+    // Recovery
+    object SelectSecret: Routes("select_secret")
+    object SelectChallenge: Routes("select_challenge")
+
     // Restore
     object RestoreInit: Routes("restore")
 

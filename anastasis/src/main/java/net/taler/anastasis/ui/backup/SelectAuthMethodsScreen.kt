@@ -49,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.BackupStates
@@ -71,6 +70,9 @@ fun SelectAuthMethodsScreen(
     val state by viewModel.reducerState.collectAsState()
     val reducerState = state as? ReducerState.Backup
         ?: error("invalid reducer state type")
+
+    val tasks by viewModel.tasks.collectAsState()
+    val isLoading = tasks.isBackgroundLoading
 
     val authProviders = reducerState.authenticationProviders ?: emptyMap()
     val selectedMethods = reducerState.authenticationMethods ?: emptyList()
@@ -117,7 +119,8 @@ fun SelectAuthMethodsScreen(
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
             viewModel.reducerManager?.next()
-        }
+        },
+        isLoading = isLoading,
     ) { scroll ->
         AuthMethods(
             nestedScrollConnection = scroll,
@@ -213,25 +216,21 @@ private fun ChallengeCard(
     ElevatedCard(
         modifier = modifier,
     ) {
-        Column(modifier = Modifier.padding(LocalSpacing.current.medium)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(authMethod.type.icon, contentDescription = null)
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(authMethod.instructions, style = MaterialTheme.typography.titleMedium)
-                    Text(
-                        text = Utils.decodeBase32(authMethod.challenge),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 5.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.delete),
-                    )
-                }
+        Row(
+            modifier = Modifier.padding(LocalSpacing.current.medium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(authMethod.type.icon, contentDescription = null)
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(authMethod.instructions, style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete),
+                )
             }
         }
     }
