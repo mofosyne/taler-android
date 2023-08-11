@@ -215,6 +215,15 @@
     </fragment>
 
     <fragment
+        android:id="@+id/promptPayTemplate"
+        android:name="net.taler.wallet.payment.PayTemplateFragment"
+        android:label="@string/payment_pay_template_title">
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_transactions"
         android:name="net.taler.wallet.transactions.TransactionsFragment"
         android:label="@string/transactions_title"
@@ -370,6 +379,10 @@
     <action
         android:id="@+id/action_global_prompt_push_payment"
         app:destination="@id/promptPushPayment" />
+
+    <action
+        android:id="@+id/action_global_prompt_pay_template"
+        app:destination="@id/promptPayTemplate" />
 
     <action
         android:id="@+id/action_global_pending_operations"

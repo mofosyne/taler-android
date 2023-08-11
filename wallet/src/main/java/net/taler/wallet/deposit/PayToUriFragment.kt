@@ -155,6 +155,9 @@ private fun PayToComposable(
             }
         )
         CurrencyDropdown(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
             currencies = currencies,
             onCurrencyChanged = { c -> currency = c },
         )
@@ -187,15 +190,17 @@ private fun PayToComposable(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyDropdown(
+    modifier: Modifier = Modifier,
+    initialCurrency: String? = null,
     currencies: List<String>,
     onCurrencyChanged: (String) -> Unit,
 ) {
-    var selectedIndex by remember { mutableStateOf(0) }
+    val initialIndex = currencies.indexOf(initialCurrency)
+        .let { if (it < 0) null else it }
+    var selectedIndex by remember { mutableStateOf(initialIndex ?: 0) }
     var expanded by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center),
+        modifier = modifier,
     ) {
         OutlinedTextField(
             modifier = Modifier
