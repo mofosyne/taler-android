@@ -32,6 +32,7 @@ import net.taler.wallet.payment.PayStatus.InsufficientBalance
 import net.taler.wallet.payment.PreparePayResponse.AlreadyConfirmedResponse
 import net.taler.wallet.payment.PreparePayResponse.InsufficientBalanceResponse
 import net.taler.wallet.payment.PreparePayResponse.PaymentPossibleResponse
+import org.json.JSONObject
 
 val REGEX_PRODUCT_IMAGE = Regex("^data:image/(jpeg|png);base64,([A-Za-z0-9+/=]+)$")
 
@@ -100,6 +101,26 @@ class PaymentManager(
             abortProposal(ps.proposalId)
         }
         resetPayStatus()
+    }
+
+    fun preparePayForTemplate(url: String, params: Map<String, String>) = scope.launch {
+        api.request("preparePayForTemplate", PreparePayResponse.serializer()) {
+            put("talerPayTemplateUri", url)
+            put("templateParams", JSONObject().apply {
+                params.forEach { put(it.key, it.value) }
+            })
+        }.onError {
+            handleError("preparePayForTemplate", it)
+        }.onSuccess {  response ->
+            mPayStatus.value = when (response) {
+                is PaymentPossibleResponse -> response.toPayStatusPrepared()
+                is InsufficientBalanceResponse -> InsufficientBalance(
+                    response.contractTerms,
+                    response.amountRaw
+                )
+                is AlreadyConfirmedResponse -> AlreadyPaid
+            }
+        }
     }
 
     internal fun abortProposal(proposalId: String) = scope.launch {

@@ -290,6 +290,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     nav.navigate(R.id.action_global_prompt_push_payment)
                     model.peerManager.preparePeerPushCredit(u2)
                 }
+                action.startsWith("pay-template/", ignoreCase = true) -> {
+                    val bundle = bundleOf("uri" to u2)
+                    nav.navigate(R.id.action_global_prompt_pay_template, bundle)
+                }
                 else -> {
                     showError(R.string.error_unsupported_uri, "From: $from\nURI: $u2")
                 }
