@@ -218,6 +218,7 @@ class TransactionPayment(
     override val error: TalerErrorInfo? = null,
     override val amountRaw: Amount,
     override val amountEffective: Amount,
+    val posConfirmation: String? = null,
 ) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline
     override val detailPageNav = R.id.action_nav_transactions_detail_payment

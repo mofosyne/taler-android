@@ -104,6 +104,7 @@ class PaymentManager(
     }
 
     fun preparePayForTemplate(url: String, params: Map<String, String>) = scope.launch {
+        mPayStatus.value = PayStatus.Loading
         api.request("preparePayForTemplate", PreparePayResponse.serializer()) {
             put("talerPayTemplateUri", url)
             put("templateParams", JSONObject().apply {
