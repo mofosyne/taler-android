@@ -133,6 +133,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="payment_already_paid">You\'ve already paid for this purchase.</string>
     <string name="payment_pay_template_title">Customize your order</string>
     <string name="payment_create_order">Create order</string>
+    <string name="payment_confirmation_code">Confirmation code</string>
 
     <string name="receive_amount">Amount to receive</string>
     <string name="receive_amount_invalid">Amount invalid</string>

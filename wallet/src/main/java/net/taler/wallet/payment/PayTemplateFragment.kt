@@ -21,16 +21,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +48,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asFlow
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
@@ -84,15 +91,22 @@ class PayTemplateFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // TODO: this is not ideal, if the template is fixed, the
+        //  user shouldn't even have to go through this fragment.
         if (uri?.queryParameterNames?.isEmpty() == true) {
             createOrder(emptyMap())
         }
     }
 
-    fun createOrder(params: Map<String, String>) {
-        uriString?.let {
-            model.paymentManager.preparePayForTemplate(it, params,).invokeOnCompletion {
-                findNavController().navigate(R.id.action_global_promptPayment)
+    private fun createOrder(params: Map<String, String>) {
+        uriString ?: return
+        model.paymentManager.preparePayForTemplate(uriString!!, params,).invokeOnCompletion {
+            if (model.paymentManager.payStatus.value is PayStatus.Prepared) {
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.nav_main, true)
+                    .build()
+                findNavController()
+                    .navigate(R.id.action_global_promptPayment, null, navOptions)
             }
         }
     }
@@ -126,61 +140,99 @@ fun PayTemplateComposable(
         } else null,
     ) }
 
-    Column(horizontalAlignment = Alignment.End) {
-        if ("summary" in queryParams) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                value = summary!!,
-                isError = summary!!.isBlank(),
-                onValueChange = { summary = it },
-                singleLine = true,
-                label = { Text(stringResource(R.string.withdraw_manual_ready_subject)) },
-            )
-        }
+    val payStatus by model.paymentManager.payStatus.asFlow()
+        .collectAsState(initial = PayStatus.None)
 
-        if ("amount" in queryParams) {
-            AmountField(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                amount = amount!!,
-                currencies = currencies,
-                onAmountChosen = { amount = it },
-            )
-        }
-
-        Button(
-            modifier = Modifier.padding(16.dp),
-            enabled = summary == null || summary!!.isNotBlank(),
-            onClick = {
-                if (amount != null) {
-                    val result = model.createAmount(
-                        amount!!.amountStr,
-                        amount!!.currency,
-                    )
-                    when (result) {
-                        AmountResult.InsufficientBalance -> {
-                            fragment.showError(R.string.payment_balance_insufficient)
-                        }
-                        AmountResult.InvalidAmount -> {
-                            fragment.showError(R.string.receive_amount_invalid)
-                        }
-                        else -> {
-                            onSubmit(
-                                mutableMapOf<String, String>().apply {
-                                    if (summary != null) put("summary", summary!!)
-                                    if (amount != null) put("amount", amount!!.toJSONString())
-                                }
-                            )
-                        }
-                    }
-                }
-            },
+    // If wallet is empty, there's no way the user can pay something
+    if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(stringResource(R.string.payment_create_order))
+            Text(
+                stringResource(R.string.payment_balance_insufficient),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.error,
+            )
         }
+    } else when (payStatus) {
+        is PayStatus.None -> {
+            Column(horizontalAlignment = Alignment.End) {
+                if ("summary" in queryParams) {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        value = summary!!,
+                        isError = summary!!.isBlank(),
+                        onValueChange = { summary = it },
+                        singleLine = true,
+                        label = { Text(stringResource(R.string.withdraw_manual_ready_subject)) },
+                    )
+                }
+
+                if ("amount" in queryParams) {
+                    AmountField(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        amount = amount!!,
+                        currencies = currencies,
+                        onAmountChosen = { amount = it },
+                    )
+                }
+
+                Button(
+                    modifier = Modifier.padding(16.dp),
+                    enabled = summary == null || summary!!.isNotBlank(),
+                    onClick = {
+                        if (amount != null) {
+                            val result = model.createAmount(
+                                amount!!.amountStr,
+                                amount!!.currency,
+                            )
+                            when (result) {
+                                AmountResult.InsufficientBalance -> {
+                                    fragment.showError(R.string.payment_balance_insufficient)
+                                }
+                                AmountResult.InvalidAmount -> {
+                                    fragment.showError(R.string.receive_amount_invalid)
+                                }
+                                else -> {
+                                    onSubmit(
+                                        mutableMapOf<String, String>().apply {
+                                            if (summary != null) put("summary", summary!!)
+                                            if (amount != null) put("amount", amount!!.toJSONString())
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.payment_create_order))
+                }
+            }
+        }
+        is PayStatus.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) { CircularProgressIndicator() }
+        }
+        is PayStatus.AlreadyPaid -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    stringResource(R.string.payment_already_paid),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+        else -> {}
     }
 }
 

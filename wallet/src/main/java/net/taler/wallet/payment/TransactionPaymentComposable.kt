@@ -88,6 +88,12 @@ fun TransactionPaymentComposable(
             amount = t.amountEffective - t.amountRaw,
             amountType = AmountType.Negative,
         )
+        if (t.posConfirmation != null) {
+            TransactionInfoComposable(
+                label = stringResource(id = R.string.payment_confirmation_code),
+                info = t.posConfirmation,
+            )
+        }
         PurchaseDetails(info = t.info) {
             onFulfill(t.info.fulfillmentUrl ?: "")
         }
