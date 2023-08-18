@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -157,7 +158,7 @@ private fun PayToComposable(
         CurrencyDropdown(
             modifier = Modifier
                 .fillMaxSize()
-                .wrapContentSize(Alignment.Center),
+                .wrapContentSize(Center),
             currencies = currencies,
             onCurrencyChanged = { c -> currency = c },
         )
@@ -190,14 +191,13 @@ private fun PayToComposable(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyDropdown(
-    modifier: Modifier = Modifier,
-    initialCurrency: String? = null,
     currencies: List<String>,
     onCurrencyChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    initialCurrency: String? = null,
 ) {
-    val initialIndex = currencies.indexOf(initialCurrency)
-        .let { if (it < 0) null else it }
-    var selectedIndex by remember { mutableStateOf(initialIndex ?: 0) }
+    val initialIndex = currencies.indexOf(initialCurrency).let { if (it < 0) 0 else it }
+    var selectedIndex by remember { mutableStateOf(initialIndex) }
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = modifier,
