@@ -21,14 +21,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asFlow
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.showError
 
 class PayTemplateFragment : Fragment() {
 
@@ -46,13 +51,19 @@ class PayTemplateFragment : Fragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
+                val payStatus by model.paymentManager.payStatus
+                    .asFlow()
+                    .collectAsState(initial = PayStatus.None)
                 TalerSurface {
                     PayTemplateComposable(
                         uri = uri,
                         currencies = model.getCurrencies(),
-                        fragment = this@PayTemplateFragment,
-                        model = model,
+                        payStatus = payStatus,
+                        onCreateAmount = { text, currency ->
+                            model.createAmount(text, currency)
+                        },
                         onSubmit = { createOrder(it) },
+                        onError = { this@PayTemplateFragment.showError(it) },
                     )
                 }
             }
@@ -66,18 +77,29 @@ class PayTemplateFragment : Fragment() {
         if (uri.queryParameterNames?.isEmpty() == true) {
             createOrder(emptyMap())
         }
+
+        model.paymentManager.payStatus.observe(viewLifecycleOwner) { payStatus ->
+            when (payStatus) {
+                is PayStatus.Prepared -> {
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.nav_main, true)
+                        .build()
+                    findNavController()
+                        .navigate(R.id.action_global_promptPayment, null, navOptions)
+                }
+                is PayStatus.Error -> {
+                    if (model.devMode.value == true) {
+                        showError(payStatus.error)
+                    } else {
+                        showError(R.string.payment_template_error, payStatus.error.userFacingMsg)
+                    }
+                }
+                else -> {}
+            }
+        }
     }
 
     private fun createOrder(params: Map<String, String>) {
-        model.paymentManager.preparePayForTemplate(uriString, params).invokeOnCompletion {
-            // TODO maybe better to observe/collect payStatus instead of invokeOnCompletion
-            //  and then only reacting to one of the possible payStatus values
-            if (model.paymentManager.payStatus.value is PayStatus.Prepared) {
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.nav_main, true)
-                    .build()
-                findNavController().navigate(R.id.action_global_promptPayment, null, navOptions)
-            }
-        }
+        model.paymentManager.preparePayForTemplate(uriString, params)
     }
 }
