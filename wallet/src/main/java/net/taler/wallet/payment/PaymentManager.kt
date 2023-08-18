@@ -116,8 +116,8 @@ class PaymentManager(
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
                 is InsufficientBalanceResponse -> InsufficientBalance(
-                    response.contractTerms,
-                    response.amountRaw
+                    contractTerms = response.contractTerms,
+                    amountRaw = response.amountRaw,
                 )
                 is AlreadyConfirmedResponse -> AlreadyPaid
             }
