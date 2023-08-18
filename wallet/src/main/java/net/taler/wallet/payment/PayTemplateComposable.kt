@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,15 +40,13 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.asFlow
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
-import net.taler.common.showError
 import net.taler.wallet.AmountResult
-import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.CurrencyDropdown
 
 
@@ -58,9 +55,10 @@ import net.taler.wallet.deposit.CurrencyDropdown
 fun PayTemplateComposable(
     uri: Uri,
     currencies: List<String>,
-    fragment: Fragment,
-    model: MainViewModel,
+    payStatus: PayStatus,
+    onCreateAmount: (String, String) -> AmountResult,
     onSubmit: (Map<String, String>) -> Unit,
+    onError: (resId: Int) -> Unit,
 ) {
     val queryParams = uri.queryParameterNames
 
@@ -80,9 +78,6 @@ fun PayTemplateComposable(
             }
         } else null,
     ) }
-
-    val payStatus by model.paymentManager.payStatus.asFlow()
-        .collectAsState(initial = PayStatus.None)
 
     // If wallet is empty, there's no way the user can pay something
     if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
@@ -128,16 +123,16 @@ fun PayTemplateComposable(
                     enabled = summary == null || summary!!.isNotBlank(),
                     onClick = {
                         if (amount != null) {
-                            val result = model.createAmount(
+                            val result = onCreateAmount(
                                 amount!!.amountStr,
                                 amount!!.currency,
                             )
                             when (result) {
                                 AmountResult.InsufficientBalance -> {
-                                    fragment.showError(R.string.payment_balance_insufficient)
+                                    onError(R.string.payment_balance_insufficient)
                                 }
                                 AmountResult.InvalidAmount -> {
-                                    fragment.showError(R.string.receive_amount_invalid)
+                                    onError(R.string.receive_amount_invalid)
                                 }
                                 else -> {
                                     onSubmit(
@@ -218,11 +213,19 @@ private fun AmountField(
     }
 }
 
-// TODO cleanup composable
-//@Preview
-//@Composable
-//fun PayTemplateComposablePreview() {
-//    TalerSurface {
-//        PayTemplateComposable(Uri.EMPTY, listOf("KUDOS"))
-//    }
-//}
+@Preview
+@Composable
+fun PayTemplateComposablePreview() {
+    TalerSurface {
+        PayTemplateComposable(
+            uri = Uri.parse("taler://pay-template/demo.backend.taler.net/test?amount=KUDOS&summary="),
+            currencies = listOf("KUDOS", "ARS"),
+            payStatus = PayStatus.None,
+            onCreateAmount = { text, currency ->
+                AmountResult.Success(amount = Amount.fromString(currency, text))
+            },
+            onSubmit = { },
+            onError = { },
+        )
+    }
+}
