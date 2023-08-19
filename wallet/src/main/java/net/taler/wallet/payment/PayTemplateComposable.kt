@@ -35,8 +35,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,7 +48,6 @@ import net.taler.wallet.AmountResult
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.CurrencyDropdown
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,23 +61,32 @@ fun PayTemplateComposable(
 ) {
     val queryParams = uri.queryParameterNames
 
-    var summary by remember { mutableStateOf(
-        if ("summary" in queryParams)
-            uri.getQueryParameter("summary") else null,
-    ) }
+    var summary by remember {
+        mutableStateOf(
+            // TODO pass this in as a parameter instead
+            if ("summary" in queryParams) uri.getQueryParameter("summary") else null
+        )
+    }
 
-    var amount by remember { mutableStateOf(
-        if ("amount" in queryParams) {
-            val amount = uri.getQueryParameter("amount")!!
-            val parts = amount.split(':')
-            when (parts.size) {
-                1 -> Amount.fromString(parts[0], "0")
-                2 -> Amount.fromString(parts[0], parts[1])
-                else -> throw AmountParserException("Invalid Amount Format")
+    var amount by remember {
+        mutableStateOf(
+            // TODO don't do amount parsing in composable, but pass it in as a parameter
+            if ("amount" in queryParams) {
+                val amount = uri.getQueryParameter("amount")!!
+                val parts = amount.split(':')
+                when (parts.size) {
+                    1 -> Amount.fromString(parts[0], "0")
+                    2 -> Amount.fromString(parts[0], parts[1])
+                    // FIXME This will crash the app, we should show a proper error instead.
+                    else -> throw AmountParserException("Invalid Amount Format")
+                }
+            } else {
+                null
             }
-        } else null,
-    ) }
+        )
+    }
 
+    // TODO we could think about splitting this up into separate composables
     // If wallet is empty, there's no way the user can pay something
     if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
         Box(
@@ -93,7 +101,7 @@ fun PayTemplateComposable(
         }
     } else when (payStatus) {
         is PayStatus.None -> {
-            Column(horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = End) {
                 if ("summary" in queryParams) {
                     OutlinedTextField(
                         modifier = Modifier
@@ -131,14 +139,16 @@ fun PayTemplateComposable(
                                 AmountResult.InsufficientBalance -> {
                                     onError(R.string.payment_balance_insufficient)
                                 }
+
                                 AmountResult.InvalidAmount -> {
                                     onError(R.string.receive_amount_invalid)
                                 }
+
                                 else -> {
                                     onSubmit(
                                         mutableMapOf<String, String>().apply {
-                                            if (summary != null) put("summary", summary!!)
-                                            if (amount != null) put("amount", amount!!.toJSONString())
+                                            summary?.let { put("summary", it) }
+                                            amount?.let { put("amount", it.toJSONString()) }
                                         }
                                     )
                                 }
@@ -150,12 +160,14 @@ fun PayTemplateComposable(
                 }
             }
         }
+
         is PayStatus.Loading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Center,
             ) { CircularProgressIndicator() }
         }
+
         is PayStatus.AlreadyPaid -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -168,12 +180,15 @@ fun PayTemplateComposable(
                 )
             }
         }
+
+        // TODO we should handle the other cases or explain why we don't handle them
         else -> {}
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
+// TODO can we combine this with existing amount composables, e.g. whats in PayToComposable?
 private fun AmountField(
     modifier: Modifier = Modifier,
     currencies: List<String>,
@@ -220,6 +235,7 @@ fun PayTemplateComposablePreview() {
         PayTemplateComposable(
             uri = Uri.parse("taler://pay-template/demo.backend.taler.net/test?amount=KUDOS&summary="),
             currencies = listOf("KUDOS", "ARS"),
+            // TODO create previews for other states
             payStatus = PayStatus.None,
             onCreateAmount = { text, currency ->
                 AmountResult.Success(amount = Amount.fromString(currency, text))
