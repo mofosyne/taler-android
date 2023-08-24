@@ -20,6 +20,8 @@ sealed class Routes(
     // Recovery
     object SelectSecret: Routes("select_secret")
     object SelectChallenge: Routes("select_challenge")
+    object SolveChallenge: Routes("solve_challenge")
+    object RecoveryFinished: Routes("recovery_finished")
 
     // Restore
     object RestoreInit: Routes("restore")

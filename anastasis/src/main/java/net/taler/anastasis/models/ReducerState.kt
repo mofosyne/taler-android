@@ -107,7 +107,9 @@ sealed class ReducerState {
         val selectedVersion: SelectedVersionInfo? = null,
         @SerialName("challenge_feedback")
         val challengeFeedback: Map<String, ChallengeFeedback>? = null,
-        // TODO: recovered_key_shares
+        @SerialName("recovered_key_shares")
+        val recoveredKeyShares: Map<String, String>? = null,
+        @SerialName("core_secret")
         val coreSecret: CoreSecret? = null,
         @SerialName("authentication_providers")
         val authenticationProviders: Map<String, AuthenticationProviderStatus>? = null,

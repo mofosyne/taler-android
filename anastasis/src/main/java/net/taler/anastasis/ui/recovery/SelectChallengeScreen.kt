@@ -16,18 +16,24 @@
 
 package net.taler.anastasis.ui.recovery
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
+import net.taler.anastasis.models.ChallengeFeedback
 import net.taler.anastasis.models.ChallengeInfo
 import net.taler.anastasis.models.RecoveryInformation
 import net.taler.anastasis.models.RecoveryStates
@@ -60,6 +67,7 @@ fun SelectChallengeScreen(
 
     val policies = reducerState.recoveryInformation?.policies ?: emptyList()
     val challenges = reducerState.recoveryInformation?.challenges ?: emptyList()
+    val challengeFeedback = reducerState.challengeFeedback ?: emptyMap()
 
     WizardPage(
         title = stringResource(R.string.select_challenge_title),
@@ -83,6 +91,7 @@ fun SelectChallengeScreen(
                     policy = policies[index],
                     policyIndex = index,
                     challenges = challenges,
+                    challengeFeedback = challengeFeedback,
                     onChallengeClick = { uuid ->
                         viewModel.reducerManager?.selectChallenge(uuid)
                     }
@@ -98,6 +107,7 @@ fun PolicyCard(
     policy: List<RecoveryInformation.Policy>,
     policyIndex: Int,
     challenges: List<ChallengeInfo>,
+    challengeFeedback: Map<String, ChallengeFeedback>,
     onChallengeClick: (uuid: String) -> Unit,
 ) {
     ElevatedCard(
@@ -119,6 +129,7 @@ fun PolicyCard(
                             .padding(top = LocalSpacing.current.small)
                             .fillMaxWidth(),
                         challenge = challenge,
+                        challengeFeedback = challengeFeedback[challenge.uuid],
                         onClick = { onChallengeClick(uuid) },
                     )
                 }
@@ -131,31 +142,82 @@ fun PolicyCard(
 fun ChallengeCard(
     modifier: Modifier = Modifier,
     challenge: ChallengeInfo,
+    challengeFeedback: ChallengeFeedback? = null,
     onClick: () -> Unit,
 ) {
     OutlinedCard(
         modifier = modifier,
     ) {
-        Row(
-            modifier = Modifier.padding(LocalSpacing.current.medium),
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End,
         ) {
-            Icon(
-                challenge.type.icon,
-                tint = MaterialTheme.colorScheme.onBackground,
-                contentDescription = stringResource(challenge.type.nameRes),
-            )
-            Spacer(Modifier.width(LocalSpacing.current.medium))
-            Text(
-                challenge.instructions,
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Spacer(Modifier.width(LocalSpacing.current.medium))
-            Button(onClick = onClick) {
-                Text(stringResource(R.string.challenge_solve))
+            Row(
+                modifier = Modifier.padding(LocalSpacing.current.medium),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    challenge.type.icon,
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    contentDescription = stringResource(challenge.type.nameRes),
+                )
+                Spacer(Modifier.width(LocalSpacing.current.medium))
+                Text(
+                    challenge.instructions,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Spacer(Modifier.width(LocalSpacing.current.medium))
+                when (challengeFeedback) {
+                    is ChallengeFeedback.Solved -> FeedbackSolvedButton()
+                    else -> Button(onClick = onClick) {
+                        Text(stringResource(R.string.challenge_solve))
+                    }
+                }
+            }
+
+            if (challengeFeedback != null && challengeFeedback !is ChallengeFeedback.Solved) {
+                Box(Modifier.padding(
+                    end = LocalSpacing.current.medium,
+                    bottom = LocalSpacing.current.medium,
+                    start = LocalSpacing.current.medium,
+                )) {
+                    Text(
+                        when (challengeFeedback) {
+                            is ChallengeFeedback.Solved -> return@Box
+                            is ChallengeFeedback.IncorrectAnswer -> stringResource(R.string.challenge_feedback_incorrect_answer)
+                            is ChallengeFeedback.CodeInFile -> challengeFeedback.displayHint
+                            is ChallengeFeedback.CodeSent -> challengeFeedback.displayHint
+                            is ChallengeFeedback.Unsupported -> stringResource(R.string.challenge_feedback_unsupported)
+                            is ChallengeFeedback.RateLimitExceeded -> stringResource(R.string.challenge_feedback_rate_limit_exceeded)
+                            is ChallengeFeedback.BankTransferRequired -> stringResource(R.string.challenge_feedback_bank_transfer_required)
+                            is ChallengeFeedback.ServerFailure -> stringResource(R.string.challenge_feedback_server_failure)
+                            is ChallengeFeedback.TruthUnknown -> stringResource(R.string.challenge_feedback_truth_unknown)
+                            is ChallengeFeedback.TalerPaymentRequired -> stringResource(R.string.challenge_feedback_taler_payment_required)
+                        },
+                        style = MaterialTheme.typography.labelMedium
+                            .copy(color = MaterialTheme.colorScheme.error),
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun FeedbackSolvedButton() {
+    OutlinedButton(
+        onClick = {},
+        enabled = false,
+    ) {
+        val label = stringResource(R.string.challenge_feedback_solved)
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = label,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text(label)
     }
 }
 
@@ -185,6 +247,10 @@ fun SelectChallengeScreenPreview() {
                             RecoveryInformation.Policy(uuid = "ZA6T35B8XAR0DNKS5H100GK8PDPTA7Q8ST2FPQSYAZ4QRAA9XKK0")
                         ),
                     ),
+                ),
+                challengeFeedback = mapOf(
+                    "RNB84NQZPCM3MZWF9D5FFMSYYN07J2NAT5N8Q0DBHHT7R3GJ4AA0" to ChallengeFeedback.IncorrectAnswer,
+                    "ZA6T35B8XAR0DNKS5H100GK8PDPTA7Q8ST2FPQSYAZ4QRAA9XKK0" to ChallengeFeedback.Solved,
                 ),
             ),
         ),

@@ -32,6 +32,7 @@
     <string name="field_empty">This field is required</string>
     <string name="field_invalid">This field is invalid</string>
     <string name="field_optional">This field is optional</string>
+    <string name="code">Verification code</string>
 
     <!-- Common -->
     <string name="select_continent_title">Where do you live?</string>
@@ -70,5 +71,15 @@
     <!-- Recovery -->
     <string name="select_secret_title">Select secret</string>
     <string name="select_challenge_title">Select challenge</string>
+    <string name="solve_challenge_title">Solve challenge</string>
+    <string name="recovery_finished_title">Your secret was recovered</string>
     <string name="challenge_solve">Solve</string>
+    <string name="challenge_feedback_solved">Solved</string>
+    <string name="challenge_feedback_incorrect_answer">Incorrect answer</string>
+    <string name="challenge_feedback_unsupported">Method unsupported</string>
+    <string name="challenge_feedback_rate_limit_exceeded">Rate limit exceeded</string>
+    <string name="challenge_feedback_bank_transfer_required">Bank transfer required</string>
+    <string name="challenge_feedback_server_failure">There was a server failure</string>
+    <string name="challenge_feedback_taler_payment_required">Taler payment required</string>
+    <string name="challenge_feedback_truth_unknown">Can\'t solve challenge</string>
 </resources>

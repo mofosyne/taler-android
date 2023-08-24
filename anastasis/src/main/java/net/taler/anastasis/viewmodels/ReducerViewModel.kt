@@ -92,8 +92,8 @@ class ReducerViewModel @Inject constructor(): ViewModel(), ReducerViewModelI {
                             Routes.SelectChallenge.route
                         }
                         RecoveryStates.ChallengePaying -> TODO()
-                        RecoveryStates.ChallengeSolving -> TODO()
-                        RecoveryStates.RecoveryFinished -> TODO()
+                        RecoveryStates.ChallengeSolving -> Routes.SolveChallenge.route
+                        RecoveryStates.RecoveryFinished -> Routes.RecoveryFinished.route
                     }
                     else -> Routes.Home.route
                 }

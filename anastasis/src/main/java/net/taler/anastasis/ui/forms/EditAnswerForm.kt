@@ -22,70 +22,100 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import net.taler.anastasis.R
-import net.taler.anastasis.models.AuthMethod
+import net.taler.anastasis.shared.FieldStatus
+import net.taler.anastasis.ui.theme.AnastasisTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditQuestionForm(
-    method: AuthMethod? = null,
-    isAnswer: Boolean = false,
-    onMethodEdited: (method: AuthMethod) -> Unit,
+fun EditAnswerForm(
+    questionLabel: String? = null,
+    question: String? = null,
+    answerLabel: String,
+    answer: String = "",
+    onAnswerEdited: (answer: String) -> Unit,
+    regex: String? = null,
 ) {
-    val localMethod = method ?: AuthMethod(
-        type = AuthMethod.Type.Question,
-        instructions = "",
-        challenge = "",
-        mimeType = "text/plain",
-    )
-
     val focusRequester1 = remember { FocusRequester() }
-    val focusRequester2 = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val status = remember(answer) {
+        fieldStatus(answer, regex)
+    }
 
     Column {
+        if (question != null) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .focusRequester(focusRequester1)
+                    .fillMaxWidth(),
+                value = question,
+                maxLines = 1,
+                enabled = false,
+                label = { Text(questionLabel ?: stringResource(R.string.question)) },
+                onValueChange = {},
+            )
+        }
+
         OutlinedTextField(
             modifier = Modifier
                 .focusRequester(focusRequester1)
                 .fillMaxWidth(),
-            value = localMethod.instructions,
-            maxLines = 1,
-            enabled = !isAnswer,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusRequester2.requestFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(instructions = it))
+            value = answer,
+            isError = status.error,
+            supportingText = {
+                status.msgRes?.let { Text(stringResource(it)) }
             },
-            label = { Text(stringResource(R.string.question)) },
-        )
-
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester2)
-                .fillMaxWidth(),
-            value = localMethod.challenge,
             maxLines = 1,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done,
+            ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(challenge = it))
-            },
-            label = { Text(stringResource(R.string.answer)) },
+            onValueChange = onAnswerEdited,
+            label = { Text(answerLabel) },
         )
     }
 
     LaunchedEffect(Unit) {
         focusRequester1.requestFocus()
     }
+}
 
+private fun fieldStatus(answer: String, regex: String? = null): FieldStatus = if (answer.isBlank()) {
+    FieldStatus.Blank
+} else if (regex?.toRegex()?.matches(answer) != false) {
+    FieldStatus.Valid
+} else {
+    FieldStatus.Invalid
+}
+
+@Preview
+@Composable
+fun EditCodeFormPreview() {
+    var code by remember { mutableStateOf("A-65611-546-7467-369") }
+    AnastasisTheme {
+        Surface {
+            EditAnswerForm(
+                answer = code,
+                answerLabel = stringResource(R.string.code),
+                onAnswerEdited = { code = it },
+            )
+        }
+    }
 }

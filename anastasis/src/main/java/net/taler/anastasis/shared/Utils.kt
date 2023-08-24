@@ -17,9 +17,6 @@
 package net.taler.anastasis.shared
 
 import android.os.Build
-import io.matthewnelson.encoding.base32.Base32
-import io.matthewnelson.encoding.core.Decoder.Companion.decodeToByteArray
-import io.matthewnelson.encoding.core.Encoder.Companion.encodeToString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
@@ -31,7 +28,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
-import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -58,17 +54,6 @@ object Utils {
     inline fun <reified T> Json.encodeToNativeJson(value: Collection<T>): JSONArray =
         JSONArray(encodeToString(value))
 
-    fun encodeBase32 (input: String) = input
-        .toByteArray(Charset.defaultCharset())
-        .encodeToString(Base32.Crockford)
-
-    fun encodeBase32 (input: ByteArray) = input
-        .encodeToString(Base32.Crockford)
-
-    fun decodeBase32 (input: String) = input
-        .decodeToByteArray(Base32.Crockford)
-        .toString(Charset.defaultCharset())
-
     // Source: https://stackoverflow.com/questions/54827455/how-to-implement-timer-with-kotlin-coroutines/54828055#54828055
     fun tickerFlow(period: Duration, initialDelay: Duration = Duration.ZERO) = flow {
         delay(initialDelay)
@@ -77,4 +62,6 @@ object Utils {
             delay(period)
         }
     }
+
+    fun extractVerificationCode(code: String) = code.split('-').drop(1).joinToString("")
 }

@@ -25,8 +25,10 @@ import net.taler.anastasis.ui.common.SelectCountryScreen
 import net.taler.anastasis.ui.common.SelectUserAttributesScreen
 import net.taler.anastasis.ui.dialogs.ErrorDialog
 import net.taler.anastasis.ui.home.HomeScreen
+import net.taler.anastasis.ui.recovery.RecoveryFinishedScreen
 import net.taler.anastasis.ui.recovery.SelectChallengeScreen
 import net.taler.anastasis.ui.recovery.SelectSecretScreen
+import net.taler.anastasis.ui.recovery.SolveChallengeScreen
 import net.taler.anastasis.ui.theme.AnastasisTheme
 import net.taler.anastasis.viewmodels.ReducerViewModel
 
@@ -111,6 +113,14 @@ fun MainNavHost(
 
             Routes.SelectChallenge.route -> {
                 SelectChallengeScreen()
+            }
+
+            Routes.SolveChallenge.route -> {
+                SolveChallengeScreen()
+            }
+
+            Routes.RecoveryFinished.route -> {
+                RecoveryFinishedScreen()
             }
 
             Routes.RestoreInit.route -> {

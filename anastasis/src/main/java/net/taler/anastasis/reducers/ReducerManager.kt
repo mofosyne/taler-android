@@ -295,4 +295,15 @@ class ReducerManager(
                 .onError { this@ReducerManager.onError(it) }
         }
     }
+
+    fun solveChallenge(answer: String) = scope.launch {
+        state.value?.let { initialState ->
+            addTask()
+            api.reduceAction(initialState, "solve_challenge") {
+                put("answer", answer)
+            }
+                .onSuccess { this@ReducerManager.onSuccess(it) }
+                .onError { this@ReducerManager.onError(it) }
+        }
+    }
 }
