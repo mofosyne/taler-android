@@ -16,6 +16,7 @@
 
 package net.taler.anastasis.ui.dialogs
 
+import android.util.Patterns
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,13 +25,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
-import net.taler.anastasis.ui.forms.EditEmailForm
+import net.taler.anastasis.ui.forms.EditAnswerForm
 import net.taler.anastasis.ui.forms.EditQuestionForm
-import net.taler.anastasis.ui.forms.EditSmsForm
-import net.taler.common.CryptoUtils
 
 @Composable
 fun EditMethodDialog(
@@ -39,25 +40,57 @@ fun EditMethodDialog(
     onMethodEdited: (method: AuthMethod) -> Unit,
     onCancel: () -> Unit,
 ) {
-    var localMethod by remember { mutableStateOf(method?.copy(
-        challenge = CryptoUtils.decodeCrock(method.challenge).toString(Charsets.UTF_8),
-    )) }
+    var localMethod by remember { mutableStateOf(method) }
+    var valid by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     AlertDialog(
         onDismissRequest = onCancel,
         title = { Text(stringResource(R.string.add_challenge)) },
         text = {
-               when(type ?: method?.type) {
+               when (type ?: method?.type) {
                    AuthMethod.Type.Question -> EditQuestionForm(
-                       method = localMethod,
-                       onMethodEdited = { localMethod = it },
+                       question = localMethod?.instructions,
+                       answer = localMethod?.challenge,
+                       onMethodEdited = { question, answer ->
+                           valid = true
+                           localMethod = AuthMethod(
+                               type = AuthMethod.Type.Question,
+                               instructions = question,
+                               challenge = answer,
+                               mimeType = "text/plain",
+                           )
+                       }
                    )
-                   AuthMethod.Type.Sms -> EditSmsForm(
-                       method = localMethod,
-                       onMethodEdited = { localMethod = it }
+                   AuthMethod.Type.Sms -> EditAnswerForm(
+                       answerLabel = stringResource(R.string.sms),
+                       answer = localMethod?.challenge ?: "",
+                       onAnswerEdited = { answer, v ->
+                           localMethod = AuthMethod(
+                               type = AuthMethod.Type.Sms,
+                               instructions = context.getString(R.string.auth_instruction_sms, answer),
+                               challenge = answer,
+                               mimeType = "text/plain",
+                           )
+                           valid = v
+                       },
+                       keyboardType = KeyboardType.Phone,
+                       regex = Patterns.PHONE.pattern(),
                    )
-                   AuthMethod.Type.Email -> EditEmailForm(
-                       method = localMethod,
-                       onMethodEdited = { localMethod = it }
+                   AuthMethod.Type.Email -> EditAnswerForm(
+                       answerLabel = stringResource(R.string.email),
+                       answer = localMethod?.challenge ?: "",
+                       onAnswerEdited = { answer, v ->
+                           localMethod = AuthMethod(
+                               type = AuthMethod.Type.Email,
+                               instructions = context.getString(R.string.auth_instruction_email, answer),
+                               challenge = answer,
+                               mimeType = "text/plain",
+                           )
+                           valid = v
+                       },
+                       keyboardType = KeyboardType.Email,
+                       regex = Patterns.EMAIL_ADDRESS.pattern(),
                    )
                    else -> {}
                }
@@ -70,15 +103,12 @@ fun EditMethodDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                localMethod?.let { onMethodEdited(
-                    it.copy(
-                        challenge = CryptoUtils.encodeCrock(
-                            it.challenge.toByteArray(Charsets.UTF_8),
-                        )
-                    )
-                ) }
-            }) {
+            TextButton(
+                onClick = {
+                    localMethod?.let { onMethodEdited(it) }
+                },
+                enabled = valid,
+            ) {
                 Text(stringResource(R.string.add))
             }
         }

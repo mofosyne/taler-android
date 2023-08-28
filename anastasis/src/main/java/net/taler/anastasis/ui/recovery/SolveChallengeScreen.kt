@@ -65,6 +65,7 @@ fun SolveChallengeScreen(
 
     val question by remember { mutableStateOf(challenge.instructions) }
     var answer by remember { mutableStateOf("") }
+    var valid by remember { mutableStateOf(false) }
 
     WizardPage(
         title = stringResource(R.string.solve_challenge_title),
@@ -82,6 +83,7 @@ fun SolveChallengeScreen(
                 else -> {}
             }
         },
+        enableNext = valid,
     ) {
         Column {
             if (challengeFeedback != null && challengeFeedback !is ChallengeFeedback.Solved) {
@@ -116,13 +118,19 @@ fun SolveChallengeScreen(
                         question = question,
                         answerLabel = stringResource(R.string.answer),
                         answer = answer,
-                        onAnswerEdited = { answer = it }
+                        onAnswerEdited = { a, v ->
+                            answer = a
+                            valid = v
+                        }
                     )
 
                     AuthMethod.Type.Sms, AuthMethod.Type.Email -> EditAnswerForm(
                         answerLabel = stringResource(R.string.code),
                         answer = answer,
-                        onAnswerEdited = { answer = it },
+                        onAnswerEdited = { a, v ->
+                            answer = a
+                            valid = v
+                        },
                         regex = "^A-\\d{5}-\\d{3}-\\d{4}-\\d{3}$",
                     )
 

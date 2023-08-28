@@ -16,28 +16,19 @@
 
 package net.taler.anastasis.models
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.Timestamp
 
 @Serializable
 sealed class ReducerArgs {
 
-    @Serializable
-    data class EnterUserAttributes(
-        @SerialName("identity_attributes")
-        val identityAttributes: Map<String, String>,
-    )
+    // TODO: ActionArgsEnterUserAttributes
 
     // TODO: ActionArgsAddProvider
 
     // TODO: ActionArgsDeleteProvider
 
-    @Serializable
-    data class AddAuthentication(
-        @SerialName("authentication_method")
-        val authenticationMethod: AuthMethod,
-    )
+    // TODO: ActionArgsAddAuthentication
 
     // TODO: ActionArgsDeleteAuthentication
 
@@ -57,16 +48,9 @@ sealed class ReducerArgs {
         )
     }
 
-    @Serializable
-    data class SelectContinent(
-        val continent: String,
-    )
+    // TODO: ActionArgsSelectContinent
 
-    @Serializable
-    data class SelectCountry(
-        @SerialName("country_code")
-        val countryCode: String,
-    )
+    // TODO: ActionArgsSelectCountry
 
     // TODO: ActionArgsSelectChallenge
 

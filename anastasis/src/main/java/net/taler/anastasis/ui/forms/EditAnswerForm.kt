@@ -49,7 +49,8 @@ fun EditAnswerForm(
     question: String? = null,
     answerLabel: String,
     answer: String = "",
-    onAnswerEdited: (answer: String) -> Unit,
+    onAnswerEdited: (answer: String, valid: Boolean) -> Unit,
+    keyboardType: KeyboardType = KeyboardType.Text,
     regex: String? = null,
 ) {
     val focusRequester1 = remember { FocusRequester() }
@@ -83,11 +84,13 @@ fun EditAnswerForm(
             },
             maxLines = 1,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
+                keyboardType = keyboardType,
                 imeAction = ImeAction.Done,
             ),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            onValueChange = onAnswerEdited,
+            onValueChange = {
+                onAnswerEdited(it, fieldStatus(it, regex) == FieldStatus.Valid)
+            },
             label = { Text(answerLabel) },
         )
     }
@@ -114,7 +117,9 @@ fun EditCodeFormPreview() {
             EditAnswerForm(
                 answer = code,
                 answerLabel = stringResource(R.string.code),
-                onAnswerEdited = { code = it },
+                onAnswerEdited = { answer, _ ->
+                    code = answer
+                },
             )
         }
     }

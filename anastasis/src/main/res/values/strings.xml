@@ -33,6 +33,7 @@
     <string name="field_invalid">This field is invalid</string>
     <string name="field_optional">This field is optional</string>
     <string name="code">Verification code</string>
+    <string name="url">URL</string>
 
     <!-- Common -->
     <string name="select_continent_title">Where do you live?</string>
@@ -60,6 +61,12 @@
     <string name="auth_instruction_sms">Sms to %1$s</string>
     <string name="backup_providers">Manage backup providers</string>
     <string name="add_challenge">Add challenge</string>
+    <string name="manage_backup_providers">Manage backup providers</string>
+    <string name="add_provider">Add provider</string>
+    <string name="provider_status_ok">OK</string>
+    <string name="provider_status_disabled">Disabled</string>
+    <string name="provider_status_error">Error</string>
+    <string name="provider_status_not_contacted">Not contacted</string>
     <string name="add_policy">Add policy</string>
     <string name="edit_policy">Edit policy</string>
     <string name="secret_name">Secret name</string>

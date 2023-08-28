@@ -38,17 +38,10 @@ import net.taler.anastasis.models.AuthMethod
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditQuestionForm(
-    method: AuthMethod? = null,
-    isAnswer: Boolean = false,
-    onMethodEdited: (method: AuthMethod) -> Unit,
+    question: String?,
+    answer: String?,
+    onMethodEdited: (question: String, answer: String) -> Unit,
 ) {
-    val localMethod = method ?: AuthMethod(
-        type = AuthMethod.Type.Question,
-        instructions = "",
-        challenge = "",
-        mimeType = "text/plain",
-    )
-
     val focusRequester1 = remember { FocusRequester() }
     val focusRequester2 = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -58,14 +51,11 @@ fun EditQuestionForm(
             modifier = Modifier
                 .focusRequester(focusRequester1)
                 .fillMaxWidth(),
-            value = localMethod.instructions,
+            value = question ?: "",
             maxLines = 1,
-            enabled = !isAnswer,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = { focusRequester2.requestFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(instructions = it))
-            },
+            onValueChange = { onMethodEdited(it, answer ?: "") },
             label = { Text(stringResource(R.string.question)) },
         )
 
@@ -73,13 +63,11 @@ fun EditQuestionForm(
             modifier = Modifier
                 .focusRequester(focusRequester2)
                 .fillMaxWidth(),
-            value = localMethod.challenge,
+            value = answer ?: "",
             maxLines = 1,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            onValueChange = {
-                onMethodEdited(localMethod.copy(challenge = it))
-            },
+            onValueChange = { onMethodEdited(question ?: "", it) },
             label = { Text(stringResource(R.string.answer)) },
         )
     }

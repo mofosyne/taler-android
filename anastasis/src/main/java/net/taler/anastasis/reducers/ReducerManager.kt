@@ -26,9 +26,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.taler.anastasis.backend.AnastasisReducerApi
+import net.taler.anastasis.backend.BackendManager
 import net.taler.anastasis.backend.TalerErrorInfo
 import net.taler.anastasis.backend.Tasks
 import net.taler.anastasis.models.AggregatedPolicyMetaInfo
+import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.CountryInfo
@@ -135,6 +137,28 @@ class ReducerManager(
         }
     }
 
+    fun addProvider(url: String) = scope.launch {
+        state.value?.let { initialState ->
+            addTask()
+            api.reduceAction(initialState, "add_provider") {
+                put("provider_url", url)
+            }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun deleteProvider(url: String) = scope.launch {
+        state.value?.let { initialState ->
+            addTask()
+            api.reduceAction(initialState, "delete_provider") {
+                put("provider_url", url)
+            }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
     fun startSyncingProviders() {
         if (providerSyncingJob != null) return
         providerSyncingJob = Utils.tickerFlow(PROVIDER_SYNC_PERIOD.seconds)
@@ -147,7 +171,7 @@ class ReducerManager(
                     }?.flatMap {
                         listOf(it.value)
                     }?.fold(false) { a, b ->
-                        a || (b !is AuthenticationProviderStatus.Ok)
+                        a || (b is AuthenticationProviderStatus.NotContacted)
                     }?.let { sync ->
                         if (!sync) {
                             Log.d("ReducerManager", "All providers are synced")
@@ -173,10 +197,12 @@ class ReducerManager(
         providerSyncingJob = null
     }
 
-    fun addAuthentication(args: ReducerArgs.AddAuthentication) = scope.launch {
+    fun addAuthentication(method: AuthMethod) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "add_authentication", args)
+            api.reduceAction(initialState, "add_authentication") {
+                put("authentication_method", BackendManager.json.encodeToNativeJson(method))
+            }
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }

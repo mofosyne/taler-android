@@ -4,13 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.NavigateBefore
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material3.Button
@@ -47,6 +48,7 @@ fun WizardPage(
     onBackClicked: () -> Unit = {},
     onNextClicked: () -> Unit = {},
     onPrevClicked: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
     isLoading: Boolean = false,
     content: @Composable (nestedScrollConnection: NestedScrollConnection) -> Unit,
 ) {
@@ -60,9 +62,10 @@ fun WizardPage(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = onBackClicked) {
-                        Icon(Icons.Default.ArrowBack, stringResource(R.string.back))
+                        Icon(Icons.Default.Close, stringResource(R.string.cancel))
                     }
                 },
+                actions = actions,
                 scrollBehavior = scrollBehavior,
             )
         },
