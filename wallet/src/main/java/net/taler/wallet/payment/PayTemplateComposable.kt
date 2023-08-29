@@ -16,7 +16,6 @@
 
 package net.taler.wallet.payment
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,146 +42,130 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
-import net.taler.common.AmountParserException
 import net.taler.wallet.AmountResult
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.CurrencyDropdown
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PayTemplateComposable(
-    uri: Uri,
+    summary: String?,
+    amountResult: AmountResult?,
     currencies: List<String>,
     payStatus: PayStatus,
     onCreateAmount: (String, String) -> AmountResult,
     onSubmit: (Map<String, String>) -> Unit,
     onError: (resId: Int) -> Unit,
 ) {
-    val queryParams = uri.queryParameterNames
 
-    var summary by remember {
-        mutableStateOf(
-            // TODO pass this in as a parameter instead
-            if ("summary" in queryParams) uri.getQueryParameter("summary") else null
-        )
-    }
-
-    var amount by remember {
-        mutableStateOf(
-            // TODO don't do amount parsing in composable, but pass it in as a parameter
-            if ("amount" in queryParams) {
-                val amount = uri.getQueryParameter("amount")!!
-                val parts = amount.split(':')
-                when (parts.size) {
-                    1 -> Amount.fromString(parts[0], "0")
-                    2 -> Amount.fromString(parts[0], parts[1])
-                    // FIXME This will crash the app, we should show a proper error instead.
-                    else -> throw AmountParserException("Invalid Amount Format")
-                }
-            } else {
-                null
-            }
-        )
-    }
-
-    // TODO we could think about splitting this up into separate composables
     // If wallet is empty, there's no way the user can pay something
-    if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Center,
-        ) {
-            Text(
-                text = stringResource(R.string.payment_balance_insufficient),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
+    if (amountResult is AmountResult.InvalidAmount) {
+        PayTemplateError(stringResource(R.string.receive_amount_invalid))
+    } else if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
+        PayTemplateError(stringResource(R.string.payment_balance_insufficient))
     } else when (payStatus) {
-        is PayStatus.None -> {
-            Column(horizontalAlignment = End) {
-                if ("summary" in queryParams) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
-                        value = summary!!,
-                        isError = summary!!.isBlank(),
-                        onValueChange = { summary = it },
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.withdraw_manual_ready_subject)) },
-                    )
-                }
-
-                if ("amount" in queryParams) {
-                    AmountField(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        amount = amount!!,
-                        currencies = currencies,
-                        onAmountChosen = { amount = it },
-                    )
-                }
-
-                Button(
-                    modifier = Modifier.padding(16.dp),
-                    enabled = summary == null || summary!!.isNotBlank(),
-                    onClick = {
-                        if (amount != null) {
-                            val result = onCreateAmount(
-                                amount!!.amountStr,
-                                amount!!.currency,
-                            )
-                            when (result) {
-                                AmountResult.InsufficientBalance -> {
-                                    onError(R.string.payment_balance_insufficient)
-                                }
-
-                                AmountResult.InvalidAmount -> {
-                                    onError(R.string.receive_amount_invalid)
-                                }
-
-                                else -> {
-                                    onSubmit(
-                                        mutableMapOf<String, String>().apply {
-                                            summary?.let { put("summary", it) }
-                                            amount?.let { put("amount", it.toJSONString()) }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    },
-                ) {
-                    Text(stringResource(R.string.payment_create_order))
-                }
+        is PayStatus.None -> PayTemplateDefault(
+            currencies = currencies,
+            summary = summary,
+            amount = amountResult?.let { (it as AmountResult.Success).amount },
+            onCreateAmount = onCreateAmount,
+            onError = onError,
+            onSubmit = { s, a ->
+                onSubmit(mutableMapOf<String, String>().apply {
+                    s?.let { put("summary", it) }
+                    a?.let { put("amount", it.toJSONString()) }
+                })
             }
-        }
-
-        is PayStatus.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Center,
-            ) { CircularProgressIndicator() }
-        }
-
-        is PayStatus.AlreadyPaid -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Center,
-            ) {
-                Text(
-                    stringResource(R.string.payment_already_paid),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        }
+        )
+        is PayStatus.Loading -> PayTemplateLoading()
+        is PayStatus.AlreadyPaid -> PayTemplateError(stringResource(R.string.payment_already_paid))
 
         // TODO we should handle the other cases or explain why we don't handle them
         else -> {}
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PayTemplateDefault(
+    currencies: List<String>,
+    summary: String? = null,
+    amount: Amount? = null,
+    onCreateAmount: (String, String) -> AmountResult,
+    onError: (msgRes: Int) -> Unit,
+    onSubmit: (summary: String?, amount: Amount?) -> Unit,
+) {
+    var localSummary by remember { mutableStateOf(summary) }
+    var localAmount by remember { mutableStateOf(amount) }
+
+    Column(horizontalAlignment = End) {
+        localSummary?.let { summary ->
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                value = summary,
+                isError = summary.isBlank(),
+                onValueChange = { localSummary = it },
+                singleLine = true,
+                label = { Text(stringResource(R.string.withdraw_manual_ready_subject)) },
+            )
+        }
+
+        localAmount?.let { amount ->
+            AmountField(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                amount = amount,
+                currencies = currencies,
+                onAmountChosen = { localAmount = it },
+            )
+        }
+
+        Button(
+            modifier = Modifier.padding(16.dp),
+            enabled = localSummary == null || localSummary!!.isNotBlank(),
+            onClick = {
+                localAmount?.let { amount ->
+                    val result = onCreateAmount(
+                        amount.amountStr,
+                        amount.currency,
+                    )
+                    when (result) {
+                        AmountResult.InsufficientBalance -> onError(R.string.payment_balance_insufficient)
+                        AmountResult.InvalidAmount -> onError(R.string.receive_amount_invalid)
+                        else -> onSubmit(summary, amount)
+                    }
+                }
+            },
+        ) {
+            Text(stringResource(R.string.payment_create_order))
+        }
+    }
+}
+
+@Composable
+fun PayTemplateError(message: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Center,
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
+@Composable
+fun PayTemplateLoading() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
 
@@ -233,7 +216,8 @@ private fun AmountField(
 fun PayTemplateComposablePreview() {
     TalerSurface {
         PayTemplateComposable(
-            uri = Uri.parse("taler://pay-template/demo.backend.taler.net/test?amount=KUDOS&summary="),
+            summary = "Donation",
+            amountResult = AmountResult.Success(Amount("ARS", 20L, 0)),
             currencies = listOf("KUDOS", "ARS"),
             // TODO create previews for other states
             payStatus = PayStatus.None,
