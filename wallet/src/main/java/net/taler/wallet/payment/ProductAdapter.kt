@@ -81,7 +81,10 @@ internal class ProductAdapter(private val listener: ProductImageClickListener) :
                 }
             }
             name.text = product.description
-            price.text = product.totalPrice.toString()
+            price.visibility = product.totalPrice?.let {
+                price.text = it.toString()
+                VISIBLE
+            } ?: GONE
         }
     }
 

@@ -42,7 +42,7 @@ abstract class Product {
     abstract val productId: String?
     abstract val description: String
     abstract val descriptionI18n: Map<String, String>?
-    abstract val price: Amount
+    abstract val price: Amount?
     abstract val location: String?
     abstract val image: String?
     val localizedDescription: String
@@ -60,14 +60,14 @@ data class ContractProduct(
     override val description: String,
     @SerialName("description_i18n")
     override val descriptionI18n: Map<String, String>? = null,
-    override val price: Amount,
+    override val price: Amount? = null,
     @SerialName("delivery_location")
     override val location: String? = null,
     override val image: String? = null,
     val quantity: Int
 ) : Product() {
-    val totalPrice: Amount by lazy {
-        price * quantity
+    val totalPrice: Amount? by lazy {
+        price?.let { price * quantity }
     }
 }
 

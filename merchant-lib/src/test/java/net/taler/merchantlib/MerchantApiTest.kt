@@ -80,7 +80,7 @@ class MerchantApiTest {
                         {
                             "product_id": "${product.productId}",
                             "description": "${product.description}",
-                            "price": "${product.price.toJSONString()}",
+                            "price": "${product.price!!.toJSONString()}",
                             "quantity": ${product.quantity}
                         }
                     ]
