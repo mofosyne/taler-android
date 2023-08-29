@@ -29,7 +29,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import net.taler.common.Amount
 import net.taler.common.showError
+import net.taler.wallet.AmountResult
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
@@ -49,6 +51,21 @@ class PayTemplateFragment : Fragment() {
         uriString = arguments?.getString("uri") ?: error("no amount passed")
         uri = Uri.parse(uriString)
 
+        val queryParams = uri.queryParameterNames
+
+        val summary = if ("summary" in queryParams)
+            uri.getQueryParameter("summary")!! else null
+
+        val amountResult = if ("amount" in queryParams) {
+            val amount = uri.getQueryParameter("amount")!!
+            val parts = amount.split(':')
+            when (parts.size) {
+                1 -> AmountResult.Success(Amount.fromString(parts[0], "0"))
+                2 -> AmountResult.Success(Amount.fromString(parts[0], parts[1]))
+                else -> AmountResult.InvalidAmount
+            }
+        } else null
+
         return ComposeView(requireContext()).apply {
             setContent {
                 val payStatus by model.paymentManager.payStatus
@@ -56,8 +73,9 @@ class PayTemplateFragment : Fragment() {
                     .collectAsState(initial = PayStatus.None)
                 TalerSurface {
                     PayTemplateComposable(
-                        uri = uri,
                         currencies = model.getCurrencies(),
+                        summary = summary,
+                        amountResult = amountResult,
                         payStatus = payStatus,
                         onCreateAmount = { text, currency ->
                             model.createAmount(text, currency)
@@ -72,8 +90,6 @@ class PayTemplateFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO: this is not ideal, if the template is fixed, the
-        //  user shouldn't even have to go through this fragment.
         if (uri.queryParameterNames?.isEmpty() == true) {
             createOrder(emptyMap())
         }
