@@ -23,6 +23,7 @@ import net.taler.common.ApiResponse
 import net.taler.qtart.TalerWalletCore
 import net.taler.anastasis.BuildConfig
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -34,12 +35,15 @@ class BackendManager {
         val json = Json {
             ignoreUnknownKeys = true
         }
+        @JvmStatic
+        private val initialized = AtomicBoolean(false)
     }
 
     private val walletCore = TalerWalletCore()
     private val requestManager = RequestManager()
 
     init {
+        if (initialized.getAndSet(true)) error("Already initialized")
         walletCore.setMessageHandler { onMessageReceived(it) }
         if (BuildConfig.DEBUG) walletCore.setStdoutHandler {
             Log.d(TAG_CORE, it)
