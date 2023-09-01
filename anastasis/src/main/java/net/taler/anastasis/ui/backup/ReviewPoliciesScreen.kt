@@ -55,14 +55,13 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.BackupStates
-import net.taler.anastasis.models.MethodSpec
 import net.taler.anastasis.models.Policy
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.dialogs.EditPolicyDialog
 import net.taler.anastasis.ui.forms.EditPolicyForm
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
@@ -263,75 +262,8 @@ fun PolicyMethodCard(
 @Composable
 fun ReviewPoliciesScreenPreview() {
     ReviewPoliciesScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Backup(
-                backupState = BackupStates.PoliciesReviewing,
-                authenticationMethods = listOf(
-                    AuthMethod(
-                        type = AuthMethod.Type.Question,
-                        mimeType = "text/plain",
-                        challenge = "E1QPPS8A",
-                        instructions = "What is your favorite GNU package?",
-                    ),
-                    AuthMethod(
-                        type = AuthMethod.Type.Email,
-                        instructions = "E-mail to user@*le.com",
-                        challenge = "ENSPAWJ0CNW62VBGDHJJWRVFDM50",
-                    )
-                ),
-                authenticationProviders = mapOf(
-                    "http://localhost:8088/" to AuthenticationProviderStatus.Ok(
-                        httpStatus = 200,
-                        methods = listOf(
-                            MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
-                            MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
-                        ),
-                        annualFee = "EUR:0.99",
-                        truthUploadFee = "EUR:3.99",
-                        liabilityLimit = "EUR:1",
-                        currency = "EUR",
-                        storageLimitInMegabytes = 1,
-                        businessName = "Anastasis 4",
-                        providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
-                    ),
-                    "http://localhost:8089/" to AuthenticationProviderStatus.Ok(
-                        httpStatus = 200,
-                        methods = listOf(
-                            MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
-                            MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
-                        ),
-                        annualFee = "EUR:0.99",
-                        truthUploadFee = "EUR:3.99",
-                        liabilityLimit = "EUR:1",
-                        currency = "EUR",
-                        storageLimitInMegabytes = 1,
-                        businessName = "Anastasis 2",
-                        providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
-                    ),
-                ),
-                policies = listOf(
-                    Policy(
-                        methods = listOf(
-                            Policy.PolicyMethod(
-                                authenticationMethod = 0,
-                                provider = "http://localhost:8089/",
-                            ),
-                            Policy.PolicyMethod(
-                                authenticationMethod = 1,
-                                provider = "http://localhost:8088/",
-                            ),
-                        ),
-                    ),
-                    Policy(
-                        methods = listOf(
-                            Policy.PolicyMethod(
-                                authenticationMethod = 0,
-                                provider = "http://localhost:8089/",
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        ),
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.PoliciesReviewing,
+        )
     )
 }

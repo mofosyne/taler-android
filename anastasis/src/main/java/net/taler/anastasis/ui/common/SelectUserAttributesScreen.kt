@@ -51,7 +51,7 @@ import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.reusable.components.DatePickerField
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
@@ -166,30 +166,8 @@ private fun fieldStatus(
 @Composable
 fun SelectUserAttributesScreenPreview() {
     SelectUserAttributesScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Backup(
-                backupState = BackupStates.UserAttributesCollecting,
-                identityAttributes = mapOf(
-                    "full_name" to "Max Musterman",
-                    "birthdate" to "2000-01-01",
-                ),
-                requiredAttributes = listOf(
-                    UserAttributeSpec(
-                        type = "string",
-                        name = "full_name",
-                        label = "Full name",
-                        widget = "anastasis_gtk_ia_full_name",
-                        uuid = "9e8f463f-575f-42cb-85f3-759559997331",
-                    ),
-                    UserAttributeSpec(
-                        type = "date",
-                        name = "birthdate",
-                        label = "Birthdate",
-                        widget = "anastasis_gtk_ia_birthdate",
-                        uuid = "83d655c7-bdb6-484d-904e-80c1058c8854",
-                    ),
-                ),
-            ),
-        ),
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.UserAttributesCollecting,
+        )
     )
 }

@@ -29,17 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
 import net.taler.anastasis.models.BackupStates
-import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.ReducerArgs
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.forms.EditSecretForm
 import net.taler.anastasis.ui.reusable.pages.WizardPage
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
-import net.taler.common.Amount
 import net.taler.common.CryptoUtils
-import net.taler.common.Timestamp
 
 @Composable
 fun EditSecretScreen(
@@ -90,21 +87,8 @@ fun EditSecretScreen(
 @Composable
 fun EditSecretScreenPreview() {
     EditSecretScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Backup(
-                backupState = BackupStates.SecretEditing,
-                secretName = "_TALERWALLET_MyPinePhone",
-                coreSecret = CoreSecret(
-                    value = "EDJP6WK5EG50",
-                    mime = "text/plain",
-                ),
-                expiration = Timestamp.never(),
-                uploadFees = listOf(
-                    ReducerState.Backup.UploadFee(
-                        fee = Amount("KUDOS", 42L, 0),
-                    ),
-                ),
-            ),
-        ),
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.SecretEditing,
+        )
     )
 }

@@ -41,13 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.models.CoreSecret
-import net.taler.anastasis.models.RecoveryInternalData
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 import net.taler.common.CryptoUtils
@@ -124,19 +122,8 @@ fun RecoveryFinishedScreen(
 @Composable
 fun RecoveryFinishedScreenPreview() {
     RecoveryFinishedScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Recovery(
-                recoveryState = RecoveryStates.RecoveryFinished,
-                recoveryDocument = RecoveryInternalData(
-                    secretName = "Secret",
-                    providerUrl = "http://localhost:8089",
-                    version = 1,
-                ),
-                coreSecret = CoreSecret(
-                    mime = "text/plain",
-                    value = CryptoUtils.encodeCrock("Taler".toByteArray(Charsets.UTF_8)),
-                )
-            ),
-        ),
+        viewModel = FakeRecoveryViewModel(
+            recoveryState = RecoveryStates.RecoveryFinished,
+        )
     )
 }

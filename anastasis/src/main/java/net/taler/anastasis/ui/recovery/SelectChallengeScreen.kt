@@ -45,7 +45,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
-import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.ChallengeFeedback
 import net.taler.anastasis.models.ChallengeInfo
 import net.taler.anastasis.models.RecoveryInformation
@@ -53,7 +52,7 @@ import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
@@ -225,34 +224,8 @@ fun FeedbackSolvedButton() {
 @Composable
 fun SelectChallengeScreenPreview() {
     SelectChallengeScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Recovery(
-                recoveryState = RecoveryStates.ChallengeSelecting,
-                recoveryInformation = RecoveryInformation(
-                    challenges = listOf(
-                        ChallengeInfo(
-                            instructions = "What is your favorite GNU package?",
-                            type = AuthMethod.Type.Question,
-                            uuid = "RNB84NQZPCM3MZWF9D5FFMSYYN07J2NAT5N8Q0DBHHT7R3GJ4AA0",
-                        ),
-                        ChallengeInfo(
-                            instructions = "E-mail to user@*le.com",
-                            type = AuthMethod.Type.Email,
-                            uuid = "ZA6T35B8XAR0DNKS5H100GK8PDPTA7Q8ST2FPQSYAZ4QRAA9XKK0",
-                        ),
-                    ),
-                    policies = listOf(
-                        listOf(
-                            RecoveryInformation.Policy(uuid = "RNB84NQZPCM3MZWF9D5FFMSYYN07J2NAT5N8Q0DBHHT7R3GJ4AA0"),
-                            RecoveryInformation.Policy(uuid = "ZA6T35B8XAR0DNKS5H100GK8PDPTA7Q8ST2FPQSYAZ4QRAA9XKK0")
-                        ),
-                    ),
-                ),
-                challengeFeedback = mapOf(
-                    "RNB84NQZPCM3MZWF9D5FFMSYYN07J2NAT5N8Q0DBHHT7R3GJ4AA0" to ChallengeFeedback.IncorrectAnswer,
-                    "ZA6T35B8XAR0DNKS5H100GK8PDPTA7Q8ST2FPQSYAZ4QRAA9XKK0" to ChallengeFeedback.Solved,
-                ),
-            ),
-        ),
+        viewModel = FakeRecoveryViewModel(
+            recoveryState = RecoveryStates.ChallengeSelecting,
+        )
     )
 }

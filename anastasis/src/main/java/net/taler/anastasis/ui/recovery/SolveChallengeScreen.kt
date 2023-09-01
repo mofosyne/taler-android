@@ -37,11 +37,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.ChallengeFeedback
+import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.forms.EditAnswerForm
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
@@ -145,5 +147,9 @@ fun SolveChallengeScreen(
 @Preview
 @Composable
 fun SolveChallengeScreenPreview() {
-    SolveChallengeScreen()
+    SolveChallengeScreen(
+        viewModel = FakeRecoveryViewModel(
+            recoveryState = RecoveryStates.ChallengeSolving,
+        )
+    )
 }

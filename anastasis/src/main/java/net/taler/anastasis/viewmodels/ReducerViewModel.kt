@@ -137,26 +137,3 @@ class ReducerViewModel @Inject constructor(): ViewModel(), ReducerViewModelI {
         _reducerError.value = null
     }
 }
-
-class FakeReducerViewModel(
-    state: ReducerState,
-    error: TalerErrorInfo? = null,
-): ReducerViewModelI {
-    override val reducerManager = null
-    private val _reducerState = MutableStateFlow<ReducerState?>(state)
-    override val reducerState: StateFlow<ReducerState?> = _reducerState.asStateFlow()
-    private val _reducerError = MutableStateFlow(error)
-    override val reducerError: StateFlow<TalerErrorInfo?> = _reducerError.asStateFlow()
-    private val _loading = MutableStateFlow(Tasks())
-    override val tasks = _loading.asStateFlow()
-
-    override fun goBack(): Boolean = false
-
-    override fun goHome() {
-        _reducerState.value = null
-    }
-
-    override fun cleanError() {
-        _reducerError.value = null
-    }
-}

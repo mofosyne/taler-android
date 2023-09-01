@@ -53,10 +53,9 @@ import net.taler.anastasis.models.SuccessDetail
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
-import net.taler.common.Timestamp
 
 @Composable
 fun BackupFinishedScreen(
@@ -168,29 +167,8 @@ fun ProviderCard(
 @Composable
 fun BackupFinishedScreenPreview() {
     BackupFinishedScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Backup(
-                backupState = BackupStates.BackupFinished,
-                authenticationProviders = mapOf(
-                    "https://localhost:8088/" to AuthenticationProviderStatus.Ok(
-                        httpStatus = 200,
-                        methods = listOf(),
-                        annualFee = "EUR:0.99",
-                        truthUploadFee = "EUR:3.99",
-                        liabilityLimit = "EUR:1",
-                        currency = "EUR",
-                        storageLimitInMegabytes = 1,
-                        businessName = "Anastasis 42",
-                        providerSalt = "BXAPCKSH9D3MYJTS9536RHJHCX",
-                    )
-                ),
-                successDetails = mapOf(
-                    "https://localhost:8088/" to SuccessDetail(
-                        policyVersion = 1,
-                        policyExpiration = Timestamp.now(),
-                    ),
-                ),
-            ),
-        ),
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.BackupFinished,
+        )
     )
 }

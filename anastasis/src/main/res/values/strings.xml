@@ -80,6 +80,7 @@
     <string name="select_challenge_title">Select challenge</string>
     <string name="solve_challenge_title">Solve challenge</string>
     <string name="recovery_finished_title">Your secret was recovered</string>
+    <string name="recovery_providers">Manage recovery providers</string>
     <string name="challenge_solve">Solve</string>
     <string name="challenge_feedback_solved">Solved</string>
     <string name="challenge_feedback_incorrect_answer">Incorrect answer</string>

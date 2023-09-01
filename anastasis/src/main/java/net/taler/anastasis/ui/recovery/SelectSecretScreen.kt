@@ -24,8 +24,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -37,6 +42,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,16 +52,17 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AggregatedPolicyMetaInfo
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
-import net.taler.anastasis.models.SelectedVersionInfo
+import net.taler.anastasis.ui.common.ManageProvidersScreen
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
 @Composable
 fun SelectSecretScreen(
     viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
+    showManageProviders: Boolean = false,
 ) {
     val state by viewModel.reducerState.collectAsState()
     val reducerState = state as? ReducerState.Recovery
@@ -63,12 +71,17 @@ fun SelectSecretScreen(
     val tasks by viewModel.tasks.collectAsState()
     val isLoading = tasks.isBackgroundLoading
 
+    val authProviders = reducerState.authenticationProviders ?: emptyMap()
     val versions = reducerState.discoveryState?.aggregatedPolicies ?: emptyList()
 
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
+    var manageProviders by remember { mutableStateOf(showManageProviders) }
+
     WizardPage(
-        title = stringResource(R.string.select_secret_title),
+        title = if (manageProviders)
+            stringResource(R.string.recovery_providers)
+        else stringResource(R.string.select_auth_methods_title),
         enableNext = selectedIndex != null,
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
@@ -77,22 +90,70 @@ fun SelectSecretScreen(
                 viewModel.reducerManager?.selectVersion(versions[it])
             }
         },
-        isLoading = isLoading,
-    ) {
-        LazyColumn {
-            items(count = versions.size) { index ->
-                SecretCard(
-                    modifier = Modifier
-                        .padding(
-                            start = LocalSpacing.current.medium,
-                            end = LocalSpacing.current.medium,
-                            bottom = LocalSpacing.current.small,
-                        )
-                        .fillMaxWidth(),
-                    policy = versions[index],
-                    isSelected = selectedIndex == index,
-                ) { selectedIndex = index }
+        actions = {
+            IconButton(onClick = {
+                manageProviders = !manageProviders
+            }) {
+                if (manageProviders) {
+                    Icon(
+                        Icons.Default.EditOff,
+                        contentDescription = stringResource(R.string.select_auth_methods_title)
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.manage_backup_providers),
+                    )
+                }
+
             }
+        },
+        isLoading = isLoading,
+    ) { scroll ->
+        if (manageProviders) {
+            ManageProvidersScreen(
+                nestedScrollConnection = scroll,
+                authProviders = authProviders,
+                onAddProvider = {
+                    viewModel.reducerManager?.addProvider(it)
+                },
+                onDeleteProvider = {
+                    viewModel.reducerManager?.deleteProvider(it)
+                },
+            )
+        } else {
+            SecretList(
+                scrollConnection = scroll,
+                versions = versions,
+                selectedIndex = selectedIndex,
+                onSelectIndex = { selectedIndex = it }
+            )
+        }
+    }
+}
+
+@Composable
+fun SecretList(
+    scrollConnection: NestedScrollConnection,
+    versions: List<AggregatedPolicyMetaInfo>,
+    selectedIndex: Int?,
+    onSelectIndex: (Int) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.nestedScroll(scrollConnection),
+    ) {
+        items(count = versions.size) { index ->
+            SecretCard(
+                modifier = Modifier
+                    .padding(
+                        start = LocalSpacing.current.medium,
+                        end = LocalSpacing.current.medium,
+                        bottom = LocalSpacing.current.small,
+                    )
+                    .fillMaxWidth(),
+                policy = versions[index],
+                isSelected = selectedIndex == index,
+            ) { onSelectIndex(index) }
         }
     }
 }
@@ -146,30 +207,8 @@ fun SecretCard(
 @Composable
 fun SelectSecretScreenPreview() {
     SelectSecretScreen(
-        viewModel = FakeReducerViewModel(
-            state = ReducerState.Recovery(
-                recoveryState = RecoveryStates.SecretSelecting,
-                discoveryState = ReducerState.Recovery.DiscoveryState(
-                    state = "finished",
-                    aggregatedPolicies = listOf(
-                        AggregatedPolicyMetaInfo(
-                            attributeMask = 0,
-                            policyHash = "000000000000000000000000000000000000000000000000000B28GR6691Y51HR2SAFJZFF0DCMRDZD1YQMS03A55P9NCWHQGEKW8",
-                            providers = listOf(
-                                SelectedVersionInfo.Provider(
-                                    url = "https://v1.anastasis.taler.net/",
-                                    version = 1,
-                                ),
-                                SelectedVersionInfo.Provider(
-                                    url = "https://v1.anastasis.codeblau.de/",
-                                    version = 1,
-                                ),
-                            ),
-                            secretName = "Secret",
-                        ),
-                    ),
-                ),
-            ),
-        ),
+        viewModel = FakeRecoveryViewModel(
+            recoveryState = RecoveryStates.SecretSelecting,
+        )
     )
 }

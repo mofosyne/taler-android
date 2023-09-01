@@ -20,29 +20,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,14 +53,13 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.BackupStates
-import net.taler.anastasis.models.MethodSpec
 import net.taler.anastasis.models.ReducerState
+import net.taler.anastasis.ui.common.ManageProvidersScreen
 import net.taler.anastasis.ui.dialogs.EditMethodDialog
-import net.taler.anastasis.ui.dialogs.EditProviderDialog
 import net.taler.anastasis.ui.reusable.components.ActionCard
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
-import net.taler.anastasis.viewmodels.FakeReducerViewModel
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 import net.taler.common.CryptoUtils
@@ -131,7 +121,7 @@ fun SelectAuthMethodsScreen(
         isLoading = isLoading,
     ) { scroll ->
         if (manageProviders) {
-            ManageBackupProviders(
+            ManageProvidersScreen(
                 nestedScrollConnection = scroll,
                 authProviders = authProviders,
                 onAddProvider = {
@@ -284,173 +274,13 @@ private fun ChallengeCard(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ManageBackupProviders(
-    nestedScrollConnection: NestedScrollConnection,
-    authProviders: Map<String, AuthenticationProviderStatus>,
-    onAddProvider: (url: String) -> Unit,
-    onDeleteProvider: (url: String) -> Unit,
-) {
-    var showEditDialog by remember { mutableStateOf(false) }
-
-    if (showEditDialog) {
-        EditProviderDialog(
-            onProviderEdited = onAddProvider,
-            onCancel = { showEditDialog = false }
-        )
-    }
-
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                showEditDialog = true
-            }) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add),
-                )
-            }
-        },
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .nestedScroll(nestedScrollConnection)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-        ) {
-            items(items = authProviders.keys.toList()) { url ->
-                val status = authProviders[url]!!
-                ProviderCard(
-                    modifier = Modifier
-                        .padding(
-                            end = LocalSpacing.current.medium,
-                            bottom = LocalSpacing.current.small,
-                            start = LocalSpacing.current.medium,
-                        )
-                        .fillMaxWidth(),
-                    url = url,
-                    status = status,
-                    onDelete = { onDeleteProvider(url) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ProviderCard(
-    modifier: Modifier = Modifier,
-    url: String,
-    status: AuthenticationProviderStatus,
-    onDelete: () -> Unit,
-) {
-    ElevatedCard(
-        modifier = modifier,
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(LocalSpacing.current.medium)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            when (status) {
-                is AuthenticationProviderStatus.Ok -> Icon(
-                    Icons.Default.CheckCircle,
-                    contentDescription = stringResource(R.string.provider_status_ok),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                is AuthenticationProviderStatus.Disabled -> Icon(
-                    Icons.Default.SyncDisabled,
-                    contentDescription = stringResource(R.string.provider_status_disabled),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-                is AuthenticationProviderStatus.Error -> Icon(
-                    Icons.Default.Error,
-                    contentDescription = stringResource(R.string.provider_status_error),
-                    tint = MaterialTheme.colorScheme.error,
-                )
-                is AuthenticationProviderStatus.NotContacted -> Icon(
-                    Icons.Default.QuestionMark,
-                    contentDescription = stringResource(R.string.provider_status_not_contacted),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(url, style = MaterialTheme.typography.labelLarge)
-                if (status is AuthenticationProviderStatus.Ok) {
-                    Text(status.businessName, style = MaterialTheme.typography.labelMedium)
-                }
-            }
-            Spacer(Modifier.width(12.dp))
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.delete),
-                )
-            }
-        }
-    }
-}
-
-private val fakeViewModel = FakeReducerViewModel(
-    state = ReducerState.Backup(
-        backupState = BackupStates.AuthenticationsEditing,
-        authenticationMethods = listOf(
-            AuthMethod(
-                type = AuthMethod.Type.Question,
-                mimeType = "text/plain",
-                challenge = "E1QPPS8A",
-                instructions = "What is your favorite GNU package?",
-            ),
-            AuthMethod(
-                type = AuthMethod.Type.Email,
-                instructions = "E-mail to user@*le.com",
-                challenge = "ENSPAWJ0CNW62VBGDHJJWRVFDM50",
-            )
-        ),
-        authenticationProviders = mapOf(
-            "http://localhost:8088/" to AuthenticationProviderStatus.Ok(
-                httpStatus = 200,
-                methods = listOf(
-                    MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
-                    MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
-                ),
-                annualFee = "EUR:0.99",
-                truthUploadFee = "EUR:3.99",
-                liabilityLimit = "EUR:1",
-                currency = "EUR",
-                storageLimitInMegabytes = 1,
-                businessName = "Anastasis 4",
-                providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
-            ),
-            "http://localhost:8089/" to AuthenticationProviderStatus.Ok(
-                httpStatus = 200,
-                methods = listOf(
-                    MethodSpec(type = AuthMethod.Type.Question, usageFee = "EUR:0.001"),
-                    MethodSpec(type = AuthMethod.Type.Sms, usageFee = "EUR:0.55"),
-                ),
-                annualFee = "EUR:0.99",
-                truthUploadFee = "EUR:3.99",
-                liabilityLimit = "EUR:1",
-                currency = "EUR",
-                storageLimitInMegabytes = 1,
-                businessName = "Anastasis 2",
-                providerSalt = "CXAPCKSH9D3MYJTS9536RHJHCW",
-            ),
-        ),
-    ),
-)
-
 @Preview
 @Composable
 fun SelectAuthMethodsScreenPreview() {
     SelectAuthMethodsScreen(
-        viewModel = fakeViewModel,
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.AuthenticationsEditing,
+        ),
     )
 }
 
@@ -458,7 +288,9 @@ fun SelectAuthMethodsScreenPreview() {
 @Composable
 fun ManageBackupProvidersPreview() {
     SelectAuthMethodsScreen(
-        viewModel = fakeViewModel,
+        viewModel = FakeBackupViewModel(
+            backupState = BackupStates.AuthenticationsEditing,
+        ),
         showManageProviders = true,
     )
 }
