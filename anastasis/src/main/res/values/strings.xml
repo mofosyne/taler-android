@@ -59,7 +59,6 @@
     <string name="auth_method_totp">TOTP</string>
     <string name="auth_instruction_email">Email to %1$s</string>
     <string name="auth_instruction_sms">Sms to %1$s</string>
-    <string name="backup_providers">Manage backup providers</string>
     <string name="add_challenge">Add challenge</string>
     <string name="manage_backup_providers">Manage backup providers</string>
     <string name="add_provider">Add provider</string>
@@ -67,6 +66,9 @@
     <string name="provider_status_disabled">Disabled</string>
     <string name="provider_status_error">Error</string>
     <string name="provider_status_not_contacted">Not contacted</string>
+    <string name="provider_liability_limit">Liability limit is %1$s</string>
+    <string name="provider_truth_upload_fee">Truth upload fee is %1$s</string>
+    <string name="provider_annual_fee">Annual fee is %1$s</string>
     <string name="add_policy">Add policy</string>
     <string name="edit_policy">Edit policy</string>
     <string name="secret_name">Secret name</string>

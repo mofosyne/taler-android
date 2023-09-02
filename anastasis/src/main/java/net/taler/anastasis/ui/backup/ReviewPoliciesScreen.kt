@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -226,12 +227,17 @@ fun PolicyCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PolicyMethodCard(
     modifier: Modifier = Modifier,
     method: AuthMethod,
     provider: AuthenticationProviderStatus.Ok,
 ) {
+    val usageFee = remember(provider) {
+        provider.methods.find { it.type == method.type }?.usageFee
+    }
+
     OutlinedCard(
         modifier = modifier,
     ) {
@@ -253,6 +259,12 @@ fun PolicyMethodCard(
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                 )
+                if (usageFee != null && !usageFee.isZero()) {
+                    Spacer(Modifier.height(LocalSpacing.current.small))
+                    Badge {
+                        Text(usageFee.toString())
+                    }
+                }
             }
         }
     }

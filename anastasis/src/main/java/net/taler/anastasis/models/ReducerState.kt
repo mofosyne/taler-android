@@ -331,7 +331,7 @@ enum class RecoveryStates {
 data class MethodSpec(
     val type: AuthMethod.Type,
     @SerialName("usage_fee")
-    val usageFee: String,
+    val usageFee: Amount,
 )
 
 @OptIn(ExperimentalSerializationApi::class)
@@ -346,20 +346,20 @@ sealed class AuthenticationProviderStatus {
     @SerialName("ok")
     data class Ok(
         @SerialName("annual_fee")
-        val annualFee: String,
+        val annualFee: Amount,
         @SerialName("business_name")
         val businessName: String,
         val currency: String? = null,
         @SerialName("http_status")
         val httpStatus: Int,
         @SerialName("liability_limit")
-        val liabilityLimit: String,
+        val liabilityLimit: Amount,
         @SerialName("provider_salt")
         val providerSalt: String,
         @SerialName("storage_limit_in_megabytes")
         val storageLimitInMegabytes: Int,
         @SerialName("truth_upload_fee")
-        val truthUploadFee: String,
+        val truthUploadFee: Amount,
         val methods: List<MethodSpec>,
     ): AuthenticationProviderStatus()
 

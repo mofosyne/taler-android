@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,9 +40,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,11 +54,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthenticationProviderStatus
+import net.taler.anastasis.models.BackupStates
+import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.dialogs.EditProviderDialog
+import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
+import net.taler.anastasis.viewmodels.FakeBackupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,13 +158,44 @@ fun ProviderCard(
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }
-            Spacer(Modifier.width(12.dp))
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .padding(horizontal = LocalSpacing.current.medium)
+                    .weight(1f),
             ) {
                 Text(url, style = MaterialTheme.typography.labelLarge)
                 if (status is AuthenticationProviderStatus.Ok) {
-                    Text(status.businessName, style = MaterialTheme.typography.labelMedium)
+                    Spacer(Modifier.height(LocalSpacing.current.small))
+                    Text(status.businessName, style = MaterialTheme.typography.labelLarge)
+                    ProvideTextStyle(MaterialTheme.typography.labelMedium) {
+                        if (!status.annualFee.isZero()) {
+                            Spacer(Modifier.height(LocalSpacing.current.small))
+                            Text(
+                                stringResource(
+                                    R.string.provider_annual_fee,
+                                    status.annualFee.toString()
+                                )
+                            )
+                        }
+                        if (!status.truthUploadFee.isZero()) {
+                            Spacer(Modifier.height(LocalSpacing.current.small))
+                            Text(
+                                stringResource(
+                                    R.string.provider_truth_upload_fee,
+                                    status.truthUploadFee.toString()
+                                )
+                            )
+                        }
+                        if (!status.liabilityLimit.isZero()) {
+                            Spacer(Modifier.height(LocalSpacing.current.small))
+                            Text(
+                                stringResource(
+                                    R.string.provider_liability_limit,
+                                    status.liabilityLimit.toString()
+                                )
+                            )
+                        }
+                    }
                 }
             }
             Spacer(Modifier.width(12.dp))
@@ -167,5 +206,27 @@ fun ProviderCard(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun ManageProvidersScreenPreview() {
+    val viewModel by remember {
+        mutableStateOf(
+            FakeBackupViewModel(
+                backupState = BackupStates.AuthenticationsEditing,
+            ),
+        )
+    }
+    val reducerState by viewModel.reducerState.collectAsState()
+    val authProviders = (reducerState as ReducerState.Backup).authenticationProviders
+    WizardPage(title = stringResource(R.string.manage_backup_providers)) {
+        ManageProvidersScreen(
+            nestedScrollConnection = it,
+            authProviders = authProviders!!,
+            onAddProvider = {},
+            onDeleteProvider = {},
+        )
     }
 }

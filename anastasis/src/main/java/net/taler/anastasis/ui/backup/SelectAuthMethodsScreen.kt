@@ -67,7 +67,6 @@ import net.taler.common.CryptoUtils
 @Composable
 fun SelectAuthMethodsScreen(
     viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
-    showManageProviders: Boolean = false,
 ) {
     val state by viewModel.reducerState.collectAsState()
     val reducerState = state as? ReducerState.Backup
@@ -89,11 +88,11 @@ fun SelectAuthMethodsScreen(
         }.distinct()
     }
 
-    var manageProviders by remember { mutableStateOf(showManageProviders) }
+    var manageProviders by remember { mutableStateOf(false) }
 
     WizardPage(
         title = if (manageProviders)
-            stringResource(R.string.backup_providers)
+            stringResource(R.string.manage_backup_providers)
             else stringResource(R.string.select_auth_methods_title),
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
@@ -281,16 +280,5 @@ fun SelectAuthMethodsScreenPreview() {
         viewModel = FakeBackupViewModel(
             backupState = BackupStates.AuthenticationsEditing,
         ),
-    )
-}
-
-@Preview
-@Composable
-fun ManageBackupProvidersPreview() {
-    SelectAuthMethodsScreen(
-        viewModel = FakeBackupViewModel(
-            backupState = BackupStates.AuthenticationsEditing,
-        ),
-        showManageProviders = true,
     )
 }
