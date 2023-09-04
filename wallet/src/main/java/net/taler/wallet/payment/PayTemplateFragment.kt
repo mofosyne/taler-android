@@ -29,9 +29,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import net.taler.common.Amount
 import net.taler.common.showError
-import net.taler.wallet.AmountResult
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
@@ -56,15 +54,16 @@ class PayTemplateFragment : Fragment() {
         val summary = if ("summary" in queryParams)
             uri.getQueryParameter("summary")!! else null
 
-        val amountResult = if ("amount" in queryParams) {
+        val amountStatus = if ("amount" in queryParams) {
             val amount = uri.getQueryParameter("amount")!!
-            val parts = amount.split(':')
+            val parts = if (amount.isEmpty()) emptyList() else amount.split(":")
             when (parts.size) {
-                1 -> AmountResult.Success(Amount.fromString(parts[0], "0"))
-                2 -> AmountResult.Success(Amount.fromString(parts[0], parts[1]))
-                else -> AmountResult.InvalidAmount
+                0 -> AmountFieldStatus.Default()
+                1 -> AmountFieldStatus.Default(currency = parts[0])
+                2 -> AmountFieldStatus.Default(parts[0], parts[1])
+                else -> AmountFieldStatus.Invalid
             }
-        } else null
+        } else AmountFieldStatus.FixedAmount
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -75,7 +74,7 @@ class PayTemplateFragment : Fragment() {
                     PayTemplateComposable(
                         currencies = model.getCurrencies(),
                         summary = summary,
-                        amountResult = amountResult,
+                        amountStatus = amountStatus,
                         payStatus = payStatus,
                         onCreateAmount = { text, currency ->
                             model.createAmount(text, currency)

@@ -195,6 +195,7 @@ fun CurrencyDropdown(
     onCurrencyChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     initialCurrency: String? = null,
+    readOnly: Boolean = false,
 ) {
     val initialIndex = currencies.indexOf(initialCurrency).let { if (it < 0) 0 else it }
     var selectedIndex by remember { mutableStateOf(initialIndex) }
@@ -204,7 +205,7 @@ fun CurrencyDropdown(
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .clickable(onClick = { expanded = true }),
+                .clickable(onClick = { if (!readOnly) expanded = true }),
             value = currencies[selectedIndex],
             onValueChange = { },
             readOnly = true,

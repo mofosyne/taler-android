@@ -47,10 +47,19 @@ import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.CurrencyDropdown
 
+sealed class AmountFieldStatus {
+    object FixedAmount: AmountFieldStatus()
+    class Default(
+        val amountStr: String? = null,
+        val currency: String? = null,
+    ): AmountFieldStatus()
+    object Invalid: AmountFieldStatus()
+}
+
 @Composable
 fun PayTemplateComposable(
     summary: String?,
-    amountResult: AmountResult?,
+    amountStatus: AmountFieldStatus,
     currencies: List<String>,
     payStatus: PayStatus,
     onCreateAmount: (String, String) -> AmountResult,
@@ -59,7 +68,7 @@ fun PayTemplateComposable(
 ) {
 
     // If wallet is empty, there's no way the user can pay something
-    if (amountResult is AmountResult.InvalidAmount) {
+    if (amountStatus is AmountFieldStatus.Invalid) {
         PayTemplateError(stringResource(R.string.receive_amount_invalid))
     } else if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
         PayTemplateError(stringResource(R.string.payment_balance_insufficient))
@@ -67,7 +76,7 @@ fun PayTemplateComposable(
         is PayStatus.None -> PayTemplateDefault(
             currencies = currencies,
             summary = summary,
-            amount = amountResult?.let { (it as AmountResult.Success).amount },
+            amountStatus = amountStatus,
             onCreateAmount = onCreateAmount,
             onError = onError,
             onSubmit = { s, a ->
@@ -90,13 +99,17 @@ fun PayTemplateComposable(
 fun PayTemplateDefault(
     currencies: List<String>,
     summary: String? = null,
-    amount: Amount? = null,
+    amountStatus: AmountFieldStatus,
     onCreateAmount: (String, String) -> AmountResult,
     onError: (msgRes: Int) -> Unit,
     onSubmit: (summary: String?, amount: Amount?) -> Unit,
 ) {
     var localSummary by remember { mutableStateOf(summary) }
-    var localAmount by remember { mutableStateOf(amount) }
+    var localAmount by remember { mutableStateOf(
+        (amountStatus as? AmountFieldStatus.Default)?.let { s ->
+            Amount.fromString(s.currency ?: currencies[0], s.amountStr ?: "0")
+        }
+    ) }
 
     Column(horizontalAlignment = End) {
         localSummary?.let { summary ->
@@ -119,6 +132,7 @@ fun PayTemplateDefault(
                     .fillMaxWidth(),
                 amount = amount,
                 currencies = currencies,
+                fixedCurrency = (amountStatus as? AmountFieldStatus.Default)?.currency != null,
                 onAmountChosen = { localAmount = it },
             )
         }
@@ -175,6 +189,7 @@ fun PayTemplateLoading() {
 private fun AmountField(
     modifier: Modifier = Modifier,
     currencies: List<String>,
+    fixedCurrency: Boolean,
     amount: Amount,
     onAmountChosen: (Amount) -> Unit,
 ) {
@@ -182,7 +197,6 @@ private fun AmountField(
         modifier = modifier,
     ) {
         val amountText = if (amount.value == 0L) "" else amount.value.toString()
-        val currency = currencies.find { amount.currency == it } ?: currencies[0]
         OutlinedTextField(
             modifier = Modifier
                 .padding(end = 16.dp)
@@ -191,9 +205,9 @@ private fun AmountField(
             placeholder = { Text("0") },
             onValueChange = { input ->
                 if (input.isNotBlank()) {
-                    onAmountChosen(Amount.fromString(currency, input))
+                    onAmountChosen(Amount.fromString(amount.currency, input))
                 } else {
-                    onAmountChosen(Amount.zero(currency))
+                    onAmountChosen(Amount.zero(amount.currency))
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
@@ -202,11 +216,12 @@ private fun AmountField(
         )
         CurrencyDropdown(
             modifier = Modifier.weight(1f),
-            initialCurrency = currency,
+            initialCurrency = amount.currency,
             currencies = currencies,
             onCurrencyChanged = { c ->
                 onAmountChosen(Amount.fromString(c, amount.amountStr))
             },
+            readOnly = fixedCurrency,
         )
     }
 }
@@ -217,7 +232,7 @@ fun PayTemplateComposablePreview() {
     TalerSurface {
         PayTemplateComposable(
             summary = "Donation",
-            amountResult = AmountResult.Success(Amount("ARS", 20L, 0)),
+            amountStatus = AmountFieldStatus.Default("ARS",  "20"),
             currencies = listOf("KUDOS", "ARS"),
             // TODO create previews for other states
             payStatus = PayStatus.None,
