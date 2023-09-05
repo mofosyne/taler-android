@@ -38,8 +38,8 @@
         android:name="net.taler.wallet.ReceiveFundsFragment"
         android:label="@string/transactions_receive_funds">
         <action
-            android:id="@+id/action_receiveFunds_to_nav_exchange_manual_withdrawal"
-            app:destination="@id/nav_exchange_manual_withdrawal" />
+            android:id="@+id/action_receiveFunds_to_nav_prompt_withdraw"
+            app:destination="@id/promptWithdraw" />
         <action
             android:id="@+id/action_receiveFunds_to_nav_peer_pull"
             app:destination="@id/nav_peer_pull" />
