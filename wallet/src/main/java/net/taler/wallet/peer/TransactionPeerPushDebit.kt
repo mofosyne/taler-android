@@ -40,6 +40,7 @@ import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionMinorState.Ready
 import net.taler.wallet.transactions.TransactionPeerComposable
 import net.taler.wallet.transactions.TransactionPeerPushDebit
 import net.taler.wallet.transactions.TransactionState
@@ -68,16 +69,18 @@ fun ColumnScope.TransactionPeerPushDebitComposable(t: TransactionPeerPushDebit) 
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
-    QrCodeUriComposable(
-        talerUri = t.talerUri,
-        clipBoardLabel = "Push payment",
-        buttonText = stringResource(id = R.string.copy),
-    ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.bodyLarge,
-            text = stringResource(id = R.string.receive_peer_invoice_uri),
-        )
+    if (t.txState == TransactionState(Pending, Ready)) {
+        QrCodeUriComposable(
+            talerUri = t.talerUri,
+            clipBoardLabel = "Push payment",
+            buttonText = stringResource(id = R.string.copy),
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                style = MaterialTheme.typography.bodyLarge,
+                text = stringResource(id = R.string.receive_peer_invoice_uri),
+            )
+        }
     }
 }
 

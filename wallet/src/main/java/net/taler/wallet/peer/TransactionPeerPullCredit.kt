@@ -40,6 +40,7 @@ import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionMinorState.Ready
 import net.taler.wallet.transactions.TransactionPeerComposable
 import net.taler.wallet.transactions.TransactionPeerPullCredit
 import net.taler.wallet.transactions.TransactionState
@@ -68,7 +69,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
-    if (t.txState.major == Pending) {
+    if (t.txState == TransactionState(Pending, Ready)) {
         QrCodeUriComposable(
             talerUri = t.talerUri,
             clipBoardLabel = "Invoice",
