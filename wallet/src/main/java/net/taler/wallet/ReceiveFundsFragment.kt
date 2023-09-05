@@ -62,6 +62,7 @@ import net.taler.wallet.exchanges.ExchangeItem
 class ReceiveFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager get() = model.exchangeManager
+    private val withdrawManager get() = model.withdrawManager
     private val peerManager get() = model.peerManager
 
     override fun onCreateView(
@@ -99,11 +100,11 @@ class ReceiveFundsFragment : Fragment() {
             Toast.makeText(requireContext(), "No exchange available", LENGTH_LONG).show()
             return
         }
-        exchangeManager.withdrawalExchange = exchange
+
         // now that we have the exchange, we can navigate
-        val bundle = bundleOf("amount" to amount.toJSONString())
-        findNavController().navigate(
-            R.id.action_receiveFunds_to_nav_exchange_manual_withdrawal, bundle)
+        exchangeManager.withdrawalExchange = exchange
+        withdrawManager.getWithdrawalDetails(exchange.exchangeBaseUrl, amount)
+        findNavController().navigate(R.id.action_receiveFunds_to_nav_prompt_withdraw)
     }
 
     private fun onPeerPull(amount: Amount) {
