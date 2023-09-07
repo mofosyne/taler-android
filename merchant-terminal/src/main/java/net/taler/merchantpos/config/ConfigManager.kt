@@ -40,6 +40,7 @@ import net.taler.common.getIncompatibleStringOrNull
 import net.taler.merchantlib.ConfigResponse
 import net.taler.merchantlib.MerchantApi
 import net.taler.merchantlib.MerchantConfig
+import net.taler.merchantpos.BuildConfig
 import net.taler.merchantpos.R
 
 private const val SETTINGS_NAME = "taler-merchant-terminal"
@@ -52,7 +53,7 @@ internal const val CONFIG_URL_DEMO = "https://docs.taler.net/_static/sample-pos-
 internal const val CONFIG_USERNAME_DEMO = ""
 internal const val CONFIG_PASSWORD_DEMO = ""
 
-private val VERSION = Version(3, 0, 1)
+private val VERSION = Version.parse(BuildConfig.BACKEND_API_VERSION)!!
 
 private val TAG = ConfigManager::class.java.simpleName
 

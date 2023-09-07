@@ -18,6 +18,8 @@ android {
         versionCode 5
         versionName "0.2.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BACKEND_API_VERSION", "\"5:0:1\"")
     }
 
     buildTypes {
