@@ -20,6 +20,7 @@ data class Tasks(
     val foreground: Int = 0,
 ) {
     enum class Type {
+        None,
         Background,
         Foreground,
     }
@@ -28,11 +29,13 @@ data class Tasks(
     val isForegroundLoading: Boolean get() = foreground > 0
 
     fun addTask(type: Type): Tasks = when (type) {
+        Type.None -> copy()
         Type.Background -> copy(background = background + 1)
         Type.Foreground -> copy(foreground = foreground + 1)
     }
 
     fun removeTask(type: Type): Tasks = when (type) {
+        Type.None -> copy()
         Type.Background -> copy(background = if (background == 0) 0 else background - 1)
         Type.Foreground -> copy(foreground = if(foreground == 0) 0 else foreground - 1)
     }

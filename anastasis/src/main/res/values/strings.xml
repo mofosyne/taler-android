@@ -74,6 +74,8 @@
     <string name="secret_name">Secret name</string>
     <string name="secret_unique">This should be unique</string>
     <string name="secret_text">Secret text</string>
+    <string name="secret_expiration">Expiration date</string>
+    <string name="secret_backup_fees">Backup fees</string>
     <string name="backup_stored_providers">Your backup is being stored by the following providers:</string>
     <string name="backup_policy_detail">Version %1$d expires at %2$s</string>
 

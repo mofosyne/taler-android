@@ -17,6 +17,12 @@
 package net.taler.anastasis.ui.backup
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,19 +30,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import net.taler.anastasis.R
 import net.taler.anastasis.models.BackupStates
-import net.taler.anastasis.models.ReducerArgs
+import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.forms.EditSecretForm
 import net.taler.anastasis.ui.reusable.pages.WizardPage
+import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
+import net.taler.common.Amount
 import net.taler.common.CryptoUtils
+import net.taler.common.Timestamp
 
 @Composable
 fun EditSecretScreen(
@@ -45,41 +60,103 @@ fun EditSecretScreen(
     val state by viewModel.reducerState.collectAsState()
     val reducerState = state as? ReducerState.Backup
         ?: error("invalid reducer state type")
+    val coreSecret = reducerState.coreSecret
 
-    var secretName by remember {
-        mutableStateOf(reducerState.secretName ?: "")
-    }
-    var secretValue by remember {
-        mutableStateOf(reducerState.coreSecret?.value?.let {
+    var secretName by remember { mutableStateOf(reducerState.secretName ?: "") }
+    var secretValue by remember { mutableStateOf(
+        coreSecret?.value?.let {
             CryptoUtils.decodeCrock(it).toString(Charsets.UTF_8)
-        } ?: "")
+        } ?: "",
+    ) }
+
+    val tz = TimeZone.currentSystemDefault()
+    val secretExpirationDate = remember(reducerState.expiration) {
+        Instant.fromEpochMilliseconds(
+            reducerState.expiration?.ms ?: System.currentTimeMillis()
+        ).toLocalDateTime(tz)
     }
+    val uploadFees = reducerState.uploadFees ?: emptyList()
 
     WizardPage(
         title = stringResource(R.string.edit_secret_title),
         onBackClicked = { viewModel.goHome() },
+        enableNext = secretName.isNotEmpty() && coreSecret != null,
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
-            viewModel.reducerManager?.backupSecret(
-                name = secretName,
-                args = ReducerArgs.EnterSecret(
-                    secret = ReducerArgs.EnterSecret.Secret(
-                        value = CryptoUtils.encodeCrock(secretValue.toByteArray(Charsets.UTF_8)),
-                        mime = "text/plain",
-                    ),
-                    expiration = null,
-                )
-            )
+              viewModel.reducerManager?.next()
         },
-    ) {
-        EditSecretForm(
-            modifier = Modifier.fillMaxSize(),
-            name = secretName,
-            value = secretValue,
-        ) { name, value, _ ->
-            secretName = name
-            secretValue = value
+    ) { scroll ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scroll),
+        ) {
+            item {
+                EditSecretForm(
+                    modifier = Modifier.fillMaxSize(),
+                    name = secretName,
+                    value = secretValue,
+                    expirationDate = secretExpirationDate.date,
+                    onSecretNameEdited = { name ->
+                        secretName = name
+                        viewModel.reducerManager?.enterSecretName(name)
+                    },
+                    onSecretEdited = { value, date ->
+                        secretValue = value
+                        viewModel.reducerManager?.enterSecret(
+                            secret = CoreSecret(
+                                value = CryptoUtils.encodeCrock(value.toByteArray(Charsets.UTF_8)),
+                                mime = "text/plain",
+                            ),
+                            expiration = Timestamp.fromMillis(
+                                date.atTime(secretExpirationDate.time).toInstant(tz)
+                                    .toEpochMilliseconds()
+                            ),
+                        )
+                    },
+                )
+            }
+
+            item {
+                if (uploadFees.isNotEmpty()) {
+                    Text(
+                        stringResource(R.string.secret_backup_fees),
+                        modifier = Modifier.padding(
+                            start = LocalSpacing.current.medium,
+                            top = LocalSpacing.current.small,
+                            end = LocalSpacing.current.medium,
+                            bottom = LocalSpacing.current.small,
+                        ),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+            }
+
+            items(items = uploadFees) { fee ->
+                FeeCard(
+                    modifier = Modifier
+                        .padding(
+                            start = LocalSpacing.current.medium,
+                            end = LocalSpacing.current.medium,
+                            bottom = LocalSpacing.current.small,
+                        ).fillMaxSize(),
+                    fee = fee.fee,
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun FeeCard(
+    modifier: Modifier = Modifier,
+    fee: Amount,
+) {
+    ElevatedCard(modifier) {
+        Text(
+            fee.toString(),
+            modifier = Modifier.padding(LocalSpacing.current.medium)
+        )
     }
 }
 

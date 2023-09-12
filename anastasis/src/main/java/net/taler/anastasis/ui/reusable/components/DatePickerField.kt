@@ -17,6 +17,7 @@
 package net.taler.anastasis.ui.reusable.components
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.ui.theme.LocalSpacing
 
@@ -52,20 +55,15 @@ fun DatePickerField(
     supportingText: (@Composable () -> Unit)? = null,
     date: LocalDate?,
     onDateSelected: (date: LocalDate) -> Unit,
+    minDate: LocalDate? = null,
+    maxDate: LocalDate? = null,
 ) {
-    val now = Utils.currentDate
-    val dialog = DatePickerDialog(
-        LocalContext.current,
-        { _: DatePicker, y: Int, m: Int, d: Int ->
-            onDateSelected(LocalDate(
-                year = y,
-                monthNumber = m + 1,
-                dayOfMonth = d,
-            ))
-        },
-        date?.year ?: now.year,
-        (date?.monthNumber ?: now.monthNumber) - 1,
-        date?.dayOfMonth ?: now.dayOfMonth,
+    val dialog = getPickerDialog(
+        context = LocalContext.current,
+        initialDate = date,
+        minDate = minDate,
+        maxDate = maxDate,
+        onDateSelected = { onDateSelected(it) },
     )
 
     OutlinedTextField(
@@ -93,6 +91,37 @@ fun DatePickerField(
         enabled = false,
         readOnly = true,
     )
+}
+
+private fun getPickerDialog(
+    context: Context,
+    initialDate: LocalDate?,
+    minDate: LocalDate?,
+    maxDate: LocalDate?,
+    onDateSelected: (date: LocalDate) -> Unit,
+): DatePickerDialog {
+    val now = Utils.currentDate
+    val tz = TimeZone.currentSystemDefault()
+    val dialog = DatePickerDialog(
+        context,
+        { _: DatePicker, y: Int, m: Int, d: Int ->
+            onDateSelected(LocalDate(
+                year = y,
+                monthNumber = m + 1,
+                dayOfMonth = d,
+            ))
+        },
+        initialDate?.year ?: now.year,
+        (initialDate?.monthNumber ?: now.monthNumber) - 1,
+        initialDate?.dayOfMonth ?: now.dayOfMonth,
+    )
+    if (minDate != null) {
+        dialog.datePicker.minDate = minDate.atStartOfDayIn(tz).toEpochMilliseconds()
+    }
+    if (maxDate != null) {
+        dialog.datePicker.maxDate = maxDate.atStartOfDayIn(tz).toEpochMilliseconds()
+    }
+    return dialog
 }
 
 @Preview

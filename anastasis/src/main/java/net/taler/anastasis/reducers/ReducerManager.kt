@@ -33,12 +33,14 @@ import net.taler.anastasis.models.AggregatedPolicyMetaInfo
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.ContinentInfo
+import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.CountryInfo
 import net.taler.anastasis.models.Policy
 import net.taler.anastasis.models.ReducerArgs
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.shared.Utils
 import net.taler.anastasis.shared.Utils.encodeToNativeJson
+import net.taler.common.Timestamp
 import org.json.JSONObject
 import kotlin.time.Duration.Companion.seconds
 
@@ -253,22 +255,29 @@ class ReducerManager(
         }
     }
 
-    fun backupSecret(
-        name: String,
-        args: ReducerArgs.EnterSecret,
+    fun enterSecretName(secretName: String) = scope.launch {
+        state.value?.let { initialState ->
+            addTask(Tasks.Type.None)
+            api.reduceAction(initialState, "enter_secret_name") {
+                put("name", secretName)
+            }
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun enterSecret(
+        secret: CoreSecret,
+        expiration: Timestamp,
     ) = scope.launch {
         state.value?.let { initialState ->
-            addTask()
-            api.reduceAction(initialState, "enter_secret", args).onSuccess { newState ->
-                scope.launch {
-                    api.reduceAction(newState, "enter_secret_name") {
-                        put("name", name)
-                    }.onSuccess { newNewState ->
-                        this@ReducerManager.onSuccess(newNewState)
-                        this@ReducerManager.next()
-                    }.onError { onError(it) }
-                }
-            }.onError { onError(it) }
+            addTask(Tasks.Type.None)
+            api.reduceAction(initialState, "enter_secret", ReducerArgs.EnterSecret(
+                secret = ReducerArgs.EnterSecret.Secret(secret.value, secret.mime),
+                expiration = expiration,
+            ))
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
         }
     }
 

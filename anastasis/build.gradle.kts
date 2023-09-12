@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-val qtartVersion = "0.9.3-dev.14"
+val qtartVersion = "0.9.3-dev.15"
 
 @Suppress("UnstableApiUsage")
 android {
