@@ -76,10 +76,10 @@ fun SolveChallengeScreen(
         onNextClicked = {
             when (challenge.type) {
                 AuthMethod.Type.Question -> {
-                    viewModel.reducerManager?.solveChallenge(answer)
+                    viewModel.reducerManager?.solveAnswerChallenge(answer)
                 }
                 AuthMethod.Type.Sms, AuthMethod.Type.Email -> {
-                    viewModel.reducerManager?.solveChallenge(Utils.extractVerificationCode(answer))
+                    viewModel.reducerManager?.solveAnswerChallenge(Utils.extractVerificationCode(answer))
                 }
                 // TODO: handle other challenge types
                 else -> {}

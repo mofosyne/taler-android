@@ -24,9 +24,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import net.taler.anastasis.backend.AnastasisReducerApi
-import net.taler.anastasis.backend.BackendManager
 import net.taler.anastasis.backend.TalerErrorInfo
 import net.taler.anastasis.backend.Tasks
 import net.taler.anastasis.models.AggregatedPolicyMetaInfo
@@ -36,13 +34,11 @@ import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.CountryInfo
 import net.taler.anastasis.models.Policy
-import net.taler.anastasis.models.ReducerArgs
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.shared.Utils
-import net.taler.anastasis.shared.Utils.encodeToNativeJson
 import net.taler.common.Timestamp
-import org.json.JSONObject
 import kotlin.time.Duration.Companion.seconds
+import net.taler.anastasis.models.ReducerArgs.*
 
 class ReducerManager(
     private val state: MutableStateFlow<ReducerState?>,
@@ -102,9 +98,9 @@ class ReducerManager(
     fun selectContinent(continent: ContinentInfo) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "select_continent") {
-                put("continent", continent.name)
-            }
+            api.reduceAction(initialState, "select_continent", SelectContinent(
+                continent = continent.name,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -113,11 +109,11 @@ class ReducerManager(
     fun selectCountry(country: CountryInfo) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "select_country") {
-                put("country_code", country.code)
+            api.reduceAction(initialState, "select_country", SelectCountry(
+                countryCode = country.code,
                 // TODO: stop hardcoding currency!
-                put("currency", "EUR")
-            }
+                currency = "EUR",
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -126,14 +122,9 @@ class ReducerManager(
     fun enterUserAttributes(userAttributes: Map<String, String>) = scope.launch {
         state.value?.let {  initialState ->
             addTask()
-            api.reduceAction(initialState, "enter_user_attributes") {
-                put("identity_attributes", JSONObject(
-                    userAttributes.toMutableMap().apply {
-                        // Hardcode application ID
-                        this["application_id"] = "anastasis-standalone"
-                    }.toMap(),
-                ))
-            }
+            api.reduceAction(initialState, "enter_user_attributes", EnterUserAttributes(
+                identityAttributes = userAttributes,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -142,9 +133,9 @@ class ReducerManager(
     fun addProvider(url: String) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "add_provider") {
-                put("provider_url", url)
-            }
+            api.reduceAction(initialState, "add_provider", AddProvider(
+                providerUrl = url,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -153,9 +144,9 @@ class ReducerManager(
     fun deleteProvider(url: String) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "delete_provider") {
-                put("provider_url", url)
-            }
+            api.reduceAction(initialState, "delete_provider", DeleteProvider(
+                providerUrl = url,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -202,9 +193,9 @@ class ReducerManager(
     fun addAuthentication(method: AuthMethod) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "add_authentication") {
-                put("authentication_method", BackendManager.json.encodeToNativeJson(method))
-            }
+            api.reduceAction(initialState, "add_authentication", AddAuthentication(
+                authenticationMethod = method,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -213,9 +204,9 @@ class ReducerManager(
     fun deleteAuthentication(index: Int) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "delete_authentication") {
-                put("authentication_method", index)
-            }
+            api.reduceAction(initialState, "delete_authentication", DeleteAuthentication(
+                authenticationMethod = index,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -224,9 +215,9 @@ class ReducerManager(
     fun addPolicy(policy: Policy) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "add_policy") {
-                put("policy", Json.encodeToNativeJson(policy.methods))
-            }
+            api.reduceAction(initialState, "add_policy", AddPolicy(
+                policy = policy.methods,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -235,10 +226,10 @@ class ReducerManager(
     fun updatePolicy(index: Int, policy: Policy) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "update_policy") {
-                put("policy_index", index)
-                put("policy", Json.encodeToNativeJson(policy.methods))
-            }
+            api.reduceAction(initialState, "update_policy", UpdatePolicy(
+                policyIndex = index,
+                policy = policy.methods,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -247,9 +238,9 @@ class ReducerManager(
     fun deletePolicy(index: Int) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "delete_policy") {
-                put("policy_index", index)
-            }
+            api.reduceAction(initialState, "delete_policy", DeletePolicy(
+                policyIndex = index,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -258,9 +249,9 @@ class ReducerManager(
     fun enterSecretName(secretName: String) = scope.launch {
         state.value?.let { initialState ->
             addTask(Tasks.Type.None)
-            api.reduceAction(initialState, "enter_secret_name") {
-                put("name", secretName)
-            }
+            api.reduceAction(initialState, "enter_secret_name", EnterSecretName(
+                name = secretName,
+            ))
                 .onSuccess { onSuccess(it) }
                 .onError { onError(it) }
         }
@@ -272,8 +263,8 @@ class ReducerManager(
     ) = scope.launch {
         state.value?.let { initialState ->
             addTask(Tasks.Type.None)
-            api.reduceAction(initialState, "enter_secret", ReducerArgs.EnterSecret(
-                secret = ReducerArgs.EnterSecret.Secret(secret.value, secret.mime),
+            api.reduceAction(initialState, "enter_secret", EnterSecret(
+                secret = secret,
                 expiration = expiration,
             ))
                 .onSuccess { onSuccess(it) }
@@ -323,20 +314,20 @@ class ReducerManager(
     fun selectChallenge(uuid: String) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "select_challenge") {
-                put("uuid", uuid)
-            }
+            api.reduceAction(initialState, "select_challenge", SelectChallenge(
+                uuid = uuid,
+            ))
                 .onSuccess { this@ReducerManager.onSuccess(it) }
                 .onError { this@ReducerManager.onError(it) }
         }
     }
 
-    fun solveChallenge(answer: String) = scope.launch {
+    fun solveAnswerChallenge(answer: String) = scope.launch {
         state.value?.let { initialState ->
             addTask()
-            api.reduceAction(initialState, "solve_challenge") {
-                put("answer", answer)
-            }
+            api.reduceAction(initialState, "solve_challenge", SolveChallengeRequest.Answer(
+                answer = answer,
+            ))
                 .onSuccess { this@ReducerManager.onSuccess(it) }
                 .onError { this@ReducerManager.onError(it) }
         }

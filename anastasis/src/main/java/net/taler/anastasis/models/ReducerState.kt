@@ -172,7 +172,7 @@ data class SuccessDetail(
 
 @Serializable
 data class CoreSecret(
-    val mime: String,
+    val mime: String? = null,
     val value: String,
     val filename: String? = null,
 )

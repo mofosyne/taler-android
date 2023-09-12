@@ -16,54 +16,96 @@
 
 package net.taler.anastasis.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.Timestamp
 
 @Serializable
 sealed class ReducerArgs {
 
-    // TODO: ActionArgsEnterUserAttributes
+    @Serializable
+    data class EnterUserAttributes(
+        @SerialName("identity_attributes")
+        val identityAttributes: Map<String, String>
+    )
 
-    // TODO: ActionArgsAddProvider
+    @Serializable
+    data class AddProvider(
+        @SerialName("provider_url")
+        val providerUrl: String
+    )
 
-    // TODO: ActionArgsDeleteProvider
+    @Serializable
+    data class DeleteProvider(
+        @SerialName("provider_url")
+        val providerUrl: String
+    )
 
-    // TODO: ActionArgsAddAuthentication
+    @Serializable
+    data class AddAuthentication(
+        @SerialName("authentication_method")
+        val authenticationMethod: AuthMethod,
+    )
 
-    // TODO: ActionArgsDeleteAuthentication
+    @Serializable
+    data class DeleteAuthentication(
+        @SerialName("authentication_method")
+        val authenticationMethod: Int,
+    )
 
-    // TODO: ActionArgsDeletePolicy
+    @Serializable
+    data class DeletePolicy(
+        @SerialName("policy_index")
+        val policyIndex: Int,
+    )
 
-    // TODO: ActionArgsEnterSecretName
+    @Serializable
+    data class EnterSecretName(val name: String)
 
     @Serializable
     data class EnterSecret(
-        val secret: Secret,
+        val secret: CoreSecret,
         val expiration: Timestamp? = null,
-    ) {
+    )
+
+    @Serializable
+    data class SelectContinent(val continent: String)
+
+    @Serializable
+    data class SelectCountry(
+        @SerialName("country_code")
+        val countryCode: String,
+        val currency: String,
+    )
+
+    @Serializable
+    data class SelectChallenge(val uuid: String)
+
+    @Serializable
+    sealed class SolveChallengeRequest {
         @Serializable
-        data class Secret(
-            val value: String,
-            val mime: String? = null,
-        )
+        data class Answer(val answer: String): SolveChallengeRequest()
+
+        @Serializable
+        data class Pin(val pin: Int): SolveChallengeRequest()
+
+        @Serializable
+        data class Hash(val hash: String): SolveChallengeRequest()
     }
 
-    // TODO: ActionArgsSelectContinent
+    @Serializable
+    data class AddPolicy(val policy: List<Policy.PolicyMethod>)
 
-    // TODO: ActionArgsSelectCountry
-
-    // TODO: ActionArgsSelectChallenge
-
-    // TODO: ActionArgsSolveChallengeRequest
-
-    // TODO: ActionArgsAddPolicy
-
-    // TODO: ActionArgsUpdateExpiration
-
-    // TODO: ActionArgsUpdateExpiration
+    @Serializable
+    data class UpdateExpiration(val expiration: Timestamp)
 
     // TODO: ActionArgsChangeVersion
 
-    // TODO: ActionArgsUpdatePolicy
+    @Serializable
+    data class UpdatePolicy(
+        @SerialName("policy_index")
+        val policyIndex: Int,
+        val policy: List<Policy.PolicyMethod>,
+    )
 
 }
