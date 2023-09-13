@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     kotlin("kapt")
     id("com.android.application")
@@ -7,16 +9,27 @@ plugins {
 }
 
 val qtartVersion = "0.9.3-dev.15"
+val minifyDebug by extra(false)
+
+fun versionCodeEpoch() = (System.currentTimeMillis() / 1000).toInt()
+fun gitCommit(): String {
+    val stdout = ByteArrayOutputStream()
+    exec {
+        commandLine("git", "rev-parse", "--short=7", "HEAD")
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
 
 @Suppress("UnstableApiUsage")
 android {
     namespace = "net.taler.anastasis"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "net.taler.anastasis"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -24,11 +37,30 @@ android {
             useSupportLibrary = true
         }
     }
-
     buildTypes {
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            isMinifyEnabled = minifyDebug
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    flavorDimensions += "distributionChannel"
+    productFlavors {
+        create("fdroid") {
+            dimension = "distributionChannel"
+            applicationIdSuffix = ".fdroid"
+        }
+        create("google") {
+            dimension = "distributionChannel"
+        }
+        create("nightly") {
+            dimension = "distributionChannel"
+            applicationIdSuffix = ".nightly"
+            versionCode = versionCodeEpoch()
+            versionNameSuffix = " (${gitCommit()})"
         }
     }
     compileOptions {
