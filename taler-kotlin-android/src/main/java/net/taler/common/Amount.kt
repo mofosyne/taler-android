@@ -90,6 +90,7 @@ public data class Amount(
         }
 
         public fun isValidAmountStr(str: String): Boolean {
+            if (str.count { it == '.' } > 1) return false
             val split = str.split(".")
             try {
                 checkValue(split[0].toLongOrNull())

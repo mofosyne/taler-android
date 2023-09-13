@@ -29,12 +29,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType.Companion.Decimal
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -55,7 +52,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
-import net.taler.common.Amount.Companion.isValidAmountStr
+import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.exchanges.ExchangeItem
 
@@ -134,28 +131,20 @@ private fun ReceiveFundsIntro(
             modifier = Modifier
                 .padding(16.dp),
         ) {
-            OutlinedTextField(
+            AmountInputField(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 16.dp),
                 value = text,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = Decimal),
                 onValueChange = { input ->
                     isError = false
-                    val filtered = input.filter { it.isDigit() || it == '.' }
-                    if (filtered.endsWith('.') || isValidAmountStr(filtered)) text = filtered
+                    text = input
+                },
+                label = { Text(stringResource(R.string.receive_amount)) },
+                supportingText = {
+                    if (isError) Text(stringResource(R.string.receive_amount_invalid))
                 },
                 isError = isError,
-                label = {
-                    if (isError) {
-                        Text(
-                            stringResource(R.string.receive_amount_invalid),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    } else {
-                        Text(stringResource(R.string.receive_amount))
-                    }
-                }
             )
             Text(
                 modifier = Modifier,

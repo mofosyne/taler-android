@@ -27,12 +27,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -52,7 +49,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
-import net.taler.common.Amount.Companion.isValidAmountStr
+import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 
 class SendFundsFragment : Fragment() {
@@ -116,34 +113,20 @@ private fun SendFundsIntro(
             modifier = Modifier
                 .padding(16.dp),
         ) {
-            OutlinedTextField(
+            AmountInputField(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 16.dp),
                 value = text,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
                 onValueChange = { input ->
                     isError = false
-                    insufficientBalance = false
-                    val filtered = input.filter { it.isDigit() || it == '.' }
-                    if (filtered.endsWith('.') || isValidAmountStr(filtered)) text = filtered
+                    text = input
                 },
-                isError = isError || insufficientBalance,
-                label = {
-                    if (isError) {
-                        Text(
-                            stringResource(R.string.receive_amount_invalid),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    } else if (insufficientBalance) {
-                        Text(
-                            stringResource(R.string.payment_balance_insufficient),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    } else {
-                        Text(stringResource(R.string.send_amount))
-                    }
-                }
+                label = { Text(stringResource(R.string.send_amount)) },
+                supportingText = {
+                    if (isError) Text(stringResource(R.string.receive_amount_invalid))
+                },
+                isError = isError,
             )
             Text(
                 modifier = Modifier,

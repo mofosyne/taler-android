@@ -60,7 +60,7 @@ class PayTemplateFragment : Fragment() {
             when (parts.size) {
                 0 -> AmountFieldStatus.Default()
                 1 -> AmountFieldStatus.Default(currency = parts[0])
-                2 -> AmountFieldStatus.Default(parts[0], parts[1])
+                2 -> AmountFieldStatus.Default(parts[1], parts[0])
                 else -> AmountFieldStatus.Invalid
             }
         } else AmountFieldStatus.FixedAmount
