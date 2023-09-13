@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -56,7 +55,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -67,6 +65,7 @@ import net.taler.common.Amount
 import net.taler.wallet.AmountResult
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 
 class PayToUriFragment : Fragment() {
@@ -136,24 +135,18 @@ private fun PayToComposable(
         var amountError by rememberSaveable { mutableStateOf("") }
         var currency by rememberSaveable { mutableStateOf(currencies[0]) }
         val focusRequester = remember { FocusRequester() }
-        OutlinedTextField(
-            modifier = Modifier
-                .focusRequester(focusRequester),
+        AmountInputField(
+            modifier = Modifier.focusRequester(focusRequester),
             value = amountText,
             onValueChange = { input ->
                 amountError = ""
                 amountText = input
             },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            singleLine = true,
+            label = { Text(stringResource(R.string.send_amount)) },
+            supportingText = {
+                if (amountError.isNotBlank()) Text(amountError)
+            },
             isError = amountError.isNotBlank(),
-            label = {
-                if (amountError.isBlank()) {
-                    Text(stringResource(R.string.send_amount))
-                } else {
-                    Text(amountError, color = MaterialTheme.colorScheme.error)
-                }
-            }
         )
         CurrencyDropdown(
             modifier = Modifier

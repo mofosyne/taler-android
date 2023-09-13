@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,12 +37,12 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.AmountResult
 import net.taler.wallet.R
+import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.deposit.CurrencyDropdown
 
@@ -104,11 +103,14 @@ fun PayTemplateDefault(
     onError: (msgRes: Int) -> Unit,
     onSubmit: (summary: String?, amount: Amount?) -> Unit,
 ) {
+    val amountDefault = amountStatus as? AmountFieldStatus.Default
+
     var localSummary by remember { mutableStateOf(summary) }
     var localAmount by remember { mutableStateOf(
-        (amountStatus as? AmountFieldStatus.Default)?.let { s ->
-            Amount.fromString(s.currency ?: currencies[0], s.amountStr ?: "0")
-        }
+        amountDefault?.let { s -> s.amountStr ?: "0" }
+    ) }
+    var localCurrency by remember { mutableStateOf(
+        amountDefault?.let { s -> s.currency ?: currencies[0] }
     ) }
 
     Column(horizontalAlignment = End) {
@@ -126,15 +128,21 @@ fun PayTemplateDefault(
         }
 
         localAmount?.let { amount ->
-            AmountField(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                amount = amount,
-                currencies = currencies,
-                fixedCurrency = (amountStatus as? AmountFieldStatus.Default)?.currency != null,
-                onAmountChosen = { localAmount = it },
-            )
+            localCurrency?.let { currency ->
+                AmountField(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    amount = amount,
+                    currency = currency,
+                    currencies = currencies,
+                    fixedCurrency = (amountStatus as? AmountFieldStatus.Default)?.currency != null,
+                    onAmountChosen = { a, c ->
+                        localAmount = a
+                        localCurrency = c
+                    },
+                )
+            }
         }
 
         Button(
@@ -142,14 +150,12 @@ fun PayTemplateDefault(
             enabled = localSummary == null || localSummary!!.isNotBlank(),
             onClick = {
                 localAmount?.let { amount ->
-                    val result = onCreateAmount(
-                        amount.amountStr,
-                        amount.currency,
-                    )
-                    when (result) {
-                        AmountResult.InsufficientBalance -> onError(R.string.payment_balance_insufficient)
-                        AmountResult.InvalidAmount -> onError(R.string.receive_amount_invalid)
-                        else -> onSubmit(summary, amount)
+                    localCurrency?.let { currency ->
+                        when (val res = onCreateAmount(amount, currency)) {
+                            is AmountResult.InsufficientBalance -> onError(R.string.payment_balance_insufficient)
+                            is AmountResult.InvalidAmount -> onError(R.string.receive_amount_invalid)
+                            is AmountResult.Success -> onSubmit(summary, res.amount)
+                        }
                     }
                 }
             },
@@ -184,43 +190,30 @@ fun PayTemplateLoading() {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-// TODO can we combine this with existing amount composables, e.g. whats in PayToComposable?
 private fun AmountField(
     modifier: Modifier = Modifier,
     currencies: List<String>,
     fixedCurrency: Boolean,
-    amount: Amount,
-    onAmountChosen: (Amount) -> Unit,
+    amount: String,
+    currency: String,
+    onAmountChosen: (amount: String, currency: String) -> Unit,
 ) {
     Row(
         modifier = modifier,
     ) {
-        val amountText = if (amount.value == 0L) "" else amount.value.toString()
-        OutlinedTextField(
+        AmountInputField(
             modifier = Modifier
                 .padding(end = 16.dp)
                 .weight(1f),
-            value = amountText,
-            placeholder = { Text("0") },
-            onValueChange = { input ->
-                if (input.isNotBlank()) {
-                    onAmountChosen(Amount.fromString(amount.currency, input))
-                } else {
-                    onAmountChosen(Amount.zero(amount.currency))
-                }
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            singleLine = true,
-            label = { Text(stringResource(R.string.send_amount)) },
+            value = amount,
+            onValueChange = { onAmountChosen(it, currency) },
+            label = { Text(stringResource(R.string.send_amount)) }
         )
         CurrencyDropdown(
             modifier = Modifier.weight(1f),
-            initialCurrency = amount.currency,
+            initialCurrency = currency,
             currencies = currencies,
-            onCurrencyChanged = { c ->
-                onAmountChosen(Amount.fromString(c, amount.amountStr))
-            },
+            onCurrencyChanged = { onAmountChosen(amount, it) },
             readOnly = fixedCurrency,
         )
     }
@@ -232,7 +225,7 @@ fun PayTemplateComposablePreview() {
     TalerSurface {
         PayTemplateComposable(
             summary = "Donation",
-            amountStatus = AmountFieldStatus.Default("ARS",  "20"),
+            amountStatus = AmountFieldStatus.Default("20",  "ARS"),
             currencies = listOf("KUDOS", "ARS"),
             // TODO create previews for other states
             payStatus = PayStatus.None,
