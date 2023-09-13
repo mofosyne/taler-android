@@ -33,7 +33,11 @@
     <string name="field_invalid">This field is invalid</string>
     <string name="field_optional">This field is optional</string>
     <string name="code">Verification code</string>
+    <string name="code_totp">TOTP code</string>
+    <string name="pin">PIN</string>
     <string name="url">URL</string>
+    <string name="copy">Copy</string>
+    <string name="button_scan_qr_code">Scan QR code</string>
 
     <!-- Common -->
     <string name="select_continent_title">Where do you live?</string>
@@ -59,6 +63,9 @@
     <string name="auth_method_totp">TOTP</string>
     <string name="auth_instruction_email">Email to %1$s</string>
     <string name="auth_instruction_sms">Sms to %1$s</string>
+    <string name="auth_instruction_totp">Enter %1$d digits code for %2$s</string>
+    <string name="totp_name">TOTP name</string>
+    <string name="totp_instructions">Confirm that your TOTP app works by entering the current 8-digit TOTP code here</string>
     <string name="add_challenge">Add challenge</string>
     <string name="manage_backup_providers">Manage backup providers</string>
     <string name="add_provider">Add provider</string>

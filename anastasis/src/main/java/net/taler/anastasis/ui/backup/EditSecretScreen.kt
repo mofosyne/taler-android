@@ -34,6 +34,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
@@ -52,6 +53,7 @@ import net.taler.anastasis.viewmodels.ReducerViewModelI
 import net.taler.common.Amount
 import net.taler.common.CryptoUtils
 import net.taler.common.Timestamp
+import kotlin.time.Duration.Companion.days
 
 @Composable
 fun EditSecretScreen(
@@ -71,9 +73,9 @@ fun EditSecretScreen(
 
     val tz = TimeZone.currentSystemDefault()
     val secretExpirationDate = remember(reducerState.expiration) {
-        Instant.fromEpochMilliseconds(
-            reducerState.expiration?.ms ?: System.currentTimeMillis()
-        ).toLocalDateTime(tz)
+        reducerState.expiration?.ms?.let {
+            Instant.fromEpochMilliseconds(it)
+        }?.toLocalDateTime(tz) ?: (Clock.System.now() + 365.days).toLocalDateTime(tz)
     }
     val uploadFees = reducerState.uploadFees ?: emptyList()
 

@@ -81,7 +81,7 @@ fun SelectSecretScreen(
     WizardPage(
         title = if (manageProviders)
             stringResource(R.string.recovery_providers)
-        else stringResource(R.string.select_auth_methods_title),
+        else stringResource(R.string.select_secret_title),
         enableNext = selectedIndex != null,
         onBackClicked = { viewModel.goHome() },
         onPrevClicked = { viewModel.goBack() },
@@ -97,7 +97,7 @@ fun SelectSecretScreen(
                 if (manageProviders) {
                     Icon(
                         Icons.Default.EditOff,
-                        contentDescription = stringResource(R.string.select_auth_methods_title)
+                        contentDescription = stringResource(R.string.select_secret_title)
                     )
                 } else {
                     Icon(

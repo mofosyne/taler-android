@@ -16,10 +16,15 @@
 
 package net.taler.common
 
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import kotlin.math.floor
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 object CryptoUtils {
-    private const val encTable = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    private const val encTableCrock = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    private const val encTable32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
     internal fun getValue(c: Char): Int {
         val a = when (c) {
@@ -61,7 +66,32 @@ object CryptoUtils {
                 numBits = 5
             }
             val v = bitBuf.ushr(numBits - 5).and(31)
-            sb += encTable[v]
+            sb += encTableCrock[v]
+            numBits -= 5
+        }
+        return sb
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    fun encodeCrock(bytes: UByteArray): String {
+        var sb = ""
+        val size = bytes.size
+        var bitBuf = 0
+        var numBits = 0
+        var pos = 0
+        while (pos < size || numBits > 0) {
+            if (pos < size && numBits < 5) {
+                val d = bytes[pos++]
+                bitBuf = bitBuf.shl(8).or(d.toInt())
+                numBits += 8
+            }
+            if (numBits < 5) {
+                // zero-padding
+                bitBuf = bitBuf.shl(5 - numBits)
+                numBits = 5
+            }
+            val v = bitBuf.ushr(numBits - 5).and(31)
+            sb += encTableCrock[v]
             numBits -= 5
         }
         return sb
@@ -94,4 +124,57 @@ object CryptoUtils {
         return out
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
+    fun encodeBase32(bytes: UByteArray): String {
+        var rpos = 0
+        var bits = 0
+        var vbit = 0
+        val result = StringBuilder()
+        while (rpos < bytes.size || vbit > 0) {
+            if (rpos < bytes.size && vbit < 5) {
+                bits = (bits shl 8) or bytes[rpos++].toInt()
+                vbit += 8
+            }
+            if (vbit < 5) {
+                bits = bits shl (5 - vbit)
+                vbit = 5
+            }
+            result.append(encTable32[(bits shr (vbit - 5)) and 31])
+            vbit -= 5
+        }
+        return result.toString()
+    }
+
+    private const val SEARCH_RANGE = 16
+    private const val TIME_STEP = 30.0
+
+    private fun String.decodeHex() = chunked(2).map { it.toUInt(16).toByte() }.toByteArray()
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    internal fun generateHmacSha1(key: ByteArray, message: ByteArray): UByteArray {
+        val mac = Mac.getInstance("HmacSHA1")
+        mac.init(SecretKeySpec(key, "HmacSHA1"))
+        return mac.doFinal(message).toUByteArray()
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    fun computeTotpAndCheck(
+        secretKey: UByteArray,
+        digits: Int,
+        code: Int,
+    ): Boolean {
+        val now = System.currentTimeMillis()
+        val epoch = floor((now / 1000.0).roundToInt() / TIME_STEP).toInt()
+        (-SEARCH_RANGE until SEARCH_RANGE).forEach {  ms ->
+            val movingFactor = (epoch + ms).toString(16).padStart(16, '0')
+            val hmacText = generateHmacSha1(secretKey.toByteArray(), movingFactor.decodeHex())
+            val offset = hmacText[hmacText.size - 1].toInt() and 0xF
+            val otp = (((hmacText[offset + 0].toInt() shl 24) +
+                    (hmacText[offset + 1].toInt() shl 16) +
+                    (hmacText[offset + 2].toInt() shl 8) +
+                    hmacText[offset + 3].toInt()) and 0x7FFFFFFF) % 10f.pow(digits).toInt()
+            if (otp == code) return true
+        }
+        return false
+    }
 }

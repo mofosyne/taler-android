@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import net.taler.anastasis.R
@@ -75,7 +76,7 @@ fun SolveChallengeScreen(
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
             when (challenge.type) {
-                AuthMethod.Type.Question -> {
+                AuthMethod.Type.Question, AuthMethod.Type.Totp -> {
                     viewModel.reducerManager?.solveAnswerChallenge(answer)
                 }
                 AuthMethod.Type.Sms, AuthMethod.Type.Email -> {
@@ -134,6 +135,17 @@ fun SolveChallengeScreen(
                             valid = v
                         },
                         regex = "^A-\\d{5}-\\d{3}-\\d{4}-\\d{3}$",
+                    )
+
+                    AuthMethod.Type.Totp -> EditAnswerForm(
+                        answerLabel = stringResource(R.string.code_totp),
+                        answer = answer,
+                        onAnswerEdited = { a, v ->
+                            answer = a
+                            valid = v
+                        },
+                        regex = "\\d{8}",
+                        keyboardType = KeyboardType.NumberPassword,
                     )
 
                     // TODO: handle other challenge types

@@ -17,6 +17,9 @@
 package net.taler.anastasis.ui.dialogs
 
 import android.util.Patterns
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,7 +36,11 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.ui.forms.EditAnswerForm
 import net.taler.anastasis.ui.forms.EditQuestionForm
+import net.taler.anastasis.ui.forms.EditTotpForm
+import net.taler.common.CryptoUtils
+import kotlin.random.Random
 
+@OptIn(ExperimentalUnsignedTypes::class)
 @Composable
 fun EditMethodDialog(
     type: AuthMethod.Type? = null,
@@ -51,25 +59,25 @@ fun EditMethodDialog(
                when (type ?: method?.type) {
                    AuthMethod.Type.Question -> EditQuestionForm(
                        question = localMethod?.instructions,
-                       answer = localMethod?.challenge,
+                       answer = localMethod?.challenge?.let { CryptoUtils.decodeCrock(it).toString(Charsets.UTF_8) },
                        onMethodEdited = { question, answer ->
                            valid = true
                            localMethod = AuthMethod(
                                type = AuthMethod.Type.Question,
                                instructions = question,
-                               challenge = answer,
+                               challenge = CryptoUtils.encodeCrock(answer.toByteArray(Charsets.UTF_8)),
                                mimeType = "text/plain",
                            )
                        }
                    )
                    AuthMethod.Type.Sms -> EditAnswerForm(
                        answerLabel = stringResource(R.string.sms),
-                       answer = localMethod?.challenge ?: "",
+                       answer = CryptoUtils.decodeCrock(localMethod?.challenge ?: "").toString(Charsets.UTF_8),
                        onAnswerEdited = { answer, v ->
                            localMethod = AuthMethod(
                                type = AuthMethod.Type.Sms,
                                instructions = context.getString(R.string.auth_instruction_sms, answer),
-                               challenge = answer,
+                               challenge = CryptoUtils.encodeCrock(answer.toByteArray(Charsets.UTF_8)),
                                mimeType = "text/plain",
                            )
                            valid = v
@@ -79,12 +87,12 @@ fun EditMethodDialog(
                    )
                    AuthMethod.Type.Email -> EditAnswerForm(
                        answerLabel = stringResource(R.string.email),
-                       answer = localMethod?.challenge ?: "",
+                       answer = CryptoUtils.decodeCrock(localMethod?.challenge ?: "").toString(Charsets.UTF_8),
                        onAnswerEdited = { answer, v ->
                            localMethod = AuthMethod(
                                type = AuthMethod.Type.Email,
                                instructions = context.getString(R.string.auth_instruction_email, answer),
-                               challenge = answer,
+                               challenge = CryptoUtils.encodeCrock(answer.toByteArray(Charsets.UTF_8)),
                                mimeType = "text/plain",
                            )
                            valid = v
@@ -92,6 +100,33 @@ fun EditMethodDialog(
                        keyboardType = KeyboardType.Email,
                        regex = Patterns.EMAIL_ADDRESS.pattern(),
                    )
+                   AuthMethod.Type.Totp -> {
+                       val scrollState = rememberScrollState()
+                       var localName by remember { mutableStateOf("") }
+                       var localCode by remember { mutableStateOf("") }
+                       val secret = remember { Random.nextBytes(32).toUByteArray() }
+                       val digits = 8
+                       EditTotpForm(
+                           modifier = Modifier
+                               .fillMaxSize()
+                               .verticalScroll(scrollState),
+                           name = localName,
+                           code = localCode,
+                           secret = secret,
+                           digits = digits,
+                           onTotpEdited = { name, code, v ->
+                               localName = name
+                               localCode = code
+                               valid = v
+                               localMethod = AuthMethod(
+                                   type = AuthMethod.Type.Totp,
+                                   instructions = context.getString(R.string.auth_instruction_totp, digits, name),
+                                   challenge =  CryptoUtils.encodeCrock(secret),
+                                   mimeType = "text/plain",
+                               )
+                           },
+                       )
+                   }
                    else -> {}
                }
         },
@@ -107,7 +142,7 @@ fun EditMethodDialog(
                 onClick = {
                     localMethod?.let { onMethodEdited(it) }
                 },
-                enabled = valid,
+                enabled = localMethod != null && valid,
             ) {
                 Text(stringResource(R.string.add))
             }

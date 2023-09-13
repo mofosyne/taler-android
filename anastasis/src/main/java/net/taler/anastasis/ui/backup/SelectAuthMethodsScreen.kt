@@ -62,7 +62,6 @@ import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
-import net.taler.common.CryptoUtils
 
 @Composable
 fun SelectAuthMethodsScreen(
@@ -137,7 +136,7 @@ fun SelectAuthMethodsScreen(
                 selectedMethods = selectedMethods,
                 onAddMethod = {
                     viewModel.reducerManager?.addAuthentication(it.copy(
-                        challenge = CryptoUtils.encodeCrock(it.challenge.toByteArray(Charsets.UTF_8))
+                        challenge = it.challenge
                     ))
                 },
                 onDeleteMethod = {
