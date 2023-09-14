@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import net.taler.common.Amount
@@ -56,21 +57,27 @@ fun AmountInputField(
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) {
     OutlinedTextField(
-        value = if (value == "0" || value.endsWith(".0")) value.trimEnd('0') else value,
+        value = when {
+            value == "0" -> ""
+            value.startsWith("0.") -> value.trimStart('0')
+            value.endsWith(".0") -> value.trimEnd('0')
+            else -> value
+        },
         onValueChange = { input ->
-            if (input.isNotBlank()) {
-                val filtered = input.filter { it.isDigit() || it == '.' }.let {
-                    if (it == "" || it.endsWith(".")) "${it}0" else it
-                }
-                if (Amount.isValidAmountStr(filtered)) {
-                    onValueChange(filtered)
-                }
-            } else onValueChange("0")
+            val filtered = when {
+                input.isEmpty() -> "0"
+                input.startsWith(".") -> "0${input}"
+                input.endsWith(".") -> "${input}0"
+                else -> input
+            }
+            if (Amount.isValidAmountStr(filtered)) {
+                onValueChange(filtered)
+            }
         },
         modifier = modifier,
         enabled = enabled,
         readOnly = readOnly,
-        textStyle = textStyle,
+        textStyle = textStyle.copy(fontFamily = FontFamily.Monospace),
         label = label,
         placeholder = { Text("0") },
         leadingIcon = leadingIcon,
