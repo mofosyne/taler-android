@@ -105,7 +105,7 @@ private fun SendFundsIntro(
             .fillMaxWidth()
             .verticalScroll(scrollState),
     ) {
-        var text by rememberSaveable { mutableStateOf("") }
+        var text by rememberSaveable { mutableStateOf("0") }
         var isError by rememberSaveable { mutableStateOf(false) }
         var insufficientBalance by rememberSaveable { mutableStateOf(false) }
         Row(
