@@ -17,11 +17,14 @@
 package net.taler.wallet.compose
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -38,6 +41,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import java.text.DecimalFormat
 
@@ -62,13 +67,22 @@ fun AmountInputField(
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) {
     val decimalSeparator = DecimalFormat().decimalFormatSymbols.decimalSeparator
-    var intermediate by remember { mutableStateOf(value) }
+    var tmpIn by remember { mutableStateOf(value) }
+
+    // React to external changes
+    val tmpOut = remember(tmpIn, value) {
+        transformOutput(tmpIn, decimalSeparator, '.').let {
+            if (value != it) value else tmpIn
+        }
+    }
+
     OutlinedTextField(
-        value = intermediate,
+        value = tmpOut,
         onValueChange = { input ->
             val filtered = transformOutput(input, decimalSeparator, '.')
             if (Amount.isValidAmountStr(filtered)) {
-                intermediate = transformInput(input, decimalSeparator, '.')
+                tmpIn = transformInput(input, decimalSeparator, '.')
+                // tmpIn = input
                 onValueChange(filtered)
             }
         },
@@ -142,5 +156,20 @@ private fun transformOutput(
         it.startsWith(outputDecimalSeparator) -> "0$it"
         it.endsWith(outputDecimalSeparator) -> "${it}0"
         else -> it
+    }
+}
+
+@Preview
+@Composable
+fun AmountInputFieldPreview() {
+    var value by remember { mutableStateOf("0") }
+    TalerSurface {
+        Column {
+            Text(modifier = Modifier.padding(16.dp), text = value)
+            AmountInputField(
+                value = value,
+                onValueChange = { value = it },
+            )
+        }
     }
 }
