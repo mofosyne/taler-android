@@ -22,18 +22,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import net.taler.common.Amount
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,28 +55,20 @@ fun AmountInputField(
     trailingIcon: @Composable (() -> Unit)? = null,
     supportingText: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = TextFieldDefaults.outlinedShape,
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) {
+    val decimalSeparator = DecimalFormat().decimalFormatSymbols.decimalSeparator
+    var intermediate by remember { mutableStateOf(value) }
     OutlinedTextField(
-        value = when {
-            value == "0" -> ""
-            value.startsWith("0.") -> value.trimStart('0')
-            value.endsWith(".0") -> value.trimEnd('0')
-            else -> value
-        },
+        value = intermediate,
         onValueChange = { input ->
-            val filtered = when {
-                input.isEmpty() -> "0"
-                input.startsWith(".") -> "0${input}"
-                input.endsWith(".") -> "${input}0"
-                else -> input
-            }
+            val filtered = transformOutput(input, decimalSeparator, '.')
             if (Amount.isValidAmountStr(filtered)) {
+                intermediate = transformInput(input, decimalSeparator, '.')
                 onValueChange(filtered)
             }
         },
@@ -79,12 +77,11 @@ fun AmountInputField(
         readOnly = readOnly,
         textStyle = textStyle.copy(fontFamily = FontFamily.Monospace),
         label = label,
-        placeholder = { Text("0") },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         supportingText = supportingText,
         isError = isError,
-        visualTransformation = visualTransformation,
+        visualTransformation = AmountInputVisualTransformation(decimalSeparator),
         keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Decimal),
         keyboardActions = keyboardActions,
         singleLine = true,
@@ -93,4 +90,57 @@ fun AmountInputField(
         shape = shape,
         colors = colors,
     )
+}
+
+private class AmountInputVisualTransformation(
+    private val decimalSeparator: Char,
+): VisualTransformation {
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        val value = text.text
+        val output = transformOutput(value, '.', decimalSeparator)
+        val newText = AnnotatedString(output)
+        return TransformedText(newText, CursorOffsetMapping(
+            unmaskedText = text.toString(),
+            maskedText = newText.toString().replace(decimalSeparator, '.'),
+        ))
+    }
+
+    private class CursorOffsetMapping(
+        private val unmaskedText: String,
+        private val maskedText: String,
+    ): OffsetMapping {
+        override fun originalToTransformed(offset: Int) = when {
+            unmaskedText.startsWith('.') -> if (offset == 0) 0 else (offset + 1) // ".x" -> "0.x"
+            else -> offset
+        }
+
+        override fun transformedToOriginal(offset: Int) = when {
+            unmaskedText == "" -> 0 // "0" -> ""
+            unmaskedText == "." -> if (offset < 1) 0 else 1 // "0.0" -> "."
+            unmaskedText.startsWith('.') -> if (offset < 1) 0 else (offset - 1) // "0.x" -> ".x"
+            unmaskedText.endsWith('.') && offset == maskedText.length -> offset - 1 // "x.0" -> "x."
+            else -> offset // "x" -> "x"
+        }
+    }
+}
+
+private fun transformInput(
+    input: String,
+    inputDecimalSeparator: Char = '.',
+    outputDecimalSeparator: Char = '.',
+) = input.trim().replace(inputDecimalSeparator, outputDecimalSeparator)
+
+private fun transformOutput(
+    input: String,
+    inputDecimalSeparator: Char = '.',
+    outputDecimalSeparator: Char = '.',
+) = transformInput(input, inputDecimalSeparator, outputDecimalSeparator).let {
+    when {
+        it.isEmpty() -> "0"
+        it == "$outputDecimalSeparator" -> "0${outputDecimalSeparator}0"
+        it.startsWith(outputDecimalSeparator) -> "0$it"
+        it.endsWith(outputDecimalSeparator) -> "${it}0"
+        else -> it
+    }
 }

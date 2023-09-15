@@ -131,7 +131,7 @@ private fun PayToComposable(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        var amountText by rememberSaveable { mutableStateOf("") }
+        var amountText by rememberSaveable { mutableStateOf("0") }
         var amountError by rememberSaveable { mutableStateOf("") }
         var currency by rememberSaveable { mutableStateOf(currencies[0]) }
         val focusRequester = remember { FocusRequester() }
