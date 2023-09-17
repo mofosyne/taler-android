@@ -73,6 +73,7 @@ class MainViewModel(
 
     private val api = WalletBackendApi(app, this, this)
 
+    val networkManager = NetworkManager(app.applicationContext)
     val withdrawManager = WithdrawManager(api, viewModelScope)
     val tipManager = TipManager(api, viewModelScope)
     val paymentManager = PaymentManager(api, viewModelScope)
