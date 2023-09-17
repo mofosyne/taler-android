@@ -22,6 +22,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
+import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -139,6 +141,17 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             }
             if (it) barcodeLauncher.launch(scanOptions)
         })
+
+        model.networkManager.networkStatus.observe(this) {
+            ui.content.offlineBanner.visibility =
+                if (it != null
+                    && it.hasCapability(NET_CAPABILITY_INTERNET)
+                    && it.hasCapability(NET_CAPABILITY_VALIDATED)) {
+                    GONE
+                } else {
+                    VISIBLE
+                }
+        }
     }
 
     @Deprecated("Deprecated in Java")

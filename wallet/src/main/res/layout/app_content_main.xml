@@ -39,7 +39,29 @@
                 android:theme="@style/Widget.Material3.ActionBar.Solid"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/offline_banner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                app:layout_constraintBottom_toTopOf="@id/progress_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:animateLayoutChanges="true"
+                android:visibility="gone"
+                tools:visibility="visible">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:textAlignment="center"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:text="@string/offline_banner" />
+            </FrameLayout>
 
             <me.zhanghai.android.materialprogressbar.MaterialProgressBar
                 android:id="@+id/progress_bar"
@@ -49,7 +71,7 @@
                 android:elevation="4dp"
                 android:indeterminate="true"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+                app:layout_constraintBottom_toBottomOf="@+id/offline_banner"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:mpb_progressStyle="horizontal"
