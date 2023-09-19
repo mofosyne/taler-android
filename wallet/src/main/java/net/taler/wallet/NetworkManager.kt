@@ -30,12 +30,14 @@ import androidx.lifecycle.MutableLiveData
 class NetworkManager(context: Context) : ConnectivityManager.NetworkCallback() {
     private val connectivityManager: ConnectivityManager
 
-    private val _networkStatus = MutableLiveData(true)
-    val networkStatus: LiveData<Boolean> = _networkStatus
+    private val _networkStatus: MutableLiveData<Boolean>
+    val networkStatus: LiveData<Boolean>
 
     init {
         connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.registerDefaultNetworkCallback(this)
+        _networkStatus = MutableLiveData(getCurrentStatus())
+        networkStatus = _networkStatus
     }
 
     @UiThread
@@ -46,7 +48,13 @@ class NetworkManager(context: Context) : ConnectivityManager.NetworkCallback() {
 
     override fun onLost(network: Network) {
         super.onLost(network)
-        _networkStatus.postValue(null)
+        _networkStatus.postValue(getCurrentStatus())
+    }
+
+    private fun getCurrentStatus(): Boolean {
+        return connectivityManager.activeNetwork?.let { network ->
+            connectivityManager.getNetworkCapabilities(network)?.isOnline()
+        } ?: false
     }
 
     private fun NetworkCapabilities.isOnline(): Boolean {
