@@ -142,15 +142,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
             if (it) barcodeLauncher.launch(scanOptions)
         })
 
-        model.networkManager.networkStatus.observe(this) {
-            ui.content.offlineBanner.visibility =
-                if (it != null
-                    && it.hasCapability(NET_CAPABILITY_INTERNET)
-                    && it.hasCapability(NET_CAPABILITY_VALIDATED)) {
-                    GONE
-                } else {
-                    VISIBLE
-                }
+        model.networkManager.networkStatus.observe(this) { online ->
+            ui.content.offlineBanner.visibility = if (online) GONE else VISIBLE
         }
     }
 

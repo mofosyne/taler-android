@@ -21,6 +21,8 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,22 +30,26 @@ import androidx.lifecycle.MutableLiveData
 class NetworkManager(context: Context) : ConnectivityManager.NetworkCallback() {
     private val connectivityManager: ConnectivityManager
 
-    private val _networkStatus = MutableLiveData<NetworkCapabilities?>(null)
-    val networkStatus: LiveData<NetworkCapabilities?> = _networkStatus
+    private val _networkStatus = MutableLiveData(true)
+    val networkStatus: LiveData<Boolean> = _networkStatus
 
     init {
         connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        connectivityManager.registerDefaultNetworkCallback( this)
+        connectivityManager.registerDefaultNetworkCallback(this)
     }
 
     @UiThread
     override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
         super.onCapabilitiesChanged(network, networkCapabilities)
-        _networkStatus.postValue(networkCapabilities)
+        _networkStatus.postValue(networkCapabilities.isOnline())
     }
 
     override fun onLost(network: Network) {
         super.onLost(network)
         _networkStatus.postValue(null)
+    }
+
+    private fun NetworkCapabilities.isOnline(): Boolean {
+        return hasCapability(NET_CAPABILITY_INTERNET) && hasCapability(NET_CAPABILITY_VALIDATED)
     }
 }
