@@ -203,6 +203,7 @@ internal class TransactionLookup(
         list.findChildViewUnder(e.x, e.y)?.let { view ->
             val holder = list.getChildViewHolder(view)
             val position = holder.bindingAdapterPosition
+            if (position < 0) return null
             return object : ItemDetails<String>() {
                 override fun getPosition(): Int = position
                 override fun getSelectionKey(): String = adapter.keyProvider.getKey(position)
