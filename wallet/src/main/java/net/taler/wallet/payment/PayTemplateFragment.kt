@@ -21,18 +21,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asFlow
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import net.taler.common.Amount
 import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
+import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.showError
 
 class PayTemplateFragment : Fragment() {
@@ -49,37 +49,23 @@ class PayTemplateFragment : Fragment() {
         uriString = arguments?.getString("uri") ?: error("no amount passed")
         uri = Uri.parse(uriString)
 
-        val queryParams = uri.queryParameterNames
+        val defaultSummary = uri.getQueryParameter("summary")
+        val defaultAmount = uri.getQueryParameter("amount")
+        val amountFieldStatus = getAmountFieldStatus(defaultAmount)
 
-        val summary = if ("summary" in queryParams)
-            uri.getQueryParameter("summary")!! else null
-
-        val amountStatus = if ("amount" in queryParams) {
-            val amount = uri.getQueryParameter("amount")!!
-            val parts = if (amount.isEmpty()) emptyList() else amount.split(":")
-            when (parts.size) {
-                0 -> AmountFieldStatus.Default()
-                1 -> AmountFieldStatus.Default(currency = parts[0])
-                2 -> AmountFieldStatus.Default(parts[1], parts[0])
-                else -> AmountFieldStatus.Invalid
-            }
-        } else AmountFieldStatus.FixedAmount
+        val payStatusFlow = model.paymentManager.payStatus.asFlow()
 
         return ComposeView(requireContext()).apply {
             setContent {
-                val payStatus by model.paymentManager.payStatus
-                    .asFlow()
-                    .collectAsState(initial = PayStatus.None)
+                val payStatus = payStatusFlow.collectAsStateLifecycleAware(initial = PayStatus.None)
                 TalerSurface {
                     PayTemplateComposable(
                         currencies = model.getCurrencies(),
-                        summary = summary,
-                        amountStatus = amountStatus,
-                        payStatus = payStatus,
-                        onCreateAmount = { text, currency ->
-                            model.createAmount(text, currency)
-                        },
-                        onSubmit = { createOrder(it) },
+                        defaultSummary = defaultSummary,
+                        amountStatus = amountFieldStatus,
+                        payStatus = payStatus.value,
+                        onCreateAmount = model::createAmount,
+                        onSubmit = this@PayTemplateFragment::createOrder,
                         onError = { this@PayTemplateFragment.showError(it) },
                     )
                 }
@@ -90,7 +76,7 @@ class PayTemplateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (uri.queryParameterNames?.isEmpty() == true) {
-            createOrder(emptyMap())
+            createOrder(null, null)
         }
 
         model.paymentManager.payStatus.observe(viewLifecycleOwner) { payStatus ->
@@ -99,9 +85,9 @@ class PayTemplateFragment : Fragment() {
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.nav_main, true)
                         .build()
-                    findNavController()
-                        .navigate(R.id.action_global_promptPayment, null, navOptions)
+                    findNavController().navigate(R.id.action_global_promptPayment, null, navOptions)
                 }
+
                 is PayStatus.Error -> {
                     if (model.devMode.value == true) {
                         showError(payStatus.error)
@@ -109,12 +95,29 @@ class PayTemplateFragment : Fragment() {
                         showError(R.string.payment_template_error, payStatus.error.userFacingMsg)
                     }
                 }
+
                 else -> {}
             }
         }
     }
 
-    private fun createOrder(params: Map<String, String>) {
-        model.paymentManager.preparePayForTemplate(uriString, params)
+    private fun getAmountFieldStatus(defaultAmount: String?): AmountFieldStatus {
+        return if (defaultAmount == null) {
+            AmountFieldStatus.FixedAmount
+        } else if (defaultAmount.isBlank()) {
+            AmountFieldStatus.Default()
+        } else {
+            val parts = defaultAmount.split(":")
+            when (parts.size) {
+                0 -> AmountFieldStatus.Default()
+                1 -> AmountFieldStatus.Default(currency = parts[0])
+                2 -> AmountFieldStatus.Default(parts[1], parts[0])
+                else -> AmountFieldStatus.Invalid
+            }
+        }
+    }
+
+    private fun createOrder(summary: String?, amount: Amount?) {
+        model.paymentManager.preparePayForTemplate(uriString, summary, amount)
     }
 }

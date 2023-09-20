@@ -79,6 +79,7 @@ class PaymentManager(
                     response.contractTerms,
                     response.amountRaw
                 )
+
                 is AlreadyConfirmedResponse -> AlreadyPaid
             }
         }
@@ -103,22 +104,24 @@ class PaymentManager(
         resetPayStatus()
     }
 
-    fun preparePayForTemplate(url: String, params: Map<String, String>) = scope.launch {
+    fun preparePayForTemplate(url: String, summary: String?, amount: Amount?) = scope.launch {
         mPayStatus.value = PayStatus.Loading
         api.request("preparePayForTemplate", PreparePayResponse.serializer()) {
             put("talerPayTemplateUri", url)
             put("templateParams", JSONObject().apply {
-                params.forEach { put(it.key, it.value) }
+                summary?.let { put("summary", it) }
+                amount?.let { put("amount", it.toJSONString()) }
             })
         }.onError {
             handleError("preparePayForTemplate", it)
-        }.onSuccess {  response ->
+        }.onSuccess { response ->
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
                 is InsufficientBalanceResponse -> InsufficientBalance(
                     contractTerms = response.contractTerms,
                     amountRaw = response.amountRaw,
                 )
+
                 is AlreadyConfirmedResponse -> AlreadyPaid
             }
         }
