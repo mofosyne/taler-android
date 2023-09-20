@@ -17,151 +17,62 @@
 package net.taler.wallet.payment
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
+import net.taler.common.ContractTerms
 import net.taler.wallet.AmountResult
 import net.taler.wallet.R
-import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.deposit.CurrencyDropdown
 
 sealed class AmountFieldStatus {
-    object FixedAmount: AmountFieldStatus()
+    object FixedAmount : AmountFieldStatus()
     class Default(
         val amountStr: String? = null,
         val currency: String? = null,
-    ): AmountFieldStatus()
-    object Invalid: AmountFieldStatus()
+    ) : AmountFieldStatus()
+
+    object Invalid : AmountFieldStatus()
 }
 
 @Composable
 fun PayTemplateComposable(
-    summary: String?,
+    defaultSummary: String?,
     amountStatus: AmountFieldStatus,
     currencies: List<String>,
     payStatus: PayStatus,
     onCreateAmount: (String, String) -> AmountResult,
-    onSubmit: (Map<String, String>) -> Unit,
+    onSubmit: (summary: String?, amount: Amount?) -> Unit,
     onError: (resId: Int) -> Unit,
 ) {
-
     // If wallet is empty, there's no way the user can pay something
     if (amountStatus is AmountFieldStatus.Invalid) {
         PayTemplateError(stringResource(R.string.receive_amount_invalid))
-    } else if (payStatus is PayStatus.InsufficientBalance || currencies.isEmpty()) {
+    } else if (currencies.isEmpty()) {
         PayTemplateError(stringResource(R.string.payment_balance_insufficient))
     } else when (payStatus) {
-        is PayStatus.None -> PayTemplateDefault(
+        is PayStatus.None -> PayTemplateOrderComposable(
             currencies = currencies,
-            summary = summary,
+            defaultSummary = defaultSummary,
             amountStatus = amountStatus,
             onCreateAmount = onCreateAmount,
             onError = onError,
-            onSubmit = { s, a ->
-                onSubmit(mutableMapOf<String, String>().apply {
-                    s?.let { put("summary", it) }
-                    a?.let { put("amount", it.toJSONString()) }
-                })
-            }
+            onSubmit = onSubmit,
         )
+
         is PayStatus.Loading -> PayTemplateLoading()
         is PayStatus.AlreadyPaid -> PayTemplateError(stringResource(R.string.payment_already_paid))
-
-        // TODO we should handle the other cases or explain why we don't handle them
-        else -> {}
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PayTemplateDefault(
-    currencies: List<String>,
-    summary: String? = null,
-    amountStatus: AmountFieldStatus,
-    onCreateAmount: (String, String) -> AmountResult,
-    onError: (msgRes: Int) -> Unit,
-    onSubmit: (summary: String?, amount: Amount?) -> Unit,
-) {
-    val amountDefault = amountStatus as? AmountFieldStatus.Default
-
-    var localSummary by remember { mutableStateOf(summary) }
-    var localAmount by remember { mutableStateOf(
-        amountDefault?.let { s -> s.amountStr ?: "0" }
-    ) }
-    var localCurrency by remember { mutableStateOf(
-        amountDefault?.let { s -> s.currency ?: currencies[0] }
-    ) }
-
-    Column(horizontalAlignment = End) {
-        localSummary?.let { summary ->
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                value = summary,
-                isError = summary.isBlank(),
-                onValueChange = { localSummary = it },
-                singleLine = true,
-                label = { Text(stringResource(R.string.withdraw_manual_ready_subject)) },
-            )
-        }
-
-        localAmount?.let { amount ->
-            localCurrency?.let { currency ->
-                AmountField(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    amount = amount,
-                    currency = currency,
-                    currencies = currencies,
-                    fixedCurrency = (amountStatus as? AmountFieldStatus.Default)?.currency != null,
-                    onAmountChosen = { a, c ->
-                        localAmount = a
-                        localCurrency = c
-                    },
-                )
-            }
-        }
-
-        Button(
-            modifier = Modifier.padding(16.dp),
-            enabled = localSummary == null || localSummary!!.isNotBlank(),
-            onClick = {
-                localAmount?.let { amount ->
-                    localCurrency?.let { currency ->
-                        when (val res = onCreateAmount(amount, currency)) {
-                            is AmountResult.InsufficientBalance -> onError(R.string.payment_balance_insufficient)
-                            is AmountResult.InvalidAmount -> onError(R.string.receive_amount_invalid)
-                            is AmountResult.Success -> onSubmit(summary, res.amount)
-                        }
-                    }
-                }
-            },
-        ) {
-            Text(stringResource(R.string.payment_create_order))
-        }
+        is PayStatus.InsufficientBalance -> PayTemplateError(stringResource(R.string.payment_balance_insufficient))
+        is PayStatus.Error -> {} // handled in fragment will show bottom sheet FIXME white page?
+        is PayStatus.Prepared -> {} // handled in fragment, will redirect
+        is PayStatus.Success -> {} // handled by other UI flow, no need for content here
     }
 }
 
@@ -189,51 +100,81 @@ fun PayTemplateLoading() {
     }
 }
 
+@Preview
 @Composable
-private fun AmountField(
-    modifier: Modifier = Modifier,
-    currencies: List<String>,
-    fixedCurrency: Boolean,
-    amount: String,
-    currency: String,
-    onAmountChosen: (amount: String, currency: String) -> Unit,
-) {
-    Row(
-        modifier = modifier,
-    ) {
-        AmountInputField(
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .weight(1f),
-            value = amount,
-            onValueChange = { onAmountChosen(it, currency) },
-            label = { Text(stringResource(R.string.send_amount)) }
-        )
-        CurrencyDropdown(
-            modifier = Modifier.weight(1f),
-            initialCurrency = currency,
-            currencies = currencies,
-            onCurrencyChanged = { onAmountChosen(amount, it) },
-            readOnly = fixedCurrency,
+fun PayTemplateLoadingPreview() {
+    TalerSurface {
+        PayTemplateComposable(
+            defaultSummary = "Donation",
+            amountStatus = AmountFieldStatus.Default("20", "ARS"),
+            payStatus = PayStatus.Loading,
+            currencies = listOf("KUDOS", "ARS"),
+            onCreateAmount = { text, currency ->
+                AmountResult.Success(amount = Amount.fromString(currency, text))
+            },
+            onSubmit = { _, _ -> },
+            onError = { _ -> },
         )
     }
 }
 
 @Preview
 @Composable
-fun PayTemplateComposablePreview() {
+fun PayTemplateInsufficientBalancePreview() {
     TalerSurface {
         PayTemplateComposable(
-            summary = "Donation",
-            amountStatus = AmountFieldStatus.Default("20",  "ARS"),
+            defaultSummary = "Donation",
+            amountStatus = AmountFieldStatus.Default("20", "ARS"),
+            payStatus = PayStatus.InsufficientBalance(
+                ContractTerms(
+                    "test",
+                    amount = Amount.zero("TESTKUDOS"),
+                    products = emptyList()
+                ), Amount.zero("TESTKUDOS")
+            ),
             currencies = listOf("KUDOS", "ARS"),
-            // TODO create previews for other states
-            payStatus = PayStatus.None,
             onCreateAmount = { text, currency ->
                 AmountResult.Success(amount = Amount.fromString(currency, text))
             },
-            onSubmit = { },
-            onError = { },
+            onSubmit = { _, _ -> },
+            onError = { _ -> },
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PayTemplateAlreadyPaidPreview() {
+    TalerSurface {
+        PayTemplateComposable(
+            defaultSummary = "Donation",
+            amountStatus = AmountFieldStatus.Default("20", "ARS"),
+            payStatus = PayStatus.AlreadyPaid,
+            currencies = listOf("KUDOS", "ARS"),
+            onCreateAmount = { text, currency ->
+                AmountResult.Success(amount = Amount.fromString(currency, text))
+            },
+            onSubmit = { _, _ -> },
+            onError = { _ -> },
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun PayTemplateNoCurrenciesPreview() {
+    TalerSurface {
+        PayTemplateComposable(
+            defaultSummary = "Donation",
+            amountStatus = AmountFieldStatus.Default("20", "ARS"),
+            payStatus = PayStatus.None,
+            currencies = emptyList(),
+            onCreateAmount = { text, currency ->
+                AmountResult.Success(amount = Amount.fromString(currency, text))
+            },
+            onSubmit = { _, _ -> },
+            onError = { _ -> },
         )
     }
 }
