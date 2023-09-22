@@ -85,7 +85,7 @@ class PayTemplateFragment : Fragment() {
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.nav_main, true)
                         .build()
-                    findNavController().navigate(R.id.action_global_promptPayment, null, navOptions)
+                    findNavController().navigate(R.id.action_promptPayTemplate_to_promptPayment, null, navOptions)
                 }
 
                 is PayStatus.Error -> {

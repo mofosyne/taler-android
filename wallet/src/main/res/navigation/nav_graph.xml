@@ -218,6 +218,10 @@
         android:id="@+id/promptPayTemplate"
         android:name="net.taler.wallet.payment.PayTemplateFragment"
         android:label="@string/payment_pay_template_title">
+        <action
+            android:id="@+id/action_promptPayTemplate_to_promptPayment"
+            app:destination="@+id/promptPayment"
+            app:popUpTo="@id/nav_main" />
         <argument
             android:name="uri"
             app:argType="string" />
