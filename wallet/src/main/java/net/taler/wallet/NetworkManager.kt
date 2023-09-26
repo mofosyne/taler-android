@@ -34,10 +34,11 @@ class NetworkManager(context: Context) : ConnectivityManager.NetworkCallback() {
     val networkStatus: LiveData<Boolean>
 
     init {
+        // careful, the order below is important, should probably get simplified
         connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        connectivityManager.registerDefaultNetworkCallback(this)
         _networkStatus = MutableLiveData(getCurrentStatus())
         networkStatus = _networkStatus
+        connectivityManager.registerDefaultNetworkCallback(this)
     }
 
     @UiThread
