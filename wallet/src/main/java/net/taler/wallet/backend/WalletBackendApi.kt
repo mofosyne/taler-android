@@ -27,7 +27,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import net.taler.wallet.backend.TalerErrorCode.NONE
 import org.json.JSONObject
 
-const val WALLET_DB = "talerwalletdb-v30.json"
+const val WALLET_DB = "talerwalletdb.sql"
 
 @OptIn(DelicateCoroutinesApi::class)
 class WalletBackendApi(
