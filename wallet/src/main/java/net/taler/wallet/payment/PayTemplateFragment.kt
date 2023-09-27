@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asFlow
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.showError
@@ -82,10 +81,7 @@ class PayTemplateFragment : Fragment() {
         model.paymentManager.payStatus.observe(viewLifecycleOwner) { payStatus ->
             when (payStatus) {
                 is PayStatus.Prepared -> {
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(R.id.nav_main, true)
-                        .build()
-                    findNavController().navigate(R.id.action_promptPayTemplate_to_promptPayment, null, navOptions)
+                    findNavController().navigate(R.id.action_promptPayTemplate_to_promptPayment)
                 }
 
                 is PayStatus.Error -> {
