@@ -87,7 +87,7 @@
     <fragment
         android:id="@+id/promptPayment"
         android:name="net.taler.wallet.payment.PromptPaymentFragment"
-        android:label="Review Payment"
+        android:label="@string/payment_prompt_title"
         tools:layout="@layout/fragment_prompt_payment">
         <action
             android:id="@+id/action_promptPayment_to_nav_main"
