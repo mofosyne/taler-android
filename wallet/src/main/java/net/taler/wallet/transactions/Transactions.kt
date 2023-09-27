@@ -236,7 +236,7 @@ class TransactionInfo(
     val summary: String,
     @SerialName("summary_i18n")
     val summaryI18n: Map<String, String>? = null,
-    val products: List<ContractProduct>,
+    val products: List<ContractProduct> = emptyList(),
     val fulfillmentUrl: String? = null,
     /**
      * Message shown to the user after the payment is complete.
