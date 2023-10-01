@@ -71,7 +71,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         settingsManager.exportLogcat(uri)
     }
     private val dbExportLauncher =
-        registerForActivityResult(CreateDocument("application/json")) { uri ->
+        registerForActivityResult(CreateDocument("application/x-sqlite3")) { uri ->
             settingsManager.exportDb(uri)
         }
 
@@ -127,7 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
         prefExportDb.setOnPreferenceClickListener {
-            dbExportLauncher.launch("taler-wallet-db-${currentTimeMillis()}.json")
+            dbExportLauncher.launch("taler-wallet-db-${currentTimeMillis()}.sql")
             true
         }
 
