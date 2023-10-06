@@ -162,7 +162,7 @@ class PeerManager(
                     amountRaw = response.amountRaw,
                     amountEffective = response.amountEffective,
                     contractTerms = response.contractTerms,
-                    id = response.peerPullPaymentIncomingId,
+                    id = response.transactionId,
                 )
             }.onError { error ->
                 Log.e(TAG, "got preparePeerPullDebit error result $error")
@@ -175,7 +175,7 @@ class PeerManager(
         _incomingPullState.value = IncomingAccepting(terms)
         scope.launch(Dispatchers.IO) {
             api.request<Unit>("confirmPeerPullDebit") {
-                put("peerPullPaymentIncomingId", terms.id)
+                put("transactionId", terms.id)
             }.onSuccess {
                 _incomingPullState.value = IncomingAccepted
             }.onError { error ->
@@ -195,7 +195,7 @@ class PeerManager(
                     amountRaw = response.amountRaw,
                     amountEffective = response.amountEffective,
                     contractTerms = response.contractTerms,
-                    id = response.peerPushPaymentIncomingId,
+                    id = response.transactionId,
                 )
             }.onError { error ->
                 Log.e(TAG, "got preparePeerPushCredit error result $error")
@@ -208,7 +208,7 @@ class PeerManager(
         _incomingPushState.value = IncomingAccepting(terms)
         scope.launch(Dispatchers.IO) {
             api.request<Unit>("confirmPeerPushCredit") {
-                put("peerPushPaymentIncomingId", terms.id)
+                put("transactionId", terms.id)
             }.onSuccess {
                 _incomingPushState.value = IncomingAccepted
             }.onError { error ->
