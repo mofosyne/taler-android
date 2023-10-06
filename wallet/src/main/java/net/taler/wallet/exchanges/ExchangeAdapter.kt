@@ -80,8 +80,9 @@ internal class ExchangeAdapter(
 
         fun bind(item: ExchangeItem) {
             urlView.text = item.name
+            // If currency is null, it's because we have no data from the exchange...
             currencyView.text = if (item.currency == null) {
-                context.getString(R.string.settings_version_unknown)
+                context.getString(R.string.exchange_not_contacted)
             } else {
                 context.getString(R.string.exchange_list_currency, item.currency)
             }
@@ -91,7 +92,8 @@ internal class ExchangeAdapter(
             } else {
                 itemView.setOnClickListener(null)
                 itemView.isClickable = false
-                overflowIcon.visibility = VISIBLE
+                // ...thus, we should prevent the user from interacting with it.
+                overflowIcon.visibility = if (item.currency != null) VISIBLE else GONE
             }
             overflowIcon.setOnClickListener { openMenu(overflowIcon, item) }
         }
