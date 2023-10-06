@@ -56,10 +56,11 @@ class UriInputFragment : Fragment() {
             }
         }
         ui.okButton.setOnClickListener {
-            if (ui.uriView.text?.startsWith("taler://", ignoreCase = true) == true ||
-                ui.uriView.text?.startsWith("payto://", ignoreCase = true) == true) {
+            val trimmedText = ui.uriView.text?.trim()
+            if (trimmedText?.startsWith("taler://", ignoreCase = true) == true ||
+                trimmedText?.startsWith("payto://", ignoreCase = true) == true) {
                 ui.uriLayout.error = null
-                launchInAppBrowser(requireContext(), ui.uriView.text.toString())
+                launchInAppBrowser(requireContext(), trimmedText.toString())
             } else {
                 ui.uriLayout.error = getString(R.string.uri_invalid)
             }
