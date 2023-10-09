@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.backup
+package net.taler.anastasis.ui.screens.backup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,7 +54,7 @@ import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.ReducerState
-import net.taler.anastasis.ui.common.ManageProvidersScreen
+import net.taler.anastasis.ui.screens.common.ManageProvidersScreen
 import net.taler.anastasis.ui.dialogs.EditMethodDialog
 import net.taler.anastasis.ui.reusable.components.ActionCard
 import net.taler.anastasis.ui.reusable.pages.WizardPage

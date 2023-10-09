@@ -1,4 +1,4 @@
-package net.taler.anastasis.ui.home
+package net.taler.anastasis.ui.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

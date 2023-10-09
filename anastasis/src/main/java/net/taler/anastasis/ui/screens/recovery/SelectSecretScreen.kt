@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.recovery
+package net.taler.anastasis.ui.screens.recovery
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,7 +52,7 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AggregatedPolicyMetaInfo
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
-import net.taler.anastasis.ui.common.ManageProvidersScreen
+import net.taler.anastasis.ui.screens.common.ManageProvidersScreen
 import net.taler.anastasis.ui.reusable.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeRecoveryViewModel

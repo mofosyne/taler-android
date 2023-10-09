@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.recovery
+package net.taler.anastasis.ui.screens.recovery
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
