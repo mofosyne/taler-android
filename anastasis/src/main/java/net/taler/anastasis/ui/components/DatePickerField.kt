@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.reusable.components
+package net.taler.anastasis.ui.components
 
 import android.app.DatePickerDialog
 import android.content.Context

@@ -41,7 +41,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import net.taler.anastasis.R
-import net.taler.anastasis.ui.reusable.components.DatePickerField
+import net.taler.anastasis.ui.components.DatePickerField
 import net.taler.anastasis.ui.theme.AnastasisTheme
 import net.taler.anastasis.ui.theme.LocalSpacing
 

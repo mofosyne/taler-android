@@ -1,6 +1,6 @@
 /*
  * This file is part of GNU Taler
- * (C) 2022 Taler Systems S.A.
+ * (C) 2023 Taler Systems S.A.
  *
  * GNU Taler is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.anastasis.ui.reusable.components
+package net.taler.anastasis.ui.components
 
 import android.content.ClipData
 import android.content.ClipboardManager

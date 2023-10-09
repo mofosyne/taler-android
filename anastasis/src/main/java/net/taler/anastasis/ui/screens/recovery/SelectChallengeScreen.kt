@@ -50,7 +50,7 @@ import net.taler.anastasis.models.ChallengeInfo
 import net.taler.anastasis.models.RecoveryInformation
 import net.taler.anastasis.models.RecoveryStates
 import net.taler.anastasis.models.ReducerState
-import net.taler.anastasis.ui.reusable.pages.WizardPage
+import net.taler.anastasis.ui.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel

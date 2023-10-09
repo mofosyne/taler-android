@@ -60,7 +60,7 @@ import net.taler.anastasis.models.Policy
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.dialogs.EditPolicyDialog
 import net.taler.anastasis.ui.forms.EditPolicyForm
-import net.taler.anastasis.ui.reusable.pages.WizardPage
+import net.taler.anastasis.ui.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel

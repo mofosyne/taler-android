@@ -32,7 +32,7 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.AuthMethod
 import net.taler.anastasis.models.AuthenticationProviderStatus
 import net.taler.anastasis.models.Policy
-import net.taler.anastasis.ui.reusable.components.DropdownTextField
+import net.taler.anastasis.ui.components.DropdownTextField
 import net.taler.anastasis.ui.theme.LocalSpacing
 
 @Composable

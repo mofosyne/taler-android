@@ -45,7 +45,7 @@ import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.ReducerState
 import net.taler.anastasis.ui.forms.EditSecretForm
-import net.taler.anastasis.ui.reusable.pages.WizardPage
+import net.taler.anastasis.ui.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel

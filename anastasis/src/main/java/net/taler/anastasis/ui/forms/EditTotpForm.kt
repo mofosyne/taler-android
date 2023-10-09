@@ -42,8 +42,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import net.taler.anastasis.R
 import net.taler.anastasis.shared.FieldStatus
-import net.taler.anastasis.ui.reusable.components.PinInputField
-import net.taler.anastasis.ui.reusable.components.QrCode
+import net.taler.anastasis.ui.components.PinInputField
+import net.taler.anastasis.ui.components.QrCode
 import net.taler.anastasis.ui.theme.AnastasisTheme
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.common.CryptoUtils
