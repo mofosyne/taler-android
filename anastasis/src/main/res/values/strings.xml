@@ -83,6 +83,10 @@
     <string name="secret_text">Secret text</string>
     <string name="secret_expiration">Expiration date</string>
     <string name="secret_backup_fees">Backup fees</string>
+    <string name="secret_type_plain_text">Plain text</string>
+    <string name="secret_type_file">File</string>
+    <string name="secret_choose_file">Choose file</string>
+    <string name="secret_file_chosen">File chosen</string>
     <string name="backup_stored_providers">Your backup is being stored by the following providers:</string>
     <string name="backup_policy_detail">Version %1$d expires at %2$s</string>
 
@@ -101,4 +105,6 @@
     <string name="challenge_feedback_server_failure">There was a server failure</string>
     <string name="challenge_feedback_taler_payment_required">Taler payment required</string>
     <string name="challenge_feedback_truth_unknown">Can\'t solve challenge</string>
+    <string name="recovery_download_file">Download file</string>
+    <string name="recovery_file_saved">File saved</string>
 </resources>

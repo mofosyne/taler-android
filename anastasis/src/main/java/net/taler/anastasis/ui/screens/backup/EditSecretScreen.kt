@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,7 +45,10 @@ import net.taler.anastasis.R
 import net.taler.anastasis.models.BackupStates
 import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.ReducerState
+import net.taler.anastasis.shared.FileUtils.resolveDocFilename
+import net.taler.anastasis.shared.FileUtils.resolveDocMimeType
 import net.taler.anastasis.ui.forms.EditSecretForm
+import net.taler.anastasis.ui.forms.SecretData
 import net.taler.anastasis.ui.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
@@ -64,13 +68,6 @@ fun EditSecretScreen(
         ?: error("invalid reducer state type")
     val coreSecret = reducerState.coreSecret
 
-    var secretName by remember { mutableStateOf(reducerState.secretName ?: "") }
-    var secretValue by remember { mutableStateOf(
-        coreSecret?.value?.let {
-            CryptoUtils.decodeCrock(it).toString(Charsets.UTF_8)
-        } ?: "",
-    ) }
-
     val tz = TimeZone.currentSystemDefault()
     val secretExpirationDate = remember(reducerState.expiration) {
         reducerState.expiration?.ms?.let {
@@ -79,13 +76,16 @@ fun EditSecretScreen(
     }
     val uploadFees = reducerState.uploadFees ?: emptyList()
 
+    var secretName by remember { mutableStateOf(reducerState.secretName ?: "") }
+    var secretData by remember { mutableStateOf<SecretData>(SecretData.Empty) }
+
     WizardPage(
         title = stringResource(R.string.edit_secret_title),
         onBackClicked = { viewModel.goHome() },
         enableNext = secretName.isNotEmpty() && coreSecret != null,
         onPrevClicked = { viewModel.goBack() },
         onNextClicked = {
-              viewModel.reducerManager?.next()
+            viewModel.reducerManager?.next()
         },
     ) { scroll ->
         LazyColumn(
@@ -94,28 +94,62 @@ fun EditSecretScreen(
                 .nestedScroll(scroll),
         ) {
             item {
+                val context = LocalContext.current
                 EditSecretForm(
                     modifier = Modifier.fillMaxSize(),
                     name = secretName,
-                    value = secretValue,
+                    data = secretData,
                     expirationDate = secretExpirationDate.date,
                     onSecretNameEdited = { name ->
                         secretName = name
                         viewModel.reducerManager?.enterSecretName(name)
                     },
-                    onSecretEdited = { value, date ->
-                        secretValue = value
-                        viewModel.reducerManager?.enterSecret(
-                            secret = CoreSecret(
-                                value = CryptoUtils.encodeCrock(value.toByteArray(Charsets.UTF_8)),
-                                mime = "text/plain",
-                            ),
-                            expiration = Timestamp.fromMillis(
-                                date.atTime(secretExpirationDate.time).toInstant(tz)
-                                    .toEpochMilliseconds()
-                            ),
-                        )
+                    onSecretEdited = { data ->
+                        secretData = data
+                        if (data !is SecretData.Empty) {
+                            viewModel.reducerManager?.enterSecret(
+                                secret = when (data) {
+                                    is SecretData.File -> {
+                                        val filename = context.resolveDocFilename(data.documentUri)
+                                        val mimeType = context.resolveDocMimeType(data.documentUri)
+                                        val inputStream = context.contentResolver.openInputStream(data.documentUri)
+                                        if (inputStream != null) {
+                                            val secret = CoreSecret(
+                                                // TODO: readBytes() has a 2GB limit
+                                                // TODO: make this SLOW readBytes() + encodeCrock operation async
+                                                value = CryptoUtils.encodeCrock(inputStream.readBytes()),
+                                                filename = filename,
+                                                mime = mimeType ?: "application/octet-stream",
+                                            )
+                                            inputStream.close()
+                                            secret
+                                        } else {
+                                            error("couldn't open file")
+                                        }
+                                    }
+                                    is SecretData.PlainText -> CoreSecret(
+                                        value = CryptoUtils.encodeCrock(data.value.toByteArray(Charsets.UTF_8)),
+                                        mime = "text/plain",
+                                    )
+                                    else -> error("impossible case")
+                                },
+                                expiration = Timestamp.fromMillis(
+                                    secretExpirationDate
+                                        .toInstant(tz)
+                                        .toEpochMilliseconds()
+                                )
+                            )
+                        }
                     },
+                    onExpirationEdited = { date ->
+                        viewModel.reducerManager?.updateSecretExpiration(
+                            expiration = Timestamp.fromMillis(
+                                date.atTime(secretExpirationDate.time)
+                                    .toInstant(tz)
+                                    .toEpochMilliseconds()
+                            )
+                        )
+                    }
                 )
             }
 
@@ -141,7 +175,8 @@ fun EditSecretScreen(
                             start = LocalSpacing.current.medium,
                             end = LocalSpacing.current.medium,
                             bottom = LocalSpacing.current.small,
-                        ).fillMaxSize(),
+                        )
+                        .fillMaxSize(),
                     fee = fee.fee,
                 )
             }

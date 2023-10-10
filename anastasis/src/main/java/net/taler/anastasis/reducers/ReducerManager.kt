@@ -272,6 +272,17 @@ class ReducerManager(
         }
     }
 
+    fun updateSecretExpiration(expiration: Timestamp) = scope.launch {
+        state.value?.let { initialState ->
+            addTask(Tasks.Type.None)
+            api.reduceAction(initialState, "update_expiration", UpdateExpiration(
+                expiration = expiration,
+            ))
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
     fun startDiscoveringPolicies() {
         if (policyDiscoveryJob != null) return
         policyDiscoveryJob = Utils.tickerFlow(POLICY_DISCOVERY_PERIOD.seconds)

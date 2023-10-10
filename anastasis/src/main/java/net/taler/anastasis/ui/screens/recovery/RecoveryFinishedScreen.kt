@@ -16,6 +16,10 @@
 
 package net.taler.anastasis.ui.screens.recovery
 
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -29,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,6 +55,8 @@ import net.taler.anastasis.viewmodels.FakeRecoveryViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 import net.taler.common.CryptoUtils
+import java.io.IOException
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,18 +109,55 @@ fun RecoveryFinishedScreen(
             }
 
             item {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(
-                            start = LocalSpacing.current.medium,
-                            end = LocalSpacing.current.medium,
-                            bottom = LocalSpacing.current.small,
-                        ).fillMaxWidth(),
-                    value = CryptoUtils.decodeCrock(coreSecret.value).toString(Charsets.UTF_8),
-                    readOnly = true,
-                    onValueChange = {},
-                    label = { Text(stringResource(R.string.secret_text)) },
-                )
+                if (coreSecret.value.length < 1000 && coreSecret.mime == "plain/text") {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .padding(
+                                start = LocalSpacing.current.medium,
+                                end = LocalSpacing.current.medium,
+                                bottom = LocalSpacing.current.small,
+                            )
+                            .fillMaxWidth(),
+                        value = CryptoUtils.decodeCrock(coreSecret.value).toString(Charsets.UTF_8),
+                        readOnly = true,
+                        onValueChange = {},
+                        label = { Text(stringResource(R.string.secret_text)) },
+                    )
+                } else {
+                    val context = LocalContext.current
+                    val launcher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.CreateDocument(coreSecret.mime ?: "application/octet-stream"),
+                        onResult = { uri ->
+                            if (uri != null) {
+                                val outputStream = context.contentResolver.openOutputStream(uri)
+                                if (outputStream != null) {
+                                    try {
+                                        // TODO: we should probably listen to Java and not block
+                                        outputStream.write(CryptoUtils.decodeCrock(coreSecret.value))
+                                        outputStream.flush()
+                                        outputStream.close()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.recovery_file_saved),
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    } catch (e: IOException) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                        }
+                    )
+
+                    OutlinedButton(onClick = {
+                        launcher.launch(coreSecret.filename ?: UUID.randomUUID().toString())
+                    }) {
+                        Text(stringResource(R.string.recovery_download_file))
+                    }
+                    Log.d("RecoveryFinishedScreen", "data = ${coreSecret.value}")
+                    Log.d("RecoveryFinishedScreen", "filename = ${coreSecret.filename}")
+                    Log.d("RecoveryFinishedScreen", "mimeType = ${coreSecret.mime}")
+                }
             }
         }
     }
