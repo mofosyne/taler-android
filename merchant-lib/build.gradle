@@ -21,9 +21,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
-    //noinspection GradleDependency
-    buildToolsVersion "$build_tools_version"
+    namespace 'net.taler.merchantlib'
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 21
@@ -42,12 +41,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    namespace 'net.taler.merchantlib'
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 dependencies {
@@ -62,7 +62,7 @@ dependencies {
 
     testImplementation "junit:junit:$junit_version"
     testImplementation "io.ktor:ktor-client-mock-jvm:$ktor_version"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {

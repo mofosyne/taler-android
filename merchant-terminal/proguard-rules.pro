@@ -22,3 +22,5 @@
 
 #noinspection ShrinkerUnresolvedReference
 -keep class net.taler.merchantpos.** {*;}
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder

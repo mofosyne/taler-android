@@ -26,3 +26,5 @@
 # androidx.security:security-crypto
 # https://github.com/google/tink/issues/361
 -keep class * extends com.google.crypto.tink.shaded.protobuf.GeneratedMessageLite { *; }
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder

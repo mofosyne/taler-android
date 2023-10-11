@@ -35,8 +35,7 @@ def gitCommit = { ->
 
 android {
     namespace 'net.taler.wallet'
-    compileSdkVersion 33
-    buildToolsVersion "$build_tools_version"
+    compileSdk 34
 
     defaultConfig {
         applicationId "net.taler.wallet"
@@ -56,7 +55,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "distributionChannel"
+    flavorDimensions = ["distributionChannel"]
     productFlavors {
         fdroid {
             dimension "distributionChannel"
@@ -74,22 +73,23 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
 
         // Flag to enable support for the new language APIs for zxing
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.6"
+        kotlinCompilerExtensionVersion "1.5.3"
     }
 
     buildFeatures {
+        buildConfig true
         viewBinding true
         compose true
     }
@@ -114,24 +114,24 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-    implementation "androidx.browser:browser:1.5.0"
+    implementation "androidx.browser:browser:1.6.0"
 
     // Compose
-    implementation platform('androidx.compose:compose-bom:2023.05.00')
+    implementation platform('androidx.compose:compose-bom:2023.10.00')
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.compose.material:material-icons-extended'
     implementation "androidx.compose.runtime:runtime-livedata"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose"
     implementation "com.google.accompanist:accompanist-themeadapter-material3:0.28.0"
-    implementation 'androidx.activity:activity-compose:1.7.1'
+    implementation 'androidx.activity:activity-compose:1.8.0'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     debugImplementation 'androidx.compose.ui:ui-tooling'
 
     // Lists and Selection
-    implementation "androidx.recyclerview:recyclerview:1.3.0"
+    implementation "androidx.recyclerview:recyclerview:1.3.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
 
     // Navigation Library

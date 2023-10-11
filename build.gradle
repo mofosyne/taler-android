@@ -1,14 +1,12 @@
 buildscript {
     ext {
-        kotlin_version = '1.8.20' // observe compatibility with compose compiler
-        ktor_version = '2.3.0'
-        nav_version = '2.5.3'
-        material_version = '1.9.0'
-        lifecycle_version = '2.6.1'
+        kotlin_version = '1.9.10' // observe compatibility with compose compiler
+        ktor_version = '2.3.5'
+        nav_version = '2.7.4'
+        material_version = '1.10.0'
+        lifecycle_version = '2.6.2'
         constraintlayout_version = '2.1.4'
         junit_version = "4.13.2"
-        // check https://android-rebuilds.beuc.net/ for availability of free build tools
-        build_tools_version = "33.0.1"
         // should debug build types be minified with D8 as well? good for catching issues early
         minify_debug = true
     }
@@ -17,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"

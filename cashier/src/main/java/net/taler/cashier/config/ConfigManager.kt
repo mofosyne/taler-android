@@ -114,7 +114,7 @@ class ConfigManager(
     }
 
     private suspend fun checkConfig(config: Config) = withContext(Dispatchers.IO) {
-        val url = "${config.bankUrl}/integration-api/config"
+        val url = "${config.bankUrl}/config"
         Log.d(TAG, "Checking config: $url")
         val configResponse = response {
             httpClient.get(url).body<ConfigResponse>()
@@ -125,7 +125,7 @@ class ConfigManager(
             // we need to check an endpoint that requires authentication as well
             // to see if the credentials are valid
             val balanceResponse = response {
-                val authUrl = "${config.bankUrl}/access-api/accounts/${config.username}"
+                val authUrl = "${config.bankUrl}/accounts/${config.username}"
                 Log.d(TAG, "Checking auth: $authUrl")
                 httpClient.get(authUrl) {
                     header(Authorization, config.basicAuth)

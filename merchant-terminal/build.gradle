@@ -7,9 +7,7 @@ plugins {
 
 android {
     namespace 'net.taler.merchantpos'
-    compileSdkVersion 33
-    //noinspection GradleDependency
-    buildToolsVersion "$build_tools_version"
+    compileSdk 34
 
     defaultConfig {
         applicationId "net.taler.merchantpos"
@@ -34,15 +32,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 
@@ -69,7 +68,7 @@ dependencies {
 
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
-    implementation "androidx.recyclerview:recyclerview:1.3.0"
+    implementation "androidx.recyclerview:recyclerview:1.3.1"
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
 
     // Navigation
@@ -79,5 +78,5 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     testImplementation 'androidx.test.ext:junit:1.1.5'
-    testImplementation 'org.robolectric:robolectric:4.8.2'
+    testImplementation 'org.robolectric:robolectric:4.10.3'
 }

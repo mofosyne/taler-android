@@ -22,8 +22,7 @@ plugins {
 
 android {
     namespace 'net.taler.common'
-    compileSdkVersion 32
-    buildToolsVersion "$build_tools_version"
+    compileSdk 34
 
     defaultConfig {
         minSdkVersion 21
@@ -45,6 +44,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
     packagingOptions {
         resources {
             excludes += ['META-INF/*.kotlin_module']
@@ -53,8 +59,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
 
     // Navigation
@@ -68,7 +74,7 @@ dependencies {
     implementation 'com.google.zxing:core:3.5.0'  // needs minSdkVersion 24+ or desugar
 
     // JSON parsing and serialization
-    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1'
+    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1'
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20220320'
 }
