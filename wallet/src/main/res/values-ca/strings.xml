@@ -14,7 +14,7 @@
   ~ You should have received a copy of the GNU General Public License along with
   ~ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
   --><resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Cartera Taller</string>
+    <string name="app_name">Cartera Taler</string>
     <string name="google_play_title" tools:keep="@string/google_play_title">Cartera Taler (experimental)</string>
     <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler et permet fer transaccions privades, fàcil i ràpidament.</string>
     <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Aquesta aplicació és una cartera per al GNU Taler. És altament experimental i encara no està llesta per a l\'ús quotidià seriós. GNUTaler és un sistema de pagament respectuós amb la privadesa. Els clients es poden mantenir anònims, però els comerciants no poden amagar els seus ingressos fets amb GNU Taler. Això ajuda a evitar l\'evasió d\'impostos i el blanqueig de diners. L\'ús principal de GNU Taler és fer pagaments; no com a bé de refugi o d\'especulació. Els pagaments sempre estan recolzats per una divisa ja existent. Els pagaments es fan després de canviar diners existents per diners digitals amb l\'ajuda d\'un servei d\'intercanvi; és a dir, un proveïdor de serveis de pagament per al Taler. Per a fer un pagament, el client només necessita una cartera carregada de diners. El comerciant pot acceptar els pagaments sense fer que el client es registri al seu lloc web. El GNU Taler és immune a molts tipus de frau, com el «phishing» de dades bancàries o el frau de devolució. En cas de pèrdua o robament, només la quantitat limitada de diners que quedin a la cartera podrien ser perduts.</string>
@@ -70,17 +70,17 @@
     <string name="transactions_detail_title">Transacció</string>
     <string name="transactions_detail_title_currency">%s Transaccions</string>
     <string name="transactions_delete">Esborrar</string>
-    <string name="transactions_select_all">Selecciona-ho tot</string>
-    <string name="transactions_delete_dialog_title">Esborra la transacció</string>
+    <string name="transactions_select_all">Seleccionar-ho tot</string>
+    <string name="transactions_delete_dialog_title">Esborrar la transacció</string>
     <string name="transactions_delete_dialog_message">Estàs segur que vols eliminar aquesta transacció de la teva cartera\?</string>
     <string name="transactions_delete_selected_dialog_message">Estàs segur que vols eliminar les transaccions seleccionades de la teva cartera\?</string>
-    <string name="transactions_cancel_dialog_message">Estàs segur que vols cancel·lar aquesta retirada\? Podries perdre els fons que encara estiguin en trànsit.</string>
+    <string name="transactions_cancel_dialog_message">Estàs segur que vols cancel·lar aquesta retirada\? Podries perdre els diners que encara estiguin en trànsit.</string>
     <!-- Transactions -->
     <string name="transaction_paid">Pagat</string>
     <string name="transaction_order_total">Total</string>
     <string name="transaction_order">Compra</string>
     <string name="transaction_order_id">Rebut #%1$s</string>
-    <string name="transaction_tip_from">Propina de %s</string>
+    <string name="transaction_tip_from">Recompensa de %s</string>
     <string name="transaction_refund">Reemborsament</string>
     <string name="transaction_refund_from">Reemborsament de %s</string>
     <string name="transaction_pending">PENDENT</string>
@@ -90,7 +90,7 @@
     <string name="transaction_peer_pull_credit">Factura</string>
     <string name="transaction_peer_pull_debit">Factura pagada</string>
     <string name="transaction_peer_push_credit">Pagament anticipat</string>
-    <string name="transaction_action_kyc">Completa KYC</string>
+    <string name="transaction_action_kyc">Completa KYC (política \'Know Your Customer\')</string>
     <string name="payment_title">Pagament</string>
     <string name="payment_fee">+%s comissió de pagament</string>
     <string name="payment_button_confirm">Confirma el pagament</string>
@@ -106,7 +106,7 @@
     <string name="receive_amount">Quantitat a rebre</string>
     <string name="receive_amount_invalid">Quantitat invàlida</string>
     <string name="receive_intro">Tria d\'on rebre els diners:</string>
-    <string name="receive_withdraw">Retira diners d\'un compte bancari</string>
+    <string name="receive_withdraw">Retirar diners d\'un compte bancari</string>
     <string name="receive_peer">Factura una altra cartera</string>
     <string name="receive_peer_title">Sol·licitud de pagament</string>
     <string name="receive_peer_create_button">Crea factura</string>
@@ -124,12 +124,12 @@
     <string name="send_deposit_check_fees_button">Despeses de comprovació</string>
     <string name="send_deposit_amount_effective">Quantitat efectiva</string>
     <string name="send_deposit_create_button">Fes un dipòsit</string>
-    <string name="send_deposit_bitcoin_create_button">Transfereix Bitcoin</string>
+    <string name="send_deposit_bitcoin_create_button">Transferir Bitcoin</string>
     <string name="send_peer">A una altra cartera</string>
-    <string name="send_peer_bitcoin">A una altra cartera Taler</string>
+    <string name="send_peer_bitcoin">A una altra cartera de Taler</string>
     <string name="send_peer_title">Envia diners a una altra cartera</string>
-    <string name="send_peer_create_button">Envia fons ara</string>
-    <string name="send_peer_warning">Avís: Els fons sortiran de la cartera immediatament.</string>
+    <string name="send_peer_create_button">Envia diners ara</string>
+    <string name="send_peer_warning">Avís: Els diners sortiran de la cartera immediatament.</string>
     <string name="send_peer_payment_instruction">Fes que el beneficiari escanegi aquest codi QR per rebre:</string>
     <string name="send_peer_payment_amount_received">Quantitat rebuda</string>
     <string name="send_peer_payment_amount_sent">Quantitat enviada</string>
@@ -152,7 +152,7 @@
     <string name="withdraw_restrict_age">Restringeix l\'ús a l\'edat de</string>
     <string name="withdraw_restrict_age_unrestricted">No restringit</string>
     <string name="withdraw_exchange">Intercanvi</string>
-    <string name="withdraw_button_confirm">Confirma retirar</string>
+    <string name="withdraw_button_confirm">Confirmar retirada de diners</string>
     <string name="withdraw_button_confirm_bank">Confirma amb el banc</string>
     <string name="withdraw_button_tos">Comprova els termes</string>
     <string name="withdraw_waiting_confirm">Esperant confirmació</string>
@@ -169,21 +169,23 @@
     <string name="withdraw_manual_bitcoin_title">L\'intercanvi de Bitcoin està llest perquè retiris els dieners</string>
     <string name="withdraw_manual_bitcoin_intro">Ara fes una transacció dividida amb aquestes tres sortides.</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
-    <string name="withdraw_manual_ready_subject"></string>
+    <string name="withdraw_manual_ready_subject">Concepte</string>
     <string name="withdraw_manual_ready_bank_button">Obre en una app bancària</string>
     <string name="withdraw_manual_ready_cancel">Cancel·la la retidada de diners</string>
-    <string name="withdraw_manual_ready_warning"/>
-    <string name="withdraw_error_title"/>
-    <string name="withdraw_error_message"/>
-    <string name="withdraw_error_test"/>
-    <string name="exchange_settings_title"/>
-    <string name="exchange_settings_summary"/>
-    <string name="exchange_list_title"/>
-    <string name="exchange_list_empty"/>
-    <string name="exchange_list_currency"/>
-    <string name="exchange_list_add"/>
-    <string name="exchange_add_url"/>
-    <string name="exchange_add_error"/>
+    <string name="withdraw_manual_ready_warning">Assegura\'t d\'emprar el concepte correcte, del contrari els diners no arribaran a la cartera.</string>
+    <string name="withdraw_error_title">Error retirant els diners</string>
+    <string name="withdraw_error_message">Retirar diners no és possible ara mateix. Si us plau, intenta-ho més tard!</string>
+    <string name="withdraw_error_test">Error retirant TESTKUDOS</string>
+    <string name="exchange_settings_title">Canvis</string>
+    <string name="exchange_settings_summary">Gestionar la llista de canvis coneguts per a aquesta cartera</string>
+    <string name="exchange_list_title">Canvis</string>
+    <string name="exchange_list_empty">No es coneixen canvis
+\n
+\nAfegeix-ne un manualment o retira diners digitals!</string>
+    <string name="exchange_list_currency">Divisa: %s</string>
+    <string name="exchange_list_add">Afegeix un canvi</string>
+    <string name="exchange_add_url">Afegeix adreça de canvi</string>
+    <string name="exchange_add_error">No s\'ha pogut afegir el canvi</string>
     <string name="exchange_menu_manual_withdraw"/>
     <string name="exchange_fee_withdrawal_fee_label"/>
     <string name="exchange_fee_overhead_label"/>
@@ -244,4 +246,19 @@
     <string name="send_deposit_iban_error">L\'IBAN és invàlid</string>
     <string name="send_deposit_bic_error">El BIC és invàlid</string>
     <string name="button_scan_qr_code_label">Escaneja el codi QR</string>
+    <string name="payment_prompt_title">Revisar pagament</string>
+    <string name="payment_pay_template_title">Personalitza la teva comanda</string>
+    <string name="payment_create_order">Crea una comanda</string>
+    <string name="payment_confirmation_code">Codi de confirmació</string>
+    <string name="payment_template_error">Error creant la comanda</string>
+    <string name="transactions_retry">Reintentar</string>
+    <string name="transactions_abort">Avortar</string>
+    <string name="transactions_fail">Matar</string>
+    <string name="transactions_suspend">Suspendre</string>
+    <string name="transactions_fail_dialog_title">Matar transacció</string>
+    <string name="transactions_fail_dialog_message">Estàs segur que vols matar aquesta transacció\? Els diners en transit ES PERDRAN.</string>
+    <string name="transactions_resume">Continuar</string>
+    <string name="transactions_abort_dialog_title">Avortar transacció</string>
+    <string name="transactions_abort_dialog_message">Estàs segur que vols avortar aquesta transacció\? Els diners en trànsit es podrien perdre.</string>
+    <string name="offline_banner">Ni hi ha accés a internet</string>
 </resources>
