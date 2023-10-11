@@ -186,8 +186,8 @@
     <string name="exchange_list_add">Afegeix un canvi</string>
     <string name="exchange_add_url">Afegeix adreça de canvi</string>
     <string name="exchange_add_error">No s\'ha pogut afegir el canvi</string>
-    <string name="exchange_menu_manual_withdraw"/>
-    <string name="exchange_fee_withdrawal_fee_label"/>
+    <string name="exchange_menu_manual_withdraw">Retirar</string>
+    <string name="exchange_fee_withdrawal_fee_label">Comissió de retirament:</string>
     <string name="exchange_fee_overhead_label"/>
     <string name="exchange_fee_coin_expiration_label"/>
     <string name="exchange_fee_coin_fees_label"/>
@@ -261,4 +261,5 @@
     <string name="transactions_abort_dialog_title">Avortar transacció</string>
     <string name="transactions_abort_dialog_message">Estàs segur que vols avortar aquesta transacció\? Els diners en trànsit es podrien perdre.</string>
     <string name="offline_banner">Ni hi ha accés a internet</string>
+    <string name="exchange_list_error">No s\'han pogut llistar serveis de canvi</string>
 </resources>
