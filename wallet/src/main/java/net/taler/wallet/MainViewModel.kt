@@ -205,7 +205,7 @@ class MainViewModel(
                 put("amountToWithdraw", "KUDOS:42")
                 put("amountToSpend", "KUDOS:23")
                 put("bankBaseUrl", "https://bank.demo.taler.net/")
-                put("bankAccessApiBaseUrl", "https://bank.demo.taler.net/demobanks/default/access-api/")
+                put("bankAccessApiBaseUrl", "https://bank.demo.taler.net/")
                 put("exchangeBaseUrl", "https://exchange.demo.taler.net/")
                 put("merchantBaseUrl", "https://backend.demo.taler.net/")
                 put("merchantAuthToken", "secret-token:sandbox")
