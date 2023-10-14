@@ -107,4 +107,5 @@
     <string name="challenge_feedback_truth_unknown">Can\'t solve challenge</string>
     <string name="recovery_download_file">Download file</string>
     <string name="recovery_file_saved">File saved</string>
+    <string name="recovery_file_saved_s">File %1$s saved</string>
 </resources>

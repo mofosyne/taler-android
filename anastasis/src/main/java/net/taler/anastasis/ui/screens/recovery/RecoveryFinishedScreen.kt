@@ -73,11 +73,11 @@ fun RecoveryFinishedScreen(
         onBackClicked = { viewModel.goHome() },
         showNext = false,
         showPrev = false,
-    ) {
+    ) { scrollConnection ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(it),
+                .nestedScroll(scrollConnection),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
@@ -127,20 +127,20 @@ fun RecoveryFinishedScreen(
                         contract = ActivityResultContracts.CreateDocument(coreSecret.mime ?: "application/octet-stream"),
                         onResult = { uri ->
                             if (uri != null) {
-                                val outputStream = context.contentResolver.openOutputStream(uri)
-                                if (outputStream != null) {
+                                context.contentResolver.openOutputStream(uri)?.use {
                                     try {
-                                        // TODO: we should probably listen to Java and not block
-                                        outputStream.write(CryptoUtils.decodeCrock(coreSecret.value))
-                                        outputStream.flush()
-                                        outputStream.close()
+                                        it.write(CryptoUtils.decodeCrock(coreSecret.value))
+                                        it.flush()
                                         Toast.makeText(
                                             context,
-                                            context.getString(R.string.recovery_file_saved),
+                                            if (coreSecret.filename != null)
+                                                context.getString(R.string.recovery_file_saved_s, coreSecret.filename)
+                                            else
+                                                context.getString(R.string.recovery_file_saved),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                     } catch (e: IOException) {
-                                        e.printStackTrace()
+                                        Log.d("RecoveryFinishedScreen", e.stackTraceToString())
                                     }
                                 }
                             }
