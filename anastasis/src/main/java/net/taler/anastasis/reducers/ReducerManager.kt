@@ -34,11 +34,28 @@ import net.taler.anastasis.models.ContinentInfo
 import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.models.CountryInfo
 import net.taler.anastasis.models.Policy
+import net.taler.anastasis.models.ReducerArgs.AddAuthentication
+import net.taler.anastasis.models.ReducerArgs.AddPolicy
+import net.taler.anastasis.models.ReducerArgs.AddProvider
+import net.taler.anastasis.models.ReducerArgs.DeleteAuthentication
+import net.taler.anastasis.models.ReducerArgs.DeletePolicy
+import net.taler.anastasis.models.ReducerArgs.DeleteProvider
+import net.taler.anastasis.models.ReducerArgs.EnterSecret
+import net.taler.anastasis.models.ReducerArgs.EnterSecretName
+import net.taler.anastasis.models.ReducerArgs.EnterUserAttributes
+import net.taler.anastasis.models.ReducerArgs.SelectChallenge
+import net.taler.anastasis.models.ReducerArgs.SelectContinent
+import net.taler.anastasis.models.ReducerArgs.SelectCountry
+import net.taler.anastasis.models.ReducerArgs.SolveChallengeRequest
+import net.taler.anastasis.models.ReducerArgs.UpdateExpiration
+import net.taler.anastasis.models.ReducerArgs.UpdatePolicy
 import net.taler.anastasis.models.ReducerState
+import net.taler.anastasis.shared.FileUtils.bufferedReadBytes
 import net.taler.anastasis.shared.Utils
+import net.taler.common.CryptoUtils
 import net.taler.common.Timestamp
+import java.io.InputStream
 import kotlin.time.Duration.Companion.seconds
-import net.taler.anastasis.models.ReducerArgs.*
 
 class ReducerManager(
     private val state: MutableStateFlow<ReducerState?>,
@@ -265,6 +282,25 @@ class ReducerManager(
             addTask(Tasks.Type.None)
             api.reduceAction(initialState, "enter_secret", EnterSecret(
                 secret = secret,
+                expiration = expiration,
+            ))
+                .onSuccess { onSuccess(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun enterFileSecret(
+        inputStream: InputStream?,
+        secret: CoreSecret,
+        expiration: Timestamp,
+    ) = scope.launch {
+        // TODO: better IO error handling
+        val bytes = inputStream?.bufferedReadBytes() ?: return@launch
+        val encodedBytes = CryptoUtils.encodeCrock(bytes)
+        state.value?.let { initialState ->
+            addTask(Tasks.Type.None)
+            api.reduceAction(initialState, "enter_secret", EnterSecret(
+                secret = secret.copy(value = encodedBytes),
                 expiration = expiration,
             ))
                 .onSuccess { onSuccess(it) }

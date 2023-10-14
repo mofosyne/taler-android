@@ -107,38 +107,37 @@ fun EditSecretScreen(
                     onSecretEdited = { data ->
                         secretData = data
                         if (data !is SecretData.Empty) {
-                            viewModel.reducerManager?.enterSecret(
-                                secret = when (data) {
-                                    is SecretData.File -> {
-                                        val filename = context.resolveDocFilename(data.documentUri)
-                                        val mimeType = context.resolveDocMimeType(data.documentUri)
-                                        val inputStream = context.contentResolver.openInputStream(data.documentUri)
-                                        if (inputStream != null) {
-                                            val secret = CoreSecret(
-                                                // TODO: readBytes() has a 2GB limit
-                                                // TODO: make this SLOW readBytes() + encodeCrock operation async
-                                                value = CryptoUtils.encodeCrock(inputStream.readBytes()),
-                                                filename = filename,
-                                                mime = mimeType ?: "application/octet-stream",
-                                            )
-                                            inputStream.close()
-                                            secret
-                                        } else {
-                                            error("couldn't open file")
-                                        }
-                                    }
-                                    is SecretData.PlainText -> CoreSecret(
-                                        value = CryptoUtils.encodeCrock(data.value.toByteArray(Charsets.UTF_8)),
-                                        mime = "text/plain",
-                                    )
-                                    else -> error("impossible case")
-                                },
-                                expiration = Timestamp.fromMillis(
-                                    secretExpirationDate
-                                        .toInstant(tz)
-                                        .toEpochMilliseconds()
-                                )
+                            val expiration = Timestamp.fromMillis(
+                                secretExpirationDate
+                                    .toInstant(tz)
+                                    .toEpochMilliseconds()
                             )
+                            when (data) {
+                                is SecretData.File -> {
+                                    val filename = context.resolveDocFilename(data.documentUri)
+                                    val mimeType = context.resolveDocMimeType(data.documentUri)
+                                    val inputStream = context.contentResolver.openInputStream(data.documentUri)
+                                    viewModel.reducerManager?.enterFileSecret(
+                                        inputStream = inputStream,
+                                        secret = CoreSecret(
+                                            value = "", // Doesn't matter
+                                            filename = filename,
+                                            mime = mimeType,
+                                        ),
+                                        expiration = expiration,
+                                    )
+                                }
+                                is SecretData.PlainText -> {
+                                    viewModel.reducerManager?.enterSecret(
+                                        secret = CoreSecret(
+                                            value = CryptoUtils.encodeCrock(data.value.toByteArray(Charsets.UTF_8)),
+                                            mime = "text/plain",
+                                        ),
+                                        expiration = expiration,
+                                    )
+                                }
+                                else -> {} // Impossible case
+                            }
                         }
                     },
                     onExpirationEdited = { date ->

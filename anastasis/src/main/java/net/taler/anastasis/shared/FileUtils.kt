@@ -20,26 +20,12 @@ import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
+import android.util.Log
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 object FileUtils {
-//    fun Context.createTempFileForDoc(uri: Uri): File {
-//        val storageDir = createTempDirectory()
-//        val filename = resolveDocFilename(uri) ?: UUID.randomUUID().toString()
-//        val file = File(storageDir.pathString, filename)
-//        if (file.exists()) file.delete()
-//        file.createNewFile()
-//
-//        // Read file and copy to temp file
-//        val inputStream = contentResolver.openInputStream(uri)
-//        inputStream?.copyTo(file.outputStream())
-//        inputStream?.close()
-//
-//        // TODO: not the best solution!
-//        // Delete file on Java VM exit for security
-//        file.deleteOnExit()
-//        return file
-//    }
-
     fun Context.resolveDocFilename(uri: Uri): String? =
         contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -53,4 +39,23 @@ object FileUtils {
             cursor.moveToFirst()
             cursor.getString(mimeIndex)
         }
+
+    // Source: https://stackoverflow.com/a/12223201
+    fun InputStream.bufferedReadBytes(): ByteArray? = use {
+        val buffer = ByteArrayOutputStream()
+        val data = ByteArray(16384)
+        var bytesRead: Int
+        try {
+            while (true) {
+                bytesRead = it.read(data, 0, data.size)
+                if (bytesRead == -1) break
+                buffer.write(data)
+            }
+            buffer.flush()
+            return buffer.toByteArray()
+        } catch (e: IOException) {
+            Log.d("FileUtils", e.stackTraceToString())
+            return null
+        }
+    }
 }
