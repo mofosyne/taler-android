@@ -9,6 +9,7 @@ plugins {
 }
 
 val qtartVersion = "0.9.3-dev.15"
+val composeVersion = "1.5.3"
 val minifyDebug by extra(false)
 
 fun versionCodeEpoch() = (System.currentTimeMillis() / 1000).toInt()
@@ -21,7 +22,6 @@ fun gitCommit(): String {
     return stdout.toString().trim()
 }
 
-@Suppress("UnstableApiUsage")
 android {
     namespace = "net.taler.anastasis"
     compileSdk = 34
@@ -64,19 +64,20 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = composeVersion
     }
-    packagingOptions {
+    packaging {
         jniLibs {
             keepDebugSymbols += arrayOf("**/*.so")
         }
@@ -88,28 +89,39 @@ android {
 
 dependencies {
     implementation(project(":taler-kotlin-android"))
-    implementation("net.taler:qtart:$qtartVersion@aar")
-    implementation("net.java.dev.jna:jna:5.13.0@aar")
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
+
+    // Android
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    
+    // Compose
+    implementation("androidx.activity:activity-compose:1.8.0")
     implementation(platform("androidx.compose:compose-bom:2022.10.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
-    implementation("androidx.compose.material:material-icons-extended:1.4.3")
+    implementation("androidx.compose.ui:ui:$composeVersion")
+    implementation("androidx.compose.ui:ui-graphics:$composeVersion")
+    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
+    implementation("androidx.compose.material:material:$composeVersion")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+    implementation("androidx.navigation:navigation-compose:2.7.4")
+    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersion")
+
+    // Dependency injection
+    implementation("com.google.dagger:hilt-android:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // JNI/JNA
+    implementation("net.java.dev.jna:jna:5.13.0@aar")
+
+    // Kotlin/KotlinX
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-    implementation("com.google.dagger:hilt-android:2.44")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("io.matthewnelson.encoding:base32:2.0.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Taler
+    implementation("net.taler:qtart:$qtartVersion@aar")
 }
 
 kapt {
