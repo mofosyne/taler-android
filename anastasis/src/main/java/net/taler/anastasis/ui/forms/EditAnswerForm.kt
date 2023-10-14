@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,7 +41,6 @@ import net.taler.anastasis.R
 import net.taler.anastasis.shared.FieldStatus
 import net.taler.anastasis.ui.theme.AnastasisTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAnswerForm(
     questionLabel: String? = null,

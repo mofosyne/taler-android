@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.SyncDisabled
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,7 +64,6 @@ import net.taler.anastasis.ui.pages.WizardPage
 import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.anastasis.viewmodels.FakeBackupViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageProvidersScreen(
     nestedScrollConnection: NestedScrollConnection,

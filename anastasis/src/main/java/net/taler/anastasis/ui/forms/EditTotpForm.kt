@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,7 +48,7 @@ import net.taler.anastasis.ui.theme.LocalSpacing
 import net.taler.common.CryptoUtils
 import kotlin.random.Random
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnsignedTypes::class)
+@OptIn(ExperimentalUnsignedTypes::class)
 @Composable
 fun EditTotpForm(
     modifier: Modifier = Modifier,

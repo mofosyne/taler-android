@@ -66,7 +66,6 @@ import net.taler.anastasis.viewmodels.FakeBackupViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModel
 import net.taler.anastasis.viewmodels.ReducerViewModelI
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewPoliciesScreen(
     viewModel: ReducerViewModelI = hiltViewModel<ReducerViewModel>(),
