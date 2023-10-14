@@ -100,6 +100,7 @@ fun EditSecretScreen(
                     name = secretName,
                     data = secretData,
                     expirationDate = secretExpirationDate.date,
+                    coreSecret = coreSecret,
                     onSecretNameEdited = { name ->
                         secretName = name
                         viewModel.reducerManager?.enterSecretName(name)

@@ -27,7 +27,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -52,6 +51,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import net.taler.anastasis.R
+import net.taler.anastasis.models.CoreSecret
 import net.taler.anastasis.shared.Utils.currentDate
 import net.taler.anastasis.ui.components.DatePickerField
 import net.taler.anastasis.ui.theme.AnastasisTheme
@@ -67,13 +67,13 @@ sealed class SecretData {
     class File(val documentUri: Uri): SecretData()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditSecretForm(
     modifier: Modifier = Modifier,
     name: String,
     data: SecretData,
     expirationDate: LocalDate,
+    coreSecret: CoreSecret?,
     onSecretNameEdited: (name: String) -> Unit,
     onSecretEdited: (data: SecretData) -> Unit,
     onExpirationEdited: (expirationDate: LocalDate) -> Unit,
@@ -176,7 +176,7 @@ fun EditSecretForm(
             ) {
                 Text(
                     if (data is SecretData.File)
-                        stringResource(R.string.secret_file_chosen)
+                        coreSecret?.filename ?: stringResource(R.string.secret_file_chosen)
                     else
                         stringResource(R.string.secret_choose_file),
                     overflow = TextOverflow.Ellipsis,
@@ -213,6 +213,7 @@ fun EditSecretFormPreview() {
                 name = name,
                 data = data,
                 expirationDate = expirationDate,
+                coreSecret = null,
                 onSecretNameEdited = { name = it },
                 onSecretEdited = { data = it },
                 onExpirationEdited = { expirationDate = it },
