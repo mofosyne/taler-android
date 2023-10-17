@@ -70,6 +70,9 @@ enum class TransactionMajorState {
     @SerialName("deleted")
     Deleted,
 
+    @SerialName("expired")
+    Expired,
+
     @SerialName("unknown")
     Unknown;
 }

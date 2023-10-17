@@ -204,8 +204,7 @@ class MainViewModel(
             api.request<Unit>("runIntegrationTestV2") {
                 put("amountToWithdraw", "KUDOS:42")
                 put("amountToSpend", "KUDOS:23")
-                put("bankBaseUrl", "https://bank.demo.taler.net/")
-                put("bankAccessApiBaseUrl", "https://bank.demo.taler.net/")
+                put("corebankApiBaseUrl", "https://bank.demo.taler.net/")
                 put("exchangeBaseUrl", "https://exchange.demo.taler.net/")
                 put("merchantBaseUrl", "https://backend.demo.taler.net/")
                 put("merchantAuthToken", "secret-token:sandbox")
