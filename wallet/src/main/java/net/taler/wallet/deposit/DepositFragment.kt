@@ -48,10 +48,8 @@ class DepositFragment : Fragment() {
         } ?: error("no amount passed")
         val receiverName = arguments?.getString("receiverName")
         val iban = arguments?.getString("IBAN")
-        val bic = arguments?.getString("BIC") ?: ""
-
         if (receiverName != null && iban != null) {
-            onDepositButtonClicked(amount, receiverName, iban, bic)
+            onDepositButtonClicked(amount, receiverName, iban)
         }
         return ComposeView(requireContext()).apply {
             setContent {
@@ -109,8 +107,7 @@ class DepositFragment : Fragment() {
         amount: Amount,
         receiverName: String,
         iban: String,
-        bic: String,
     ) {
-        depositManager.onDepositButtonClicked(amount, receiverName, iban, bic)
+        depositManager.onDepositButtonClicked(amount, receiverName, iban)
     }
 }

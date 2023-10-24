@@ -40,13 +40,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.transactions.AmountType.Negative
+import net.taler.wallet.transactions.AmountType.Positive
+import net.taler.wallet.transactions.TransactionAmountComposable
 
 @Composable
 fun MakeDepositComposable(
@@ -54,7 +56,7 @@ fun MakeDepositComposable(
     amount: Amount,
     presetName: String? = null,
     presetIban: String? = null,
-    onMakeDeposit: (Amount, String, String, String) -> Unit,
+    onMakeDeposit: (Amount, String, String) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -65,13 +67,12 @@ fun MakeDepositComposable(
     ) {
         var name by rememberSaveable { mutableStateOf(presetName ?: "") }
         var iban by rememberSaveable { mutableStateOf(presetIban ?: "") }
-        var bic by rememberSaveable { mutableStateOf("") }
-        var bicInvalid by rememberSaveable { mutableStateOf(false) }
         val focusRequester = remember { FocusRequester() }
         OutlinedTextField(
             modifier = Modifier
                 .padding(16.dp)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .fillMaxWidth(),
             value = name,
             enabled = !state.showFees,
             onValueChange = { input ->
@@ -93,7 +94,8 @@ fun MakeDepositComposable(
         val ibanError = state is DepositState.IbanInvalid
         OutlinedTextField(
             modifier = Modifier
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
             value = iban,
             enabled = !state.showFees,
             onValueChange = { input ->
@@ -118,46 +120,14 @@ fun MakeDepositComposable(
                 )
             }
         )
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(16.dp),
-            value = bic,
-            enabled = !state.showFees,
-            onValueChange = { input ->
-                bicInvalid = false
-                bic = input
+        TransactionAmountComposable(
+            label = if (state.effectiveDepositAmount == null) {
+                stringResource(R.string.amount_chosen)
+            } else {
+                stringResource(R.string.send_deposit_amount_effective)
             },
-            isError = bicInvalid,
-            supportingText = {
-                if (bicInvalid) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.send_deposit_bic_error),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.send_deposit_bic),
-                )
-            }
-        )
-        val amountTitle = if (state.effectiveDepositAmount == null) {
-            R.string.amount_chosen
-        } else R.string.send_deposit_amount_effective
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(id = amountTitle),
-        )
-        val shownAmount = if (state.effectiveDepositAmount == null) amount else {
-            state.effectiveDepositAmount
-        }
-        Text(
-            modifier = Modifier.padding(16.dp),
-            fontSize = 24.sp,
-            color = colorResource(R.color.green),
-            text = shownAmount.toString(),
+            amount = state.effectiveDepositAmount ?: amount,
+            amountType = Positive,
         )
         AnimatedVisibility(visible = state.showFees) {
             Column(
@@ -167,29 +137,17 @@ fun MakeDepositComposable(
                 val totalAmount = state.totalDepositCost ?: amount
                 val effectiveAmount = state.effectiveDepositAmount ?: Amount.zero(amount.currency)
                 val fee = totalAmount - effectiveAmount
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(id = R.string.withdraw_fees),
+
+                TransactionAmountComposable(
+                    label = stringResource(R.string.withdraw_fees),
+                    amount = fee,
+                    amountType = if (fee.isZero()) Positive else Negative,
                 )
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    fontSize = 24.sp,
-                    color = if (fee.isZero()) colorResource(R.color.green) else MaterialTheme.colorScheme.error,
-                    text = if (fee.isZero()) {
-                        fee.toString()
-                    } else {
-                        stringResource(R.string.amount_negative, fee.toString())
-                    },
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(id = R.string.send_amount),
-                )
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    fontSize = 24.sp,
-                    color = colorResource(R.color.green),
-                    text = totalAmount.toString(),
+
+                TransactionAmountComposable(
+                    label = stringResource(R.string.send_amount),
+                    amount = totalAmount,
+                    amountType = Positive,
                 )
             }
         }
@@ -207,11 +165,7 @@ fun MakeDepositComposable(
             enabled = iban.isNotBlank(),
             onClick = {
                 focusManager.clearFocus()
-                if (isValidBic(bic)) {
-                    onMakeDeposit(amount, name, iban, bic)
-                } else {
-                    bicInvalid = true
-                }
+                onMakeDeposit(amount, name, iban)
             },
         ) {
             Text(
@@ -224,14 +178,6 @@ fun MakeDepositComposable(
     }
 }
 
-private val bicRegex = Regex("[a-zA-Z\\d]{8,11}")
-
-/**
- * performs some minimal verification, nothing perfect.
- * Allows for empty string.
- */
-private fun isValidBic(bic: String): Boolean = bic.isEmpty() || bicRegex.matches(bic)
-
 @Preview
 @Composable
 fun PreviewMakeDepositComposable() {
@@ -242,7 +188,7 @@ fun PreviewMakeDepositComposable() {
         )
         MakeDepositComposable(
             state = state,
-            amount = Amount.fromString("TESTKUDOS", "42.23")) { _, _, _, _ ->
+            amount = Amount.fromString("TESTKUDOS", "42.23")) { _, _, _ ->
         }
     }
 }

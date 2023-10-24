@@ -46,10 +46,10 @@ class DepositManager(
     }
 
     @UiThread
-    fun onDepositButtonClicked(amount: Amount, receiverName: String, iban: String, bic: String) {
+    fun onDepositButtonClicked(amount: Amount, receiverName: String, iban: String) {
         if (depositState.value is DepositState.FeesChecked) {
             // fees already checked, so IBAN was validated, can make deposit directly
-            makeIbanDeposit(amount, receiverName, iban, bic)
+            makeIbanDeposit(amount, receiverName, iban)
         } else {
             // validate IBAN first
             mDepositState.value = DepositState.CheckingFees
@@ -62,7 +62,7 @@ class DepositManager(
                 }.onSuccess { response ->
                     if (response.valid) {
                         // only prepare/make deposit, if IBAN is valid
-                        makeIbanDeposit(amount, receiverName, iban, bic)
+                        makeIbanDeposit(amount, receiverName, iban)
                     } else {
                         mDepositState.value = DepositState.IbanInvalid
                     }
@@ -72,10 +72,10 @@ class DepositManager(
     }
 
     @UiThread
-    private fun makeIbanDeposit(amount: Amount, receiverName: String, iban: String, bic: String) {
+    private fun makeIbanDeposit(amount: Amount, receiverName: String, iban: String) {
         val paytoUri: String = PaytoUriIban(
             iban = iban,
-            bic = bic,
+            bic = null,
             targetPath = "",
             params = mapOf("receiver-name" to receiverName),
         ).paytoUri
