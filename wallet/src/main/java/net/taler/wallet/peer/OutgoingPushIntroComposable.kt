@@ -48,7 +48,6 @@ import net.taler.common.Amount
 import net.taler.wallet.R
 import kotlin.random.Random
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OutgoingPushIntroComposable(
     state: OutgoingState,
