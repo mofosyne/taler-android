@@ -150,11 +150,6 @@ fun OutgoingPushIntroComposable(
             onOptionChange = { option = it }
         ) { hours = it }
 
-        Text(
-            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
-            text = stringResource(R.string.send_peer_warning),
-        )
-
         Button(
             enabled = state is OutgoingChecked && subject.isNotBlank(),
             onClick = { onSend(amount, subject, hours) },
