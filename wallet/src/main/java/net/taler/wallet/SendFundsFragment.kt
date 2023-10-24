@@ -141,7 +141,7 @@ private fun SendFundsIntro(
         Row(modifier = Modifier.padding(16.dp)) {
             fun onClickButton(block: (Amount) -> Unit) {
                 val amount = getAmount(currency, text)
-                if (amount == null) isError = true
+                if (amount == null || amount.isZero()) isError = true
                 else if (!hasSufficientBalance(amount)) insufficientBalance = true
                 else block(amount)
             }

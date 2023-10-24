@@ -175,7 +175,7 @@ private fun ReceiveFundsIntro(
                     .height(IntrinsicSize.Max),
                 onClick = {
                     val amount = getAmount(currency, text)
-                    if (amount == null) isError = true
+                    if (amount == null || amount.isZero()) isError = true
                     else onPeerPull(amount)
                 },
             ) {
