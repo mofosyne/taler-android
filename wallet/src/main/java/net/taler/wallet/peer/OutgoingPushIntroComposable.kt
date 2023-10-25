@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -117,7 +118,7 @@ fun OutgoingPushIntroComposable(
             style = MaterialTheme.typography.bodyMedium,
         )
         var option by rememberSaveable { mutableStateOf(DEFAULT_EXPIRY) }
-        var hours by rememberSaveable { mutableStateOf(DEFAULT_EXPIRY.hours) }
+        var hours by rememberSaveable { mutableLongStateOf(DEFAULT_EXPIRY.hours) }
         ExpirationComposable(
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
             option = option,

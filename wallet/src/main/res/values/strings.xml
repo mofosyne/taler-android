@@ -166,7 +166,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_peer_bitcoin">To another Taler wallet</string>
     <string name="send_peer_title">Send money to another wallet</string>
     <string name="send_peer_create_button">Send funds now</string>
-    <string name="send_peer_warning">Warning: Funds will leave the wallet immediately.</string>
+    <string name="send_peer_warning">Funds will leave the wallet immediately.</string>
     <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>
     <string name="send_peer_payment_amount_received">Amount received</string>
     <string name="send_peer_payment_amount_sent">Amount sent</string>
