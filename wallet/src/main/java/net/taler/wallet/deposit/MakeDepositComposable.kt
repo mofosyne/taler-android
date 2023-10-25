@@ -78,6 +78,7 @@ fun MakeDepositComposable(
             onValueChange = { input ->
                 name = input
             },
+            singleLine = true,
             isError = name.isBlank(),
             label = {
                 Text(
@@ -97,6 +98,7 @@ fun MakeDepositComposable(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
             value = iban,
+            singleLine = true,
             enabled = !state.showFees,
             onValueChange = { input ->
                 iban = input.uppercase()

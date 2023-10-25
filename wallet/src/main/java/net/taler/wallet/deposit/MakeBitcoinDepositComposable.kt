@@ -71,6 +71,7 @@ fun MakeBitcoinDepositComposable(
                 .padding(16.dp)
                 .focusRequester(focusRequester),
             value = address,
+            singleLine = true,
             enabled = !state.showFees,
             onValueChange = { input ->
                 address = input

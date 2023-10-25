@@ -39,6 +39,7 @@ fun NumericInputField(
     OutlinedTextField(
         modifier = modifier,
         value = value.toString(),
+        singleLine = true,
         readOnly = readOnly,
         onValueChange = {
             val dd = it.toLongOrNull() ?: 0
