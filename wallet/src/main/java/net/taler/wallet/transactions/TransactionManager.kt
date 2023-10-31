@@ -124,6 +124,18 @@ class TransactionManager(
         }
     }
 
+    suspend fun getTransactionById(transactionId: String): Transaction? {
+        var transaction: Transaction? = null
+        api.request("getTransactionById", Transaction.serializer()) {
+            put("transactionId", transactionId)
+        }.onError {
+            Log.e(TAG, "Error getting transaction $it")
+        }.onSuccess { result ->
+            transaction = result
+        }
+        return transaction
+    }
+
     fun selectTransaction(transaction: Transaction) {
         mSelectedTransaction.postValue(transaction)
     }

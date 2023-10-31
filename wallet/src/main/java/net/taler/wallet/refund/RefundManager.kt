@@ -21,21 +21,17 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import net.taler.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 
 sealed class RefundStatus {
     data class Error(val error: TalerErrorInfo) : RefundStatus()
-    data class Success(val response: RefundResponse) : RefundStatus()
+    data class Success(val response: StartRefundQueryForUriResponse) : RefundStatus()
 }
 
 @Serializable
-data class RefundResponse(
-    val amountEffectivePaid: Amount,
-    val amountRefundGranted: Amount,
-    val amountRefundGone: Amount,
-    val pendingAtExchange: Boolean
+data class StartRefundQueryForUriResponse(
+    val transactionId: String,
 )
 
 class RefundManager(
@@ -46,7 +42,7 @@ class RefundManager(
     fun refund(refundUri: String): LiveData<RefundStatus> {
         val liveData = MutableLiveData<RefundStatus>()
         scope.launch {
-            api.request("applyRefund", RefundResponse.serializer()) {
+            api.request("startRefundQueryForUri", StartRefundQueryForUriResponse.serializer()) {
                 put("talerRefundUri", refundUri)
             }.onError {
                 liveData.postValue(RefundStatus.Error(it))

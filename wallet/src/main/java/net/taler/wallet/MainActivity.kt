@@ -22,8 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.content.IntentFilter
-import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
-import android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -38,6 +36,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.GravityCompat.START
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -312,10 +311,15 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                 }
             }
             is RefundStatus.Success -> {
-                val amount = status.response.amountRefundGranted
-                model.showTransactions(amount.currency)
-                val str = getString(R.string.refund_success, amount.amountStr)
-                Snackbar.make(ui.navView, str, LENGTH_LONG).show()
+                lifecycleScope.launch {
+                    val transactionId = status.response.transactionId
+                    val transaction = model.transactionManager.getTransactionById(transactionId)
+                    if (transaction != null) {
+                        val currency = transaction.amountRaw.currency
+                        model.showTransactions(currency)
+                        Snackbar.make(ui.navView, getString(R.string.refund_success), LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }
