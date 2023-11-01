@@ -28,7 +28,6 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.launchInAppBrowser
-import net.taler.wallet.showError
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 import net.taler.wallet.transactions.WithdrawalDetails.TalerBankIntegrationApi
 import net.taler.wallet.withdraw.TransactionWithdrawalComposable
@@ -61,9 +60,10 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
     override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {
         when (type) {
             ActionListener.Type.COMPLETE_KYC -> {
-                tx.error?.getStringExtra("kycUrl")?.let { kycUrl ->
-                    launchInAppBrowser(requireContext(), kycUrl)
-                } ?: tx.error?.let { showError(it) }
+                if (tx !is TransactionWithdrawal) return
+                tx.kycUrl?.let {
+                    launchInAppBrowser(requireContext(), it)
+                }
             }
 
             ActionListener.Type.CONFIRM_WITH_BANK -> {

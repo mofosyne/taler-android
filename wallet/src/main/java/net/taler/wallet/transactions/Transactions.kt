@@ -155,6 +155,7 @@ class TransactionWithdrawal(
     override val timestamp: Timestamp,
     override val txState: TransactionState,
     override val txActions: List<TransactionAction>,
+    val kycUrl: String? = null,
     val exchangeBaseUrl: String,
     val withdrawalDetails: WithdrawalDetails,
     override val error: TalerErrorInfo? = null,

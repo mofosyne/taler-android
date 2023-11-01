@@ -44,13 +44,12 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
 import net.taler.wallet.databinding.FragmentTransactionsBinding
-import net.taler.wallet.handleKyc
-import net.taler.wallet.launchInAppBrowser
 import net.taler.wallet.showError
+import net.taler.wallet.transactions.TransactionMajorState.*
+import net.taler.wallet.transactions.TransactionMinorState.*
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
-    fun onActionButtonClicked(transaction: Transaction)
 }
 
 class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.Callback {
@@ -180,25 +179,6 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
         if (transaction.detailPageNav != 0) {
             transactionManager.selectTransaction(transaction)
             findNavController().navigate(transaction.detailPageNav)
-        }
-    }
-
-    override fun onActionButtonClicked(transaction: Transaction) {
-        if (transaction.error != null) {
-            transaction.handleKyc({ error("Unhandled Action Button Event") }) { error ->
-                error.getStringExtra("kycUrl")?.let {
-                    launchInAppBrowser(requireContext(), it)
-                }
-            }
-        } else if (transaction is TransactionWithdrawal && !transaction.confirmed) {
-            if (transaction.withdrawalDetails is WithdrawalDetails.TalerBankIntegrationApi &&
-                transaction.withdrawalDetails.bankConfirmationUrl != null
-            ) {
-                launchInAppBrowser(
-                    context = requireContext(),
-                    url = transaction.withdrawalDetails.bankConfirmationUrl,
-                )
-            }
         }
     }
 
