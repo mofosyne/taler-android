@@ -30,8 +30,8 @@ import androidx.compose.ui.res.stringResource
 import net.taler.wallet.R
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionMinorState.BankConfirmTransfer
+import net.taler.wallet.transactions.TransactionMinorState.ExchangeWaitReserve
 import net.taler.wallet.transactions.TransactionMinorState.KycRequired
-import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
 
 interface ActionListener {
     enum class Type {
@@ -49,13 +49,11 @@ fun ActionButton(
     tx: TransactionWithdrawal,
     listener: ActionListener,
 ) {
-    // TODO: translate manual transfer to DD37 equivalent
-    if (tx.error == null && !tx.confirmed && tx.withdrawalDetails is ManualTransfer) {
-        ConfirmManualButton(modifier, tx, listener)
-    } else if (tx.txState.major == Pending) {
+    if (tx.txState.major == Pending) {
         when (tx.txState.minor) {
             KycRequired -> KycButton(modifier, tx, listener)
             BankConfirmTransfer -> ConfirmBankButton(modifier, tx, listener)
+            ExchangeWaitReserve -> ConfirmManualButton(modifier, tx, listener)
             else -> {}
         }
     }
