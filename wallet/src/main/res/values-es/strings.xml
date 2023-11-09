@@ -138,7 +138,7 @@
         <item quantity="one">Moneda: %s (usada %d vez)</item>
         <item quantity="other">Moneda: %s (usada %d veces)</item>
     </plurals>
-    <string name="exchange_fee_wire_fee_timespan">Timespan: %1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_timespan">Intervalo de tiempo: %1$s - %2$s</string>
     <string name="host_apdu_service_desc">Pagos Taler con NFC</string>
     <string name="transactions_delete_dialog_title">Eliminar Transacción</string>
     <string name="transactions_delete_dialog_message">¿Estás seguro de que deseas eliminar esta transacción de tu cartera\?</string>
