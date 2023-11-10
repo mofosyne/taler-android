@@ -15,7 +15,7 @@
     <string name="or">o</string>
     <string name="error_unsupported_uri">Error: esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="balances_title">Saldos</string>
+    <string name="balances_title">Balances</string>
     <string name="amount_positive">+%s</string>
     <string name="amount_chosen">Monto elegido</string>
     <string name="balances_inbound_label">entrada</string>
