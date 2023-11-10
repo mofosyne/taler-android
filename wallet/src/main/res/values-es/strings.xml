@@ -15,7 +15,7 @@
     <string name="or">o</string>
     <string name="error_unsupported_uri">Error: esta URI de Taler no está soportada.</string>
     <string name="menu_settings">Ajustes</string>
-    <string name="balances_title">Balances</string>
+    <string name="balances_title">Saldos</string>
     <string name="amount_positive">+%s</string>
     <string name="amount_chosen">Monto elegido</string>
     <string name="balances_inbound_label">entrada</string>
@@ -36,7 +36,7 @@
     <string name="payment_label_amount_total">Monto total:</string>
     <string name="payment_label_order_summary">Compra</string>
     <string name="payment_error">Error: %s</string>
-    <string name="payment_balance_insufficient">¡Balance insuficiente!</string>
+    <string name="payment_balance_insufficient">¡Saldo insuficiente!</string>
     <string name="payment_aborted">Abortado</string>
     <string name="payment_failed">Fallido</string>
     <string name="payment_already_paid_title">Ya fue pagado</string>
@@ -161,7 +161,7 @@
     <string name="withdraw_manual_ready_title">¡El cambiario está listo para el retiro!</string>
     <string name="withdraw_manual_ready_details_intro">Detalles de la transferencia bancaria</string>
     <string name="copy" tools:override="true">Copiar</string>
-    <string name="transactions_balance">Balance</string>
+    <string name="transactions_balance">Saldo</string>
     <string name="withdraw_manual_ready_bank_button">Abrir en aplicación de banco</string>
     <string name="copy_uri">Copiar URI de Taler</string>
     <string name="transactions_send_funds">Enviar
