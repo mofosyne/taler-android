@@ -79,11 +79,14 @@ fun TransactionRefundComposable(
             amount = t.amountRaw,
             amountType = AmountType.Neutral,
         )
-        TransactionAmountComposable(
-            label = stringResource(id = R.string.withdraw_fees),
-            amount = t.amountRaw - t.amountEffective,
-            amountType = AmountType.Negative,
-        )
+        val fee = t.amountRaw - t.amountEffective
+        if (!fee.isZero()) {
+            TransactionAmountComposable(
+                label = stringResource(id = R.string.withdraw_fees),
+                amount = fee,
+                amountType = AmountType.Negative,
+            )
+        }
         TransactionInfoComposable(
             label = stringResource(id = R.string.transaction_order),
             info = t.paymentInfo?.summary ?: "",

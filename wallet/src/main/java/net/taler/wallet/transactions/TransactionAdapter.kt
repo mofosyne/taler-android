@@ -39,6 +39,8 @@ import net.taler.wallet.transactions.TransactionAdapter.TransactionViewHolder
 import net.taler.wallet.transactions.TransactionMajorState.Aborted
 import net.taler.wallet.transactions.TransactionMajorState.Failed
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionMinorState.BankConfirmTransfer
+import net.taler.wallet.transactions.TransactionMinorState.KycRequired
 
 internal class TransactionAdapter(
     private val listener: OnTransactionClickListener,
@@ -112,6 +114,14 @@ internal class TransactionAdapter(
 
         private fun bindExtraInfo(transaction: Transaction) {
             when {
+                // Goes first so it always shows errors when present
+                transaction.error != null -> {
+                    extraInfoView.text =
+                        context.getString(R.string.payment_error, transaction.error!!.userFacingMsg)
+                    extraInfoView.setTextColor(red)
+                    extraInfoView.visibility = VISIBLE
+                }
+
                 transaction.txState.major == Aborted -> {
                     extraInfoView.setText(R.string.payment_aborted)
                     extraInfoView.setTextColor(red)
@@ -124,11 +134,18 @@ internal class TransactionAdapter(
                     extraInfoView.visibility = VISIBLE
                 }
 
-                transaction.error != null -> {
-                    extraInfoView.text =
-                        context.getString(R.string.payment_error, transaction.error!!.userFacingMsg)
-                    extraInfoView.setTextColor(red)
-                    extraInfoView.visibility = VISIBLE
+                transaction.txState.major == Pending -> when (transaction.txState.minor) {
+                    BankConfirmTransfer -> {
+                        extraInfoView.setText(R.string.withdraw_waiting_confirm)
+                        extraInfoView.setTextColor(amountColor)
+                        extraInfoView.visibility = VISIBLE
+                    }
+                    KycRequired -> {
+                        extraInfoView.setText(R.string.transaction_action_kyc)
+                        extraInfoView.setTextColor(amountColor)
+                        extraInfoView.visibility = VISIBLE
+                    }
+                    else -> extraInfoView.visibility = GONE
                 }
 
                 transaction is TransactionWithdrawal && !transaction.confirmed -> {
