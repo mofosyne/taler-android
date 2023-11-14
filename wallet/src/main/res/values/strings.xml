@@ -257,10 +257,14 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="settings_logcat_summary">Save internal log</string>
     <string name="settings_logcat_error">Error exporting log</string>
     <string name="settings_logcat_success">Log exported to file</string>
-    <string name="settings_db_export">Database</string>
+    <string name="settings_db_export">Export database</string>
     <string name="settings_db_export_summary">Save internal database</string>
+    <string name="settings_db_import">Import database</string>
+    <string name="settings_db_import_summary">Restore database from file</string>
     <string name="settings_db_export_error">Error exporting database</string>
+    <string name="settings_db_import_error">Error importing database</string>
     <string name="settings_db_export_success">Database exported to file</string>
+    <string name="settings_db_import_success">Database imported from file</string>
     <string name="settings_version_app">App Version</string>
     <string name="settings_version_core">Wallet Core Version</string>
     <string name="settings_version_protocol_exchange">Supported Exchange Versions</string>

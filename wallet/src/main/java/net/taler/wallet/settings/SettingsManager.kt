@@ -25,14 +25,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.wallet.R
-import net.taler.wallet.backend.WALLET_DB
+import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.backend.WalletResponse.Error
+import net.taler.wallet.backend.WalletResponse.Success
+import org.json.JSONObject
 
 class SettingsManager(
     private val context: Context,
+    private val api: WalletBackendApi,
     private val scope: CoroutineScope,
 ) {
-
     fun exportLogcat(uri: Uri?) {
         if (uri == null) {
             onLogExportError()
@@ -65,26 +70,86 @@ class SettingsManager(
             onDbExportError()
             return
         }
+
         scope.launch(Dispatchers.IO) {
-            try {
-                context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
-                    context.openFileInput(WALLET_DB).use { inputStream ->
-                        inputStream.copyTo(outputStream)
+            when (val response = api.rawRequest("exportDb")) {
+                is Success -> {
+                    try {
+                        context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
+                            val data = Json.encodeToString(response.result)
+                            val writer = outputStream.bufferedWriter()
+                            writer.write(data)
+                            writer.close()
+                        }
+                    } catch(e: Exception) {
+                        Log.e(SettingsManager::class.simpleName, "Error exporting db: ", e)
+                        withContext(Dispatchers.Main) {
+                            onDbExportError()
+                        }
+                        return@launch
                     }
-                } ?: onDbExportError()
-            } catch (e: Exception) {
-                Log.e(SettingsManager::class.simpleName, "Error exporting db: ", e)
-                onDbExportError()
-                return@launch
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, R.string.settings_db_export_success, LENGTH_LONG).show()
+                    }
+                }
+                is Error -> {
+                    Log.e(SettingsManager::class.simpleName, "Error exporting db: ${response.error}")
+                    withContext(Dispatchers.Main) {
+                        onDbExportError()
+                    }
+                    return@launch
+                }
             }
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, R.string.settings_db_export_success, LENGTH_LONG).show()
+        }
+    }
+
+    fun importDb(uri: Uri?) {
+        if (uri == null) {
+            onDbImportError()
+            return
+        }
+
+        scope.launch(Dispatchers.IO) {
+            context.contentResolver.openInputStream(uri)?.use {  inputStream ->
+                try {
+                    val reader = inputStream.bufferedReader()
+                    val strData = reader.readText()
+                    reader.close()
+                    val jsonData = JSONObject(strData)
+                    when (val response = api.rawRequest("importDb") {
+                        put("dump", jsonData)
+                    }) {
+                        is Success -> {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, R.string.settings_db_import_success, LENGTH_LONG).show()
+                            }
+                        }
+                        is Error -> {
+                            Log.e(SettingsManager::class.simpleName, "Error importing db: ${response.error}")
+                            withContext(Dispatchers.Main) {
+                                onDbImportError()
+                            }
+                            return@launch
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(SettingsManager::class.simpleName, "Error importing db: ", e)
+                    withContext(Dispatchers.Main) {
+                        onDbImportError()
+                    }
+                    return@launch
+                }
             }
         }
     }
 
     private fun onDbExportError() {
         Toast.makeText(context, R.string.settings_db_export_error, LENGTH_LONG).show()
+    }
+
+    private fun onDbImportError() {
+        Toast.makeText(context, R.string.settings_db_import_error, LENGTH_LONG).show()
     }
 
 }
