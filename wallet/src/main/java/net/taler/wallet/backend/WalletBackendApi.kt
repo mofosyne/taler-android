@@ -23,6 +23,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.taler.wallet.backend.TalerErrorCode.NONE
 import org.json.JSONObject
@@ -75,6 +76,28 @@ class WalletBackendApi(
                         json.decodeFromJsonElement(serializer, response.result)
                     } ?: Unit as T
                     WalletResponse.Success(t)
+                }
+                is ApiResponse.Error -> {
+                    val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
+                    WalletResponse.Error(error)
+                }
+            }
+        } catch (e: Exception) {
+            val info = TalerErrorInfo(NONE, "", e.toString())
+            WalletResponse.Error(info)
+        }
+    }
+
+    // Returns raw JSON response instead of serialized object
+    suspend inline fun rawRequest(
+        operation: String,
+        noinline args: (JSONObject.() -> JSONObject)? = null,
+    ): WalletResponse<JsonObject> = withContext(Dispatchers.Default) {
+        val json = BackendManager.json
+        try {
+            when (val response = sendRequest(operation, args?.invoke(JSONObject()))) {
+                is ApiResponse.Response -> {
+                    WalletResponse.Success(response.result)
                 }
                 is ApiResponse.Error -> {
                     val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)

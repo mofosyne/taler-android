@@ -56,6 +56,14 @@
         tools:isPreferenceVisible="true" />
 
     <Preference
+        app:icon="@drawable/ic_archive"
+        app:isPreferenceVisible="false"
+        app:key="pref_import_db"
+        app:summary="@string/settings_db_import_summary"
+        app:title="@string/settings_db_import"
+        tools:isPreferenceVisible="true" />
+
+    <Preference
         app:icon="@drawable/ic_account_balance_wallet"
         app:isPreferenceVisible="false"
         app:key="pref_version_app"

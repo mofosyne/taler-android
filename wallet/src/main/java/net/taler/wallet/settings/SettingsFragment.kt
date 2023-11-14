@@ -18,6 +18,7 @@ package net.taler.wallet.settings
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.fragment.app.activityViewModels
 import androidx.preference.Preference
@@ -47,6 +48,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefWithdrawTest: Preference
     private lateinit var prefLogcat: Preference
     private lateinit var prefExportDb: Preference
+    private lateinit var prefImportDb: Preference
     private lateinit var prefVersionApp: Preference
     private lateinit var prefVersionCore: Preference
     private lateinit var prefVersionExchange: Preference
@@ -58,6 +60,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefWithdrawTest,
             prefLogcat,
             prefExportDb,
+            prefImportDb,
             prefVersionApp,
             prefVersionCore,
             prefVersionExchange,
@@ -71,8 +74,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         settingsManager.exportLogcat(uri)
     }
     private val dbExportLauncher =
-        registerForActivityResult(CreateDocument("application/x-sqlite3")) { uri ->
+        registerForActivityResult(CreateDocument("application/json")) { uri ->
             settingsManager.exportDb(uri)
+        }
+    private val dbImportLauncher =
+        registerForActivityResult(OpenDocument()) { uri ->
+            settingsManager.importDb(uri)
         }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -81,6 +88,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         prefWithdrawTest = findPreference("pref_testkudos")!!
         prefLogcat = findPreference("pref_logcat")!!
         prefExportDb = findPreference("pref_export_db")!!
+        prefImportDb = findPreference("pref_import_db")!!
         prefVersionApp = findPreference("pref_version_app")!!
         prefVersionCore = findPreference("pref_version_core")!!
         prefVersionExchange = findPreference("pref_version_protocol_exchange")!!
@@ -127,10 +135,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
         prefExportDb.setOnPreferenceClickListener {
-            dbExportLauncher.launch("taler-wallet-db-${currentTimeMillis()}.sql")
+            dbExportLauncher.launch("taler-wallet-db-${currentTimeMillis()}.json")
             true
         }
-
+        prefImportDb.setOnPreferenceClickListener {
+            dbImportLauncher.launch(arrayOf("application/json"))
+            true
+        }
         prefTest.setOnPreferenceClickListener {
             model.runIntegrationTest()
             true
