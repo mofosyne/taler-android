@@ -139,7 +139,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
         prefImportDb.setOnPreferenceClickListener {
-            dbImportLauncher.launch(arrayOf("application/json"))
+            showImportDialog()
             true
         }
         prefTest.setOnPreferenceClickListener {
@@ -152,15 +152,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun showImportDialog() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
+            .setMessage(R.string.settings_dialog_import_message)
+            .setNegativeButton(R.string.import_db) { _, _ ->
+                dbImportLauncher.launch(arrayOf("application/json"))
+            }
+            .setPositiveButton(R.string.cancel) { _, _ ->
+                Snackbar.make(requireView(), getString(R.string.settings_alert_import_canceled), LENGTH_SHORT).show()
+            }
+            .show()
+    }
+
     private fun showResetDialog() {
         MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
-            .setMessage("Do you really want to reset the wallet and lose all coins and purchases?")
-            .setPositiveButton("Reset") { _, _ ->
+            .setMessage(R.string.settings_dialog_reset_message)
+            .setNegativeButton(R.string.reset) { _, _ ->
                 model.dangerouslyReset()
-                Snackbar.make(requireView(), "Wallet has been reset", LENGTH_SHORT).show()
+                Snackbar.make(requireView(), getString(R.string.settings_alert_reset_done), LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancel") { _, _ ->
-                Snackbar.make(requireView(), "Reset cancelled", LENGTH_SHORT).show()
+            .setPositiveButton(R.string.cancel) { _, _ ->
+                Snackbar.make(requireView(), getString(R.string.settings_alert_reset_canceled), LENGTH_SHORT).show()
             }
             .show()
     }

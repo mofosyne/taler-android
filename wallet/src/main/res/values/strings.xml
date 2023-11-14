@@ -59,6 +59,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="currency">Currency</string>
     <!-- The count should be mirrored in RTL languages -->
     <string name="char_count">%1$d/%2$d</string>
+    <string name="import_db">Import</string>
+    <string name="reset">Reset</string>
 
     <string name="offline">Operation requires internet access. Please ensure your internet connection works and try again.</string>
     <string name="offline_banner">No internet access</string>
@@ -274,6 +276,12 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="settings_test_summary">Performs test transactions with demo setup</string>
     <string name="settings_reset">Reset Wallet (dangerous!)</string>
     <string name="settings_reset_summary">Throws away your money</string>
+
+    <string name="settings_dialog_reset_message">Do you really want to reset the wallet and lose all coins and purchases?</string>
+    <string name="settings_dialog_import_message">This operation will overwrite your existing database. Do you want to continue?</string>
+    <string name="settings_alert_reset_done">Wallet has been reset</string>
+    <string name="settings_alert_reset_canceled">Reset cancelled</string>
+    <string name="settings_alert_import_canceled">Import cancelled</string>
 
     <string name="refund_title">Refund</string>
     <string name="refund_error">Error processing refund</string>
