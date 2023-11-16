@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="google_play_title" tools:keep="@string/google_play_title">Monedero Taler (experimental)</string>
+    <string name="google_play_title" tools:keep="@string/google_play_title">Cartera Taler (experimental)</string>
     <string name="nav_prompt_withdraw">Retirar efectivo digital</string>
     <string name="nav_exchange_tos">Términos de servicio del cambiario</string>
     <string name="nav_exchange_select">Seleccionar cambiario</string>
@@ -55,7 +55,7 @@
     <string name="withdraw_error_title">Error en el retiro</string>
     <string name="withdraw_error_test">Error retirando TESTKUDOS</string>
     <string name="exchange_settings_title">Cambiarios</string>
-    <string name="exchange_settings_summary">Gestionar la lista de cambiarios conocidos en este monedero</string>
+    <string name="exchange_settings_summary">Gestionar la lista de cambiarios conocidos en esta cartera</string>
     <string name="exchange_list_title">Cambiarios</string>
     <string name="exchange_list_empty">Sin cambiarios conocidos
 \n
@@ -91,7 +91,7 @@
     <string name="settings_version_protocol_exchange">Versiones de Exchange soportadas</string>
     <string name="settings_version_protocol_merchant">Versiones de Merchant soportadas</string>
     <string name="settings_version_unknown">Desconocido</string>
-    <string name="settings_reset">Reiniciar monedero (¡peligroso!)</string>
+    <string name="settings_reset">Reiniciar cartera (¡peligroso!)</string>
     <string name="settings_reset_summary">Se deshace de tu dinero</string>
     <string name="nav_settings_backup">Copia de seguridad</string>
     <string name="backup_last">Última copia de seguridad: %s</string>
@@ -101,11 +101,11 @@
     <string name="tip_title">Premio</string>
     <string name="wifi_disabled_error">Enciende tu Wi-Fi para obtener Wi-Fi gratis</string>
     <string name="wifi_connect_error">No se pudo conectar al Wi-Fi gratis: %s</string>
-    <string name="app_name">Monedero Taler</string>
+    <string name="app_name">Cartera Taler</string>
     <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler hace transacciones en línea amigables con la privacidad, de forma rápida y sencilla.</string>
-    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Esta aplicación es un monedero para GNU Taler. Es altamente experimental, y aún no está lista para producción. GNU Taler es un sistema de pago que preserva la privacidad. Los clientes pueden permanecer anónimos, pero los comerciantes no pueden esconder sus ingresos a través de GNU Taler. Esto ayuda a evitar la evasión de impuestos y el lavado de dinero. El uso principal de GNU Taler son los pagos; su intención no es servir como reserva de valor. Los pagos siempre están respaldados por una divisa existente. El pago se realiza después de cambiar dinero existente por dinero electrónico con la ayuda de un servicio de cambiario, que es un proveedor de servicios de pagos para Taler. Cuando se realiza un pago, los clientes solo necesitan un monedero con fondos. Un comerciante puede aceptar pagos sin hacer que sus clientes se registren en su página Web. GNU Taler es inmune contra varios tipos de fraude, como el phising de información de tarjetas de crédito o el fraude por devolución. En caso de pérdida o robo, solo una cantidad limitada de dinero guardado en el monedero podría perderse.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Esta aplicación es una cartera para GNU Taler. Es altamente experimental, y aún no está lista para producción. GNU Taler es un sistema de pago que preserva la privacidad. Los clientes pueden permanecer anónimos, pero los comerciantes no pueden esconder sus ingresos a través de GNU Taler. Esto ayuda a evitar la evasión de impuestos y el lavado de dinero. El uso principal de GNU Taler son los pagos; su intención no es servir como reserva de valor. Los pagos siempre están respaldados por una divisa existente. El pago se realiza después de cambiar dinero existente por dinero electrónico con la ayuda de un servicio de cambiario, que es un proveedor de servicios de pagos para Taler. Cuando se realiza un pago, los clientes solo necesitan una cartera con fondos. Un comerciante puede aceptar pagos sin hacer que sus clientes se registren en su página Web. GNU Taler es inmune contra varios tipos de fraude, como el phising de información de tarjetas de crédito o el fraude por devolución. En caso de pérdida o robo, solo una cantidad limitada de dinero guardado en la cartera podría perderse.</string>
     <string name="nav_header_title">GNU Taler</string>
-    <string name="nav_header_subtitle">Monedero</string>
+    <string name="nav_header_subtitle">Cartera</string>
     <string name="nav_exchange_fees">Comisiones del cambiario</string>
     <string name="nav_error">Error</string>
     <string name="button_scan_qr_code">Escanear código QR de Taler</string>
@@ -113,7 +113,7 @@
     <string name="offline">La operación requiere acceso a Internet. Por favor asegúrate que tu conexión a Internet funcione y prueba de nuevo.</string>
     <string name="menu_retry_pending_operations">Reintentar operaciones pendientes</string>
     <string name="amount_negative">-%s</string>
-    <string name="balances_empty_state">No hay efectivo digital en tu monedero.
+    <string name="balances_empty_state">No hay efectivo digital en tu cartera.
 \n
 \nPuedes obtener dinero de prueba desde el banco demostrativo:
 \n
@@ -142,7 +142,7 @@
     <string name="exchange_fee_wire_fee_timespan">Intervalo de tiempo: %1$s - %2$s</string>
     <string name="host_apdu_service_desc">Pagos Taler con NFC</string>
     <string name="transactions_delete_dialog_title">Eliminar transacción</string>
-    <string name="transactions_delete_dialog_message">¿Estás seguro de que deseas eliminar esta transacción de tu monedero\?</string>
+    <string name="transactions_delete_dialog_message">¿Estás seguro de que deseas eliminar esta transacción de tu cartera\?</string>
     <string name="withdraw_manual_ready_cancel">Cancelar retiro</string>
     <string name="tip_already_accepted">Este premio ya fue aceptado.</string>
     <string name="transaction_deposit">Depósito</string>
@@ -154,7 +154,7 @@
     <string name="receive_peer_create_button">Crear cobro</string>
     <string name="pay_peer_title">Pagar factura</string>
     <string name="send_peer_create_button">Enviar fondos ahora</string>
-    <string name="send_peer_warning">Los fondos saldrán de este monedero inmediatamente.</string>
+    <string name="send_peer_warning">Los fondos saldrán de esta cartera inmediatamente.</string>
     <string name="send_peer_payment_instruction">Muestra este código a quien deba recibir el dinero:</string>
     <string name="tip_exchange">Cambiario</string>
     <string name="tip_merchant_url">URL de comerciante</string>
@@ -173,7 +173,7 @@
     <string name="receive_peer_title">Solicitar pago</string>
     <string name="receive_amount">Monto a recibir</string>
     <string name="receive_intro">Elige desde dónde recibir el dinero:</string>
-    <string name="receive_peer">Cobrar a otro monedero</string>
+    <string name="receive_peer">Cobrar a otra cartera</string>
     <string name="receive_amount_invalid">Monto inválido</string>
     <string name="receive_withdraw">Retiro desde cuenta de banco</string>
     <string name="send_deposit_create_button">Hacer un depósito</string>
@@ -187,8 +187,8 @@
     <string name="send_deposit_bic">BIC/SWIFT</string>
     <string name="receive_peer_payment_title">Recibir pago</string>
     <string name="currency">Divisa</string>
-    <string name="send_peer">A otro monedero</string>
-    <string name="send_peer_title">Enviar dinero a otro monedero</string>
+    <string name="send_peer">A otra cartera</string>
+    <string name="send_peer_title">Enviar dinero a otra cartera</string>
     <string name="transaction_peer_push_debit">Pago push</string>
     <string name="send_peer_payment_amount_received">Monto recibido</string>
     <string name="send_peer_payment_amount_sent">Monto enviado</string>
@@ -200,7 +200,7 @@
     <string name="settings_logcat_success">Bitácora exportada al archivo</string>
     <string name="tip_total">Total</string>
     <string name="send_peer_purpose">Motivo</string>
-    <string name="send_peer_bitcoin">A otro monedero Taler</string>
+    <string name="send_peer_bitcoin">A otra cartera de Taler</string>
     <string name="withdraw_manual_ready_intro">Para completar el proceso, necesitas transferir %s a la cuenta bancaria del cambiario</string>
     <string name="withdraw_manual_bitcoin_title">Cambiario de Bitcoin listo para el retiro</string>
     <string name="settings_db_export_summary">Guardar base de datos interna</string>
@@ -208,17 +208,17 @@
     <string name="tip_button_confirm">Aceptar premio</string>
     <string name="tip_received">Premio recibido</string>
     <string name="tip_fees">Comisión</string>
-    <string name="send_deposit_bitcoin">A un monedero de Bitcoin</string>
+    <string name="send_deposit_bitcoin">A una cartera de Bitcoin</string>
     <string name="settings_db_export">Base de datos</string>
     <string name="settings_db_export_error">Error exportando base de datos</string>
-    <string name="withdraw_manual_ready_warning">Asegúrate de usar el sujeto correcto; de lo contrario, el dinero no llegará a este monedero.</string>
+    <string name="withdraw_manual_ready_warning">Asegúrate de usar el sujeto correcto; de lo contrario, el dinero no llegará a esta cartera.</string>
     <string name="transaction_action_kyc">Completar KYC</string>
     <string name="withdraw_restrict_age">Restringir uso a edad</string>
     <string name="withdraw_restrict_age_unrestricted">Sin restricciones</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
     <string name="send_deposit_check_fees_button">Revisar comisiones</string>
     <string name="char_count">%1$d/%2$d</string>
-    <string name="transactions_delete_selected_dialog_message">¿Estás seguro de que deseas eliminar las transacciones seleccionadas de tu monedero\?</string>
+    <string name="transactions_delete_selected_dialog_message">¿Estás seguro de que deseas eliminar las transacciones seleccionadas de tu cartera\?</string>
     <string name="send_deposit_bitcoin_address">Dirección Bitcoin</string>
     <string name="send_deposit_bitcoin_create_button">Transferir Bitcoin</string>
     <string name="transaction_dummy_title">Transacción desconocida</string>
