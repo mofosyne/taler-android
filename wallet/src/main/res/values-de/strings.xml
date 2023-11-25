@@ -83,7 +83,7 @@
     <string name="exchange_fee_wire_fee_timespan">Zeitspanne: %1$s - %2$s</string>
     <string name="exchange_fee_wire_fee_wire_fee">Übermittlungsgebühren: %s</string>
     <string name="exchange_fee_wire_fee_closing_fee">Abschlussgebühr: %s</string>
-    <string name="exchange_tos_accept">Nutzungsbedingungen akzeptieren</string>
+    <string name="exchange_tos_accept">Allgemeine Geschäftsbedingungen akzeptieren</string>
     <string name="pending_operations_title">Schwebende Vorgänge</string>
     <string name="pending_operations_refuse">Vorschlag ablehnen</string>
     <string name="pending_operations_no_action">(keine Aktion)</string>
@@ -112,7 +112,7 @@
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Wallet</string>
     <string name="nav_prompt_withdraw">Digitales Bargeld abheben</string>
-    <string name="nav_exchange_tos">Nutzungsbedingungen des Exchange</string>
+    <string name="nav_exchange_tos">Allgemeine Geschäftsbedingungen des Exchange</string>
     <string name="nav_exchange_select">Exchange auswählen</string>
     <string name="nav_exchange_fees">Exchange Gebühren</string>
     <string name="enter_uri">Geben Sie die Taler-URI ein</string>
@@ -132,7 +132,7 @@
     <string name="transactions_error">Transaktionen konnten nicht geladen werden
 \n
 \n%s</string>
-    <string name="exchange_tos_error">Fehler beim Anzeigen der Nutzungsbedingungen: %s</string>
+    <string name="exchange_tos_error">Fehler beim Anzeigen der AGB: %s</string>
     <string name="settings_version_protocol_exchange">Unterstützte Exchange-Versionen</string>
     <string name="amount_negative">- %s</string>
     <string name="amount_positive">+ %s</string>
