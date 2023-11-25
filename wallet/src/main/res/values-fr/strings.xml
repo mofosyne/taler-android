@@ -38,7 +38,7 @@
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Portefeuille</string>
     <string name="nav_prompt_withdraw">Retirer de l\'argent numérique</string>
-    <string name="nav_exchange_tos">Conditions générale d\'utilisation du change</string>
+    <string name="nav_exchange_tos">Conditions générales d\'utilisation du service d\'échange</string>
     <string name="nav_error">Erreur</string>
     <string name="button_back">Retour en arrière</string>
     <string name="payment_label_order_summary">Achat</string>
@@ -62,7 +62,7 @@
     <string name="exchange_fee_wire_fee_timespan">Durée : %1$s - %2$s</string>
     <string name="exchange_fee_wire_fee_wire_fee">Frais de virement : %s</string>
     <string name="exchange_fee_wire_fee_closing_fee">Frais de clôture : %s</string>
-    <string name="exchange_tos_accept">Accepter les conditions générales d\'utilisations</string>
+    <string name="exchange_tos_accept">Accepter les conditions générales d\'utilisation</string>
     <string name="exchange_tos_error">Erreur lors de l\'affichage des conditions générales d\'utilisation : %s</string>
     <string name="pending_operations_title">Opérations en attente</string>
     <string name="pending_operations_refuse">Refuser la proposition</string>
