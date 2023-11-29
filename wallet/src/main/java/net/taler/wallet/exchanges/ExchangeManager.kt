@@ -30,10 +30,21 @@ import net.taler.common.toEvent
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.balances.ScopeInfo
 
 @Serializable
 data class ExchangeListResponse(
     val exchanges: List<ExchangeItem>,
+)
+
+@Serializable
+data class ExchangeShortListResponse(
+    val exchanges: List<ShortExchangeListItem>,
+)
+
+@Serializable
+data class ShortExchangeListItem(
+    val exchangeBaseUrl: String,
 )
 
 class ExchangeManager(
@@ -45,6 +56,7 @@ class ExchangeManager(
     val progress: LiveData<Boolean> = mProgress
 
     private val mExchanges = MutableLiveData<List<ExchangeItem>>()
+    private val mScopedExchanges = MutableLiveData<List<ShortExchangeListItem>>()
     val exchanges: LiveData<List<ExchangeItem>> get() = list()
 
     private val mAddError = MutableLiveData<Event<TalerErrorInfo>>()
@@ -69,6 +81,22 @@ class ExchangeManager(
             }
         }
         return mExchanges
+    }
+
+    private fun listForScope(scopeInfo: ScopeInfo): LiveData<List<ShortExchangeListItem>> {
+        mProgress.value = true
+        scope.launch {
+            val response = api.request("listExchangesForScopedCurrency", ExchangeShortListResponse.serializer())
+            response.onError {
+                mProgress.value = false
+                mListError.value = it.toEvent()
+            }.onSuccess {
+                Log.d(TAG, "Exchange list: ${it.exchanges}")
+                mProgress.value = false
+                mScopedExchanges.value = it.exchanges
+            }
+        }
+        return mScopedExchanges
     }
 
     fun add(exchangeUrl: String) = scope.launch {
