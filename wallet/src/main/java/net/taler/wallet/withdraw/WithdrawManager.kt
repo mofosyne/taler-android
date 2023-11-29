@@ -33,6 +33,7 @@ import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
+import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 
 sealed class WithdrawStatus {
@@ -44,6 +45,8 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
+        val numCoins: Int,
+        val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
         val ageRestrictionOptions: List<Int>? = null,
         val tosText: String,
         val tosEtag: String,
@@ -55,6 +58,8 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
+        val numCoins: Int,
+        val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
         val ageRestrictionOptions: List<Int>? = null,
     ) : WithdrawStatus()
 
@@ -101,10 +106,12 @@ data class WithdrawalDetailsForUri(
 )
 
 @Serializable
-data class WithdrawalDetails(
+data class ManualWithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
     val amountEffective: Amount,
+    val numCoins: Int,
+    val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
     val ageRestrictionOptions: List<Int>? = null,
 )
 
@@ -115,7 +122,9 @@ data class AcceptWithdrawalResponse(
 
 @Serializable
 data class AcceptManualWithdrawalResponse(
-    val exchangePaytoUris: List<String>,
+    val reservePub: String,
+    val withdrawalAccountsList: List<WithdrawalExchangeAccountDetails>,
+    val transactionId: String,
 )
 
 data class ExchangeSelection(
@@ -176,7 +185,7 @@ class WithdrawManager(
         uri: String? = null,
     ) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
-        api.request("getWithdrawalDetailsForAmount", WithdrawalDetails.serializer()) {
+        api.request("getWithdrawalDetailsForAmount", ManualWithdrawalDetails.serializer()) {
             put("exchangeBaseUrl", exchangeBaseUrl)
             put("amount", amount.toJSONString())
         }.onError { error ->
@@ -188,6 +197,8 @@ class WithdrawManager(
                     exchangeBaseUrl = exchangeBaseUrl,
                     amountRaw = details.amountRaw,
                     amountEffective = details.amountEffective,
+                    numCoins = details.numCoins,
+                    withdrawalAccountList = details.withdrawalAccountList,
                     ageRestrictionOptions = details.ageRestrictionOptions,
                 )
             } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
@@ -196,7 +207,7 @@ class WithdrawManager(
 
     private fun getExchangeTos(
         exchangeBaseUrl: String,
-        details: WithdrawalDetails,
+        details: ManualWithdrawalDetails,
         showImmediately: Boolean,
         uri: String?,
     ) = scope.launch {
@@ -210,6 +221,8 @@ class WithdrawManager(
                 exchangeBaseUrl = exchangeBaseUrl,
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
+                numCoins = details.numCoins,
+                withdrawalAccountList = details.withdrawalAccountList,
                 ageRestrictionOptions = details.ageRestrictionOptions,
                 tosText = it.content,
                 tosEtag = it.currentEtag,
@@ -234,6 +247,8 @@ class WithdrawManager(
                 exchangeBaseUrl = s.exchangeBaseUrl,
                 amountRaw = s.amountRaw,
                 amountEffective = s.amountEffective,
+                numCoins = s.numCoins,
+                withdrawalAccountList = s.withdrawalAccountList,
                 ageRestrictionOptions = s.ageRestrictionOptions,
             )
         }
@@ -278,7 +293,7 @@ class WithdrawManager(
                 amount = status.amountRaw,
                 exchangeBaseUrl = status.exchangeBaseUrl,
                 // TODO what if there's more than one or no URI?
-                uriStr = response.exchangePaytoUris[0],
+                uriStr = response.withdrawalAccountsList[0].paytoUri,
             )
         }
     }

@@ -114,7 +114,7 @@ fun TransactionWithdrawalComposablePreview() {
         txState = TransactionState(Pending),
         txActions = listOf(Retry, Suspend, Abort),
         exchangeBaseUrl = "https://exchange.demo.taler.net/",
-        withdrawalDetails = ManualTransfer(exchangePaytoUris = emptyList()),
+        withdrawalDetails = ManualTransfer(exchangeCreditAccounts = emptyList()),
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
