@@ -54,10 +54,6 @@ fun TransferIBAN(
                 .padding(vertical = 8.dp)
         )
 
-        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), transfer.iban)
-        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
-        DetailRow(stringResource(R.string.withdraw_exchange), exchangeBaseUrl, false)
-
         Text(
             text = stringResource(R.string.withdraw_manual_ready_warning),
             style = MaterialTheme.typography.bodyMedium,
@@ -69,6 +65,10 @@ fun TransferIBAN(
                 .border(BorderStroke(2.dp, colorResource(R.color.notice_border)))
                 .padding(all = 16.dp)
         )
+
+        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), transfer.iban)
+        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
+        DetailRow(stringResource(R.string.withdraw_exchange), exchangeBaseUrl, false)
 
         WithdrawalAmountTransfer(
             amountRaw = transactionAmountRaw,

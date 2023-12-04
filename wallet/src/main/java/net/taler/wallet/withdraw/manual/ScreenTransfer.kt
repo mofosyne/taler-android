@@ -18,6 +18,7 @@ package net.taler.wallet.withdraw.manual
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,10 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
@@ -129,31 +130,46 @@ fun ScreenTransfer(
 }
 
 @Composable
-fun DetailRow(label: String, content: String, copy: Boolean = true) {
+fun DetailRow(
+    label: String,
+    content: String,
+    copy: Boolean = true,
+) {
     val context = LocalContext.current
-    Row {
-        Column(
-            modifier = Modifier
-                .weight(0.3f)) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 16.dp, start = 6.dp, end = 6.dp),
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        Row(
+            modifier = Modifier.padding(top = 8.dp, start = 6.dp, end = 6.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
-                text = label,
+                modifier = if (copy) Modifier.weight(1f) else Modifier,
+                text = content,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (copy) FontWeight.Bold else FontWeight.Normal,
+                fontFamily = if (copy) FontFamily.Monospace else FontFamily.Default,
+                textAlign = TextAlign.Center,
             )
+
             if (copy) {
                 IconButton(
+                    modifier = Modifier.padding(start = 8.dp),
                     onClick = { copyToClipBoard(context, label, content) },
-                ) { Icon(Icons.Default.ContentCopy, stringResource(R.string.copy)) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = stringResource(R.string.copy),
+                    )
+                }
             }
         }
-        Text(
-            text = content,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .weight(0.7f)
-                .then(if (copy) Modifier else Modifier.alpha(0.7f))
-        )
     }
 }
 
