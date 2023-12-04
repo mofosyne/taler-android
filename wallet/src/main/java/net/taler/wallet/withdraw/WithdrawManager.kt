@@ -70,6 +70,8 @@ sealed class WithdrawStatus {
 
     class ManualTransferRequired(
         val transactionId: String?,
+        val transactionAmountRaw: Amount,
+        val transactionAmountEffective: Amount,
         val exchangeBaseUrl: String,
         val withdrawalTransfers: List<TransferData>,
     ) : WithdrawStatus()
@@ -332,6 +334,8 @@ fun createManualTransferRequired(
     withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
 ) = WithdrawStatus.ManualTransferRequired(
     transactionId = transactionId,
+    transactionAmountRaw = amountRaw,
+    transactionAmountEffective = amountEffective,
     exchangeBaseUrl = exchangeBaseUrl,
     withdrawalTransfers = withdrawalAccountList.map {
         val uri = Uri.parse(it.paytoUri.replace("receiver-name=", "receiver_name="))

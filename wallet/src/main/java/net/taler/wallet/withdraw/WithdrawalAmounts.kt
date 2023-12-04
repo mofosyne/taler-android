@@ -37,50 +37,52 @@ import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.compose.SelectionChip
-import net.taler.wallet.currency.CurrencySpecification
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.TransactionAmountComposable
-import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 
 @Composable
-fun ConversionComposable(
+fun WithdrawalAmounts(
     amountRaw: Amount,
     amountEffective: Amount,
-    accounts: List<WithdrawalExchangeAccountDetails>?,
+    conversionAmounts: List<Amount>? = null,
+    defaultCurrency: String? = null,
 ) {
-    val altCurrencies = accounts
-        ?.filter { it.currencySpecification != null }
-        ?.map { it.currencySpecification!!.name } ?: emptyList()
-    var selectedCurrency by remember { mutableStateOf(amountRaw.currency) }
-    val selectedAccount = accounts?.find {
-        it.currencySpecification?.name == selectedCurrency
+    // TODO: use currencySpecification.name here!
+    val currencies = (conversionAmounts?.map { it.currency } ?: emptyList()).toSet() + amountRaw.currency
+    var selectedCurrency by remember {
+        mutableStateOf(defaultCurrency ?: amountRaw.currency)
+    }
+    val selectedConversion = conversionAmounts?.find {
+        (defaultCurrency ?: it.currency) == selectedCurrency
     }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (altCurrencies.isNotEmpty()) {
+        if (currencies.size > 1) {
             TransferCurrencyChooser(
-                currencies = listOf(amountRaw.currency) + altCurrencies,
+                currencies = currencies,
                 selectedCurrency = selectedCurrency,
-                onSelectedCurrency = { selectedCurrency = it }
+                onSelectedCurrency = { selectedCurrency = it },
             )
         }
 
-        selectedAccount?.transferAmount?.let { transferAmount ->
-            TransactionAmountComposable(
-                label = "Transfer",
-                amount = transferAmount,
-                amountType = AmountType.Neutral,
-            )
+        if (selectedCurrency != amountRaw.currency) {
+            selectedConversion?.let { transferAmount ->
+                TransactionAmountComposable(
+                    label = stringResource(R.string.withdraw_transfer),
+                    amount = transferAmount,
+                    amountType = AmountType.Neutral,
+                )
+            }
         }
 
         TransactionAmountComposable(
             label = if (selectedCurrency == amountRaw.currency) {
                 stringResource(R.string.amount_chosen)
             } else {
-                "Conversion"
+                stringResource(R.string.withdraw_conversion)
             },
             amount = amountRaw,
             amountType = AmountType.Neutral,
@@ -94,31 +96,34 @@ fun ConversionComposable(
                 amountType = AmountType.Negative,
             )
         }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = amountEffective,
+            amountType = AmountType.Positive,
+        )
     }
 }
 
 @Composable
 fun TransferCurrencyChooser(
     modifier: Modifier = Modifier,
-    currencies: List<String>,
+    currencies: Set<String>,
     selectedCurrency: String,
     onSelectedCurrency: (currency: String) -> Unit,
 ) {
-    if (currencies.isEmpty()) return
-    val currencyOptions: List<String> = currencies.distinct()
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-            text = "This exchange allows currency conversion.",
+            text = stringResource(R.string.withdraw_conversion_support),
             style = MaterialTheme.typography.bodyMedium,
         )
 
         LazyRow {
-            items(items = currencyOptions) { currency ->
+            items(items = currencies.toList()) { currency ->
                 SelectionChip(
                     modifier = Modifier.padding(horizontal = 4.dp),
                     label = { Text(currency) },
@@ -131,26 +136,69 @@ fun TransferCurrencyChooser(
     }
 }
 
+@Composable
+fun WithdrawalAmountTransfer(
+    amountRaw: Amount,
+    amountEffective: Amount,
+    conversionAmountRaw: Amount,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        TransactionAmountComposable(
+            label = stringResource(R.string.withdraw_transfer),
+            amount = conversionAmountRaw,
+            amountType = AmountType.Neutral,
+        )
+
+        if (amountRaw.currency != conversionAmountRaw.currency) {
+            TransactionAmountComposable(
+                label = stringResource(R.string.withdraw_conversion),
+                amount = amountRaw,
+                amountType = AmountType.Neutral,
+            )
+        }
+
+        val fee = amountRaw - amountEffective
+        if (!fee.isZero()) {
+            TransactionAmountComposable(
+                label = stringResource(id = R.string.withdraw_fees),
+                amount = fee,
+                amountType = AmountType.Negative,
+            )
+        }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = amountEffective,
+            amountType = AmountType.Positive,
+        )
+    }
+}
+
 @Preview
 @Composable
-fun ConversionComposablePreview() {
+fun WithdrawalAmountsPreview() {
     Surface {
-        ConversionComposable(
+        WithdrawalAmounts(
             amountRaw = Amount.fromJSONString("CHF:10"),
             amountEffective = Amount.fromJSONString("CHF:9.5"),
-            accounts = listOf(
-                WithdrawalExchangeAccountDetails(
-                    paytoUri = "payto://IBAN/1231231231",
-                    transferAmount = Amount.fromJSONString("NETZBON:10"),
-                    currencySpecification = CurrencySpecification(
-                        name = "NETZBON",
-                        numFractionalInputDigits = 2,
-                        numFractionalNormalDigits = 2,
-                        numFractionalTrailingZeroDigits = 2,
-                        altUnitNames = mapOf("0" to "NETZBON"),
-                    ),
-                ),
+            conversionAmounts = listOf(
+                Amount.fromJSONString("NETZBON:10"),
             ),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun WithdrawalAmountTransferPreview() {
+    Surface {
+        WithdrawalAmountTransfer(
+            amountRaw = Amount.fromJSONString("CHF:10"),
+            amountEffective = Amount.fromJSONString("CHF:9.5"),
+            conversionAmountRaw = Amount.fromJSONString("NETZBON:10"),
         )
     }
 }

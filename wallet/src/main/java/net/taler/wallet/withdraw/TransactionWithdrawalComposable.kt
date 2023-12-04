@@ -41,14 +41,12 @@ import net.taler.wallet.cleanExchange
 import net.taler.wallet.currency.CurrencySpecification
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
-import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.ErrorTransactionButton
 import net.taler.wallet.transactions.Transaction
 import net.taler.wallet.transactions.TransactionAction
 import net.taler.wallet.transactions.TransactionAction.Abort
 import net.taler.wallet.transactions.TransactionAction.Retry
 import net.taler.wallet.transactions.TransactionAction.Suspend
-import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionState
@@ -78,19 +76,15 @@ fun TransactionWithdrawalComposable(
             style = MaterialTheme.typography.bodyLarge,
         )
 
-        TransactionAmountComposable(
-            label = stringResource(id = R.string.withdraw_total),
-            amount = t.amountEffective,
-            amountType = AmountType.Positive,
-        )
-
         ActionButton(tx = t, listener = actionListener)
 
         if (t.withdrawalDetails is ManualTransfer) {
-            ConversionComposable(
+            WithdrawalAmounts(
                 amountRaw = t.amountRaw,
                 amountEffective = t.amountEffective,
-                accounts = t.withdrawalDetails.exchangeCreditAccounts,
+                conversionAmounts = t.withdrawalDetails.exchangeCreditAccounts
+                    ?.filter { it.transferAmount != null }
+                    ?.map { it.transferAmount!! }
             )
         }
 

@@ -30,13 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.withdraw.TransferData
+import net.taler.wallet.withdraw.WithdrawalAmountTransfer
 
 @Composable
 fun TransferIBAN(
-    data: TransferData.IBAN,
+    transfer: TransferData.IBAN,
     exchangeBaseUrl: String,
+    transactionAmountRaw: Amount,
+    transactionAmountEffective: Amount,
 ) {
     Column(modifier = Modifier
         .wrapContentWidth(Alignment.CenterHorizontally)
@@ -45,15 +49,14 @@ fun TransferIBAN(
         Text(
             text = stringResource(
                 R.string.withdraw_manual_ready_intro,
-                data.amountRaw.toString()),
+                transfer.amountRaw.toString()),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
 
-        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), data.iban)
-        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), data.subject)
-        DetailRow(stringResource(R.string.amount_chosen), data.amountRaw.toString())
+        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), transfer.iban)
+        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
         DetailRow(stringResource(R.string.withdraw_exchange), exchangeBaseUrl, false)
 
         Text(
@@ -66,6 +69,12 @@ fun TransferIBAN(
                 .background(colorResource(R.color.notice_background))
                 .border(BorderStroke(2.dp, colorResource(R.color.notice_border)))
                 .padding(all = 16.dp)
+        )
+
+        WithdrawalAmountTransfer(
+            amountRaw = transactionAmountRaw,
+            amountEffective = transactionAmountEffective,
+            conversionAmountRaw = transfer.amountRaw,
         )
     }
 }

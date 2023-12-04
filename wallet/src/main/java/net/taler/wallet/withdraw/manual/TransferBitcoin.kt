@@ -34,10 +34,13 @@ import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.compose.CopyToClipboardButton
 import net.taler.wallet.withdraw.TransferData
+import net.taler.wallet.withdraw.WithdrawalAmountTransfer
 
 @Composable
 fun TransferBitcoin(
-    data: TransferData.Bitcoin,
+    transfer: TransferData.Bitcoin,
+    transactionAmountRaw: Amount,
+    transactionAmountEffective: Amount,
 ) {
     Column(modifier = Modifier
         .wrapContentWidth(Alignment.CenterHorizontally)
@@ -51,9 +54,15 @@ fun TransferBitcoin(
         )
 
         BitcoinSegwitAddresses(
-            amount = data.amountRaw,
-            address = data.account,
-            segwitAddresses = data.segwitAddresses,
+            amount = transfer.amountRaw,
+            address = transfer.account,
+            segwitAddresses = transfer.segwitAddresses,
+        )
+
+        WithdrawalAmountTransfer(
+            amountRaw = transactionAmountRaw,
+            amountEffective = transactionAmountEffective,
+            conversionAmountRaw = transfer.amountRaw,
         )
     }
 }

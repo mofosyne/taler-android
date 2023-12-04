@@ -79,7 +79,7 @@ fun ScreenTransfer(
 
         if (status.withdrawalTransfers.size > 1) {
             TransferCurrencyChooser(
-                currencies = status.withdrawalTransfers.map { it.currency },
+                currencies = status.withdrawalTransfers.map { it.currency }.toSet(),
                 selectedCurrency = selectedCurrency,
                 onSelectedCurrency = { selectedCurrency = it }
             )
@@ -87,11 +87,15 @@ fun ScreenTransfer(
 
         when (selectedTransfer) {
             is TransferData.IBAN -> TransferIBAN(
-                data = selectedTransfer,
+                transfer = selectedTransfer,
                 exchangeBaseUrl = status.exchangeBaseUrl,
+                transactionAmountRaw = status.transactionAmountRaw,
+                transactionAmountEffective = status.transactionAmountEffective,
             )
             is TransferData.Bitcoin -> TransferBitcoin(
-                data = selectedTransfer,
+                transfer = selectedTransfer,
+                transactionAmountRaw = status.transactionAmountRaw,
+                transactionAmountEffective = status.transactionAmountEffective,
             )
             else -> {
                 // TODO: show some placeholder
@@ -160,6 +164,8 @@ fun ScreenTransferPreview() {
         ScreenTransfer(
             status = WithdrawStatus.ManualTransferRequired(
                 transactionId = "",
+                transactionAmountRaw = Amount.fromJSONString("KUDOS:10"),
+                transactionAmountEffective = Amount.fromJSONString("KUDOS:9.5"),
                 exchangeBaseUrl = "test.exchange.taler.net",
                 withdrawalTransfers = listOf(
                     TransferData.IBAN(
