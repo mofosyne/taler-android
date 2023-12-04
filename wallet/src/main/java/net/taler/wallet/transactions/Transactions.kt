@@ -42,6 +42,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.currency.CurrencySpecification
 import net.taler.wallet.refund.RefundPaymentInfo
 import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
@@ -222,6 +223,13 @@ data class WithdrawalExchangeAccountDetails (
      * Redundant with the amount in paytoUri, just included to avoid parsing.
      */
     val transferAmount: Amount? = null,
+
+    /**
+     * Currency specification for the external currency.
+     *
+     * Only included if this account requires a currency conversion.
+     */
+    val currencySpecification: CurrencySpecification? = null,
 
     /**
      * Further restrictions for sending money to the

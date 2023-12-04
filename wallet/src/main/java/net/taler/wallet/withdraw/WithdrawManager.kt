@@ -38,6 +38,7 @@ import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 
 sealed class WithdrawStatus {
     data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
+
     data class NeedsExchange(val exchangeSelection: Event<ExchangeSelection>) : WithdrawStatus()
 
     data class TosReviewRequired(
@@ -63,33 +64,43 @@ sealed class WithdrawStatus {
         val ageRestrictionOptions: List<Int>? = null,
     ) : WithdrawStatus()
 
-    object Withdrawing : WithdrawStatus()
+    data object Withdrawing : WithdrawStatus()
+
     data class Success(val currency: String, val transactionId: String) : WithdrawStatus()
-    sealed class ManualTransferRequired : WithdrawStatus() {
-        abstract val uri: Uri
-        abstract val transactionId: String?
-    }
 
-    data class ManualTransferRequiredIBAN(
+    class ManualTransferRequired(
+        val transactionId: String?,
         val exchangeBaseUrl: String,
-        override val uri: Uri,
-        val iban: String,
-        val subject: String,
-        val amountRaw: Amount,
-        override val transactionId: String?,
-    ) : ManualTransferRequired()
-
-    data class ManualTransferRequiredBitcoin(
-        val exchangeBaseUrl: String,
-        override val uri: Uri,
-        val account: String,
-        val segwitAddrs: List<String>,
-        val subject: String,
-        val amountRaw: Amount,
-        override val transactionId: String?,
-    ) : ManualTransferRequired()
+        val withdrawalTransfers: List<TransferData>,
+    ) : WithdrawStatus()
 
     data class Error(val message: String?) : WithdrawStatus()
+}
+
+sealed class TransferData {
+    abstract val uri: Uri
+    abstract val subject: String
+    abstract val amountRaw: Amount
+    abstract val amountEffective: Amount
+
+    val currency get() = amountRaw.currency
+
+    data class IBAN(
+        override val uri: Uri,
+        override val subject: String,
+        override val amountRaw: Amount,
+        override val amountEffective: Amount,
+        val iban: String,
+    ): TransferData()
+
+    data class Bitcoin(
+        override val uri: Uri,
+        override val subject: String,
+        override val amountRaw: Amount,
+        override val amountEffective: Amount,
+        val account: String,
+        val segwitAddresses: List<String>,
+    ): TransferData()
 }
 
 sealed class WithdrawTestStatus {
@@ -290,10 +301,8 @@ class WithdrawManager(
             handleError("acceptManualWithdrawal", it)
         }.onSuccess { response ->
             withdrawStatus.value = createManualTransferRequired(
-                amount = status.amountRaw,
-                exchangeBaseUrl = status.exchangeBaseUrl,
-                // TODO what if there's more than one or no URI?
-                uriStr = response.withdrawalAccountsList[0].paytoUri,
+                status = status,
+                response = response,
             )
         }
     }
@@ -316,33 +325,46 @@ class WithdrawManager(
 }
 
 fun createManualTransferRequired(
-    amount: Amount,
+    transactionId: String,
     exchangeBaseUrl: String,
-    uriStr: String,
-    transactionId: String? = null,
-): WithdrawStatus.ManualTransferRequired {
-    val uri = Uri.parse(uriStr.replace("receiver-name=", "receiver_name="))
-    if ("bitcoin".equals(uri.authority, true)) {
-        val msg = uri.getQueryParameter("message").orEmpty()
-        val reg = "\\b([A-Z0-9]{52})\\b".toRegex().find(msg)
-        val reserve = reg?.value ?: uri.getQueryParameter("subject")!!
-        val segwitAddrs = Bech32.generateFakeSegwitAddress(reserve, uri.pathSegments.first())
-        return WithdrawStatus.ManualTransferRequiredBitcoin(
-            exchangeBaseUrl = exchangeBaseUrl,
+    amountRaw: Amount,
+    amountEffective: Amount,
+    withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
+) = WithdrawStatus.ManualTransferRequired(
+    transactionId = transactionId,
+    exchangeBaseUrl = exchangeBaseUrl,
+    withdrawalTransfers = withdrawalAccountList.map {
+        val uri = Uri.parse(it.paytoUri.replace("receiver-name=", "receiver_name="))
+        if ("bitcoin".equals(uri.authority, true)) {
+            val msg = uri.getQueryParameter("message").orEmpty()
+            val reg = "\\b([A-Z0-9]{52})\\b".toRegex().find(msg)
+            val reserve = reg?.value ?: uri.getQueryParameter("subject")!!
+            val segwitAddresses = Bech32.generateFakeSegwitAddress(reserve, uri.pathSegments.first())
+            TransferData.Bitcoin(
+                uri = uri,
+                account = uri.lastPathSegment!!,
+                segwitAddresses = segwitAddresses,
+                subject = reserve,
+                amountRaw = amountRaw,
+                amountEffective = amountEffective,
+            )
+        } else TransferData.IBAN(
             uri = uri,
-            account = uri.lastPathSegment!!,
-            segwitAddrs = segwitAddrs,
-            subject = reserve,
-            amountRaw = amount,
-            transactionId = transactionId,
+            iban = uri.lastPathSegment!!,
+            subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
+            amountRaw = amountRaw,
+            amountEffective = amountEffective,
         )
-    }
-    return WithdrawStatus.ManualTransferRequiredIBAN(
-        exchangeBaseUrl = exchangeBaseUrl,
-        uri = uri,
-        iban = uri.lastPathSegment!!,
-        subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
-        amountRaw = amount,
-        transactionId = transactionId,
-    )
-}
+    },
+)
+
+fun createManualTransferRequired(
+    status: ReceivedDetails,
+    response: AcceptManualWithdrawalResponse,
+): WithdrawStatus.ManualTransferRequired = createManualTransferRequired(
+    transactionId = response.transactionId,
+    exchangeBaseUrl = status.exchangeBaseUrl,
+    amountRaw = status.amountRaw,
+    amountEffective = status.amountEffective,
+    withdrawalAccountList = response.withdrawalAccountsList,
+)

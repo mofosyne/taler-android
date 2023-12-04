@@ -1,6 +1,6 @@
 /*
  * This file is part of GNU Taler
- * (C) 2022 Taler Systems S.A.
+ * (C) 2023 Taler Systems S.A.
  *
  * GNU Taler is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -17,15 +17,13 @@
 package net.taler.wallet.withdraw.manual
 
 import android.net.Uri
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -33,78 +31,89 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
+import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
 import net.taler.wallet.compose.copyToClipBoard
+import net.taler.wallet.withdraw.TransferCurrencyChooser
+import net.taler.wallet.withdraw.TransferData
 import net.taler.wallet.withdraw.WithdrawStatus
 
 @Composable
-fun ScreenIBAN(
-    status: WithdrawStatus.ManualTransferRequiredIBAN,
-    bankAppClick: (() -> Unit)?,
+fun ScreenTransfer(
+    status: WithdrawStatus.ManualTransferRequired,
+    bankAppClick: ((transfer: TransferData) -> Unit)?,
     onCancelClick: (() -> Unit)?,
 ) {
+    // TODO: show some placeholder
+    if (status.withdrawalTransfers.isEmpty()) return
+
     val scrollState = rememberScrollState()
-    Column(modifier = Modifier
-        .wrapContentWidth(Alignment.CenterHorizontally)
-        .verticalScroll(scrollState)
-        .padding(all = 16.dp)
+    Column(
+        modifier = Modifier
+            .verticalScroll(scrollState)
+            .padding(all = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = stringResource(R.string.withdraw_manual_ready_title),
             style = MaterialTheme.typography.headlineSmall,
         )
-        Text(
-            text = stringResource(R.string.withdraw_manual_ready_intro,
-                status.amountRaw.toString()),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-        DetailRow(stringResource(R.string.withdraw_manual_ready_iban), status.iban)
-        DetailRow(stringResource(R.string.withdraw_manual_ready_subject), status.subject)
-        DetailRow(stringResource(R.string.amount_chosen), status.amountRaw.toString())
-        DetailRow(stringResource(R.string.withdraw_exchange), status.exchangeBaseUrl, false)
-        Text(
-            text = stringResource(R.string.withdraw_manual_ready_warning),
-            style = MaterialTheme.typography.bodyMedium,
-            color = colorResource(R.color.notice_text),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(all = 8.dp)
-                .background(colorResource(R.color.notice_background))
-                .border(BorderStroke(2.dp, colorResource(R.color.notice_border)))
-                .padding(all = 16.dp)
-        )
-        if (bankAppClick != null) {
+
+        val defaultCurrency = status.withdrawalTransfers[0].currency
+        var selectedCurrency by remember { mutableStateOf(defaultCurrency) }
+        val selectedTransfer = status.withdrawalTransfers.firstOrNull { it.currency == selectedCurrency }
+
+        if (status.withdrawalTransfers.size > 1) {
+            TransferCurrencyChooser(
+                currencies = status.withdrawalTransfers.map { it.currency },
+                selectedCurrency = selectedCurrency,
+                onSelectedCurrency = { selectedCurrency = it }
+            )
+        }
+
+        when (selectedTransfer) {
+            is TransferData.IBAN -> TransferIBAN(
+                data = selectedTransfer,
+                exchangeBaseUrl = status.exchangeBaseUrl,
+            )
+            is TransferData.Bitcoin -> TransferBitcoin(
+                data = selectedTransfer,
+            )
+            else -> {
+                // TODO: show some placeholder
+            }
+        }
+
+        if (bankAppClick != null && selectedTransfer != null) {
             Button(
-                onClick = bankAppClick,
+                onClick = { bankAppClick(selectedTransfer) },
                 modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .align(Alignment.CenterHorizontally),
+                    .padding(top = 16.dp)
             ) {
                 Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
             }
         }
+
         if (onCancelClick != null) {
             Button(
                 onClick = onCancelClick,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
-                    .align(Alignment.End),
             ) {
                 Text(
                     text = stringResource(R.string.withdraw_manual_ready_cancel),
@@ -146,15 +155,35 @@ fun DetailRow(label: String, content: String, copy: Boolean = true) {
 
 @Preview
 @Composable
-fun PreviewScreenIBAN() {
+fun ScreenTransferPreview() {
     Surface {
-        ScreenIBAN(WithdrawStatus.ManualTransferRequiredIBAN(
-            exchangeBaseUrl = "test.exchange.taler.net",
-            uri = Uri.parse("https://taler.net"),
-            iban = "ASDQWEASDZXCASDQWE",
-            subject = "Taler Withdrawal P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG",
-            amountRaw = Amount("KUDOS", 10, 0),
-            transactionId = "",
-        ), {}) {}
+        ScreenTransfer(
+            status = WithdrawStatus.ManualTransferRequired(
+                transactionId = "",
+                exchangeBaseUrl = "test.exchange.taler.net",
+                withdrawalTransfers = listOf(
+                    TransferData.IBAN(
+                        uri = Uri.parse("https://taler.net"),
+                        iban = "ASDQWEASDZXCASDQWE",
+                        subject = "Taler Withdrawal P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG",
+                        amountRaw = Amount("KUDOS", 10, 0),
+                        amountEffective = Amount("KUDOS", 9, 5),
+                    ),
+                    TransferData.Bitcoin(
+                        uri = Uri.parse("https://taler.net"),
+                        account = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+                        segwitAddresses = listOf(
+                            "bc1qqleages8702xvg9qcyu02yclst24xurdrynvxq",
+                            "bc1qsleagehks96u7jmqrzcf0fw80ea5g57qm3m84c"
+                        ),
+                        subject = "0ZSX8SH0M30KHX8K3Y1DAMVGDQV82XEF9DG1HC4QMQ3QWYT4AF00",
+                        amountRaw = Amount(CURRENCY_BTC, 0, 14000000),
+                        amountEffective = Amount(CURRENCY_BTC, 0, 14000000),
+                    )
+                ),
+            ),
+            bankAppClick = {},
+            onCancelClick = {},
+        )
     }
 }

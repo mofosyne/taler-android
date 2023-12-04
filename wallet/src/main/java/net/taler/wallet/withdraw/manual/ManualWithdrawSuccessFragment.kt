@@ -32,47 +32,49 @@ import net.taler.wallet.R
 import net.taler.wallet.TAG
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.showError
+import net.taler.wallet.withdraw.TransferData
 import net.taler.wallet.withdraw.WithdrawStatus
 
 class ManualWithdrawSuccessFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
     private val withdrawManager by lazy { model.withdrawManager }
+
+    private lateinit var status: WithdrawStatus.ManualTransferRequired
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
-        val status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
-        val intent = Intent().apply {
-            data = status.uri
-        }
-        // TODO test if this works with an actual payto:// handling app
-        val componentName = intent.resolveActivity(requireContext().packageManager)
-        val onBankAppClick = if (componentName == null) null else {
-            { requireContext().startActivitySafe(intent) }
-        }
-        val tid = status.transactionId
-        val onCancelClick = if (tid == null) null else {
-            {
-                transactionManager.deleteTransaction(tid) {
-                    Log.e(TAG, "Error deleteTransaction $it")
-                    showError(it)
-                }
-                findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
-            }
-        }
+        status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
+
         setContent {
             TalerSurface {
-                when (status) {
-                    is WithdrawStatus.ManualTransferRequiredBitcoin -> {
-                        ScreenBitcoin(status, onBankAppClick, onCancelClick)
-                    }
-
-                    is WithdrawStatus.ManualTransferRequiredIBAN -> {
-                        ScreenIBAN(status, onBankAppClick, onCancelClick)
-                    }
-                }
+                ScreenTransfer(
+                    status = status,
+                    bankAppClick = { onBankAppClick(it) },
+                    onCancelClick = { onCancelClick() },
+                )
             }
+        }
+    }
+
+    private fun onBankAppClick(transfer: TransferData) {
+        val intent = Intent().apply { data = transfer.uri }
+        val componentName = intent.resolveActivity(requireContext().packageManager)
+        if (componentName != null) {
+            requireContext().startActivitySafe(intent)
+        }
+    }
+
+    private fun onCancelClick() {
+        status.transactionId?.let { tid ->
+            transactionManager.deleteTransaction(tid) {
+                Log.e(TAG, "Error deleteTransaction $it")
+                showError(it)
+            }
+
+            findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
         }
     }
 
