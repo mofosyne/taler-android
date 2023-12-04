@@ -21,7 +21,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.withdraw.TransferData
 
 @Composable
@@ -41,9 +41,9 @@ fun TransferIBAN(
     transactionAmountRaw: Amount,
     transactionAmountEffective: Amount,
 ) {
-    Column(modifier = Modifier
-        .wrapContentWidth(Alignment.CenterHorizontally)
-        .padding(all = 16.dp)
+    Column(
+        modifier = Modifier.padding(all = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = stringResource(
@@ -68,7 +68,11 @@ fun TransferIBAN(
 
         DetailRow(stringResource(R.string.withdraw_manual_ready_iban), transfer.iban)
         DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
-        DetailRow(stringResource(R.string.withdraw_exchange), exchangeBaseUrl, false)
+
+        TransactionInfoComposable(
+            label = stringResource(R.string.withdraw_exchange),
+            info = exchangeBaseUrl,
+        )
 
         WithdrawalAmountTransfer(
             amountRaw = transactionAmountRaw,

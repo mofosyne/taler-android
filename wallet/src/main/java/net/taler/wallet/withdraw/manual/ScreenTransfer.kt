@@ -29,7 +29,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +51,8 @@ import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
 import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.currency.CurrencySpecification
+import net.taler.wallet.transactions.AmountType
+import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 import net.taler.wallet.withdraw.TransferData
 import net.taler.wallet.withdraw.WithdrawStatus
@@ -62,21 +66,10 @@ fun ScreenTransfer(
     // TODO: show some placeholder
     if (status.withdrawalTransfers.isEmpty()) return
 
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .verticalScroll(scrollState)
-            .padding(all = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.withdraw_manual_ready_title),
-            style = MaterialTheme.typography.headlineSmall,
-        )
+    val defaultTransfer = status.withdrawalTransfers[0]
+    var selectedTransfer by remember { mutableStateOf(defaultTransfer) }
 
-        val defaultTransfer = status.withdrawalTransfers[0]
-        var selectedTransfer by remember { mutableStateOf(defaultTransfer) }
-
+    Column {
         if (status.withdrawalTransfers.size > 1) {
             TransferAccountChooser(
                 accounts = status.withdrawalTransfers.map { it.withdrawalAccount },
@@ -89,41 +82,55 @@ fun ScreenTransfer(
             )
         }
 
-        when (val transfer = selectedTransfer) {
-            is TransferData.IBAN -> TransferIBAN(
-                transfer = transfer,
-                exchangeBaseUrl = status.exchangeBaseUrl,
-                transactionAmountRaw = status.transactionAmountRaw,
-                transactionAmountEffective = status.transactionAmountEffective,
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(all = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(R.string.withdraw_manual_ready_title),
+                style = MaterialTheme.typography.headlineSmall,
             )
-            is TransferData.Bitcoin -> TransferBitcoin(
-                transfer = transfer,
-                transactionAmountRaw = status.transactionAmountRaw,
-                transactionAmountEffective = status.transactionAmountEffective,
-            )
-        }
 
-        if (bankAppClick != null) {
-            Button(
-                onClick = { bankAppClick(selectedTransfer) },
-                modifier = Modifier
-                    .padding(top = 16.dp)
-            ) {
-                Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
-            }
-        }
-
-        if (onCancelClick != null) {
-            Button(
-                onClick = onCancelClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.withdraw_manual_ready_cancel),
-                    color = MaterialTheme.colorScheme.onError,
+            when (val transfer = selectedTransfer) {
+                is TransferData.IBAN -> TransferIBAN(
+                    transfer = transfer,
+                    exchangeBaseUrl = status.exchangeBaseUrl,
+                    transactionAmountRaw = status.transactionAmountRaw,
+                    transactionAmountEffective = status.transactionAmountEffective,
                 )
+
+                is TransferData.Bitcoin -> TransferBitcoin(
+                    transfer = transfer,
+                    transactionAmountRaw = status.transactionAmountRaw,
+                    transactionAmountEffective = status.transactionAmountEffective,
+                )
+            }
+
+            if (bankAppClick != null) {
+                Button(
+                    onClick = { bankAppClick(selectedTransfer) },
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                ) {
+                    Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
+                }
+            }
+
+            if (onCancelClick != null) {
+                Button(
+                    onClick = onCancelClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.withdraw_manual_ready_cancel),
+                        color = MaterialTheme.colorScheme.onError,
+                    )
+                }
             }
         }
     }
@@ -169,6 +176,86 @@ fun DetailRow(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun WithdrawalAmountTransfer(
+    amountRaw: Amount,
+    amountEffective: Amount,
+    conversionAmountRaw: Amount,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        TransactionAmountComposable(
+            label = stringResource(R.string.withdraw_transfer),
+            amount = conversionAmountRaw,
+            amountType = AmountType.Neutral,
+        )
+
+        if (amountRaw.currency != conversionAmountRaw.currency) {
+            TransactionAmountComposable(
+                label = stringResource(R.string.withdraw_conversion),
+                amount = amountRaw,
+                amountType = AmountType.Neutral,
+            )
+        }
+
+        val fee = amountRaw - amountEffective
+        if (!fee.isZero()) {
+            TransactionAmountComposable(
+                label = stringResource(id = R.string.withdraw_fees),
+                amount = fee,
+                amountType = AmountType.Negative,
+            )
+        }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = amountEffective,
+            amountType = AmountType.Positive,
+        )
+    }
+}
+
+@Composable
+fun TransferAccountChooser(
+    modifier: Modifier = Modifier,
+    accounts: List<WithdrawalExchangeAccountDetails>,
+    selectedAccount: WithdrawalExchangeAccountDetails,
+    onSelectAccount: (account: WithdrawalExchangeAccountDetails) -> Unit,
+) {
+    val selectedIndex = accounts.indexOfFirst {
+        it.paytoUri == selectedAccount.paytoUri
+    }
+
+    ScrollableTabRow(
+        selectedTabIndex = selectedIndex,
+        modifier = modifier,
+    ) {
+        accounts.forEachIndexed { index, account ->
+            Tab(
+                selected = selectedAccount.paytoUri == account.paytoUri,
+                onClick = { onSelectAccount(account) },
+                text = {
+                    if (account.currencySpecification?.name != null) {
+                        Text(stringResource(
+                            R.string.withdraw_account_currency,
+                            index + 1,
+                            account.currencySpecification.name,
+                        ))
+                    } else if (account.transferAmount?.currency != null) {
+                        Text(stringResource(
+                            R.string.withdraw_account_currency,
+                            index + 1,
+                            account.transferAmount.currency,
+                        ))
+                    } else Text(stringResource(R.string.withdraw_account, index + 1))
+                },
+            )
         }
     }
 }
