@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -48,6 +49,12 @@ class ManualWithdrawSuccessFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
         status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
+
+        if (status.withdrawalTransfers.size > 1) {
+            (requireActivity() as AppCompatActivity)
+                .supportActionBar
+                ?.subtitle = getString(R.string.withdraw_subtitle)
+        }
 
         setContent {
             TalerSurface {

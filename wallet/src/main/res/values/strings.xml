@@ -188,6 +188,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="withdraw_initiated">Withdrawal initiated</string>
     <string name="withdraw_title">Withdrawal</string>
+    <string name="withdraw_subtitle">Select target bank account</string>
     <string name="withdraw_total">Withdraw</string>
     <string name="withdraw_fees">Fee</string>
     <string name="withdraw_restrict_age">Restrict Usage to Age</string>
