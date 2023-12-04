@@ -80,26 +80,26 @@ sealed class WithdrawStatus {
 }
 
 sealed class TransferData {
-    abstract val uri: Uri
     abstract val subject: String
     abstract val amountRaw: Amount
     abstract val amountEffective: Amount
+    abstract val withdrawalAccount: WithdrawalExchangeAccountDetails
 
-    val currency get() = amountRaw.currency
+    val currency get() = withdrawalAccount.transferAmount?.currency
 
     data class IBAN(
-        override val uri: Uri,
         override val subject: String,
         override val amountRaw: Amount,
         override val amountEffective: Amount,
+        override val withdrawalAccount: WithdrawalExchangeAccountDetails,
         val iban: String,
     ): TransferData()
 
     data class Bitcoin(
-        override val uri: Uri,
         override val subject: String,
         override val amountRaw: Amount,
         override val amountEffective: Amount,
+        override val withdrawalAccount: WithdrawalExchangeAccountDetails,
         val account: String,
         val segwitAddresses: List<String>,
     ): TransferData()
@@ -345,19 +345,19 @@ fun createManualTransferRequired(
             val reserve = reg?.value ?: uri.getQueryParameter("subject")!!
             val segwitAddresses = Bech32.generateFakeSegwitAddress(reserve, uri.pathSegments.first())
             TransferData.Bitcoin(
-                uri = uri,
                 account = uri.lastPathSegment!!,
                 segwitAddresses = segwitAddresses,
                 subject = reserve,
                 amountRaw = amountRaw,
                 amountEffective = amountEffective,
+                withdrawalAccount = it.copy(paytoUri = uri.toString())
             )
         } else TransferData.IBAN(
-            uri = uri,
             iban = uri.lastPathSegment!!,
             subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
             amountRaw = amountRaw,
             amountEffective = amountEffective,
+            withdrawalAccount = it.copy(paytoUri = uri.toString())
         )
     },
 )

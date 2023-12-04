@@ -17,6 +17,7 @@
 package net.taler.wallet.withdraw.manual
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -60,7 +61,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
     }
 
     private fun onBankAppClick(transfer: TransferData) {
-        val intent = Intent().apply { data = transfer.uri }
+        val intent = Intent().apply { data = Uri.parse(transfer.withdrawalAccount.paytoUri) }
         val componentName = intent.resolveActivity(requireContext().packageManager)
         if (componentName != null) {
             requireContext().startActivitySafe(intent)

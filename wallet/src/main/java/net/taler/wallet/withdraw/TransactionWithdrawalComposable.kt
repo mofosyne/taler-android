@@ -41,12 +41,14 @@ import net.taler.wallet.cleanExchange
 import net.taler.wallet.currency.CurrencySpecification
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
+import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.ErrorTransactionButton
 import net.taler.wallet.transactions.Transaction
 import net.taler.wallet.transactions.TransactionAction
 import net.taler.wallet.transactions.TransactionAction.Abort
 import net.taler.wallet.transactions.TransactionAction.Retry
 import net.taler.wallet.transactions.TransactionAction.Suspend
+import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
 import net.taler.wallet.transactions.TransactionState
@@ -78,15 +80,26 @@ fun TransactionWithdrawalComposable(
 
         ActionButton(tx = t, listener = actionListener)
 
-        if (t.withdrawalDetails is ManualTransfer) {
-            WithdrawalAmounts(
-                amountRaw = t.amountRaw,
-                amountEffective = t.amountEffective,
-                conversionAmounts = t.withdrawalDetails.exchangeCreditAccounts
-                    ?.filter { it.transferAmount != null }
-                    ?.map { it.transferAmount!! }
+        TransactionAmountComposable(
+            label = stringResource(R.string.amount_chosen),
+            amount = t.amountRaw,
+            amountType = AmountType.Neutral,
+        )
+
+        val fee = t.amountRaw - t.amountEffective
+        if (!fee.isZero()) {
+            TransactionAmountComposable(
+                label = stringResource(id = R.string.withdraw_fees),
+                amount = fee,
+                amountType = AmountType.Negative,
             )
         }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = t.amountEffective,
+            amountType = AmountType.Positive,
+        )
 
         TransactionInfoComposable(
             label = stringResource(id = R.string.withdraw_exchange),

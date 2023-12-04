@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.withdraw.TransferData
-import net.taler.wallet.withdraw.WithdrawalAmountTransfer
 
 @Composable
 fun TransferIBAN(

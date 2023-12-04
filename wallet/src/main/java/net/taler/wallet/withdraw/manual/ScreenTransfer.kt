@@ -16,7 +16,6 @@
 
 package net.taler.wallet.withdraw.manual
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -48,7 +47,8 @@ import net.taler.common.Amount
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
 import net.taler.wallet.compose.copyToClipBoard
-import net.taler.wallet.withdraw.TransferCurrencyChooser
+import net.taler.wallet.currency.CurrencySpecification
+import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 import net.taler.wallet.withdraw.TransferData
 import net.taler.wallet.withdraw.WithdrawStatus
 
@@ -73,36 +73,36 @@ fun ScreenTransfer(
             style = MaterialTheme.typography.headlineSmall,
         )
 
-        val defaultCurrency = status.withdrawalTransfers[0].currency
-        var selectedCurrency by remember { mutableStateOf(defaultCurrency) }
-        val selectedTransfer = status.withdrawalTransfers.firstOrNull { it.currency == selectedCurrency }
+        val defaultTransfer = status.withdrawalTransfers[0]
+        var selectedTransfer by remember { mutableStateOf(defaultTransfer) }
 
         if (status.withdrawalTransfers.size > 1) {
-            TransferCurrencyChooser(
-                currencies = status.withdrawalTransfers.map { it.currency }.toSet(),
-                selectedCurrency = selectedCurrency,
-                onSelectedCurrency = { selectedCurrency = it }
+            TransferAccountChooser(
+                accounts = status.withdrawalTransfers.map { it.withdrawalAccount },
+                selectedAccount = selectedTransfer.withdrawalAccount,
+                onSelectAccount = { account ->
+                    status.withdrawalTransfers.find {
+                        it.withdrawalAccount.paytoUri == account.paytoUri
+                    }?.let { selectedTransfer = it }
+                }
             )
         }
 
-        when (selectedTransfer) {
+        when (val transfer = selectedTransfer) {
             is TransferData.IBAN -> TransferIBAN(
-                transfer = selectedTransfer,
+                transfer = transfer,
                 exchangeBaseUrl = status.exchangeBaseUrl,
                 transactionAmountRaw = status.transactionAmountRaw,
                 transactionAmountEffective = status.transactionAmountEffective,
             )
             is TransferData.Bitcoin -> TransferBitcoin(
-                transfer = selectedTransfer,
+                transfer = transfer,
                 transactionAmountRaw = status.transactionAmountRaw,
                 transactionAmountEffective = status.transactionAmountEffective,
             )
-            else -> {
-                // TODO: show some placeholder
-            }
         }
 
-        if (bankAppClick != null && selectedTransfer != null) {
+        if (bankAppClick != null) {
             Button(
                 onClick = { bankAppClick(selectedTransfer) },
                 modifier = Modifier
@@ -169,14 +169,23 @@ fun ScreenTransferPreview() {
                 exchangeBaseUrl = "test.exchange.taler.net",
                 withdrawalTransfers = listOf(
                     TransferData.IBAN(
-                        uri = Uri.parse("https://taler.net"),
                         iban = "ASDQWEASDZXCASDQWE",
                         subject = "Taler Withdrawal P2T19EXRBY4B145JRNZ8CQTD7TCS03JE9VZRCEVKVWCP930P56WG",
                         amountRaw = Amount("KUDOS", 10, 0),
                         amountEffective = Amount("KUDOS", 9, 5),
+                        withdrawalAccount = WithdrawalExchangeAccountDetails(
+                            paytoUri = "https://taler.net/kudos",
+                            transferAmount = Amount("KUDOS", 10, 0),
+                            currencySpecification = CurrencySpecification(
+                                "KUDOS",
+                                numFractionalInputDigits = 2,
+                                numFractionalNormalDigits = 2,
+                                numFractionalTrailingZeroDigits = 2,
+                                altUnitNames = emptyMap(),
+                            ),
+                        ),
                     ),
                     TransferData.Bitcoin(
-                        uri = Uri.parse("https://taler.net"),
                         account = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
                         segwitAddresses = listOf(
                             "bc1qqleages8702xvg9qcyu02yclst24xurdrynvxq",
@@ -185,6 +194,17 @@ fun ScreenTransferPreview() {
                         subject = "0ZSX8SH0M30KHX8K3Y1DAMVGDQV82XEF9DG1HC4QMQ3QWYT4AF00",
                         amountRaw = Amount(CURRENCY_BTC, 0, 14000000),
                         amountEffective = Amount(CURRENCY_BTC, 0, 14000000),
+                        withdrawalAccount = WithdrawalExchangeAccountDetails(
+                            paytoUri = "https://taler.net/btc",
+                            transferAmount = Amount("BTC", 0, 14000000),
+                            currencySpecification = CurrencySpecification(
+                                "Bitcoin",
+                                numFractionalInputDigits = 2,
+                                numFractionalNormalDigits = 2,
+                                numFractionalTrailingZeroDigits = 2,
+                                altUnitNames = emptyMap(),
+                            ),
+                        ),
                     )
                 ),
             ),

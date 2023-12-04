@@ -215,6 +215,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_error_title">Withdrawal Error</string>
     <string name="withdraw_error_message">Withdrawing is currently not possible. Please try again later!</string>
     <string name="withdraw_error_test">Error withdrawing TESTKUDOS</string>
+    <string name="withdraw_account">Account #%1$d</string>
+    <string name="withdraw_account_currency">Account #%1$d (%2$s)</string>
     <string name="withdraw_transfer">Transfer</string>
     <string name="withdraw_conversion">Conversion</string>
     <string name="withdraw_conversion_support">This exchange supports currency conversion</string>
