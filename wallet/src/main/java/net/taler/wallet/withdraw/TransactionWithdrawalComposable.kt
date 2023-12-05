@@ -38,6 +38,7 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.balances.CurrencySpecification
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
 import net.taler.wallet.transactions.AmountType
@@ -54,6 +55,7 @@ import net.taler.wallet.transactions.TransactionState
 import net.taler.wallet.transactions.TransactionWithdrawal
 import net.taler.wallet.transactions.TransitionsComposable
 import net.taler.wallet.transactions.WithdrawalDetails.ManualTransfer
+import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 
 @Composable
 fun TransactionWithdrawalComposable(
@@ -75,17 +77,15 @@ fun TransactionWithdrawalComposable(
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
             style = MaterialTheme.typography.bodyLarge,
         )
-        TransactionAmountComposable(
-            label = stringResource(id = R.string.withdraw_total),
-            amount = t.amountEffective,
-            amountType = AmountType.Positive,
-        )
+
         ActionButton(tx = t, listener = actionListener)
+
         TransactionAmountComposable(
-            label = stringResource(id = R.string.amount_chosen),
+            label = stringResource(R.string.amount_chosen),
             amount = t.amountRaw,
             amountType = AmountType.Neutral,
         )
+
         val fee = t.amountRaw - t.amountEffective
         if (!fee.isZero()) {
             TransactionAmountComposable(
@@ -94,11 +94,20 @@ fun TransactionWithdrawalComposable(
                 amountType = AmountType.Negative,
             )
         }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.withdraw_total),
+            amount = t.amountEffective,
+            amountType = AmountType.Positive,
+        )
+
         TransactionInfoComposable(
             label = stringResource(id = R.string.withdraw_exchange),
             info = cleanExchange(t.exchangeBaseUrl),
         )
+        
         TransitionsComposable(t, devMode, onTransition)
+
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)
         }
@@ -114,15 +123,30 @@ fun TransactionWithdrawalComposablePreview() {
         txState = TransactionState(Pending),
         txActions = listOf(Retry, Suspend, Abort),
         exchangeBaseUrl = "https://exchange.demo.taler.net/",
-        withdrawalDetails = ManualTransfer(exchangePaytoUris = emptyList()),
+        withdrawalDetails = ManualTransfer(
+            exchangeCreditAccountDetails = listOf(
+                WithdrawalExchangeAccountDetails(
+                    paytoUri = "payto://IBAN/1231231231",
+                    transferAmount = Amount.fromJSONString("NETZBON:42.23"),
+                    currencySpecification = CurrencySpecification(
+                        name = "NETZBON",
+                        numFractionalInputDigits = 2,
+                        numFractionalNormalDigits = 2,
+                        numFractionalTrailingZeroDigits = 2,
+                        altUnitNames = mapOf("0" to "NETZBON"),
+                    ),
+                ),
+            ),
+        ),
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
         amountEffective = Amount.fromString("TESTKUDOS", "42.1337"),
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
+
     val listener = object : ActionListener {
-        override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {
-        }
+        override fun onActionButtonClicked(tx: Transaction, type: ActionListener.Type) {}
     }
+
     Surface {
         TransactionWithdrawalComposable(t, true, listener) {}
     }

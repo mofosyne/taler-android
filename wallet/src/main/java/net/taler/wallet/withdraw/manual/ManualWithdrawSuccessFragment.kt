@@ -17,11 +17,12 @@
 package net.taler.wallet.withdraw.manual
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,50 +30,54 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.startActivitySafe
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.TAG
 import net.taler.wallet.compose.TalerSurface
-import net.taler.wallet.showError
+import net.taler.wallet.withdraw.TransferData
 import net.taler.wallet.withdraw.WithdrawStatus
 
 class ManualWithdrawSuccessFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
-    private val transactionManager by lazy { model.transactionManager }
     private val withdrawManager by lazy { model.withdrawManager }
+
+    private lateinit var status: WithdrawStatus.ManualTransferRequired
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = ComposeView(requireContext()).apply {
-        val status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
-        val intent = Intent().apply {
-            data = status.uri
-        }
-        // TODO test if this works with an actual payto:// handling app
-        val componentName = intent.resolveActivity(requireContext().packageManager)
-        val onBankAppClick = if (componentName == null) null else {
-            { requireContext().startActivitySafe(intent) }
-        }
-        val tid = status.transactionId
-        val onCancelClick = if (tid == null) null else {
-            {
-                transactionManager.deleteTransaction(tid) {
-                    Log.e(TAG, "Error deleteTransaction $it")
-                    showError(it)
+        status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
+
+        // Set action bar subtitle and unset on exit
+        if (status.withdrawalTransfers.size > 1) {
+            val activity = requireActivity() as AppCompatActivity
+
+            activity.apply {
+                supportActionBar?.subtitle = getString(R.string.withdraw_subtitle)
+            }
+
+            findNavController().addOnDestinationChangedListener { controller, destination, args ->
+                if (destination.id != R.id.nav_exchange_manual_withdrawal_success) {
+                    activity.apply {
+                        supportActionBar?.subtitle = null
+                    }
                 }
-                findNavController().navigate(R.id.action_nav_exchange_manual_withdrawal_success_to_nav_main)
             }
         }
+
         setContent {
             TalerSurface {
-                when (status) {
-                    is WithdrawStatus.ManualTransferRequiredBitcoin -> {
-                        ScreenBitcoin(status, onBankAppClick, onCancelClick)
-                    }
-
-                    is WithdrawStatus.ManualTransferRequiredIBAN -> {
-                        ScreenIBAN(status, onBankAppClick, onCancelClick)
-                    }
-                }
+                ScreenTransfer(
+                    status = status,
+                    bankAppClick = { onBankAppClick(it) },
+                )
             }
+        }
+    }
+
+    private fun onBankAppClick(transfer: TransferData) {
+        val intent = Intent().apply { data = Uri.parse(transfer.withdrawalAccount.paytoUri) }
+        val componentName = intent.resolveActivity(requireContext().packageManager)
+        if (componentName != null) {
+            requireContext().startActivitySafe(intent)
         }
     }
 

@@ -77,13 +77,13 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
             ActionListener.Type.CONFIRM_MANUAL -> {
                 if (tx !is TransactionWithdrawal) return
                 if (tx.withdrawalDetails !is ManualTransfer) return
-                // TODO what if there's more than one or no URI?
-                if (tx.withdrawalDetails.exchangePaytoUris.isEmpty()) return
+                if (tx.withdrawalDetails.exchangeCreditAccountDetails?.isEmpty() != false) return
                 val status = createManualTransferRequired(
-                    amount = tx.amountRaw,
-                    exchangeBaseUrl = tx.exchangeBaseUrl,
-                    uriStr = tx.withdrawalDetails.exchangePaytoUris[0],
                     transactionId = tx.transactionId,
+                    exchangeBaseUrl = tx.exchangeBaseUrl,
+                    amountRaw = tx.amountRaw,
+                    amountEffective = tx.amountEffective,
+                    withdrawalAccountList = tx.withdrawalDetails.exchangeCreditAccountDetails,
                 )
                 withdrawManager.viewManualWithdrawal(status)
                 findNavController().navigate(

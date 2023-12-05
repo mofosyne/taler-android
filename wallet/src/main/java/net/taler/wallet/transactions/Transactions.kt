@@ -42,6 +42,7 @@ import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.balances.CurrencySpecification
 import net.taler.wallet.refund.RefundPaymentInfo
 import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
@@ -182,12 +183,7 @@ sealed class WithdrawalDetails {
     @Serializable
     @SerialName("manual-transfer")
     class ManualTransfer(
-        /**
-         * Payto URIs that the exchange supports.
-         *
-         * Already contains the amount and message.
-         */
-        val exchangePaytoUris: List<String>,
+        val exchangeCreditAccountDetails: List<WithdrawalExchangeAccountDetails>? = null,
     ) : WithdrawalDetails()
 
     @Serializable
@@ -206,6 +202,68 @@ sealed class WithdrawalDetails {
          */
         val bankConfirmationUrl: String? = null,
     ) : WithdrawalDetails()
+}
+
+@Serializable
+data class WithdrawalExchangeAccountDetails (
+    /**
+     * Payto URI to credit the exchange.
+     *
+     * Depending on whether the (manual!) withdrawal is accepted or just
+     * being checked, this already includes the subject with the
+     * reserve public key.
+     */
+    val paytoUri: String,
+
+    /**
+     * Transfer amount. Might be in a different currency than the requested
+     * amount for withdrawal.
+     *
+     * Redundant with the amount in paytoUri, just included to avoid parsing.
+     */
+    val transferAmount: Amount? = null,
+
+    /**
+     * Currency specification for the external currency.
+     *
+     * Only included if this account requires a currency conversion.
+     */
+    val currencySpecification: CurrencySpecification? = null,
+
+    /**
+     * Further restrictions for sending money to the
+     * exchange.
+     */
+    val creditRestrictions: List<AccountRestriction>? = null,
+)
+
+@Serializable
+sealed class AccountRestriction {
+    @Serializable
+    @SerialName("deny")
+    data object DenyAllAccount: AccountRestriction()
+
+    @Serializable
+    @SerialName("regex")
+    data class RegexAccount(
+        // Regular expression that the payto://-URI of the
+        // partner account must follow.  The regular expression
+        // should follow posix-egrep, but without support for character
+        // classes, GNU extensions, back-references or intervals. See
+        // https://www.gnu.org/software/findutils/manual/html_node/find_html/posix_002degrep-regular-expression-syntax.html
+        // for a description of the posix-egrep syntax. Applications
+        // may support regexes with additional features, but exchanges
+        // must not use such regexes.
+        val paytoRegex: String,
+
+        // Hint for a human to understand the restriction
+        // (that is hopefully easier to comprehend than the regex itself).
+        val humanHint: String,
+
+        // Map from IETF BCP 47 language tags to localized
+        // human hints.
+        val humanHintI18n: Map<String, String>? = null,
+    ): AccountRestriction()
 }
 
 @Serializable
