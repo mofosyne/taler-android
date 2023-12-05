@@ -27,8 +27,8 @@
     <string name="menu_retry_pending_operations">Bekleyen İşlemleri Yeniden Deneyin</string>
     <string name="host_apdu_service_desc">Taler NFC Ödemeleri</string>
     <string name="balances_title">Bakiyeler</string>
-    <string name="amount_positive">+ %s</string>
-    <string name="amount_negative">- %s</string>
+    <string name="amount_positive">+. %s</string>
+    <string name="amount_negative">-. %s</string>
     <string name="amount_chosen">Seçilen Miktar</string>
     <string name="balances_inbound_label">gelen</string>
     <string name="transactions_title">İşlemler</string>
@@ -148,4 +148,13 @@
         <item quantity="one">Madeni para: %s (%d kez kullanıldı)</item>
         <item quantity="other">Madeni paralar: %s (%d kez kullanıldılar)</item>
     </plurals>
+    <string name="transactions_send_funds">Gönder
+\nFonlar</string>
+    <string name="transactions_receive_funds">Al
+\nFonlar</string>
+    <string name="transactions_detail_title_currency">%s İşlemleri</string>
+    <string name="transactions_retry">Tekrar Dene</string>
+    <string name="transactions_abort">İptal Et</string>
+    <string name="transactions_cancel_dialog_message">Bu çekimi iptal etmek istediğinizden emin misiniz? Transit halindeki fonlar kaybolabilir.</string>
+    <string name="transactions_balance">Bakiye</string>
 </resources>
