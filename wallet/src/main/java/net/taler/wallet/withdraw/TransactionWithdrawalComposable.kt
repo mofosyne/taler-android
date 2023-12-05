@@ -38,7 +38,7 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.currency.CurrencySpecification
+import net.taler.wallet.balances.CurrencySpecification
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
 import net.taler.wallet.transactions.AmountType

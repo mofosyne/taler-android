@@ -14,26 +14,15 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.currency
+package net.taler.wallet.balances
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CurrencyInfo(
-    val trustedAuditors: List<TrustedAuditor>,
-    val trustedExchanges: List<TrustedExchange>,
-)
-
-@Serializable
-data class TrustedAuditor(
-    val currency: String,
-    val auditorPub: String,
-    val auditorBaseUrl: String,
-)
-
-@Serializable
-data class TrustedExchange(
-    val currency: String,
-    val exchangeMasterPub: String,
-    val exchangeBaseUrl: String,
+data class CurrencySpecification(
+    val name: String,
+    val numFractionalInputDigits: Int,
+    val numFractionalNormalDigits: Int,
+    val numFractionalTrailingZeroDigits: Int,
+    val altUnitNames: Map<String, String>,
 )

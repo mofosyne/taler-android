@@ -43,10 +43,9 @@ import net.taler.common.fadeOut
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
+import net.taler.wallet.balances.BalanceState
 import net.taler.wallet.databinding.FragmentTransactionsBinding
 import net.taler.wallet.showError
-import net.taler.wallet.transactions.TransactionMajorState.*
-import net.taler.wallet.transactions.TransactionMinorState.*
 
 interface OnTransactionClickListener {
     fun onTransactionClicked(transaction: Transaction)
@@ -108,7 +107,9 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             }
         })
 
-        model.balances.observe(viewLifecycleOwner) { balances ->
+        model.balanceManager.balanceState.observe(viewLifecycleOwner) { state ->
+            val balances = (state as? BalanceState.Success)?.balances ?: return@observe
+
             // hide extra fab when in single currency mode (uses MainFragment's FAB)
             if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
             balances.find { it.currency == currency }?.available?.let { amount: Amount ->

@@ -14,53 +14,59 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.currency
+package net.taler.wallet.balances
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.distinctUntilChanged
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
-import net.taler.wallet.balances.ScopeInfo
 
 @Serializable
-data class GetCurrencySpecificationResponse(
-    val currencySpecification: CurrencySpecification,
-)
+sealed class BalanceState {
+    data object None: BalanceState()
+    data object Loading: BalanceState()
 
-class CurrencyManager(
+    data class Success(
+        val balances: List<BalanceItem>,
+    ): BalanceState()
+
+    data class Error(
+        val error: TalerErrorInfo,
+    ): BalanceState()
+}
+
+class BalanceManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
 ) {
-    private val mCurrencyInfo = MutableLiveData<CurrencyInfo>()
-    val currencyInfo: LiveData<CurrencyInfo> get() = listCurrencies()
+    private val mBalanceState = MutableLiveData<BalanceState>()
+    val balanceState: LiveData<BalanceState> get() = mBalanceState.distinctUntilChanged()
 
     private val mError = MutableLiveData<TalerErrorInfo>()
     val error: LiveData<TalerErrorInfo> = mError
 
-    private fun listCurrencies(): LiveData<CurrencyInfo> {
-        scope.launch {
-            val response = api.request("listCurrencies", CurrencyInfo.serializer())
-            response.onError {
-                mError.value = it
-            }.onSuccess {
-                Log.d(TAG, "Currency info: $it")
-                mCurrencyInfo.value = it
-            }
+    fun listBalances(): Job = scope.launch {
+        mBalanceState.value = BalanceState.Loading
+        val balanceResponse = api.request("getBalances", BalanceResponse.serializer())
+
+        balanceResponse.onError {
+            Log.e(TAG, "Error retrieving balances: $it")
+            mBalanceState.value = BalanceState.Error(it)
         }
-        return mCurrencyInfo
+
+        balanceResponse.onSuccess {
+            mBalanceState.value = BalanceState.Success(it.balances)
+        }
     }
 
-    suspend fun getCurrencySpecification(scopeInfo: ScopeInfo): CurrencySpecification? {
-        var spec: CurrencySpecification? = null
-        api.request("getCurrencySpecification", GetCurrencySpecificationResponse.serializer())
-            .onSuccess {
-                spec = it.currencySpecification
-            }
-        return spec
+    fun resetBalances() {
+        mBalanceState.value = BalanceState.None
     }
 }

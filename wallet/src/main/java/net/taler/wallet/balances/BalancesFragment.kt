@@ -59,12 +59,14 @@ class BalancesFragment : Fragment(),
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.balances.observe(viewLifecycleOwner) {
-            onBalancesChanged(it)
+        model.balanceManager.balanceState.observe(viewLifecycleOwner) {
+            onBalanceStateChanged(it)
         }
     }
 
-    private fun onBalancesChanged(balances: List<BalanceItem>) {
+    private fun onBalanceStateChanged(state: BalanceState) {
+        val balances = (state as? BalanceState.Success)?.balances ?: return
+
         beginDelayedTransition(view as ViewGroup)
         if (balances.isEmpty()) {
             ui.mainEmptyState.visibility = VISIBLE

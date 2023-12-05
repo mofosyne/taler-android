@@ -50,7 +50,7 @@ import net.taler.common.Amount
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
 import net.taler.wallet.compose.copyToClipBoard
-import net.taler.wallet.currency.CurrencySpecification
+import net.taler.wallet.balances.CurrencySpecification
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails

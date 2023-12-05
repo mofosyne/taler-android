@@ -17,6 +17,7 @@
 package net.taler.wallet
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,11 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.EventObserver
 import net.taler.wallet.CurrencyMode.MULTI
 import net.taler.wallet.CurrencyMode.SINGLE
-import net.taler.wallet.balances.BalanceItem
+import net.taler.wallet.balances.BalanceState
+import net.taler.wallet.balances.BalanceState.Error
+import net.taler.wallet.balances.BalanceState.Loading
+import net.taler.wallet.balances.BalanceState.None
+import net.taler.wallet.balances.BalanceState.Success
 import net.taler.wallet.balances.BalancesFragment
 import net.taler.wallet.databinding.FragmentMainBinding
 import net.taler.wallet.transactions.TransactionsFragment
@@ -50,8 +55,8 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        model.balances.observe(viewLifecycleOwner) {
-            onBalancesChanged(it)
+        model.balanceManager.balanceState.observe(viewLifecycleOwner) {
+            onBalanceStateChanged(it)
         }
         model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
             // we only need to navigate to a dedicated list, when in multi-currency mode
@@ -75,19 +80,33 @@ class MainFragment : Fragment() {
         model.loadBalances()
     }
 
-    private fun onBalancesChanged(balances: List<BalanceItem>) {
-        val mode = if (balances.size == 1) SINGLE else MULTI
-        if (currencyMode != mode) {
-            val f = if (mode == SINGLE) {
-                model.transactionManager.selectedCurrency = balances[0].available.currency
-                TransactionsFragment()
-            } else {
-                BalancesFragment()
+    private fun onBalanceStateChanged(state: BalanceState) {
+        when (state) {
+            is Loading -> {
+                model.showProgressBar.value = true
             }
-            currencyMode = mode
-            childFragmentManager.beginTransaction()
-                .replace(R.id.mainFragmentContainer, f, mode.name)
-                .commitNow()
+            is None -> {
+                model.showProgressBar.value = false
+            }
+            is Success -> {
+                model.showProgressBar.value = false
+                val balances = state.balances
+                val mode = if(balances.size == 1) SINGLE else MULTI
+                val f = if (mode == SINGLE) {
+                    model.transactionManager.selectedCurrency = balances[0].available.currency
+                    TransactionsFragment()
+                } else {
+                    BalancesFragment()
+                }
+                currencyMode = mode
+                childFragmentManager.beginTransaction()
+                    .replace(R.id.mainFragmentContainer, f, mode.name)
+                    .commitNow()
+            }
+            is Error -> {
+                model.showProgressBar.value = false
+                Log.e(TAG, "Error retrieving balances: ${state.error}")
+            }
         }
     }
 

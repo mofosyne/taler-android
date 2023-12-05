@@ -22,7 +22,6 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,8 +36,8 @@ import net.taler.wallet.backend.NotificationReceiver
 import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletCoreVersion
-import net.taler.wallet.balances.BalanceItem
-import net.taler.wallet.balances.BalanceResponse
+import net.taler.wallet.balances.BalanceManager
+import net.taler.wallet.balances.BalanceState
 import net.taler.wallet.deposit.DepositManager
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
@@ -60,9 +59,6 @@ private val transactionNotifications = listOf(
 class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app), VersionReceiver, NotificationReceiver {
-
-    private val mBalances = MutableLiveData<List<BalanceItem>>()
-    val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
@@ -86,6 +82,7 @@ class MainViewModel(
     val settingsManager: SettingsManager = SettingsManager(app.applicationContext, api, viewModelScope)
     val accountManager: AccountManager = AccountManager(api, viewModelScope)
     val depositManager: DepositManager = DepositManager(api, viewModelScope)
+    val balanceManager: BalanceManager = BalanceManager(api, viewModelScope)
 
     private val mTransactionsEvent = MutableLiveData<Event<String>>()
     val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
@@ -120,15 +117,7 @@ class MainViewModel(
 
     @UiThread
     fun loadBalances(): Job = viewModelScope.launch {
-        showProgressBar.value = true
-        val response = api.request("getBalances", BalanceResponse.serializer())
-        showProgressBar.value = false
-        response.onError {
-            Log.e(TAG, "Error retrieving balances: $it")
-        }
-        response.onSuccess {
-            mBalances.value = it.balances
-        }
+        balanceManager.listBalances()
     }
 
     /**
@@ -141,8 +130,9 @@ class MainViewModel(
 
     @UiThread
     fun getCurrencies(): List<String> {
-        return balances.value?.map { balanceItem ->
-            balanceItem.currency
+        val state = balanceManager.balanceState.value as? BalanceState.Success
+        return state?.balances?.let { balances ->
+            balances.map { it.currency }
         } ?: emptyList()
     }
 
@@ -159,9 +149,12 @@ class MainViewModel(
 
     @UiThread
     fun hasSufficientBalance(amount: Amount): Boolean {
-        balances.value?.forEach { balanceItem ->
-            if (balanceItem.currency == amount.currency) {
-                return balanceItem.available >= amount
+        val state = balanceManager.balanceState.value as? BalanceState.Success
+        state?.balances?.let { balances ->
+            balances.forEach { balanceItem ->
+                if (balanceItem.currency == amount.currency) {
+                    return balanceItem.available >= amount
+                }
             }
         }
         return false
@@ -173,7 +166,7 @@ class MainViewModel(
             api.sendRequest("reset")
         }
         withdrawManager.testWithdrawalStatus.value = null
-        mBalances.value = emptyList()
+        balanceManager.resetBalances()
     }
 
     fun startTunnel() {
