@@ -50,10 +50,21 @@ class ManualWithdrawSuccessFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         status = withdrawManager.withdrawStatus.value as WithdrawStatus.ManualTransferRequired
 
+        // Set action bar subtitle and unset on exit
         if (status.withdrawalTransfers.size > 1) {
-            (requireActivity() as AppCompatActivity)
-                .supportActionBar
-                ?.subtitle = getString(R.string.withdraw_subtitle)
+            val activity = requireActivity() as AppCompatActivity
+
+            activity.apply {
+                supportActionBar?.subtitle = getString(R.string.withdraw_subtitle)
+            }
+
+            findNavController().addOnDestinationChangedListener { controller, destination, args ->
+                if (destination.id != R.id.nav_exchange_manual_withdrawal_success) {
+                    activity.apply {
+                        supportActionBar?.subtitle = null
+                    }
+                }
+            }
         }
 
         setContent {

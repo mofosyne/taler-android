@@ -56,11 +56,13 @@ fun TransferBitcoin(
             segwitAddresses = transfer.segwitAddresses,
         )
 
-        WithdrawalAmountTransfer(
-            amountRaw = transactionAmountRaw,
-            amountEffective = transactionAmountEffective,
-            conversionAmountRaw = transfer.amountRaw,
-        )
+        transfer.withdrawalAccount.transferAmount?.let { amount ->
+            WithdrawalAmountTransfer(
+                amountRaw = transactionAmountRaw,
+                amountEffective = transactionAmountEffective,
+                conversionAmountRaw = amount,
+            )
+        }
     }
 }
 

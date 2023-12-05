@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.cleanExchange
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.withdraw.TransferData
 
@@ -71,13 +72,15 @@ fun TransferIBAN(
 
         TransactionInfoComposable(
             label = stringResource(R.string.withdraw_exchange),
-            info = exchangeBaseUrl,
+            info = cleanExchange(exchangeBaseUrl),
         )
 
-        WithdrawalAmountTransfer(
-            amountRaw = transactionAmountRaw,
-            amountEffective = transactionAmountEffective,
-            conversionAmountRaw = transfer.amountRaw,
-        )
+        transfer.withdrawalAccount.transferAmount?.let { amount ->
+            WithdrawalAmountTransfer(
+                amountRaw = transactionAmountRaw,
+                amountEffective = transactionAmountEffective,
+                conversionAmountRaw = amount,
+            )
+        }
     }
 }
