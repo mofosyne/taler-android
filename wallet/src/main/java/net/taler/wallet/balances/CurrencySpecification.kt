@@ -16,13 +16,18 @@
 
 package net.taler.wallet.balances
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CurrencySpecification(
     val name: String,
+    @SerialName("num_fractional_input_digits")
     val numFractionalInputDigits: Int,
+    @SerialName("num_fractional_normal_digits")
     val numFractionalNormalDigits: Int,
+    @SerialName("num_fractional_trailing_zero_digits")
     val numFractionalTrailingZeroDigits: Int,
+    @SerialName("alt_unit_names")
     val altUnitNames: Map<String, String>,
 )

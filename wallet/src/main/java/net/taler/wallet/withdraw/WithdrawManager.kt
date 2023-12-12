@@ -124,7 +124,7 @@ data class ManualWithdrawalDetails(
     val amountRaw: Amount,
     val amountEffective: Amount,
     val numCoins: Int,
-    val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
+    val withdrawalAccountsList: List<WithdrawalExchangeAccountDetails>,
     val ageRestrictionOptions: List<Int>? = null,
 )
 
@@ -211,7 +211,7 @@ class WithdrawManager(
                     amountRaw = details.amountRaw,
                     amountEffective = details.amountEffective,
                     numCoins = details.numCoins,
-                    withdrawalAccountList = details.withdrawalAccountList,
+                    withdrawalAccountList = details.withdrawalAccountsList,
                     ageRestrictionOptions = details.ageRestrictionOptions,
                 )
             } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
@@ -235,7 +235,7 @@ class WithdrawManager(
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
                 numCoins = details.numCoins,
-                withdrawalAccountList = details.withdrawalAccountList,
+                withdrawalAccountList = details.withdrawalAccountsList,
                 ageRestrictionOptions = details.ageRestrictionOptions,
                 tosText = it.content,
                 tosEtag = it.currentEtag,
