@@ -83,15 +83,9 @@ fun ScreenTransfer(
         val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(all = 16.dp),
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                text = stringResource(R.string.withdraw_manual_ready_title),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-
             when (val transfer = selectedTransfer) {
                 is TransferData.IBAN -> TransferIBAN(
                     transfer = transfer,
@@ -111,7 +105,7 @@ fun ScreenTransfer(
                 Button(
                     onClick = { bankAppClick(selectedTransfer) },
                     modifier = Modifier
-                        .padding(top = 16.dp)
+                        .padding(bottom = 16.dp)
                 ) {
                     Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
                 }
