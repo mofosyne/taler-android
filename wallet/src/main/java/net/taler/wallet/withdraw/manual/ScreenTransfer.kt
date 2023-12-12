@@ -17,7 +17,6 @@
 package net.taler.wallet.withdraw.manual
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -121,6 +120,7 @@ fun DetailRow(
     copy: Boolean = true,
 ) {
     val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -131,28 +131,26 @@ fun DetailRow(
             style = MaterialTheme.typography.bodyMedium,
         )
 
-        Row(
-            modifier = Modifier.padding(top = 8.dp, start = 6.dp, end = 6.dp, bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = if (copy) Modifier.weight(1f) else Modifier,
-                text = content,
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = if (copy) FontFamily.Monospace else FontFamily.Default,
-                textAlign = TextAlign.Center,
-            )
+        Text(
+            modifier = Modifier.padding(
+                top = 8.dp,
+                start = 6.dp,
+                end = 6.dp,
+            ),
+            text = content,
+            style = MaterialTheme.typography.bodyLarge,
+            fontFamily = if (copy) FontFamily.Monospace else FontFamily.Default,
+            textAlign = TextAlign.Center,
+        )
 
-            if (copy) {
-                IconButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    onClick = { copyToClipBoard(context, label, content) },
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = stringResource(R.string.copy),
-                    )
-                }
+        if (copy) {
+            IconButton(
+                onClick = { copyToClipBoard(context, label, content) },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ContentCopy,
+                    contentDescription = stringResource(R.string.copy),
+                )
             }
         }
     }
