@@ -170,7 +170,7 @@ class MainViewModel(
     @UiThread
     fun dangerouslyReset() {
         viewModelScope.launch {
-            api.sendRequest("reset")
+            api.sendRequest("clearDb")
         }
         withdrawManager.testWithdrawalStatus.value = null
         mBalances.value = emptyList()
