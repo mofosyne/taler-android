@@ -46,7 +46,6 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
-        val numCoins: Int,
         val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
         val ageRestrictionOptions: List<Int>? = null,
         val tosText: String,
@@ -59,7 +58,6 @@ sealed class WithdrawStatus {
         val exchangeBaseUrl: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
-        val numCoins: Int,
         val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
         val ageRestrictionOptions: List<Int>? = null,
     ) : WithdrawStatus()
@@ -123,7 +121,6 @@ data class ManualWithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
     val amountEffective: Amount,
-    val numCoins: Int,
     val withdrawalAccountsList: List<WithdrawalExchangeAccountDetails>,
     val ageRestrictionOptions: List<Int>? = null,
 )
@@ -210,7 +207,6 @@ class WithdrawManager(
                     exchangeBaseUrl = exchangeBaseUrl,
                     amountRaw = details.amountRaw,
                     amountEffective = details.amountEffective,
-                    numCoins = details.numCoins,
                     withdrawalAccountList = details.withdrawalAccountsList,
                     ageRestrictionOptions = details.ageRestrictionOptions,
                 )
@@ -234,7 +230,6 @@ class WithdrawManager(
                 exchangeBaseUrl = exchangeBaseUrl,
                 amountRaw = details.amountRaw,
                 amountEffective = details.amountEffective,
-                numCoins = details.numCoins,
                 withdrawalAccountList = details.withdrawalAccountsList,
                 ageRestrictionOptions = details.ageRestrictionOptions,
                 tosText = it.content,
@@ -260,7 +255,6 @@ class WithdrawManager(
                 exchangeBaseUrl = s.exchangeBaseUrl,
                 amountRaw = s.amountRaw,
                 amountEffective = s.amountEffective,
-                numCoins = s.numCoins,
                 withdrawalAccountList = s.withdrawalAccountList,
                 ageRestrictionOptions = s.ageRestrictionOptions,
             )
