@@ -74,7 +74,7 @@ dependencies {
     implementation 'com.google.zxing:core:3.5.0'  // needs minSdkVersion 24+ or desugar
 
     // JSON parsing and serialization
-    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1'
+    api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
     testImplementation "junit:junit:$junit_version"
     testImplementation 'org.json:json:20220320'
 }
