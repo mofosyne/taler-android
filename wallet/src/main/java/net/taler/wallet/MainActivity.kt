@@ -66,10 +66,10 @@ import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNEC
 import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import net.taler.wallet.databinding.ActivityMainBinding
 import net.taler.wallet.refund.RefundStatus
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Locale.ROOT
-import javax.net.ssl.HttpsURLConnection
 
 class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
     OnPreferenceStartFragmentCallback {
@@ -186,13 +186,18 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         if (scheme == "http" || scheme == "https") {
             model.viewModelScope.launch(Dispatchers.IO) {
-                val conn: HttpsURLConnection =
-                    URL(uri.toString()).openConnection() as HttpsURLConnection
+                val conn = URL(uri.toString()).openConnection() as HttpURLConnection
                 Log.v(TAG, "prepare query: $uri")
                 conn.setRequestProperty("Accept", "text/html")
                 conn.connectTimeout = 5000
                 conn.requestMethod = "HEAD"
-                conn.connect()
+                try {
+                    conn.connect()
+                } catch (e: IOException) {
+                    Log.e(TAG, "Error connecting to $uri ", e)
+                    showError(R.string.error_broken_uri, "$uri")
+                    return@launch
+                }
                 val status = conn.responseCode
 
                 if (status == HttpURLConnection.HTTP_OK || status == HttpURLConnection.HTTP_PAYMENT_REQUIRED) {
@@ -202,8 +207,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                         val talerHeaderUri = Uri.parse(talerHeader[0])
                         getTalerAction(talerHeaderUri, 0, actionFound)
                     }
-                }
-                if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                } else if (status == HttpURLConnection.HTTP_MOVED_TEMP
                     || status == HttpURLConnection.HTTP_MOVED_PERM
                     || status == HttpURLConnection.HTTP_SEE_OTHER
                 ) {
@@ -213,6 +217,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                         val locUri = Uri.parse(location[0])
                         getTalerAction(locUri, maxRedirects - 1, actionFound)
                     }
+                } else {
+                    showError(R.string.error_broken_uri, "$uri")
                 }
             }
         } else {

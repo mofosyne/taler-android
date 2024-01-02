@@ -65,6 +65,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="offline">Operation requires internet access. Please ensure your internet connection works and try again.</string>
     <string name="offline_banner">No internet access</string>
     <string name="error_unsupported_uri">Error: This Taler URI is not supported.</string>
+    <string name="error_broken_uri">Error: This Taler URI is (currently) not working.</string>
 
     <string name="menu_settings">Settings</string>
     <string name="menu_retry_pending_operations">Retry Pending Operations</string>
