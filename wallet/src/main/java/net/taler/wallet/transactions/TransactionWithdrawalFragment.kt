@@ -77,7 +77,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
             ActionListener.Type.CONFIRM_MANUAL -> {
                 if (tx !is TransactionWithdrawal) return
                 if (tx.withdrawalDetails !is ManualTransfer) return
-                if (tx.withdrawalDetails.exchangeCreditAccountDetails?.isEmpty() != false) return
+                if (tx.withdrawalDetails.exchangeCreditAccountDetails.isNullOrEmpty()) return
                 val status = createManualTransferRequired(
                     transactionId = tx.transactionId,
                     exchangeBaseUrl = tx.exchangeBaseUrl,
