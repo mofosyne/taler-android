@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.taler.common.Amount
-import net.taler.common.QrCodeManager
 import net.taler.common.Timestamp
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode.UNKNOWN
@@ -95,8 +94,7 @@ class PeerManager(
                     put("purse_expiration", JSONObject(Json.encodeToString(expiry)))
                 })
             }.onSuccess {
-                val qrCode = QrCodeManager.makeQrCode(it.talerUri)
-                _outgoingPullState.value = OutgoingResponse(it.talerUri, qrCode)
+                _outgoingPullState.value = OutgoingResponse(it.transactionId)
             }.onError { error ->
                 Log.e(TAG, "got initiatePeerPullCredit error result $error")
                 _outgoingPullState.value = OutgoingError(error)
@@ -138,9 +136,7 @@ class PeerManager(
                     put("purse_expiration", JSONObject(Json.encodeToString(expiry)))
                 })
             }.onSuccess { response ->
-                // TODO bring the user to that transaction and only show QR when in Pending/Ready state
-                val qrCode = QrCodeManager.makeQrCode(response.talerUri)
-                _outgoingPushState.value = OutgoingResponse(response.talerUri, qrCode)
+                _outgoingPushState.value = OutgoingResponse(response.transactionId)
             }.onError { error ->
                 Log.e(TAG, "got initiatePeerPushDebit error result $error")
                 _outgoingPushState.value = OutgoingError(error)

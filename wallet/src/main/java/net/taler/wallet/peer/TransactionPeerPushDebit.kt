@@ -69,7 +69,7 @@ fun ColumnScope.TransactionPeerPushDebitComposable(t: TransactionPeerPushDebit) 
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
-    if (t.txState == TransactionState(Pending, Ready)) {
+    if (t.txState == TransactionState(Pending, Ready) && t.talerUri != null) {
         QrCodeUriComposable(
             talerUri = t.talerUri,
             clipBoardLabel = "Push payment",

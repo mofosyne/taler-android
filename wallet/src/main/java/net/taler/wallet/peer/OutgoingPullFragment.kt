@@ -23,8 +23,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
@@ -35,8 +38,8 @@ import net.taler.wallet.showError
 
 class OutgoingPullFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
-    private val exchangeManager get() = model.exchangeManager
     private val peerManager get() = model.peerManager
+    private val transactionManager get() = model.transactionManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,20 +52,15 @@ class OutgoingPullFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 TalerSurface {
-                    when (val state = peerManager.pullState.collectAsStateLifecycleAware().value) {
-                        is OutgoingIntro, OutgoingChecking, is OutgoingChecked -> {
-                            OutgoingPullIntroComposable(
-                                amount = amount,
-                                state = state,
-                                onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
-                            )
+                    val state = peerManager.pullState.collectAsStateLifecycleAware().value
+                    OutgoingPullComposable(
+                        amount = amount,
+                        state = state,
+                        onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
+                        onClose = {
+                            findNavController().navigate(R.id.action_nav_peer_pull_to_nav_main)
                         }
-                        OutgoingCreating, is OutgoingResponse, is OutgoingError -> {
-                            OutgoingPullResultComposable(state) {
-                                findNavController().navigate(R.id.action_nav_peer_pull_to_nav_main)
-                            }
-                        }
-                    }
+                    )
                 }
             }
         }
@@ -70,10 +68,20 @@ class OutgoingPullFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lifecycleScope.launchWhenStarted {
-            peerManager.pullState.collect {
-                if (it is OutgoingError && model.devMode.value == true) {
-                    showError(it.info)
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                peerManager.pullState.collect {
+                    if (it is OutgoingResponse) {
+                        if (transactionManager.selectTransaction(it.transactionId)) {
+                            findNavController().navigate(R.id.action_nav_peer_pull_to_nav_transactions_detail_peer)
+                        } else {
+                            findNavController().navigate(R.id.action_nav_peer_pull_to_nav_main)
+                        }
+                    }
+
+                    if (it is OutgoingError && model.devMode.value == true) {
+                        showError(it.info)
+                    }
                 }
             }
         }

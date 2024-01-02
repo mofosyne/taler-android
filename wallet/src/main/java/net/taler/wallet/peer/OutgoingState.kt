@@ -16,7 +16,6 @@
 
 package net.taler.wallet.peer
 
-import android.graphics.Bitmap
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 import net.taler.wallet.backend.TalerErrorInfo
@@ -32,8 +31,7 @@ data class OutgoingChecked(
 ) : OutgoingState()
 object OutgoingCreating : OutgoingState()
 data class OutgoingResponse(
-    val talerUri: String,
-    val qrCode: Bitmap,
+    val transactionId: String,
 ) : OutgoingState()
 
 data class OutgoingError(
@@ -49,10 +47,7 @@ data class CheckPeerPullCreditResponse(
 
 @Serializable
 data class InitiatePeerPullPaymentResponse(
-    /**
-     * Taler URI for the other party to make the payment that was requested.
-     */
-    val talerUri: String,
+    val transactionId: String,
 )
 
 @Serializable
@@ -64,8 +59,5 @@ data class CheckPeerPushDebitResponse(
 @Serializable
 data class InitiatePeerPushDebitResponse(
     val exchangeBaseUrl: String,
-    @Deprecated("Will be removed in future version")
-    val talerUri: String,
-    // TODO bring the user to that transaction and only show QR when in Pending/Ready state
     val transactionId: String,
 )

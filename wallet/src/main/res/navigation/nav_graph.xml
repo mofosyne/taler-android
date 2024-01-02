@@ -177,6 +177,10 @@
             android:id="@+id/action_nav_peer_pull_to_nav_main"
             app:destination="@id/nav_main"
             app:popUpTo="@id/nav_main" />
+        <action
+            android:id="@+id/action_nav_peer_pull_to_nav_transactions_detail_peer"
+            app:destination="@id/nav_transactions_detail_peer"
+            app:popUpTo="@id/nav_main" />
     </fragment>
 
     <fragment
@@ -191,6 +195,10 @@
         <action
             android:id="@+id/action_nav_peer_push_to_nav_main"
             app:destination="@id/nav_main"
+            app:popUpTo="@id/nav_main" />
+        <action
+            android:id="@+id/action_nav_peer_push_to_nav_transactions_detail_peer"
+            app:destination="@id/nav_transactions_detail_peer"
             app:popUpTo="@id/nav_main" />
     </fragment>
 

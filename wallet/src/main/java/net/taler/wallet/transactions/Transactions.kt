@@ -254,14 +254,17 @@ sealed class AccountRestriction {
         // for a description of the posix-egrep syntax. Applications
         // may support regexes with additional features, but exchanges
         // must not use such regexes.
+        @SerialName("payto_regex")
         val paytoRegex: String,
 
         // Hint for a human to understand the restriction
         // (that is hopefully easier to comprehend than the regex itself).
+        @SerialName("human_hint")
         val humanHint: String,
 
         // Map from IETF BCP 47 language tags to localized
         // human hints.
+        @SerialName("human_hint_i18n")
         val humanHintI18n: Map<String, String>? = null,
     ): AccountRestriction()
 }
@@ -483,7 +486,7 @@ class TransactionPeerPushDebit(
     override val amountRaw: Amount,
     override val amountEffective: Amount,
     val info: PeerInfoShort,
-    val talerUri: String,
+    val talerUri: String? = null,
     // val completed: Boolean, definitely
 ) : Transaction() {
     override val icon = R.drawable.ic_cash_usd_outline

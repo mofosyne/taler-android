@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -44,9 +43,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.JsonPrimitive
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode
+import net.taler.wallet.backend.TalerErrorInfo
 import kotlin.random.Random
+
+@Composable
+fun OutgoingPushComposable(
+    state: OutgoingState,
+    amount: Amount,
+    onSend: (amount: Amount, summary: String, hours: Long) -> Unit,
+    onClose: () -> Unit,
+) {
+    when(state) {
+        is OutgoingChecking, is OutgoingCreating, is OutgoingResponse -> PeerCreatingComposable()
+        is OutgoingIntro, is OutgoingChecked -> OutgoingPushIntroComposable(
+            amount = amount,
+            state = state,
+            onSend = onSend,
+        )
+        is OutgoingError -> PeerErrorComposable(state, onClose)
+    }
+}
 
 @Composable
 fun OutgoingPushIntroComposable(
@@ -68,6 +88,7 @@ fun OutgoingPushIntroComposable(
             softWrap = false,
             style = MaterialTheme.typography.titleLarge,
         )
+
         if (state is OutgoingChecked) {
             val fee = state.amountEffective - state.amountRaw
             Text(
@@ -100,9 +121,11 @@ fun OutgoingPushIntroComposable(
                 )
             }
         )
+
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,11 +134,13 @@ fun OutgoingPushIntroComposable(
             text = stringResource(R.string.char_count, subject.length, MAX_LENGTH_SUBJECT),
             textAlign = TextAlign.End,
         )
+
         Text(
             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
             text = stringResource(R.string.send_peer_expiration_period),
             style = MaterialTheme.typography.bodyMedium,
         )
+
         var option by rememberSaveable { mutableStateOf(DEFAULT_EXPIRY) }
         var hours by rememberSaveable { mutableLongStateOf(DEFAULT_EXPIRY.hours) }
         ExpirationComposable(
@@ -124,10 +149,12 @@ fun OutgoingPushIntroComposable(
             hours = hours,
             onOptionChange = { option = it }
         ) { hours = it }
+
         Text(
             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
             text = stringResource(R.string.send_peer_warning),
         )
+
         Button(
             enabled = state is OutgoingChecked && subject.isNotBlank(),
             onClick = { onSend(amount, subject, hours) },
@@ -139,20 +166,58 @@ fun OutgoingPushIntroComposable(
 
 @Preview
 @Composable
-fun PeerPushIntroComposableCheckingPreview() {
+fun PeerPushComposableCreatingPreview() {
     Surface {
-        val state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking
-        OutgoingPushIntroComposable(state, Amount.fromString("TESTKUDOS", "42.23")) { _, _, _ -> }
+        OutgoingPushComposable(
+            amount = Amount.fromString("TESTKUDOS", "42.23"),
+            state = OutgoingCreating,
+            onSend = { _, _, _ -> },
+            onClose = {},
+        )
     }
 }
 
 @Preview
 @Composable
-fun PeerPushIntroComposableCheckedPreview() {
+fun PeerPushComposableCheckingPreview() {
+    Surface {
+        val state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking
+        OutgoingPushComposable(
+            state = state,
+            amount = Amount.fromString("TESTKUDOS", "42.23"),
+            onSend = { _, _, _ -> },
+            onClose = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PeerPushComposableCheckedPreview() {
     Surface {
         val amountEffective = Amount.fromString("TESTKUDOS", "42.42")
         val amountRaw = Amount.fromString("TESTKUDOS", "42.23")
         val state = OutgoingChecked(amountRaw, amountEffective)
-        OutgoingPushIntroComposable(state, amountEffective) { _, _, _ -> }
+        OutgoingPushComposable(
+            state = state,
+            amount = amountEffective,
+            onSend = { _, _, _ -> },
+            onClose = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PeerPushComposableErrorPreview() {
+    Surface {
+        val json = mapOf("foo" to JsonPrimitive("bar"))
+        val state = OutgoingError(TalerErrorInfo(TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "message", json))
+        OutgoingPushComposable(
+            amount = Amount.fromString("TESTKUDOS", "42.23"),
+            state = state,
+            onSend = { _, _, _ -> },
+            onClose = {},
+        )
     }
 }
