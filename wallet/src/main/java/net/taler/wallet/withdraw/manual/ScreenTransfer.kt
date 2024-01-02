@@ -211,6 +211,7 @@ fun TransferAccountChooser(
     ScrollableTabRow(
         selectedTabIndex = selectedIndex,
         modifier = modifier,
+        edgePadding = 8.dp,
     ) {
         accounts.forEachIndexed { index, account ->
             Tab(
