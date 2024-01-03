@@ -18,12 +18,17 @@ package net.taler.wallet.exchanges
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
@@ -55,6 +60,21 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                if (model.devMode.value == true) {
+                    menuInflater.inflate(R.menu.exchange_list, menu)
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (menuItem.itemId == R.id.action_add_dev_exchanges) {
+                    exchangeManager.addDevExchanges()
+                }
+                return true
+            }
+        }, viewLifecycleOwner, RESUMED)
+
         ui.list.apply {
             adapter = exchangeAdapter
             addItemDecoration(DividerItemDecoration(context, VERTICAL))

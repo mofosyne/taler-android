@@ -227,6 +227,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="exchange_add_url">Enter address of exchange</string>
     <string name="exchange_add_error">Could not add exchange</string>
     <string name="exchange_list_error">Could not list exchanges</string>
+    <string name="exchange_list_add_dev">Add development exchanges</string>
     <string name="exchange_menu_manual_withdraw">Withdraw</string>
 
     <string name="exchange_fee_withdrawal_fee_label">Withdrawal Fee:</string>

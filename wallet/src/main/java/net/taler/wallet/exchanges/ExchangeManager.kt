@@ -21,6 +21,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -101,6 +102,22 @@ class ExchangeManager(
             exchange = exchangeListResponse.exchanges.find { it.currency == currency }
         }
         return exchange
+    }
+
+    fun addDevExchanges() {
+        scope.launch {
+            listOf(
+                "https://exchange.demo.taler.net/",
+                "https://exchange.test.taler.net/",
+                "https://exchange.head.taler.net/",
+                "https://exchange.taler.ar/",
+                "https://exchange.taler.fdold.eu/",
+                "https://exchange.taler.grothoff.org/",
+            ).forEach { exchangeUrl ->
+                add(exchangeUrl)
+                delay(100)
+            }
+        }
     }
 
 }
