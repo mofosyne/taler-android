@@ -118,13 +118,17 @@ private fun SendFundsIntro(
                 value = text,
                 onValueChange = { input ->
                     isError = false
+                    insufficientBalance = false
                     text = input
                 },
                 label = { Text(stringResource(R.string.send_amount)) },
                 supportingText = {
                     if (isError) Text(stringResource(R.string.receive_amount_invalid))
+                    else if (insufficientBalance) {
+                        Text(stringResource(R.string.payment_balance_insufficient))
+                    }
                 },
-                isError = isError,
+                isError = isError || insufficientBalance,
             )
             Text(
                 modifier = Modifier,
