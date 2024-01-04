@@ -28,7 +28,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +52,7 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
+import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.TransactionAmountComposable
@@ -225,7 +225,7 @@ fun PeerErrorComposable(state: OutgoingError, onClose: () -> Unit) {
 @Preview
 @Composable
 fun PeerPullComposableCreatingPreview() {
-    Surface {
+    TalerSurface {
         OutgoingPullComposable(
             amount = Amount.fromString("TESTKUDOS", "42.23"),
             state = OutgoingCreating,
@@ -238,7 +238,7 @@ fun PeerPullComposableCreatingPreview() {
 @Preview
 @Composable
 fun PeerPullComposableCheckingPreview() {
-    Surface {
+    TalerSurface {
         OutgoingPullComposable(
             amount = Amount.fromString("TESTKUDOS", "42.23"),
             state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking,
@@ -251,7 +251,7 @@ fun PeerPullComposableCheckingPreview() {
 @Preview
 @Composable
 fun PeerPullComposableCheckedPreview() {
-    Surface {
+    TalerSurface {
         val amountRaw = Amount.fromString("TESTKUDOS", "42.42")
         val amountEffective = Amount.fromString("TESTKUDOS", "42.23")
         val exchangeItem = ExchangeItem("https://example.org", "TESTKUDOS", emptyList())
@@ -267,7 +267,7 @@ fun PeerPullComposableCheckedPreview() {
 @Preview
 @Composable
 fun PeerPullComposableErrorPreview() {
-    Surface {
+    TalerSurface {
         val json = mapOf("foo" to JsonPrimitive("bar"))
         val state = OutgoingError(TalerErrorInfo(TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "message", json))
         OutgoingPullComposable(

@@ -24,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +47,7 @@ import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
+import net.taler.wallet.compose.TalerSurface
 import kotlin.random.Random
 
 @Composable
@@ -167,7 +167,7 @@ fun OutgoingPushIntroComposable(
 @Preview
 @Composable
 fun PeerPushComposableCreatingPreview() {
-    Surface {
+    TalerSurface {
         OutgoingPushComposable(
             amount = Amount.fromString("TESTKUDOS", "42.23"),
             state = OutgoingCreating,
@@ -180,7 +180,7 @@ fun PeerPushComposableCreatingPreview() {
 @Preview
 @Composable
 fun PeerPushComposableCheckingPreview() {
-    Surface {
+    TalerSurface {
         val state = if (Random.nextBoolean()) OutgoingIntro else OutgoingChecking
         OutgoingPushComposable(
             state = state,
@@ -194,7 +194,7 @@ fun PeerPushComposableCheckingPreview() {
 @Preview
 @Composable
 fun PeerPushComposableCheckedPreview() {
-    Surface {
+    TalerSurface {
         val amountEffective = Amount.fromString("TESTKUDOS", "42.42")
         val amountRaw = Amount.fromString("TESTKUDOS", "42.23")
         val state = OutgoingChecked(amountRaw, amountEffective)
@@ -210,7 +210,7 @@ fun PeerPushComposableCheckedPreview() {
 @Preview
 @Composable
 fun PeerPushComposableErrorPreview() {
-    Surface {
+    TalerSurface {
         val json = mapOf("foo" to JsonPrimitive("bar"))
         val state = OutgoingError(TalerErrorInfo(TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED, "hint", "message", json))
         OutgoingPushComposable(

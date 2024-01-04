@@ -66,6 +66,7 @@ class OutgoingPushFragment : Fragment() {
             setContent {
                 TalerSurface {
                     val state = peerManager.pushState.collectAsStateLifecycleAware().value
+                    backPressedCallback.isEnabled = false
                     OutgoingPushComposable(
                         amount = amount,
                         state = state,
