@@ -66,7 +66,6 @@ class OutgoingPushFragment : Fragment() {
             setContent {
                 TalerSurface {
                     val state = peerManager.pushState.collectAsStateLifecycleAware().value
-                    backPressedCallback.isEnabled = false
                     OutgoingPushComposable(
                         amount = amount,
                         state = state,
@@ -96,6 +95,9 @@ class OutgoingPushFragment : Fragment() {
                     if (it is OutgoingError && model.devMode.value == true) {
                         showError(it.info)
                     }
+
+                    // Disable back navigation when tx is being created
+                    backPressedCallback.isEnabled = it !is OutgoingCreating
                 }
             }
         }

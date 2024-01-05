@@ -17,21 +17,15 @@
 package net.taler.wallet.peer
 
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
-import net.taler.wallet.compose.QrCodeUriComposable
 import net.taler.wallet.transactions.AmountType
 import net.taler.wallet.transactions.PeerInfoShort
 import net.taler.wallet.transactions.TransactionAction.Abort
@@ -40,6 +34,7 @@ import net.taler.wallet.transactions.TransactionAction.Suspend
 import net.taler.wallet.transactions.TransactionAmountComposable
 import net.taler.wallet.transactions.TransactionInfoComposable
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import net.taler.wallet.transactions.TransactionMinorState.CreatePurse
 import net.taler.wallet.transactions.TransactionMinorState.Ready
 import net.taler.wallet.transactions.TransactionPeerComposable
 import net.taler.wallet.transactions.TransactionPeerPullCredit
@@ -47,16 +42,23 @@ import net.taler.wallet.transactions.TransactionState
 
 @Composable
 fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit) {
+    if (t.error == null) PeerQrCode(
+        state = t.txState,
+        talerUri = t.talerUri,
+    )
+
     TransactionAmountComposable(
         label = stringResource(id = R.string.receive_amount),
         amount = t.amountEffective,
         amountType = AmountType.Positive,
     )
+
     TransactionAmountComposable(
         label = stringResource(id = R.string.amount_chosen),
         amount = t.amountRaw,
         amountType = AmountType.Neutral,
     )
+
     val fee = t.amountRaw - t.amountEffective
     if (!fee.isZero()) {
         TransactionAmountComposable(
@@ -65,32 +67,20 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
             amountType = AmountType.Negative,
         )
     }
+
     TransactionInfoComposable(
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
     )
-    if (t.txState == TransactionState(Pending, Ready)) {
-        QrCodeUriComposable(
-            talerUri = t.talerUri,
-            clipBoardLabel = "Invoice",
-            buttonText = stringResource(id = R.string.copy),
-        ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.bodyLarge,
-                text = stringResource(id = R.string.receive_peer_invoice_uri),
-            )
-        }
-    }
 }
 
 @Preview
 @Composable
-fun TransactionPeerPullCreditPreview() {
+fun TransactionPeerPullCreditPreview(loading: Boolean = false) {
     val t = TransactionPeerPullCredit(
         transactionId = "transactionId",
         timestamp = Timestamp.fromMillis(System.currentTimeMillis() - 360 * 60 * 1000),
-        txState = TransactionState(Pending),
+        txState = TransactionState(Pending, if (loading) CreatePurse else Ready),
         txActions = listOf(Retry, Suspend, Abort),
         exchangeBaseUrl = "https://exchange.example.org/",
         amountRaw = Amount.fromString("TESTKUDOS", "42.23"),
@@ -105,4 +95,10 @@ fun TransactionPeerPullCreditPreview() {
     Surface {
         TransactionPeerComposable(t, true) {}
     }
+}
+
+@Preview
+@Composable
+fun TransactionPeerPullCreditLoadingPreview() {
+    TransactionPeerPullCreditPreview(loading = true)
 }
