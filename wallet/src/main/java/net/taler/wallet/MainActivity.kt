@@ -55,6 +55,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 import com.journeyapps.barcodescanner.ScanOptions.QR_CODE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.taler.common.EventObserver
 import net.taler.common.isOnline
 import net.taler.common.showError
@@ -283,6 +284,37 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     nav.navigate(R.id.action_global_promptWithdraw)
                     model.withdrawManager.getWithdrawalDetails(u2)
                 }
+
+                action.startsWith("withdraw-exchange/", ignoreCase = true) -> {
+                    model.showProgressBar.value = true
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val response = model.withdrawManager.prepareManualWithdrawal(u2)
+                        if (response == null) withContext(Dispatchers.Main) {
+                            model.showProgressBar.value = false
+                            nav.navigate(R.id.errorFragment)
+                        } else {
+                            val exchange =
+                                model.exchangeManager.findExchangeByUrl(response.exchangeBaseUrl)
+                            if (exchange == null) withContext(Dispatchers.Main) {
+                                model.showProgressBar.value = false
+                                showError(R.string.exchange_add_error)
+                            } else {
+                                model.exchangeManager.withdrawalExchange = exchange
+                                withContext(Dispatchers.Main) {
+                                    model.showProgressBar.value = false
+                                    val args = Bundle().apply {
+                                        if (response.amount != null) {
+                                            putString("amount", response.amount.toJSONString())
+                                        }
+                                    }
+                                    // there's more than one entry point, so use global action
+                                    nav.navigate(R.id.action_global_manual_withdrawal, args)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 action.startsWith("refund/", ignoreCase = true) -> {
                     model.showProgressBar.value = true
                     model.refundManager.refund(u2).observe(this, Observer(::onRefundResponse))

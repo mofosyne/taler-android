@@ -19,6 +19,7 @@ package net.taler.wallet.withdraw
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
@@ -117,6 +118,12 @@ data class WithdrawalDetailsForUri(
 )
 
 @Serializable
+data class WithdrawExchangeResponse(
+    val exchangeBaseUrl: String,
+    val amount: Amount? = null,
+)
+
+@Serializable
 data class ManualWithdrawalDetails(
     val tosAccepted: Boolean,
     val amountRaw: Amount,
@@ -212,6 +219,20 @@ class WithdrawManager(
                 )
             } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
         }
+    }
+
+    @WorkerThread
+    suspend fun prepareManualWithdrawal(uri: String): WithdrawExchangeResponse? {
+        withdrawStatus.postValue(WithdrawStatus.Loading(uri))
+        var response: WithdrawExchangeResponse? = null
+        api.request("prepareWithdrawExchange", WithdrawExchangeResponse.serializer()) {
+            put("talerUri", uri)
+        }.onError {
+            handleError("prepareWithdrawExchange", it)
+        }.onSuccess {
+            response = it
+        }
+        return response
     }
 
     private fun getExchangeTos(

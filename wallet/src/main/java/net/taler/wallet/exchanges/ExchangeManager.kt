@@ -37,6 +37,11 @@ data class ExchangeListResponse(
     val exchanges: List<ExchangeItem>,
 )
 
+@Serializable
+data class ExchangeDetailedResponse(
+    val exchange: ExchangeItem,
+)
+
 class ExchangeManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
@@ -100,6 +105,19 @@ class ExchangeManager(
         ).onSuccess { exchangeListResponse ->
             // just pick the first for now
             exchange = exchangeListResponse.exchanges.find { it.currency == currency }
+        }
+        return exchange
+    }
+
+    @WorkerThread
+    suspend fun findExchangeByUrl(exchangeUrl: String): ExchangeItem? {
+        var exchange: ExchangeItem? = null
+        api.request("getExchangeDetailedInfo", ExchangeDetailedResponse.serializer()) {
+            put("exchangeBaseUrl", exchangeUrl)
+        }.onError {
+            Log.e(TAG, "Error getExchangeDetailedInfo: $it")
+        }.onSuccess {
+            exchange = it.exchange
         }
         return exchange
     }

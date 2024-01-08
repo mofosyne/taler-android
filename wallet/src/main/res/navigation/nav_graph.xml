@@ -377,6 +377,10 @@
         app:destination="@id/promptWithdraw" />
 
     <action
+        android:id="@+id/action_global_manual_withdrawal"
+        app:destination="@id/nav_exchange_manual_withdrawal" />
+
+    <action
         android:id="@+id/action_global_promptPayment"
         app:destination="@id/promptPayment" />
 
