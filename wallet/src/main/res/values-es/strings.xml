@@ -209,7 +209,7 @@
     <string name="tip_received">Premio recibido</string>
     <string name="tip_fees">Comisión</string>
     <string name="send_deposit_bitcoin">A una cartera de Bitcoin</string>
-    <string name="settings_db_export">Base de datos</string>
+    <string name="settings_db_export">Exportar base de datos</string>
     <string name="settings_db_export_error">Error exportando base de datos</string>
     <string name="withdraw_manual_ready_warning">Asegúrate de usar el sujeto correcto; de lo contrario, el dinero no llegará a esta cartera.</string>
     <string name="transaction_action_kyc">Completar KYC</string>
@@ -251,4 +251,23 @@
     <string name="transactions_fail_dialog_title">Matar transacción</string>
     <string name="transactions_abort_dialog_message">¿Estás seguro de que deseas abortar esta transacción\? Los fondos en tránsito podrían perderse.</string>
     <string name="offline_banner">Sin acceso a internet</string>
+    <string name="error_broken_uri">Error: Este URI taler no funciona actualmente.</string>
+    <string name="withdraw_subtitle">Seleccione un cuenta bancaria destino</string>
+    <string name="withdraw_account">Cuenta #%1$d</string>
+    <string name="withdraw_account_currency">Cuenta #%1$d (%2$s)</string>
+    <string name="withdraw_transfer">Transferencia</string>
+    <string name="withdraw_conversion">Conversión</string>
+    <string name="withdraw_conversion_support">Este exchange soporta conversión de moneda</string>
+    <string name="exchange_list_add_dev">Agregar exchange de desarrollo</string>
+    <string name="settings_db_import">Importar base de datos</string>
+    <string name="settings_db_import_summary">Restaurar base de datos desde archivo</string>
+    <string name="settings_db_import_error">Error al importar la base de datos</string>
+    <string name="settings_db_import_success">Base de datos importada desde archivo</string>
+    <string name="settings_dialog_reset_message">Realmente quieres reiniciar la biiletera y perder todas las monedas y compras?</string>
+    <string name="settings_dialog_import_message">Esta operación sobreescribirá toda tu base de datos. Realmente quieres continuar?</string>
+    <string name="settings_alert_reset_done">La billetera ha sido reiniciada</string>
+    <string name="settings_alert_reset_canceled">Reinicio cancelado</string>
+    <string name="settings_alert_import_canceled">Importación cancelada</string>
+    <string name="import_db">Importar</string>
+    <string name="reset">Reiniciar</string>
 </resources>
