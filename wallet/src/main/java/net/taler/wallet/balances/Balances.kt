@@ -1,6 +1,6 @@
 /*
  * This file is part of GNU Taler
- * (C) 2020 Taler Systems S.A.
+ * (C) 2024 Taler Systems S.A.
  *
  * GNU Taler is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -17,8 +17,14 @@
 package net.taler.wallet.balances
 
 import kotlinx.serialization.Serializable
+import net.taler.common.Amount
 
 @Serializable
-data class BalanceResponse(
-    val balances: List<BalanceItem>
-)
+data class BalanceItem(
+    val available: Amount,
+    val pendingIncoming: Amount,
+    val pendingOutgoing: Amount,
+) {
+    val currency: String get() = available.currency
+    val hasPending: Boolean get() = !pendingIncoming.isZero() || !pendingOutgoing.isZero()
+}

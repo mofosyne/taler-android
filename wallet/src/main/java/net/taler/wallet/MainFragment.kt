@@ -26,7 +26,8 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.EventObserver
 import net.taler.wallet.CurrencyMode.MULTI
 import net.taler.wallet.CurrencyMode.SINGLE
-import net.taler.wallet.balances.BalanceItem
+import net.taler.wallet.balances.BalanceState
+import net.taler.wallet.balances.BalanceState.Success
 import net.taler.wallet.balances.BalancesFragment
 import net.taler.wallet.databinding.FragmentMainBinding
 import net.taler.wallet.transactions.TransactionsFragment
@@ -50,7 +51,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        model.balances.observe(viewLifecycleOwner) {
+        model.balanceManager.state.observe(viewLifecycleOwner) {
             onBalancesChanged(it)
         }
         model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
@@ -72,10 +73,12 @@ class MainFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        model.loadBalances()
+        model.balanceManager.loadBalances()
     }
 
-    private fun onBalancesChanged(balances: List<BalanceItem>) {
+    private fun onBalancesChanged(state: BalanceState) {
+        if (state !is Success) return
+        val balances = state.balances
         val mode = if (balances.size == 1) SINGLE else MULTI
         if (currencyMode != mode) {
             val f = if (mode == SINGLE) {

@@ -22,10 +22,8 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
@@ -37,8 +35,7 @@ import net.taler.wallet.backend.NotificationReceiver
 import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletCoreVersion
-import net.taler.wallet.balances.BalanceItem
-import net.taler.wallet.balances.BalanceResponse
+import net.taler.wallet.balances.BalanceManager
 import net.taler.wallet.deposit.DepositManager
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
@@ -60,9 +57,6 @@ class MainViewModel(
     app: Application,
 ) : AndroidViewModel(app), VersionReceiver, NotificationReceiver {
 
-    private val mBalances = MutableLiveData<List<BalanceItem>>()
-    val balances: LiveData<List<BalanceItem>> = mBalances.distinctUntilChanged()
-
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
     var walletVersion: String? = null
@@ -83,6 +77,7 @@ class MainViewModel(
         PendingOperationsManager(api, viewModelScope)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
+    val balanceManager = BalanceManager(api, viewModelScope)
     val exchangeManager: ExchangeManager = ExchangeManager(api, viewModelScope)
     val peerManager: PeerManager = PeerManager(api, exchangeManager, viewModelScope)
     val settingsManager: SettingsManager = SettingsManager(app.applicationContext, api, viewModelScope)
@@ -108,7 +103,7 @@ class MainViewModel(
 
         // Only update balances when we're told they changed
         if (payload.type == "balance-change") {
-            loadBalances()
+            balanceManager.loadBalances()
         }
 
         if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {
@@ -122,19 +117,6 @@ class MainViewModel(
         }
     }
 
-    @UiThread
-    fun loadBalances(): Job = viewModelScope.launch {
-        showProgressBar.value = true
-        val response = api.request("getBalances", BalanceResponse.serializer())
-        showProgressBar.value = false
-        response.onError {
-            Log.e(TAG, "Error retrieving balances: $it")
-        }
-        response.onSuccess {
-            mBalances.value = it.balances
-        }
-    }
-
     /**
      * Navigates to the given currency's transaction list, when [MainFragment] is shown.
      */
@@ -145,7 +127,7 @@ class MainViewModel(
 
     @UiThread
     fun getCurrencies(): List<String> {
-        return balances.value?.map { balanceItem ->
+        return balanceManager.balancesOrNull?.map { balanceItem ->
             balanceItem.currency
         } ?: emptyList()
     }
@@ -163,7 +145,7 @@ class MainViewModel(
 
     @UiThread
     fun hasSufficientBalance(amount: Amount): Boolean {
-        balances.value?.forEach { balanceItem ->
+        balanceManager.balancesOrNull?.forEach { balanceItem ->
             if (balanceItem.currency == amount.currency) {
                 return balanceItem.available >= amount
             }
@@ -177,7 +159,7 @@ class MainViewModel(
             api.sendRequest("clearDb")
         }
         withdrawManager.testWithdrawalStatus.value = null
-        mBalances.value = emptyList()
+        balanceManager.resetBalances()
     }
 
     fun startTunnel() {
