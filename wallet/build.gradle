@@ -60,6 +60,8 @@ android {
         fdroid {
             dimension "distributionChannel"
             applicationIdSuffix ".fdroid"
+            // version codes get multiplied by 10 and an ABI suffix gets added to the code
+            // if 'splitApk' property is set
         }
         google {
             dimension "distributionChannel"
@@ -99,6 +101,15 @@ android {
         }
         resources {
             excludes += ['META-INF/*.kotlin_module']
+        }
+    }
+    splits {
+        abi {
+            // can not be defined per flavor, so we use a property to turn this on for F-Droid
+            enable project.hasProperty('splitApk')
+            reset() // Resets the list of ABIs to remove all included by default
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            universalApk false
         }
     }
 
@@ -165,5 +176,22 @@ dependencies {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    }
+}
+
+// Map for the version code that gives each ABI a value.
+ext.abiCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, x86: 3, x86_64: 4]
+// For each APK output variant, override versionCode with a combination of ext.abiCodes + variant.versionCode.
+android.applicationVariants.configureEach { variant ->
+    // Assigns a different version code for each output APK
+    variant.outputs.each { output ->
+        // Stores the value of ext.abiCodes that is associated with the ABI for this variant.
+        def baseAbiVersionCode =
+                // Determines the ABI for this variant and returns the mapped value.
+                project.ext.abiCodes.get(output.getFilter(com.android.build.OutputFile.ABI))
+        if (baseAbiVersionCode != null) {
+            output.versionCodeOverride = 10 * variant.versionCode + baseAbiVersionCode
+        }
+        // leaves version code alone of there's no baseAbiVersionCode
     }
 }
