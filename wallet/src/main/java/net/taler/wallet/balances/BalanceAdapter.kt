@@ -24,20 +24,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import kotlinx.serialization.Serializable
-import net.taler.common.Amount
 import net.taler.wallet.R
 import net.taler.wallet.balances.BalanceAdapter.BalanceViewHolder
-
-@Serializable
-data class BalanceItem(
-    val available: Amount,
-    val pendingIncoming: Amount,
-    val pendingOutgoing: Amount
-) {
-    val currency: String get() = available.currency
-    val hasPending: Boolean get() = !pendingIncoming.isZero() || !pendingOutgoing.isZero()
-}
 
 class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 

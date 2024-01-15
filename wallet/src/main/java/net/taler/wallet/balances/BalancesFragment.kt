@@ -30,7 +30,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import net.taler.common.fadeIn
 import net.taler.wallet.MainViewModel
+import net.taler.wallet.balances.BalanceState.Error
+import net.taler.wallet.balances.BalanceState.Loading
+import net.taler.wallet.balances.BalanceState.None
+import net.taler.wallet.balances.BalanceState.Success
 import net.taler.wallet.databinding.FragmentBalancesBinding
+import net.taler.wallet.showError
 
 interface BalanceClickListener {
     fun onBalanceClick(currency: String)
@@ -59,20 +64,30 @@ class BalancesFragment : Fragment(),
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
         }
 
-        model.balances.observe(viewLifecycleOwner) {
+        model.balanceManager.state.observe(viewLifecycleOwner) {
             onBalancesChanged(it)
         }
     }
 
-    private fun onBalancesChanged(balances: List<BalanceItem>) {
-        beginDelayedTransition(view as ViewGroup)
-        if (balances.isEmpty()) {
-            ui.mainEmptyState.visibility = VISIBLE
-            ui.mainList.visibility = GONE
-        } else {
-            balancesAdapter.setItems(balances)
-            ui.mainEmptyState.visibility = INVISIBLE
-            ui.mainList.fadeIn()
+    private fun onBalancesChanged(state: BalanceState) {
+        model.showProgressBar.value = false
+        when (state) {
+            is None -> {}
+            is Loading -> {
+                model.showProgressBar.value = true
+            }
+            is Success -> {
+                beginDelayedTransition(view as ViewGroup)
+                if (state.balances.isEmpty()) {
+                    ui.mainEmptyState.visibility = VISIBLE
+                    ui.mainList.visibility = GONE
+                } else {
+                    balancesAdapter.setItems(state.balances)
+                    ui.mainEmptyState.visibility = INVISIBLE
+                    ui.mainList.fadeIn()
+                }
+            }
+            is Error -> showError(state.error)
         }
     }
 
