@@ -16,15 +16,42 @@
 
 package net.taler.wallet.balances
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
 
 @Serializable
 data class BalanceItem(
+    val scopeInfo: ScopeInfo,
     val available: Amount,
     val pendingIncoming: Amount,
     val pendingOutgoing: Amount,
 ) {
     val currency: String get() = available.currency
     val hasPending: Boolean get() = !pendingIncoming.isZero() || !pendingOutgoing.isZero()
+}
+
+@Serializable
+sealed class ScopeInfo {
+    abstract val currency: String
+
+    @Serializable
+    @SerialName("global")
+    data class Global(
+        override val currency: String
+    ): ScopeInfo()
+
+    @Serializable
+    @SerialName("exchange")
+    data class Exchange(
+        override val currency: String,
+        val url: String,
+    ): ScopeInfo()
+
+    @Serializable
+    @SerialName("auditor")
+    data class Auditor(
+        override val currency: String,
+        val url: String,
+    ): ScopeInfo()
 }
