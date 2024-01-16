@@ -26,20 +26,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import kotlinx.serialization.Serializable
 import net.taler.wallet.R
-import net.taler.wallet.cleanExchange
 import net.taler.wallet.exchanges.ExchangeAdapter.ExchangeItemViewHolder
-
-@Serializable
-data class ExchangeItem(
-    val exchangeBaseUrl: String,
-    // can be null before exchange info in wallet-core was fully loaded
-    val currency: String? = null,
-    val paytoUris: List<String>,
-) {
-    val name: String get() = cleanExchange(exchangeBaseUrl)
-}
 
 interface ExchangeClickListener {
     fun onExchangeSelected(item: ExchangeItem)
