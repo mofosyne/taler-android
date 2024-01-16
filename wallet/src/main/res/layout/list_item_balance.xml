@@ -49,6 +49,19 @@
         tools:text="TESTKUDOS" />
 
     <TextView
+        android:id="@+id/scopeView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/balanceAmountView"
+        app:layout_constraintBottom_toTopOf="@id/balanceInboundAmount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/pendingView"
+        tools:text="@string/balance_scope_exchange"
+        tools:visibility="visible"/>
+
+    <TextView
         android:id="@+id/balanceInboundAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,7 +72,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/balanceAmountView"
+        app:layout_constraintTop_toBottomOf="@+id/scopeView"
         tools:text="+10 TESTKUDOS"
         tools:visibility="visible" />
 

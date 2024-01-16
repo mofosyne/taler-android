@@ -78,6 +78,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="amount_chosen">Chosen Amount</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
+    <string name="balance_scope_exchange">Exchange: %1$s</string>
+    <string name="balance_scope_auditor">Auditor: %1$s</string>
 
     <string name="transactions_title">Transactions</string>
     <string name="transactions_balance">Balance</string>

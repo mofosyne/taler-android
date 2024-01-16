@@ -26,6 +26,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import net.taler.wallet.R
 import net.taler.wallet.balances.BalanceAdapter.BalanceViewHolder
+import net.taler.wallet.balances.ScopeInfo.Auditor
+import net.taler.wallet.balances.ScopeInfo.Exchange
+import net.taler.wallet.balances.ScopeInfo.Global
+import net.taler.wallet.cleanExchange
 
 class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<BalanceViewHolder>() {
 
@@ -56,6 +60,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
     inner class BalanceViewHolder(private val v: View) : RecyclerView.ViewHolder(v) {
         private val currencyView: TextView = v.findViewById(R.id.balanceCurrencyView)
         private val amountView: TextView = v.findViewById(R.id.balanceAmountView)
+        private val scopeView: TextView = v.findViewById(R.id.scopeView)
         private val balanceInboundAmount: TextView = v.findViewById(R.id.balanceInboundAmount)
         private val balanceInboundLabel: TextView = v.findViewById(R.id.balanceInboundLabel)
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
@@ -75,6 +80,20 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
                 balanceInboundAmount.text =
                     v.context.getString(R.string.amount_positive, amountIncoming)
             }
+
+            val scopeInfo = item.scopeInfo
+            scopeView.visibility = when (scopeInfo) {
+                is Global -> GONE
+                is Exchange -> {
+                    scopeView.text = v.context.getString(R.string.balance_scope_exchange, cleanExchange(scopeInfo.url))
+                    VISIBLE
+                }
+                is Auditor -> {
+                    scopeView.text = v.context.getString(R.string.balance_scope_auditor, cleanExchange(scopeInfo.url))
+                    VISIBLE
+                }
+            }
+
             pendingView.visibility = if (item.hasPending) VISIBLE else GONE
         }
     }
