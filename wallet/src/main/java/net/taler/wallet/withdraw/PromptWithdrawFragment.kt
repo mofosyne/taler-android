@@ -36,16 +36,21 @@ import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.cleanExchange
 import net.taler.wallet.databinding.FragmentPromptWithdrawBinding
+import net.taler.wallet.exchanges.ExchangeItem
+import net.taler.wallet.exchanges.SelectExchangeDialogFragment
 import net.taler.wallet.withdraw.WithdrawStatus.Loading
 import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 import net.taler.wallet.withdraw.WithdrawStatus.TosReviewRequired
 import net.taler.wallet.withdraw.WithdrawStatus.Withdrawing
+import net.taler.wallet.withdraw.WithdrawStatus.NeedsExchange
 
 class PromptWithdrawFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
     private val transactionManager by lazy { model.transactionManager }
+
+    private val selectExchangeDialog = SelectExchangeDialogFragment()
 
     private lateinit var ui: FragmentPromptWithdrawBinding
 
@@ -64,22 +69,20 @@ class PromptWithdrawFragment : Fragment() {
         withdrawManager.withdrawStatus.observe(viewLifecycleOwner) {
             showWithdrawStatus(it)
         }
-        withdrawManager.exchangeSelection.observe(viewLifecycleOwner, EventObserver {
-            findNavController().navigate(R.id.action_promptWithdraw_to_selectExchangeFragment)
+
+        selectExchangeDialog.exchangeSelection.observe(viewLifecycleOwner, EventObserver {
+            onExchangeSelected(it)
         })
     }
 
     private fun showWithdrawStatus(status: WithdrawStatus?): Any = when (status) {
         null -> model.showProgressBar.value = false
         is Loading -> model.showProgressBar.value = true
-        is WithdrawStatus.NeedsExchange -> {
+        is NeedsExchange -> {
             model.showProgressBar.value = false
-            val exchangeSelection = status.exchangeSelection.getIfNotConsumed()
-            if (exchangeSelection == null) { // already consumed
-                findNavController().popBackStack()
-            } else {
-                withdrawManager.selectExchange(exchangeSelection)
-            }
+            if (selectExchangeDialog.dialog?.isShowing != true) {
+                selectExchange()
+            } else {}
         }
         is TosReviewRequired -> onTosReviewRequired(status)
         is ReceivedDetails -> onReceivedDetails(status)
@@ -178,8 +181,7 @@ class PromptWithdrawFragment : Fragment() {
         if (uri != null) {  // no Uri for manual withdrawals
             ui.selectExchangeButton.fadeIn()
             ui.selectExchangeButton.setOnClickListener {
-                val exchangeSelection = ExchangeSelection(amountRaw, uri)
-                withdrawManager.selectExchange(exchangeSelection)
+                selectExchange()
             }
         }
 
@@ -195,4 +197,44 @@ class PromptWithdrawFragment : Fragment() {
         ui.withdrawCard.fadeIn()
     }
 
+    private fun selectExchange() {
+        val exchanges = when (val status = withdrawManager.withdrawStatus.value) {
+            is ReceivedDetails -> status.possibleExchanges
+            is NeedsExchange -> status.possibleExchanges
+            is TosReviewRequired -> status.possibleExchanges
+            else -> return
+        }
+        selectExchangeDialog.setExchanges(exchanges)
+        selectExchangeDialog.show(parentFragmentManager, "SELECT_EXCHANGE")
+    }
+
+    private fun onExchangeSelected(exchange: ExchangeItem) {
+        val status = withdrawManager.withdrawStatus.value
+        val amount = when (status) {
+            is ReceivedDetails -> status.amountRaw
+            is NeedsExchange -> status.amount
+            is TosReviewRequired -> status.amountRaw
+            else -> return
+        }
+        val uri = when (status) {
+            is ReceivedDetails -> status.talerWithdrawUri
+            is NeedsExchange -> status.talerWithdrawUri
+            is TosReviewRequired -> status.talerWithdrawUri
+            else -> return
+        }
+        val exchanges = when (status) {
+            is ReceivedDetails -> status.possibleExchanges
+            is NeedsExchange -> status.possibleExchanges
+            is TosReviewRequired -> status.possibleExchanges
+            else -> return
+        }
+
+        withdrawManager.getWithdrawalDetails(
+            exchangeBaseUrl = exchange.exchangeBaseUrl,
+            amount = amount,
+            showTosImmediately = false,
+            uri = uri,
+            possibleExchanges = exchanges,
+        )
+    }
 }

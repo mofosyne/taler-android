@@ -301,9 +301,6 @@
         android:label="@string/nav_prompt_withdraw"
         tools:layout="@layout/fragment_prompt_withdraw">
         <action
-            android:id="@+id/action_promptWithdraw_to_selectExchangeFragment"
-            app:destination="@id/selectExchangeFragment" />
-        <action
             android:id="@+id/action_promptWithdraw_to_reviewExchangeTOS"
             app:destination="@id/reviewExchangeTOS" />
         <action
@@ -334,12 +331,6 @@
             app:destination="@id/promptWithdraw"
             app:popUpTo="@id/nav_main" />
     </fragment>
-    <fragment
-        android:id="@+id/selectExchangeFragment"
-        android:name="net.taler.wallet.exchanges.SelectExchangeFragment"
-        android:label="@string/nav_exchange_select"
-        tools:layout="@layout/fragment_exchange_list" />
-
     <fragment
         android:id="@+id/nav_pending_operations"
         android:name="net.taler.wallet.pending.PendingOperationsFragment"
