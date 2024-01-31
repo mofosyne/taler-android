@@ -77,13 +77,14 @@ data class TalerErrorInfo(
         get() {
             return StringBuilder().apply {
                 // If there's a hint in errorResponse, use it.
-                extra["errorResponse"]
-                    ?.jsonObject
-                    ?.get("hint")
-                    ?.let {
-                        append(it.jsonPrimitive.content)
-                    } ?: {
-                    // Otherwise, use the standard ones.
+                if (extra.containsKey("errorResponse")) {
+                    val errorResponse = extra["errorResponse"]!!.jsonObject
+                    if (errorResponse.containsKey("hint")) {
+                        val hint = errorResponse["hint"]!!.jsonPrimitive.content
+                        append(hint)
+                    }
+                } else {
+                    // Otherwise, use the standard ones
                     hint?.let { append(it) }
                     message?.let { append(" ").append(it) }
                 }
