@@ -29,10 +29,13 @@ fun interface VersionReceiver {
 
 @Serializable
 data class WalletCoreVersion(
-    val hash: String? = null,
+    val implementationSemver: String,
+    val implementationGitHash: String,
     val version: String,
     val exchange: String,
     val merchant: String,
-    val bank: String,
+    val bankIntegrationApiRange: String,
+    val bankConversionApiRange: String,
+    val corebankApiRange: String,
     val devMode: Boolean,
 )
