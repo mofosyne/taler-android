@@ -97,6 +97,10 @@
             android:id="@+id/action_promptPayment_to_alreadyPaid"
             app:destination="@id/alreadyPaid"
             app:popUpTo="@id/nav_main" />
+        <action
+            android:id="@+id/action_promptPayment_to_nav_transactions_detail_payment"
+            app:destination="@id/nav_transactions_detail_payment"
+            app:popUpTo="@id/nav_main" />
     </fragment>
 
     <fragment

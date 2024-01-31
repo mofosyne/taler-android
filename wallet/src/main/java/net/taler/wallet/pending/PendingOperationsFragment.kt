@@ -17,14 +17,11 @@
 package net.taler.wallet.pending
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -36,13 +33,11 @@ import androidx.recyclerview.widget.RecyclerView
 import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.TAG
 import net.taler.wallet.databinding.FragmentPendingOperationsBinding
 import org.json.JSONObject
 
 interface PendingOperationClickListener {
     fun onPendingOperationClick(type: String, detail: JSONObject)
-    fun onPendingOperationActionClick(type: String, detail: JSONObject)
 }
 
 class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
@@ -113,20 +108,6 @@ class PendingOperationsFragment : Fragment(), PendingOperationClickListener {
     override fun onPendingOperationClick(type: String, detail: JSONObject) {
         requireActivity().showError("No detail view for $type implemented yet.")
     }
-
-    override fun onPendingOperationActionClick(type: String, detail: JSONObject) {
-        when (type) {
-            "proposal-choice" -> {
-                Log.v(TAG, "got action click on proposal-choice")
-                val proposalId = detail.optString("proposalId", "")
-                if (proposalId == "") {
-                    return
-                }
-                model.paymentManager.abortProposal(proposalId)
-            }
-        }
-    }
-
 }
 
 class PendingOperationsAdapter(
@@ -154,22 +135,6 @@ class PendingOperationsAdapter(
         val pendingContainer = holder.rowView.findViewById<LinearLayout>(R.id.pending_container)
         pendingContainer.setOnClickListener {
             listener.onPendingOperationClick(p.type, p.detail)
-        }
-        when (p.type) {
-            "proposal-choice" -> {
-                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = btn1.context.getString(R.string.pending_operations_refuse)
-                btn1.visibility = VISIBLE
-                btn1.setOnClickListener {
-                    listener.onPendingOperationActionClick(p.type, p.detail)
-                }
-            }
-            else -> {
-                val btn1 = holder.rowView.findViewById<TextView>(R.id.button_pending_action_1)
-                btn1.text = btn1.context.getString(R.string.pending_operations_no_action)
-                btn1.visibility = GONE
-                btn1.setOnClickListener {}
-            }
         }
         val textView = holder.rowView.findViewById<TextView>(R.id.pending_text)
         val subTextView = holder.rowView.findViewById<TextView>(R.id.pending_subtext)

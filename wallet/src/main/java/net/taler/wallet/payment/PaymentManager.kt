@@ -41,7 +41,7 @@ sealed class PayStatus {
     object Loading : PayStatus()
     data class Prepared(
         val contractTerms: ContractTerms,
-        val proposalId: String,
+        val transactionId: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
     ) : PayStatus()
@@ -51,10 +51,18 @@ sealed class PayStatus {
         val amountRaw: Amount,
     ) : PayStatus()
 
-    // TODO bring user to fulfilment URI
-    object AlreadyPaid : PayStatus()
-    data class Error(val error: TalerErrorInfo) : PayStatus()
-    data class Success(val currency: String) : PayStatus()
+    data class AlreadyPaid(
+        val transactionId: String,
+    ) : PayStatus()
+
+    data class Error(
+        val transactionId: String? = null,
+        val error: TalerErrorInfo,
+    ) : PayStatus()
+    data class Success(
+        val transactionId: String,
+        val currency: String,
+    ) : PayStatus()
 }
 
 class PaymentManager(
@@ -76,32 +84,33 @@ class PaymentManager(
             mPayStatus.value = when (response) {
                 is PaymentPossibleResponse -> response.toPayStatusPrepared()
                 is InsufficientBalanceResponse -> InsufficientBalance(
-                    response.contractTerms,
-                    response.amountRaw
+                    contractTerms = response.contractTerms,
+                    amountRaw = response.amountRaw
                 )
-
-                is AlreadyConfirmedResponse -> AlreadyPaid
+                is AlreadyConfirmedResponse -> AlreadyPaid(
+                    transactionId = response.transactionId,
+                )
             }
         }
     }
 
-    fun confirmPay(proposalId: String, currency: String) = scope.launch {
+    fun confirmPay(transactionId: String, currency: String) = scope.launch {
         api.request("confirmPay", ConfirmPayResult.serializer()) {
-            put("proposalId", proposalId)
+            put("transactionId", transactionId)
         }.onError {
             handleError("confirmPay", it)
-        }.onSuccess {
-            mPayStatus.postValue(PayStatus.Success(currency))
+        }.onSuccess { response ->
+            mPayStatus.postValue(when (response) {
+                is ConfirmPayResult.Done -> PayStatus.Success(
+                    transactionId = response.transactionId,
+                    currency = currency,
+                )
+                is ConfirmPayResult.Pending -> PayStatus.Error(
+                    transactionId = response.transactionId,
+                    error = response.lastError,
+                )
+            })
         }
-    }
-
-    @UiThread
-    fun abortPay() {
-        val ps = payStatus.value
-        if (ps is PayStatus.Prepared) {
-            abortProposal(ps.proposalId)
-        }
-        resetPayStatus()
     }
 
     fun preparePayForTemplate(url: String, summary: String?, amount: Amount?) = scope.launch {
@@ -122,20 +131,10 @@ class PaymentManager(
                     amountRaw = response.amountRaw,
                 )
 
-                is AlreadyConfirmedResponse -> AlreadyPaid
+                is AlreadyConfirmedResponse -> AlreadyPaid(
+                    transactionId = response.transactionId,
+                )
             }
-        }
-    }
-
-    internal fun abortProposal(proposalId: String) = scope.launch {
-        Log.i(TAG, "aborting proposal")
-        api.request<Unit>("abortProposal") {
-            put("proposalId", proposalId)
-        }.onError {
-            Log.e(TAG, "received error response to abortProposal")
-            handleError("abortProposal", it)
-        }.onSuccess {
-            mPayStatus.postValue(PayStatus.None)
         }
     }
 
@@ -146,7 +145,7 @@ class PaymentManager(
 
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
-        mPayStatus.value = PayStatus.Error(error)
+        mPayStatus.value = PayStatus.Error(error = error)
     }
 
 }

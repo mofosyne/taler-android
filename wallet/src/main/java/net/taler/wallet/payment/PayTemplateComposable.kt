@@ -149,7 +149,7 @@ fun PayTemplateAlreadyPaidPreview() {
         PayTemplateComposable(
             defaultSummary = "Donation",
             amountStatus = AmountFieldStatus.Default("20", "ARS"),
-            payStatus = PayStatus.AlreadyPaid,
+            payStatus = PayStatus.AlreadyPaid(transactionId = "transactionId"),
             currencies = listOf("KUDOS", "ARS"),
             onCreateAmount = { text, currency ->
                 AmountResult.Success(amount = Amount.fromString(currency, text))
