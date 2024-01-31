@@ -94,10 +94,6 @@
             app:destination="@id/nav_main"
             app:popUpTo="@id/nav_main" />
         <action
-            android:id="@+id/action_promptPayment_to_alreadyPaid"
-            app:destination="@id/alreadyPaid"
-            app:popUpTo="@id/nav_main" />
-        <action
             android:id="@+id/action_promptPayment_to_nav_transactions_detail_payment"
             app:destination="@id/nav_transactions_detail_payment"
             app:popUpTo="@id/nav_main" />
@@ -298,12 +294,6 @@
         android:name="net.taler.wallet.tip.AlreadyAcceptedFragment"
         android:label="@string/tip_already_accepted"
         tools:layout="@layout/fragment_already_accepted" />
-
-    <fragment
-        android:id="@+id/alreadyPaid"
-        android:name="net.taler.wallet.payment.AlreadyPaidFragment"
-        android:label="@string/payment_already_paid_title"
-        tools:layout="@layout/fragment_already_paid" />
 
     <fragment
         android:id="@+id/promptWithdraw"
