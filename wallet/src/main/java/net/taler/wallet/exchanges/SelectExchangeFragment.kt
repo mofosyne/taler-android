@@ -18,6 +18,7 @@ package net.taler.wallet.exchanges
 
 import androidx.navigation.fragment.findNavController
 import net.taler.common.fadeOut
+import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 
 class SelectExchangeFragment : ExchangeListFragment() {
 
@@ -30,17 +31,23 @@ class SelectExchangeFragment : ExchangeListFragment() {
 
     override fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
         ui.progressBar.fadeOut()
-        super.onExchangeUpdate(exchanges.filter { exchangeItem ->
-            exchangeItem.currency == exchangeSelection.amount.currency
-        })
+        val status = withdrawManager.withdrawStatus.value
+        if (status is ReceivedDetails) {
+            super.onExchangeUpdate(status.possibleExchanges)
+        } else {
+            findNavController().navigateUp()
+        }
     }
 
     override fun onExchangeSelected(item: ExchangeItem) {
+        val status = withdrawManager.withdrawStatus.value
+        val exchanges = (status as? ReceivedDetails)?.possibleExchanges ?: emptyList()
         withdrawManager.getWithdrawalDetails(
             exchangeBaseUrl = item.exchangeBaseUrl,
             amount = exchangeSelection.amount,
             showTosImmediately = true,
             uri = exchangeSelection.talerWithdrawUri,
+            possibleExchanges = exchanges,
         )
         findNavController().navigateUp()
     }
