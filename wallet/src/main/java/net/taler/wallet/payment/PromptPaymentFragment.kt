@@ -18,22 +18,27 @@ package net.taler.wallet.payment
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.TAG
 import net.taler.wallet.databinding.FragmentPromptPaymentBinding
 import net.taler.wallet.showError
 
@@ -44,6 +49,7 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
 
     private val model: MainViewModel by activityViewModels()
     private val paymentManager by lazy { model.paymentManager }
+    private val transactionManager by lazy { model.transactionManager }
 
     private lateinit var ui: FragmentPromptPaymentBinding
     private val adapter = ProductAdapter(this)
@@ -68,7 +74,15 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
     override fun onDestroy() {
         super.onDestroy()
         if (!requireActivity().isChangingConfigurations) {
-            paymentManager.abortPay()
+            val payStatus = paymentManager.payStatus.value as? PayStatus.Prepared ?: return
+            transactionManager.abortTransaction(payStatus.transactionId) { error ->
+                Log.e(TAG, "Error abortTransaction $error")
+                if (model.devMode.value == false) {
+                    showError(error.userFacingMsg)
+                } else {
+                    showError(error)
+                }
+            }
         }
     }
 
@@ -92,8 +106,8 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
                 ui.bottom.confirmButton.setOnClickListener {
                     model.showProgressBar.value = true
                     paymentManager.confirmPay(
-                        payStatus.proposalId,
-                        payStatus.contractTerms.amount.currency
+                        transactionId = payStatus.transactionId,
+                        currency = payStatus.contractTerms.amount.currency,
                     )
                     ui.bottom.confirmButton.fadeOut()
                     ui.bottom.confirmProgressBar.fadeIn()
@@ -108,14 +122,14 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             is PayStatus.Success -> {
                 showLoading(false)
                 paymentManager.resetPayStatus()
-                findNavController().navigate(R.id.action_promptPayment_to_nav_main)
-                model.showTransactions(payStatus.currency)
+                navigateToTransaction(payStatus.transactionId)
                 Snackbar.make(requireView(), R.string.payment_initiated, LENGTH_LONG).show()
             }
             is PayStatus.AlreadyPaid -> {
                 showLoading(false)
                 paymentManager.resetPayStatus()
-                findNavController().navigate(R.id.action_promptPayment_to_alreadyPaid)
+                navigateToTransaction(payStatus.transactionId)
+                Snackbar.make(requireView(), R.string.payment_already_paid, LENGTH_LONG).show()
             }
             is PayStatus.Error -> {
                 showLoading(false)
@@ -158,4 +172,13 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         f.show(parentFragmentManager, "image")
     }
 
+    private fun navigateToTransaction(id: String) {
+        lifecycleScope.launch {
+            if (transactionManager.selectTransaction(id)) {
+                findNavController().navigate(R.id.action_promptPayment_to_nav_transactions_detail_payment)
+            } else {
+                findNavController().navigate(R.id.action_promptPayment_to_nav_main)
+            }
+        }
+    }
 }

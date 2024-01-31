@@ -32,14 +32,14 @@ sealed class PreparePayResponse {
     @Serializable
     @SerialName("payment-possible")
     data class PaymentPossibleResponse(
-        val proposalId: String,
+        val transactionId: String,
         val amountRaw: Amount,
         val amountEffective: Amount,
         val contractTerms: ContractTerms,
     ) : PreparePayResponse() {
         fun toPayStatusPrepared() = PayStatus.Prepared(
             contractTerms = contractTerms,
-            proposalId = proposalId,
+            transactionId = transactionId,
             amountRaw = amountRaw,
             amountEffective = amountEffective,
         )
@@ -48,7 +48,6 @@ sealed class PreparePayResponse {
     @Serializable
     @SerialName("insufficient-balance")
     data class InsufficientBalanceResponse(
-        val proposalId: String,
         val amountRaw: Amount,
         val contractTerms: ContractTerms,
     ) : PreparePayResponse()
@@ -56,13 +55,13 @@ sealed class PreparePayResponse {
     @Serializable
     @SerialName("already-confirmed")
     data class AlreadyConfirmedResponse(
-        val proposalId: String,
+        val transactionId: String,
         /**
          * Did the payment succeed?
          */
         val paid: Boolean,
         val amountRaw: Amount,
-        val amountEffective: Amount,
+        val amountEffective: Amount? = null,
         val contractTerms: ContractTerms,
     ) : PreparePayResponse()
 }
@@ -71,9 +70,15 @@ sealed class PreparePayResponse {
 sealed class ConfirmPayResult {
     @Serializable
     @SerialName("done")
-    data class Done(val contractTerms: ContractTerms) : ConfirmPayResult()
+    data class Done(
+        val transactionId: String,
+        val contractTerms: ContractTerms,
+    ) : ConfirmPayResult()
 
     @Serializable
     @SerialName("pending")
-    data class Pending(val lastError: TalerErrorInfo) : ConfirmPayResult()
+    data class Pending(
+        val transactionId: String,
+        val lastError: TalerErrorInfo,
+    ) : ConfirmPayResult()
 }
