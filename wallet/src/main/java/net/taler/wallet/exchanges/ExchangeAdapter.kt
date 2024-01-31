@@ -33,6 +33,7 @@ interface ExchangeClickListener {
     fun onExchangeSelected(item: ExchangeItem)
     fun onManualWithdraw(item: ExchangeItem)
     fun onPeerReceive(item: ExchangeItem)
+    fun onExchangeDelete(item: ExchangeItem)
 }
 
 internal class ExchangeAdapter(
@@ -96,6 +97,10 @@ internal class ExchangeAdapter(
                     }
                     R.id.action_receive_peer -> {
                         listener.onPeerReceive(item)
+                        true
+                    }
+                    R.id.action_delete -> {
+                        listener.onExchangeDelete(item)
                         true
                     }
                     else -> false
