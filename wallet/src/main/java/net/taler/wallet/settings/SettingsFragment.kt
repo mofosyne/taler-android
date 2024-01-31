@@ -28,7 +28,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import net.taler.common.showError
-import net.taler.qtart.BuildConfig.WALLET_CORE_VERSION
 import net.taler.wallet.BuildConfig.FLAVOR
 import net.taler.wallet.BuildConfig.VERSION_CODE
 import net.taler.wallet.BuildConfig.VERSION_NAME
@@ -104,7 +103,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefDevMode.isChecked = enabled
             if (enabled) {
                 prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
-                prefVersionCore.summary = WALLET_CORE_VERSION
+                prefVersionCore.summary = "${model.walletVersion} (${model.walletVersionHash?.take(7)})"
                 model.exchangeVersion?.let { prefVersionExchange.summary = it }
                 model.merchantVersion?.let { prefVersionMerchant.summary = it }
             }

@@ -66,6 +66,10 @@ class MainViewModel(
 
     val devMode = MutableLiveData(BuildConfig.DEBUG)
     val showProgressBar = MutableLiveData<Boolean>()
+    var walletVersion: String? = null
+        private set
+    var walletVersionHash: String? = null
+        private set
     var exchangeVersion: String? = null
         private set
     var merchantVersion: String? = null
@@ -94,6 +98,8 @@ class MainViewModel(
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
 
     override fun onVersionReceived(versionInfo: WalletCoreVersion) {
+        walletVersion = versionInfo.implementationSemver
+        walletVersionHash = versionInfo.implementationGitHash
         exchangeVersion = versionInfo.exchange
         merchantVersion = versionInfo.merchant
     }
