@@ -52,6 +52,7 @@ sealed class WithdrawStatus {
         val tosText: String,
         val tosEtag: String,
         val showImmediately: Event<Boolean>,
+        val possibleExchanges: List<ExchangeItem> = emptyList(),
     ) : WithdrawStatus()
 
     data class ReceivedDetails(
@@ -61,6 +62,7 @@ sealed class WithdrawStatus {
         val amountEffective: Amount,
         val withdrawalAccountList: List<WithdrawalExchangeAccountDetails>,
         val ageRestrictionOptions: List<Int>? = null,
+        val possibleExchanges: List<ExchangeItem> = emptyList(),
     ) : WithdrawStatus()
 
     data object Withdrawing : WithdrawStatus()
@@ -191,6 +193,7 @@ class WithdrawManager(
                 amount = details.amount,
                 showTosImmediately = false,
                 uri = uri,
+                possibleExchanges = details.possibleExchanges,
             )
         }
     }
@@ -200,6 +203,7 @@ class WithdrawManager(
         amount: Amount,
         showTosImmediately: Boolean = false,
         uri: String? = null,
+        possibleExchanges: List<ExchangeItem> = emptyList(),
     ) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
         api.request("getWithdrawalDetailsForAmount", ManualWithdrawalDetails.serializer()) {
@@ -216,8 +220,9 @@ class WithdrawManager(
                     amountEffective = details.amountEffective,
                     withdrawalAccountList = details.withdrawalAccountsList,
                     ageRestrictionOptions = details.ageRestrictionOptions,
+                    possibleExchanges = possibleExchanges,
                 )
-            } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri)
+            } else getExchangeTos(exchangeBaseUrl, details, showTosImmediately, uri, possibleExchanges)
         }
     }
 
@@ -240,6 +245,7 @@ class WithdrawManager(
         details: ManualWithdrawalDetails,
         showImmediately: Boolean,
         uri: String?,
+        possibleExchanges: List<ExchangeItem>,
     ) = scope.launch {
         api.request("getExchangeTos", TosResponse.serializer()) {
             put("exchangeBaseUrl", exchangeBaseUrl)
@@ -256,6 +262,7 @@ class WithdrawManager(
                 tosText = it.content,
                 tosEtag = it.currentEtag,
                 showImmediately = showImmediately.toEvent(),
+                possibleExchanges = possibleExchanges,
             )
         }
     }
@@ -278,6 +285,7 @@ class WithdrawManager(
                 amountEffective = s.amountEffective,
                 withdrawalAccountList = s.withdrawalAccountList,
                 ageRestrictionOptions = s.ageRestrictionOptions,
+                possibleExchanges = s.possibleExchanges,
             )
         }
     }
