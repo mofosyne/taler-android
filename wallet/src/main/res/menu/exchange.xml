@@ -21,4 +21,7 @@
     <item
         android:id="@+id/action_receive_peer"
         android:title="@string/receive_peer" />
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/transactions_delete" />
 </menu>

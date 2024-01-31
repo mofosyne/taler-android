@@ -32,9 +32,11 @@ import androidx.lifecycle.Lifecycle.State.RESUMED
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.common.EventObserver
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.databinding.FragmentExchangeListBinding
@@ -101,6 +103,13 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
                 showError(error)
             }
         })
+        exchangeManager.deleteError.observe(viewLifecycleOwner, EventObserver { error ->
+            if (model.devMode.value == true) {
+                showError(error)
+            } else {
+                showError(error.userFacingMsg)
+            }
+        })
     }
 
     protected open fun onExchangeUpdate(exchanges: List<ExchangeItem>) {
@@ -136,4 +145,19 @@ open class ExchangeListFragment : Fragment(), ExchangeClickListener {
         findNavController().navigate(R.id.action_global_receiveFunds)
     }
 
+    override fun onExchangeDelete(item: ExchangeItem) {
+        val optionsArray = arrayOf(getString(R.string.exchange_delete_force))
+        val checkedArray = BooleanArray(1) { false }
+
+        MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
+            .setTitle(R.string.exchange_delete)
+            .setMultiChoiceItems(optionsArray, checkedArray) { _, which, isChecked ->
+                checkedArray[which] = isChecked
+            }
+            .setNegativeButton(R.string.transactions_delete) { _, _ ->
+                exchangeManager.delete(item.exchangeBaseUrl, checkedArray[0])
+            }
+            .setPositiveButton(R.string.cancel) { _, _ -> }
+            .show()
+    }
 }

@@ -59,6 +59,9 @@ class ExchangeManager(
     private val mListError = MutableLiveData<Event<TalerErrorInfo>>()
     val listError: LiveData<Event<TalerErrorInfo>> = mListError
 
+    private val mDeleteError = MutableLiveData<Event<TalerErrorInfo>>()
+    val deleteError: LiveData<Event<TalerErrorInfo>> = mDeleteError
+
     var withdrawalExchange: ExchangeItem? = null
 
     private fun list(): LiveData<List<ExchangeItem>> {
@@ -88,6 +91,22 @@ class ExchangeManager(
         }.onSuccess {
             mProgress.value = false
             Log.d(TAG, "Exchange $exchangeUrl added")
+            list()
+        }
+    }
+
+    fun delete(exchangeUrl: String, purge: Boolean = false) = scope.launch {
+        mProgress.value = true
+        api.request<Unit>("deleteExchange") {
+            put("exchangeBaseUrl", exchangeUrl)
+            put("purge", purge)
+        }.onError {
+            Log.e(TAG, "Error deleting exchange: $it")
+            mProgress.value = false
+            mDeleteError.value = it.toEvent()
+        }.onSuccess {
+            mProgress.value = false
+            Log.d(TAG, "Exchange $exchangeUrl deleted")
             list()
         }
     }
