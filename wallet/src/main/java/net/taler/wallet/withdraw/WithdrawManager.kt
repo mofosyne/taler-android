@@ -20,7 +20,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -40,7 +39,11 @@ import net.taler.wallet.withdraw.WithdrawStatus.ReceivedDetails
 sealed class WithdrawStatus {
     data class Loading(val talerWithdrawUri: String? = null) : WithdrawStatus()
 
-    data class NeedsExchange(val exchangeSelection: Event<ExchangeSelection>) : WithdrawStatus()
+    data class NeedsExchange(
+        val talerWithdrawUri: String,
+        val amount: Amount,
+        val possibleExchanges: List<ExchangeItem>,
+    ) : WithdrawStatus()
 
     data class TosReviewRequired(
         val talerWithdrawUri: String? = null,
@@ -146,11 +149,6 @@ data class AcceptManualWithdrawalResponse(
     val transactionId: String,
 )
 
-data class ExchangeSelection(
-    val amount: Amount,
-    val talerWithdrawUri: String,
-)
-
 class WithdrawManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
@@ -159,8 +157,6 @@ class WithdrawManager(
     val withdrawStatus = MutableLiveData<WithdrawStatus>()
     val testWithdrawalStatus = MutableLiveData<WithdrawTestStatus>()
 
-    private val _exchangeSelection = MutableLiveData<Event<ExchangeSelection>>()
-    val exchangeSelection: LiveData<Event<ExchangeSelection>> = _exchangeSelection
     var exchangeFees: ExchangeFees? = null
         private set
 
@@ -173,11 +169,6 @@ class WithdrawManager(
         }
     }
 
-    @UiThread
-    fun selectExchange(selection: ExchangeSelection) {
-        _exchangeSelection.value = selection.toEvent()
-    }
-
     fun getWithdrawalDetails(uri: String) = scope.launch {
         withdrawStatus.value = WithdrawStatus.Loading(uri)
         api.request("getWithdrawalDetailsForUri", WithdrawalDetailsForUri.serializer()) {
@@ -186,8 +177,11 @@ class WithdrawManager(
             handleError("getWithdrawalDetailsForUri", error)
         }.onSuccess { details ->
             if (details.defaultExchangeBaseUrl == null) {
-                val exchangeSelection = ExchangeSelection(details.amount, uri)
-                withdrawStatus.value = WithdrawStatus.NeedsExchange(exchangeSelection.toEvent())
+                withdrawStatus.value = WithdrawStatus.NeedsExchange(
+                    talerWithdrawUri = uri,
+                    amount = details.amount,
+                    possibleExchanges = details.possibleExchanges,
+                )
             } else getWithdrawalDetails(
                 exchangeBaseUrl = details.defaultExchangeBaseUrl,
                 amount = details.amount,
