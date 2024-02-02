@@ -27,18 +27,18 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.taler.wallet.backend.TalerErrorCode.NONE
 import org.json.JSONObject
+import java.io.File
 
-const val WALLET_DB = "talerwalletdb.sql"
+private const val WALLET_DB = "talerwalletdb.sqlite3"
 
 @OptIn(DelicateCoroutinesApi::class)
 class WalletBackendApi(
-    app: Application,
+    private val app: Application,
     private val versionReceiver: VersionReceiver,
     notificationReceiver: NotificationReceiver,
 ) {
 
     private val backendManager = BackendManager(notificationReceiver)
-    private val dbPath = "${app.filesDir}/${WALLET_DB}"
 
     init {
         GlobalScope.launch(Dispatchers.IO) {
@@ -48,8 +48,14 @@ class WalletBackendApi(
     }
 
     private suspend fun sendInitMessage() {
+        val db = if (File(app.filesDir, "talerwalletdb.sql").isFile) {
+            // can be removed after a reasonable migration period (2024-02-02)
+            "${app.filesDir}/talerwalletdb.sql"
+        } else {
+            "${app.filesDir}/${WALLET_DB}"
+        }
         request("init", InitResponse.serializer()) {
-            put("persistentStoragePath", dbPath)
+            put("persistentStoragePath", db)
             put("logLevel", "INFO")
         }.onSuccess { response ->
             versionReceiver.onVersionReceived(response.versionInfo)
@@ -77,6 +83,7 @@ class WalletBackendApi(
                     } ?: Unit as T
                     WalletResponse.Success(t)
                 }
+
                 is ApiResponse.Error -> {
                     val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
                     WalletResponse.Error(error)
@@ -99,6 +106,7 @@ class WalletBackendApi(
                 is ApiResponse.Response -> {
                     WalletResponse.Success(response.result)
                 }
+
                 is ApiResponse.Error -> {
                     val error: TalerErrorInfo = json.decodeFromJsonElement(response.error)
                     WalletResponse.Error(error)
