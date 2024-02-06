@@ -70,21 +70,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/promptTip"
-        android:name="net.taler.wallet.tip.PromptTipFragment"
-        android:label="Review Tip"
-        tools:layout="@layout/fragment_prompt_tip">
-        <action
-            android:id="@+id/action_promptTip_to_nav_main"
-            app:destination="@id/nav_main"
-            app:popUpTo="@id/nav_main" />
-        <action
-            android:id="@+id/action_promptTip_to_alreadyAccepted"
-            app:destination="@id/alreadyAccepted"
-            app:popUpTo="@id/nav_main" />
-    </fragment>
-
-    <fragment
         android:id="@+id/promptPayment"
         android:name="net.taler.wallet.payment.PromptPaymentFragment"
         android:label="@string/payment_prompt_title"
@@ -290,12 +275,6 @@
         android:label="@string/transactions_detail_title" />
 
     <fragment
-        android:id="@+id/alreadyAccepted"
-        android:name="net.taler.wallet.tip.AlreadyAcceptedFragment"
-        android:label="@string/tip_already_accepted"
-        tools:layout="@layout/fragment_already_accepted" />
-
-    <fragment
         android:id="@+id/promptWithdraw"
         android:name="net.taler.wallet.withdraw.PromptWithdrawFragment"
         android:label="@string/nav_prompt_withdraw"
@@ -368,10 +347,6 @@
     <action
         android:id="@+id/action_global_promptPayment"
         app:destination="@id/promptPayment" />
-
-    <action
-        android:id="@+id/action_global_promptTip"
-        app:destination="@id/promptTip" />
 
     <action
         android:id="@+id/action_global_prompt_pull_payment"

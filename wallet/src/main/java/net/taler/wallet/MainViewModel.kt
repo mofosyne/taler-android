@@ -46,7 +46,6 @@ import net.taler.wallet.peer.PeerManager
 import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.settings.SettingsManager
-import net.taler.wallet.tip.TipManager
 import net.taler.wallet.transactions.TransactionManager
 import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
@@ -79,7 +78,6 @@ class MainViewModel(
 
     val networkManager = NetworkManager(app.applicationContext)
     val withdrawManager = WithdrawManager(api, viewModelScope)
-    val tipManager = TipManager(api, viewModelScope)
     val paymentManager = PaymentManager(api, viewModelScope)
     val pendingOperationsManager: PendingOperationsManager =
         PendingOperationsManager(api, viewModelScope)

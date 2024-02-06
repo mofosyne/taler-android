@@ -273,11 +273,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     nav.navigate(R.id.action_global_promptPayment)
                     model.paymentManager.preparePay(u2)
                 }
-                action.startsWith("tip/", ignoreCase = true) -> {
-                    Log.v(TAG, "navigating!")
-                    nav.navigate(R.id.action_global_promptTip)
-                    model.tipManager.prepareTip(u2)
-                }
                 action.startsWith("withdraw/", ignoreCase = true) -> {
                     Log.v(TAG, "navigating!")
                     // there's more than one entry point, so use global action

@@ -109,7 +109,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="transaction_order_total">Total</string>
     <string name="transaction_order">Purchase</string>
     <string name="transaction_order_id">Receipt #%1$s</string>
-    <string name="transaction_tip_from">Reward from %s</string>
     <string name="transaction_refund">Refund</string>
     <string name="transaction_refund_from">Refund from %s</string>
     <string name="transaction_pending">PENDING</string>
@@ -294,15 +293,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="refund_title">Refund</string>
     <string name="refund_error">Error processing refund</string>
     <string name="refund_success">Refund received!</string>
-
-    <string name="tip_title">Reward</string>
-    <string name="tip_already_accepted">This reward was already accepted.</string>
-    <string name="tip_total">Total</string>
-    <string name="tip_fees">Fee</string>
-    <string name="tip_exchange">Exchange</string>
-    <string name="tip_merchant_url">Merchant URL</string>
-    <string name="tip_button_confirm">Accept reward</string>
-    <string name="tip_received">Reward received</string>
 
     <string name="wifi_disabled_error">Turn on Wi-Fi to get free Wi-Fi</string>
     <string name="wifi_connect_error">Could not connect to free Wi-Fi: %s</string>

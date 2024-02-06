@@ -16,6 +16,4 @@
 
 <resources>
 
-    <bool name="settings_backup_default">true</bool>
-
 </resources>

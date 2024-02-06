@@ -41,8 +41,8 @@ import net.taler.wallet.R
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
-import net.taler.wallet.cleanExchange
 import net.taler.wallet.balances.CurrencySpecification
+import net.taler.wallet.cleanExchange
 import net.taler.wallet.refund.RefundPaymentInfo
 import net.taler.wallet.transactions.TransactionMajorState.None
 import net.taler.wallet.transactions.TransactionMajorState.Pending
@@ -334,30 +334,6 @@ class TransactionRefund(
     }
 
     override val generalTitleRes = R.string.refund_title
-}
-
-@Serializable
-@SerialName("tip")
-class TransactionTip(
-    override val transactionId: String,
-    override val timestamp: Timestamp,
-    override val txState: TransactionState,
-    override val txActions: List<TransactionAction>,
-    val merchantBaseUrl: String,
-    override val error: TalerErrorInfo? = null,
-    override val amountRaw: Amount,
-    override val amountEffective: Amount,
-) : Transaction() {
-    override val icon = R.drawable.transaction_tip_accepted
-    override val detailPageNav = R.id.action_nav_transactions_detail_tip
-
-    @Transient
-    override val amountType = AmountType.Positive
-    override fun getTitle(context: Context): String {
-        return context.getString(R.string.transaction_tip_from, merchantBaseUrl)
-    }
-
-    override val generalTitleRes = R.string.tip_title
 }
 
 @Serializable
