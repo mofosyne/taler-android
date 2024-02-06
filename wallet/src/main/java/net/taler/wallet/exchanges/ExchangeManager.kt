@@ -135,6 +135,22 @@ class ExchangeManager(
                 add(exchangeUrl)
                 delay(100)
             }
+            exchanges.value?.let { exs ->
+                exs.find {
+                    it.exchangeBaseUrl.startsWith("https://exchange.taler.fdold.eu")
+                }?.let { fDoldExchange ->
+                    api.request<Unit>("addGlobalCurrencyExchange") {
+                        put("currency", fDoldExchange.currency)
+                        put("exchangeBaseUrl", fDoldExchange.exchangeBaseUrl)
+                        put("exchangeMasterPub",
+                            "7ER30ZWJEXAG026H5KG9M19NGTFC2DKKFPV79GVXA6DK5DCNSWXG")
+                    }.onError {
+                        Log.e(TAG, "Error addGlobalCurrencyExchange: $it")
+                    }.onSuccess {
+                        Log.i(TAG, "fdold is global now!")
+                    }
+                }
+            }
         }
     }
 
