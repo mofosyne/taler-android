@@ -60,7 +60,7 @@ class SelectExchangeDialogFragment: DialogFragment() {
 
         return MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setIcon(R.drawable.ic_account_balance)
-            .setTitle(R.string.exchange_list_add)
+            .setTitle(R.string.exchange_list_select)
             .setView(view)
             .setNegativeButton(R.string.cancel) { _, _ ->
                 dismiss()

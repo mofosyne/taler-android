@@ -230,9 +230,10 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="exchange_list_empty">No exchanges known\n\nAdd one manually or withdraw digital cash!</string>
     <string name="exchange_list_currency">Currency: %s</string>
     <string name="exchange_list_add">Add exchange</string>
+    <string name="exchange_list_select">Select exchange</string>
     <string name="exchange_delete">Delete exchange</string>
     <string name="exchange_delete_force">Force deletion (purge)</string>
-    <string name="exchange_dialog_delete_message">Are you sure you want to delete this exchange?</string>
+    <string name="exchange_dialog_delete_message">Are you sure you want to delete this exchange? Forcing this operation will result in a loss of funds.</string>
     <string name="exchange_not_contacted">Exchange not contacted</string>
     <string name="exchange_add_url">Enter address of exchange</string>
     <string name="exchange_add_error">Could not add exchange</string>
