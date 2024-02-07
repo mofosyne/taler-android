@@ -115,7 +115,13 @@ class PromptWithdrawFragment : Fragment() {
         if (s.showImmediately.getIfNotConsumed() == true) {
             findNavController().navigate(R.id.action_promptWithdraw_to_reviewExchangeTOS)
         } else {
-            showContent(s.amountRaw, s.amountEffective, s.exchangeBaseUrl, s.talerWithdrawUri)
+            showContent(
+                amountRaw = s.amountRaw,
+                amountEffective = s.amountEffective,
+                exchange = s.exchangeBaseUrl,
+                uri = s.talerWithdrawUri,
+                exchanges = s.possibleExchanges,
+            )
             ui.confirmWithdrawButton.apply {
                 text = getString(R.string.withdraw_button_tos)
                 setOnClickListener {
@@ -133,6 +139,7 @@ class PromptWithdrawFragment : Fragment() {
             exchange = s.exchangeBaseUrl,
             uri = s.talerWithdrawUri,
             ageRestrictionOptions = s.ageRestrictionOptions,
+            exchanges = s.possibleExchanges,
         )
         ui.confirmWithdrawButton.apply {
             text = getString(R.string.withdraw_button_confirm)
@@ -154,6 +161,7 @@ class PromptWithdrawFragment : Fragment() {
         amountEffective: Amount,
         exchange: String,
         uri: String?,
+        exchanges: List<ExchangeItem> = emptyList(),
         ageRestrictionOptions: List<Int>? = null,
     ) {
         model.showProgressBar.value = false
@@ -178,7 +186,8 @@ class PromptWithdrawFragment : Fragment() {
         ui.withdrawExchangeUrl.text = cleanExchange(exchange)
         ui.withdrawExchangeUrl.fadeIn()
 
-        if (uri != null) {  // no Uri for manual withdrawals
+        // no Uri for manual withdrawals, no selection for single exchange
+        if (uri != null && exchanges.size > 1) {
             ui.selectExchangeButton.fadeIn()
             ui.selectExchangeButton.setOnClickListener {
                 selectExchange()
