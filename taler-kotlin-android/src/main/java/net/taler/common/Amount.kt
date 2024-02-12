@@ -16,11 +16,14 @@
 
 package net.taler.common
 
+import android.os.Build
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import java.text.DecimalFormat
+import java.text.NumberFormat
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -54,6 +57,11 @@ public data class Amount(
      * of 50_000_000 would correspond to 50 cents.
      */
     val fraction: Int,
+
+    /**
+     * Currency specification for amount
+     */
+    val spec: CurrencySpecification? = null,
 ) : Comparable<Amount> {
 
     public companion object {
@@ -170,6 +178,8 @@ public data class Amount(
         return Amount(checkCurrency(currency), this.value, this.fraction)
     }
 
+    fun withSpec(spec: CurrencySpecification?) = copy(spec = spec)
+
     public operator fun minus(other: Amount): Amount {
         check(currency == other.currency) { "Can only subtract from same currency" }
         var resultValue = value
@@ -196,8 +206,40 @@ public data class Amount(
         return "$currency:$amountStr"
     }
 
-    override fun toString(): String {
-        return "$amountStr $currency"
+    override fun toString() = toString(
+        showSymbol = true,
+        negative = false,
+    )
+
+    fun toString(
+        showSymbol: Boolean = true,
+        negative: Boolean = false,
+    ): String {
+        val symbols = DecimalFormat().decimalFormatSymbols
+
+        val format = if (showSymbol) {
+            NumberFormat.getCurrencyInstance()
+        } else {
+            // Make sure monetary separators are the ones used!
+            symbols.decimalSeparator = symbols.monetaryDecimalSeparator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                symbols.groupingSeparator = symbols.monetaryGroupingSeparator
+            }
+
+            NumberFormat.getInstance()
+        }
+
+        if (spec != null) {
+            symbols.currencySymbol = spec.symbol(this)
+            format.maximumFractionDigits = spec.numFractionalNormalDigits
+            format.minimumFractionDigits = spec.numFractionalTrailingZeroDigits
+        } else {
+            symbols.currencySymbol = currency
+        }
+
+        (format as DecimalFormat).decimalFormatSymbols = symbols
+
+        return format.format((if (negative) "-$amountStr" else amountStr).toBigDecimal())
     }
 
     override fun compareTo(other: Amount): Int {

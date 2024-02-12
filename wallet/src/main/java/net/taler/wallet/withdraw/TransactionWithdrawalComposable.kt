@@ -38,7 +38,7 @@ import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.cleanExchange
-import net.taler.wallet.balances.CurrencySpecification
+import net.taler.common.CurrencySpecification
 import net.taler.wallet.transactions.ActionButton
 import net.taler.wallet.transactions.ActionListener
 import net.taler.wallet.transactions.AmountType
@@ -133,7 +133,7 @@ fun TransactionWithdrawalComposablePreview() {
                         numFractionalInputDigits = 2,
                         numFractionalNormalDigits = 2,
                         numFractionalTrailingZeroDigits = 2,
-                        altUnitNames = mapOf("0" to "NETZBON"),
+                        altUnitNames = mapOf(0 to "NETZBON"),
                     ),
                 ),
             ),

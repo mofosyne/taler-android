@@ -31,6 +31,7 @@ import net.taler.common.toEvent
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.exchanges.ExchangeFees
 import net.taler.wallet.exchanges.ExchangeItem
 import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
@@ -145,6 +146,7 @@ data class ManualWithdrawalDetails(
     val amountEffective: Amount,
     val withdrawalAccountsList: List<WithdrawalExchangeAccountDetails>,
     val ageRestrictionOptions: List<Int>? = null,
+    val scopeInfo: ScopeInfo,
 )
 
 @Serializable

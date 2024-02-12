@@ -37,7 +37,6 @@ import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
 import net.taler.common.showError
@@ -113,8 +112,9 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             val balances = state.balances
             // hide extra fab when in single currency mode (uses MainFragment's FAB)
             if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
-            balances.find { it.currency == currency }?.available?.let { amount: Amount ->
-                ui.amount.text = amount.amountStr
+            // TODO: find via scopeInfo instead of currency
+            balances.find { it.currency == currency }?.let { balance ->
+                ui.amount.text = balance.available.toString(showSymbol = false)
             }
         }
         transactionManager.progress.observe(viewLifecycleOwner) { show ->

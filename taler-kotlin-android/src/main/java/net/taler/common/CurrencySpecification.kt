@@ -1,6 +1,6 @@
 /*
  * This file is part of GNU Taler
- * (C) 2023 Taler Systems S.A.
+ * (C) 2024 Taler Systems S.A.
  *
  * GNU Taler is free software; you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -14,7 +14,7 @@
  * GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package net.taler.wallet.balances
+package net.taler.common
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,5 +29,8 @@ data class CurrencySpecification(
     @SerialName("num_fractional_trailing_zero_digits")
     val numFractionalTrailingZeroDigits: Int,
     @SerialName("alt_unit_names")
-    val altUnitNames: Map<String, String>,
-)
+    val altUnitNames: Map<Int, String>,
+) {
+    // TODO: add support for alt units
+    fun symbol(amount: Amount): String = altUnitNames[0] ?: amount.currency
+}

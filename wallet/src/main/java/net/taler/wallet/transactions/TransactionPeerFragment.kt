@@ -106,7 +106,7 @@ fun TransactionAmountComposable(label: String, amount: Amount, amountType: Amoun
     )
     Text(
         modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-        text = if (amountType == AmountType.Negative) "-$amount" else amount.toString(),
+        text = amount.toString(negative = amountType == AmountType.Negative),
         fontSize = 24.sp,
         color = when (amountType) {
             AmountType.Positive -> colorResource(R.color.green)
