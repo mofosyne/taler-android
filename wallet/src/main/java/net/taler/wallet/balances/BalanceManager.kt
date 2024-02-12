@@ -24,13 +24,22 @@ import androidx.lifecycle.distinctUntilChanged
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import net.taler.common.CurrencySpecification
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
+import org.json.JSONObject
 
 @Serializable
 data class BalanceResponse(
     val balances: List<BalanceItem>
+)
+
+@Serializable
+data class GetCurrencySpecificationResponse(
+    val currencySpecification: CurrencySpecification,
 )
 
 sealed class BalanceState {
@@ -67,9 +76,36 @@ class BalanceManager(
             }
             response.onSuccess {
                 mState.postValue(BalanceState.Success(it.balances))
-                mBalances.postValue(it.balances)
+                scope.launch {
+                    // Get currency spec for all balances)
+                    mState.postValue(
+                        BalanceState.Success(it.balances.map { balance ->
+                            val spec = getCurrencySpecification(balance.scopeInfo)
+                            balance.copy(
+                                available = balance.available.withSpec(spec),
+                                pendingIncoming = balance.pendingIncoming.withSpec(spec),
+                                pendingOutgoing = balance.pendingOutgoing.withSpec(spec),
+                            )
+                        }),
+                    )
+                }
             }
         }
+    }
+
+    private suspend fun getCurrencySpecification(scopeInfo: ScopeInfo): CurrencySpecification? {
+        var spec: CurrencySpecification? = null
+        api.request("getCurrencySpecification", GetCurrencySpecificationResponse.serializer()) {
+            val json = Json.encodeToString(scopeInfo)
+            Log.d(TAG, "BalanceManager: $json")
+            put("scope", JSONObject(json))
+        }.onSuccess {
+            spec = it.currencySpecification
+        }.onError {
+            Log.e(TAG, "Error getting currency spec for scope $scopeInfo: $it")
+        }
+
+        return spec
     }
 
     fun resetBalances() {

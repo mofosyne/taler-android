@@ -58,7 +58,6 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
     }
 
     inner class BalanceViewHolder(private val v: View) : RecyclerView.ViewHolder(v) {
-        private val currencyView: TextView = v.findViewById(R.id.balanceCurrencyView)
         private val amountView: TextView = v.findViewById(R.id.balanceAmountView)
         private val scopeView: TextView = v.findViewById(R.id.scopeView)
         private val balanceInboundAmount: TextView = v.findViewById(R.id.balanceInboundAmount)
@@ -67,8 +66,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
 
         fun bind(item: BalanceItem) {
             v.setOnClickListener { listener.onBalanceClick(item.available.currency) }
-            currencyView.text = item.currency
-            amountView.text = item.available.amountStr
+            amountView.text = item.available.toString()
 
             val amountIncoming = item.pendingIncoming
             if (amountIncoming.isZero()) {
@@ -77,8 +75,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
             } else {
                 balanceInboundAmount.visibility = VISIBLE
                 balanceInboundLabel.visibility = VISIBLE
-                balanceInboundAmount.text =
-                    v.context.getString(R.string.amount_positive, amountIncoming)
+                balanceInboundAmount.text = v.context.getString(R.string.amount_positive, amountIncoming)
             }
 
             val scopeInfo = item.scopeInfo

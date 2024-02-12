@@ -17,6 +17,7 @@
 package net.taler.wallet.exchanges
 
 import kotlinx.serialization.Serializable
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.cleanExchange
 
 @Serializable
@@ -25,6 +26,7 @@ data class ExchangeItem(
     // can be null before exchange info in wallet-core was fully loaded
     val currency: String? = null,
     val paytoUris: List<String>,
+    val scopeInfo: ScopeInfo? = null,
 ) {
     val name: String get() = cleanExchange(exchangeBaseUrl)
 }

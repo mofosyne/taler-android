@@ -183,7 +183,7 @@ internal class TransactionAdapter(
         }
 
         private fun bindAmount(transaction: Transaction) {
-            val amountStr = transaction.amountEffective.amountStr
+            val amountStr = transaction.amountEffective.toString(showSymbol = false)
             when (transaction.amountType) {
                 AmountType.Positive -> {
                     amount.text = context.getString(R.string.amount_positive, amountStr)
