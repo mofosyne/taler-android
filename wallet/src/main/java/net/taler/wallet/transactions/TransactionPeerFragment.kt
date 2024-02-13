@@ -38,6 +38,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
@@ -56,7 +57,9 @@ class TransactionPeerFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState(null).value
-                if (t != null) TransactionPeerComposable(t, devMode) {
+                if (t != null) TransactionPeerComposable(t, devMode,
+                    balanceManager.getSpecForCurrency(t.amountRaw.currency),
+                ) {
                     onTransitionButtonClicked(t, it)
                 }
             }
@@ -68,6 +71,7 @@ class TransactionPeerFragment : TransactionDetailFragment() {
 fun TransactionPeerComposable(
     t: Transaction,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -84,10 +88,10 @@ fun TransactionPeerComposable(
             style = MaterialTheme.typography.bodyLarge,
         )
         when (t) {
-            is TransactionPeerPullCredit -> TransactionPeerPullCreditComposable(t)
-            is TransactionPeerPushCredit -> TransactionPeerPushCreditComposable(t)
-            is TransactionPeerPullDebit -> TransactionPeerPullDebitComposable(t)
-            is TransactionPeerPushDebit -> TransactionPeerPushDebitComposable(t)
+            is TransactionPeerPullCredit -> TransactionPeerPullCreditComposable(t, spec)
+            is TransactionPeerPushCredit -> TransactionPeerPushCreditComposable(t, spec)
+            is TransactionPeerPullDebit -> TransactionPeerPullDebitComposable(t, spec)
+            is TransactionPeerPushDebit -> TransactionPeerPushDebitComposable(t, spec)
             else -> error("unexpected transaction: ${t::class.simpleName}")
         }
         TransitionsComposable(t, devMode, onTransition)

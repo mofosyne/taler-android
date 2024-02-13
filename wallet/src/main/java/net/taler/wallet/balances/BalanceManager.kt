@@ -108,6 +108,21 @@ class BalanceManager(
         return spec
     }
 
+    @Deprecated("Please find spec via scopeInfo instead", ReplaceWith("getSpecForScopeInfo"))
+    fun getSpecForCurrency(currency: String): CurrencySpecification? {
+        val state = mState.value
+        if (state !is BalanceState.Success) return null
+
+        return state.balances.find { it.currency == currency }?.available?.spec
+    }
+
+    fun getSpecForScopeInfo(scopeInfo: ScopeInfo): CurrencySpecification? {
+        val state = mState.value
+        if (state !is BalanceState.Success) return null
+
+        return state.balances.find { it.scopeInfo == scopeInfo }?.available?.spec
+    }
+
     fun resetBalances() {
         mState.value = BalanceState.None
     }

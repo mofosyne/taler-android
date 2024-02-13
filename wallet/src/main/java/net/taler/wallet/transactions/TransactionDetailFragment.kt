@@ -39,6 +39,7 @@ abstract class TransactionDetailFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
     protected val transactionManager by lazy { model.transactionManager }
+    protected val balanceManager by lazy { model.balanceManager }
     protected val devMode get() = model.devMode.value == true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

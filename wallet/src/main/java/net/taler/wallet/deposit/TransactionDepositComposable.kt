@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -53,6 +54,7 @@ import net.taler.wallet.transactions.TransitionsComposable
 fun TransactionDepositComposable(
     t: TransactionDeposit,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -71,7 +73,7 @@ fun TransactionDepositComposable(
 
         TransactionAmountComposable(
             label = stringResource(id = R.string.amount_chosen),
-            amount = t.amountRaw,
+            amount = t.amountRaw.withSpec(spec),
             amountType = AmountType.Neutral,
         )
 
@@ -79,14 +81,14 @@ fun TransactionDepositComposable(
         if (!fee.isZero()) {
             TransactionAmountComposable(
                 label = stringResource(id = R.string.withdraw_fees),
-                amount = fee,
+                amount = fee.withSpec(spec),
                 amountType = AmountType.Negative,
             )
         }
 
         TransactionAmountComposable(
             label = stringResource(id = R.string.amount_sent),
-            amount = t.amountEffective,
+            amount = t.amountEffective.withSpec(spec),
             amountType = AmountType.Negative,
         )
 
@@ -112,6 +114,6 @@ fun TransactionDepositComposablePreview() {
         error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionDepositComposable(t, true) {}
+        TransactionDepositComposable(t, true, null) {}
     }
 }

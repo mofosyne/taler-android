@@ -19,7 +19,6 @@ package net.taler.wallet.balances
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.taler.common.Amount
-import net.taler.common.CurrencySpecification
 
 @Serializable
 data class BalanceItem(

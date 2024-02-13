@@ -35,7 +35,9 @@ class TransactionRefundFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                if (t is TransactionRefund) TransactionRefundComposable(t, devMode) {
+                if (t is TransactionRefund) TransactionRefundComposable(t, devMode,
+                    balanceManager.getSpecForCurrency(t.amountRaw.currency)
+                ) {
                     onTransitionButtonClicked(t, it)
                 }
             }

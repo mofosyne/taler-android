@@ -61,6 +61,7 @@ import net.taler.wallet.transactions.WithdrawalExchangeAccountDetails
 fun TransactionWithdrawalComposable(
     t: TransactionWithdrawal,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     actionListener: ActionListener,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
@@ -82,7 +83,7 @@ fun TransactionWithdrawalComposable(
 
         TransactionAmountComposable(
             label = stringResource(R.string.amount_chosen),
-            amount = t.amountRaw,
+            amount = t.amountRaw.withSpec(spec),
             amountType = AmountType.Neutral,
         )
 
@@ -90,14 +91,14 @@ fun TransactionWithdrawalComposable(
         if (!fee.isZero()) {
             TransactionAmountComposable(
                 label = stringResource(id = R.string.withdraw_fees),
-                amount = fee,
+                amount = fee.withSpec(spec),
                 amountType = AmountType.Negative,
             )
         }
 
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_total),
-            amount = t.amountEffective,
+            amount = t.amountEffective.withSpec(spec),
             amountType = AmountType.Positive,
         )
 
@@ -148,6 +149,6 @@ fun TransactionWithdrawalComposablePreview() {
     }
 
     Surface {
-        TransactionWithdrawalComposable(t, true, listener) {}
+        TransactionWithdrawalComposable(t, true, null, listener) {}
     }
 }

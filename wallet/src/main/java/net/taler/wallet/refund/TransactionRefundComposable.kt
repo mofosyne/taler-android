@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -54,6 +55,7 @@ import net.taler.wallet.transactions.TransitionsComposable
 fun TransactionRefundComposable(
     t: TransactionRefund,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -71,19 +73,19 @@ fun TransactionRefundComposable(
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_refund),
-            amount = t.amountEffective,
+            amount = t.amountEffective.withSpec(spec),
             amountType = AmountType.Positive,
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_order_total),
-            amount = t.amountRaw,
+            amount = t.amountRaw.withSpec(spec),
             amountType = AmountType.Neutral,
         )
         val fee = t.amountRaw - t.amountEffective
         if (!fee.isZero()) {
             TransactionAmountComposable(
                 label = stringResource(id = R.string.withdraw_fees),
-                amount = fee,
+                amount = fee.withSpec(spec),
                 amountType = AmountType.Negative,
             )
         }
@@ -116,6 +118,6 @@ fun TransactionRefundComposablePreview() {
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {
-        TransactionRefundComposable(t = t, devMode = true) {}
+        TransactionRefundComposable(t = t, devMode = true, spec = null) {}
     }
 }
