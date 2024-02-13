@@ -59,6 +59,7 @@ import net.taler.wallet.withdraw.WithdrawStatus
 @Composable
 fun ScreenTransfer(
     status: WithdrawStatus.ManualTransferRequired,
+    spec: CurrencySpecification?,
     bankAppClick: ((transfer: TransferData) -> Unit)?,
     shareClick: ((transfer: TransferData) -> Unit)?,
 ) {
@@ -98,14 +99,14 @@ fun ScreenTransfer(
                 is TransferData.IBAN -> TransferIBAN(
                     transfer = transfer,
                     exchangeBaseUrl = status.exchangeBaseUrl,
-                    transactionAmountRaw = status.transactionAmountRaw,
-                    transactionAmountEffective = status.transactionAmountEffective,
+                    transactionAmountRaw = status.transactionAmountRaw.withSpec(spec),
+                    transactionAmountEffective = status.transactionAmountEffective.withSpec(spec),
                 )
 
                 is TransferData.Bitcoin -> TransferBitcoin(
                     transfer = transfer,
-                    transactionAmountRaw = status.transactionAmountRaw,
-                    transactionAmountEffective = status.transactionAmountEffective,
+                    transactionAmountRaw = status.transactionAmountRaw.withSpec(spec),
+                    transactionAmountEffective = status.transactionAmountEffective.withSpec(spec),
                 )
             }
 
@@ -305,6 +306,7 @@ fun ScreenTransferPreview() {
                     )
                 ),
             ),
+            spec = null,
             bankAppClick = {},
             shareClick = {},
         )

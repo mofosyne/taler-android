@@ -36,6 +36,7 @@ import net.taler.wallet.withdraw.WithdrawStatus
 class ManualWithdrawSuccessFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val withdrawManager by lazy { model.withdrawManager }
+    private val balanceManager by lazy { model.balanceManager }
 
     private lateinit var status: WithdrawStatus.ManualTransferRequired
 
@@ -66,6 +67,7 @@ class ManualWithdrawSuccessFragment : Fragment() {
             TalerSurface {
                 ScreenTransfer(
                     status = status,
+                    spec = balanceManager.getSpecForCurrency(status.transactionAmountRaw.currency),
                     bankAppClick = { onBankAppClick(it) },
                     shareClick = { onShareClick(it) },
                 )
