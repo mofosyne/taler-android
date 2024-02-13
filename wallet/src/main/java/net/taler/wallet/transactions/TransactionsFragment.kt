@@ -55,6 +55,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     private val model: MainViewModel by activityViewModels()
     private val transactionManager by lazy { model.transactionManager }
+    private val balanceManager by lazy { model.balanceManager }
 
     private lateinit var ui: FragmentTransactionsBinding
     private val transactionAdapter by lazy { TransactionAdapter(this) }
@@ -107,14 +108,16 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             }
         })
 
-        model.balanceManager.state.observe(viewLifecycleOwner) { state ->
+        balanceManager.state.observe(viewLifecycleOwner) { state ->
             if (state !is Success) return@observe
             val balances = state.balances
             // hide extra fab when in single currency mode (uses MainFragment's FAB)
             if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
+
             // TODO: find via scopeInfo instead of currency
             balances.find { it.currency == currency }?.let { balance ->
                 ui.amount.text = balance.available.toString(showSymbol = false)
+                transactionAdapter.setCurrencySpec(balance.available.spec)
             }
         }
         transactionManager.progress.observe(viewLifecycleOwner) { show ->

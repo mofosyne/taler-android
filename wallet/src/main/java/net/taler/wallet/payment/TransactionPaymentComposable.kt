@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.common.ContractMerchant
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -57,6 +58,7 @@ import net.taler.wallet.transactions.TransitionsComposable
 fun TransactionPaymentComposable(
     t: TransactionPayment,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     onFulfill: (url: String) -> Unit,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
@@ -76,7 +78,7 @@ fun TransactionPaymentComposable(
 
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_order_total),
-            amount = t.amountRaw,
+            amount = t.amountRaw.withSpec(spec),
             amountType = AmountType.Neutral,
         )
 
@@ -84,14 +86,14 @@ fun TransactionPaymentComposable(
         if (!fee.isZero()) {
             TransactionAmountComposable(
                 label = stringResource(id = R.string.withdraw_fees),
-                amount = fee,
+                amount = fee.withSpec(spec),
                 amountType = AmountType.Negative,
             )
         }
 
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_paid),
-            amount = t.amountEffective,
+            amount = t.amountEffective.withSpec(spec),
             amountType = AmountType.Negative,
         )
 
@@ -167,6 +169,6 @@ fun TransactionPaymentComposablePreview() {
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     TalerSurface {
-        TransactionPaymentComposable(t = t, devMode = true, onFulfill = {}) {}
+        TransactionPaymentComposable(t = t, devMode = true, spec = null, onFulfill = {}) {}
     }
 }

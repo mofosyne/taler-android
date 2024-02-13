@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
@@ -41,7 +42,7 @@ import net.taler.wallet.transactions.TransactionPeerPullCredit
 import net.taler.wallet.transactions.TransactionState
 
 @Composable
-fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit) {
+fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit, spec: CurrencySpecification?) {
     if (t.error == null) PeerQrCode(
         state = t.txState,
         talerUri = t.talerUri,
@@ -49,7 +50,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
     
     TransactionAmountComposable(
         label = stringResource(id = R.string.receive_peer_amount_invoiced),
-        amount = t.amountRaw,
+        amount = t.amountRaw.withSpec(spec),
         amountType = AmountType.Neutral,
     )
 
@@ -57,14 +58,14 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
     if (!fee.isZero()) {
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_fees),
-            amount = fee,
+            amount = fee.withSpec(spec),
             amountType = AmountType.Negative,
         )
     }
 
     TransactionAmountComposable(
         label = stringResource(id = R.string.amount_received),
-        amount = t.amountEffective,
+        amount = t.amountEffective.withSpec(spec),
         amountType = AmountType.Positive,
     )
 
@@ -93,7 +94,7 @@ fun TransactionPeerPullCreditPreview(loading: Boolean = false) {
         error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionPeerComposable(t, true) {}
+        TransactionPeerComposable(t, true, null) {}
     }
 }
 

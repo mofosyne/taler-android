@@ -49,6 +49,7 @@ class TransactionWithdrawalFragment : TransactionDetailFragment(), ActionListene
                 if (t is TransactionWithdrawal) TransactionWithdrawalComposable(
                     t = t,
                     devMode = devMode,
+                    spec = balanceManager.getSpecForCurrency(t.amountRaw.currency),
                     actionListener = this@TransactionWithdrawalFragment,
                 ) {
                     onTransitionButtonClicked(t, it)

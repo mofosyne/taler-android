@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.wallet.R
 import net.taler.wallet.backend.TalerErrorCode.EXCHANGE_GENERIC_KYC_REQUIRED
@@ -38,10 +39,10 @@ import net.taler.wallet.transactions.TransactionPeerPushCredit
 import net.taler.wallet.transactions.TransactionState
 
 @Composable
-fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit) {
+fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit, spec: CurrencySpecification?) {
     TransactionAmountComposable(
         label = stringResource(id = R.string.amount_sent),
-        amount = t.amountRaw,
+        amount = t.amountRaw.withSpec(spec),
         amountType = AmountType.Neutral,
     )
 
@@ -49,14 +50,14 @@ fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit) {
     if (!fee.isZero()) {
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_fees),
-            amount = fee,
+            amount = fee.withSpec(spec),
             amountType = AmountType.Negative,
         )
     }
 
     TransactionAmountComposable(
         label = stringResource(id = R.string.amount_received),
-        amount = t.amountEffective,
+        amount = t.amountEffective.withSpec(spec),
         amountType = AmountType.Positive,
     )
 
@@ -84,6 +85,6 @@ fun TransactionPeerPushCreditPreview() {
         error = TalerErrorInfo(code = EXCHANGE_GENERIC_KYC_REQUIRED),
     )
     Surface {
-        TransactionPeerComposable(t, true) {}
+        TransactionPeerComposable(t, true, null) {}
     }
 }

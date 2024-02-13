@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.common.Timestamp
 import net.taler.common.toAbsoluteTime
 import net.taler.wallet.R
@@ -59,7 +60,9 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
         setContent {
             TalerSurface {
                 val t = transactionManager.selectedTransaction.observeAsState().value
-                if (t is TransactionRefresh) TransactionRefreshComposable(t, devMode) {
+                if (t is TransactionRefresh) TransactionRefreshComposable(t, devMode,
+                    balanceManager.getSpecForCurrency(t.amountRaw.currency),
+                ) {
                     onTransitionButtonClicked(t, it)
                 }
             }
@@ -71,6 +74,7 @@ class TransactionRefreshFragment : TransactionDetailFragment() {
 private fun TransactionRefreshComposable(
     t: TransactionRefresh,
     devMode: Boolean,
+    spec: CurrencySpecification?,
     onTransition: (t: TransactionAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -88,7 +92,7 @@ private fun TransactionRefreshComposable(
         )
         TransactionAmountComposable(
             label = stringResource(id = R.string.withdraw_fees),
-            amount = t.amountEffective,
+            amount = t.amountEffective.withSpec(spec),
             amountType = AmountType.Negative,
         )
         TransitionsComposable(t, devMode, onTransition)
@@ -111,6 +115,6 @@ private fun TransactionRefreshComposablePreview() {
         error = TalerErrorInfo(code = TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED),
     )
     Surface {
-        TransactionRefreshComposable(t, true) {}
+        TransactionRefreshComposable(t, true, null) {}
     }
 }

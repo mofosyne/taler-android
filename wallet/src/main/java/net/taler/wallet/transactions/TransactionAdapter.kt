@@ -32,6 +32,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import net.taler.common.CurrencySpecification
 import net.taler.common.exhaustive
 import net.taler.common.toRelativeTime
 import net.taler.wallet.R
@@ -47,6 +48,8 @@ internal class TransactionAdapter(
 ) : Adapter<TransactionViewHolder>() {
 
     private var transactions: List<Transaction> = ArrayList()
+    private var currencySpec: CurrencySpecification? = null
+
     lateinit var tracker: SelectionTracker<String>
     val keyProvider = TransactionKeyProvider()
 
@@ -65,6 +68,11 @@ internal class TransactionAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val transaction = transactions[position]
         holder.bind(transaction, tracker.isSelected(transaction.transactionId))
+    }
+
+    fun setCurrencySpec(spec: CurrencySpecification?) {
+        this.currencySpec = spec
+        this.notifyDataSetChanged()
     }
 
     fun update(updatedTransactions: List<Transaction>) {
@@ -183,7 +191,7 @@ internal class TransactionAdapter(
         }
 
         private fun bindAmount(transaction: Transaction) {
-            val amountStr = transaction.amountEffective.toString(showSymbol = false)
+            val amountStr = transaction.amountEffective.withSpec(currencySpec).toString(showSymbol = false)
             when (transaction.amountType) {
                 AmountType.Positive -> {
                     amount.text = context.getString(R.string.amount_positive, amountStr)
