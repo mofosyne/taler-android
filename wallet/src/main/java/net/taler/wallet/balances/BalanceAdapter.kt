@@ -75,7 +75,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
             } else {
                 balanceInboundAmount.visibility = VISIBLE
                 balanceInboundLabel.visibility = VISIBLE
-                balanceInboundAmount.text = v.context.getString(R.string.amount_positive, amountIncoming)
+                balanceInboundAmount.text = v.context.getString(R.string.amount_positive, amountIncoming.toString(showSymbol = false))
             }
 
             val scopeInfo = item.scopeInfo
