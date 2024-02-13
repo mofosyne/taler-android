@@ -60,7 +60,9 @@ fun TransferBitcoin(
             WithdrawalAmountTransfer(
                 amountRaw = transactionAmountRaw,
                 amountEffective = transactionAmountEffective,
-                conversionAmountRaw = amount,
+                conversionAmountRaw = amount.withSpec(
+                    transfer.withdrawalAccount.currencySpecification,
+                ),
             )
         }
     }
