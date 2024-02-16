@@ -148,4 +148,5 @@
     <string name="withdraw_manual_ready_bank_button">In Banking-App öffnen</string>
     <string name="withdraw_manual_ready_cancel">Abhebevorgang abbrechen</string>
     <string name="withdraw_manual_ready_warning">Bitte vergewissern Sie sich, dass Sie den Überweisungsvermerk richtig angeben, da sonst der überwiesene Betrag nicht im Wallet ankommt.</string>
+    <string name="reset">Zurücksetzen</string>
 </resources>
