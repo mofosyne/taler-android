@@ -39,6 +39,11 @@ class WalletResponseTest {
               "result": {
                 "balances": [
                   {
+                    "scopeInfo": {
+                      "currency": "TESTKUDOS",
+                      "type": "exchange",
+                      "url": "https://exchange.test.taler.net/"
+                    },
                     "available": "TESTKUDOS:15.8",
                     "pendingIncoming": "TESTKUDOS:0",
                     "pendingOutgoing": "TESTKUDOS:0",
