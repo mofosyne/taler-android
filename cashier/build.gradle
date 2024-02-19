@@ -32,6 +32,8 @@ android {
         versionCode 2
         versionName "0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BACKEND_API_VERSION", "\"4:0:0\"")
     }
 
     buildTypes {
