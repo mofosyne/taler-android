@@ -50,11 +50,13 @@ object HttpHelper {
             Log.e(TAG, "Error retrieving $url", e)
             return HttpJsonResult.Error(0)
         }
-        return if (response.code == 200 && response.body != null) {
+        return if (response.code == 204) {
+            HttpJsonResult.Success(JSONObject())
+        } else if (response.code in 200..299 && response.body != null) {
             val jsonObject = JSONObject(response.body!!.string())
             HttpJsonResult.Success(jsonObject)
         } else {
-            Log.e(TAG, "Received status ${response.code} from $url expected 200")
+            Log.e(TAG, "Received status ${response.code} from $url expected 2xx")
             HttpJsonResult.Error(response.code, getErrorBody(response))
         }
     }
@@ -76,11 +78,13 @@ object HttpHelper {
             Log.e(TAG, "Error retrieving $url", e)
             return HttpJsonResult.Error(0)
         }
-        return if (response.code == 200 && response.body != null) {
+        return if (response.code == 204) {
+            HttpJsonResult.Success(JSONObject())
+        } else if (response.code in 200..299 && response.body != null) {
             val jsonObject = JSONObject(response.body!!.string())
             HttpJsonResult.Success(jsonObject)
         } else {
-            Log.e(TAG, "Received status ${response.code} from $url expected 200")
+            Log.e(TAG, "Received status ${response.code} from $url expected 2xx")
             HttpJsonResult.Error(response.code, getErrorBody(response))
         }
     }

@@ -64,7 +64,7 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
     fun getBalance() = viewModelScope.launch(Dispatchers.IO) {
         check(configManager.hasConfig()) { "No config to get balance" }
         val config = configManager.config
-        val url = "${config.bankUrl}/access-api/accounts/${config.username}"
+        val url = "${config.bankUrl}/accounts/${config.username}"
         Log.d(TAG, "Checking balance at $url")
         val result = when (val response = makeJsonGetRequest(url, config)) {
             is HttpJsonResult.Success -> {

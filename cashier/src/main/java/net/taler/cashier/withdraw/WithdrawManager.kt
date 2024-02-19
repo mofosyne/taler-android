@@ -94,7 +94,7 @@ class WithdrawManager(
         mWithdrawResult.value = null
         mWithdrawAmount.value = amount
         scope.launch(Dispatchers.IO) {
-            val url = "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals"
+            val url = "${config.bankUrl}/accounts/${config.username}/withdrawals"
             Log.d(TAG, "Starting withdrawal at $url")
             val map = mapOf("amount" to amount.toJSONString())
             val body = JSONObject(map)
@@ -154,29 +154,29 @@ class WithdrawManager(
 
     private fun checkWithdrawStatus(withdrawalId: String) = scope.launch(Dispatchers.IO) {
         val url =
-            "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}"
+            "${config.bankUrl}/withdrawals/${withdrawalId}"
         Log.d(TAG, "Checking withdraw status at $url")
         val response = makeJsonGetRequest(url, config)
         if (response !is Success) return@launch  // ignore errors and continue trying
         val oldStatus = mWithdrawStatus.value
         try {
-            when {
-                response.json.getBoolean("aborted") -> {
-                    cancelWithdrawStatusCheck()
-                    mWithdrawStatus.postValue(WithdrawStatus.Aborted)
-                }
-                response.json.getBoolean("confirmation_done") -> {
-                    if (oldStatus !is WithdrawStatus.Success) {
-                        cancelWithdrawStatusCheck()
-                        mWithdrawStatus.postValue(WithdrawStatus.Success)
-                        viewModel.getBalance()
-                    }
-                }
-                response.json.getBoolean("selection_done") -> {
+            when(response.json.getString("status")) {
+                "selected" -> {
                     // only update status, if there's none, yet
                     // so we don't re-notify or overwrite newer status info
                     if (oldStatus == null) {
                         mWithdrawStatus.postValue(WithdrawStatus.SelectionDone(withdrawalId))
+                    }
+                }
+                "aborted" -> {
+                    cancelWithdrawStatusCheck()
+                    mWithdrawStatus.postValue(WithdrawStatus.Aborted)
+                }
+                "confirmed" -> {
+                    if (oldStatus !is WithdrawStatus.Success) {
+                        cancelWithdrawStatusCheck()
+                        mWithdrawStatus.postValue(WithdrawStatus.Success)
+                        viewModel.getBalance()
                     }
                 }
             }
@@ -206,7 +206,7 @@ class WithdrawManager(
 
     private fun abort(withdrawalId: String) = scope.launch(Dispatchers.IO) {
         val url =
-            "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}/abort"
+            "${config.bankUrl}/accounts/${config.username}/withdrawals/${withdrawalId}/abort"
         Log.d(TAG, "Aborting withdrawal at $url")
         makeJsonPostRequest(url, JSONObject(), config)
     }
@@ -216,7 +216,7 @@ class WithdrawManager(
         mWithdrawStatus.value = WithdrawStatus.Confirming
         scope.launch(Dispatchers.IO) {
             val url =
-                "${config.bankUrl}/access-api/accounts/${config.username}/withdrawals/${withdrawalId}/confirm"
+                "${config.bankUrl}/accounts/${config.username}/withdrawals/${withdrawalId}/confirm"
             Log.d(TAG, "Confirming withdrawal at $url")
             when (val response = makeJsonPostRequest(url, JSONObject(), config)) {
                 is Success -> {
