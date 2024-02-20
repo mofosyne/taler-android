@@ -36,6 +36,7 @@ import net.taler.wallet.backend.VersionReceiver
 import net.taler.wallet.backend.WalletBackendApi
 import net.taler.wallet.backend.WalletCoreVersion
 import net.taler.wallet.balances.BalanceManager
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.deposit.DepositManager
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
@@ -81,8 +82,8 @@ class MainViewModel(
     val accountManager: AccountManager = AccountManager(api, viewModelScope)
     val depositManager: DepositManager = DepositManager(api, viewModelScope)
 
-    private val mTransactionsEvent = MutableLiveData<Event<String>>()
-    val transactionsEvent: LiveData<Event<String>> = mTransactionsEvent
+    private val mTransactionsEvent = MutableLiveData<Event<ScopeInfo>>()
+    val transactionsEvent: LiveData<Event<ScopeInfo>> = mTransactionsEvent
 
     private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
@@ -111,11 +112,11 @@ class MainViewModel(
     }
 
     /**
-     * Navigates to the given currency's transaction list, when [MainFragment] is shown.
+     * Navigates to the given scope info's transaction list, when [MainFragment] is shown.
      */
     @UiThread
-    fun showTransactions(currency: String) {
-        mTransactionsEvent.value = currency.toEvent()
+    fun showTransactions(scopeInfo: ScopeInfo) {
+        mTransactionsEvent.value = scopeInfo.toEvent()
     }
 
     @UiThread

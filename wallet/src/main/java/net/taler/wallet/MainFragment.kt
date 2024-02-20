@@ -24,20 +24,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.EventObserver
-import net.taler.wallet.CurrencyMode.MULTI
-import net.taler.wallet.CurrencyMode.SINGLE
+import net.taler.wallet.ScopeMode.MULTI
+import net.taler.wallet.ScopeMode.SINGLE
 import net.taler.wallet.balances.BalanceState
 import net.taler.wallet.balances.BalanceState.Success
 import net.taler.wallet.balances.BalancesFragment
 import net.taler.wallet.databinding.FragmentMainBinding
 import net.taler.wallet.transactions.TransactionsFragment
 
-enum class CurrencyMode { SINGLE, MULTI }
+enum class ScopeMode { SINGLE, MULTI }
 
 class MainFragment : Fragment() {
 
     private val model: MainViewModel by activityViewModels()
-    private var currencyMode: CurrencyMode? = null
+    private var scopeMode: ScopeMode? = null
 
     private lateinit var ui: FragmentMainBinding
 
@@ -54,10 +54,10 @@ class MainFragment : Fragment() {
         model.balanceManager.state.observe(viewLifecycleOwner) {
             onBalancesChanged(it)
         }
-        model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { currency ->
-            // we only need to navigate to a dedicated list, when in multi-currency mode
-            if (currencyMode == MULTI) {
-                model.transactionManager.selectedCurrency = currency
+        model.transactionsEvent.observe(viewLifecycleOwner, EventObserver { scopeInfo ->
+            // we only need to navigate to a dedicated list, when in multi-scope mode
+            if (scopeMode == MULTI) {
+                model.transactionManager.selectedScope = scopeInfo
                 findNavController().navigate(R.id.action_nav_main_to_nav_transactions)
             }
         })
@@ -80,14 +80,14 @@ class MainFragment : Fragment() {
         if (state !is Success) return
         val balances = state.balances
         val mode = if (balances.size == 1) SINGLE else MULTI
-        if (currencyMode != mode) {
+        if (scopeMode != mode) {
             val f = if (mode == SINGLE) {
-                model.transactionManager.selectedCurrency = balances[0].available.currency
+                model.transactionManager.selectedScope = balances[0].scopeInfo
                 TransactionsFragment()
             } else {
                 BalancesFragment()
             }
-            currencyMode = mode
+            scopeMode = mode
             childFragmentManager.beginTransaction()
                 .replace(R.id.mainFragmentContainer, f, mode.name)
                 .commitNow()

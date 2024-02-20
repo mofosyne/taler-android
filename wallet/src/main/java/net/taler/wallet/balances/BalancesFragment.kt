@@ -39,7 +39,7 @@ import net.taler.wallet.databinding.FragmentBalancesBinding
 import net.taler.wallet.showError
 
 interface BalanceClickListener {
-    fun onBalanceClick(currency: String)
+    fun onBalanceClick(scopeInfo: ScopeInfo)
 }
 
 class BalancesFragment : Fragment(),
@@ -96,8 +96,8 @@ class BalancesFragment : Fragment(),
         }
     }
 
-    override fun onBalanceClick(currency: String) {
-        model.showTransactions(currency)
+    override fun onBalanceClick(scopeInfo: ScopeInfo) {
+        model.showTransactions(scopeInfo)
     }
 
 }

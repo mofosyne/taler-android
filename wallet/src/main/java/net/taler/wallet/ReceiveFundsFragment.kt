@@ -51,6 +51,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.exchanges.ExchangeItem
@@ -59,7 +60,9 @@ class ReceiveFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val exchangeManager get() = model.exchangeManager
     private val withdrawManager get() = model.withdrawManager
+    private val balanceManager get() = model.balanceManager
     private val peerManager get() = model.peerManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,8 +70,10 @@ class ReceiveFundsFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
+                val scopeInfo = model.transactionManager.selectedScope ?: error("No scope selected")
                 ReceiveFundsIntro(
-                    model.transactionManager.selectedCurrency ?: error("No currency selected"),
+                    scopeInfo.currency,
+                    model.balanceManager.getSpecForScopeInfo(scopeInfo),
                     this@ReceiveFundsFragment::onManualWithdraw,
                     this@ReceiveFundsFragment::onPeerPull,
                 )
@@ -113,6 +118,7 @@ class ReceiveFundsFragment : Fragment() {
 @Composable
 private fun ReceiveFundsIntro(
     currency: String,
+    spec: CurrencySpecification?,
     onManualWithdraw: (Amount) -> Unit,
     onPeerPull: (Amount) -> Unit,
 ) {
@@ -146,7 +152,7 @@ private fun ReceiveFundsIntro(
             )
             Text(
                 modifier = Modifier,
-                text = currency,
+                text = spec?.symbol(Amount.zero(currency)) ?: currency,
                 softWrap = false,
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -189,6 +195,6 @@ private fun ReceiveFundsIntro(
 @Composable
 fun PreviewReceiveFundsIntro() {
     Surface {
-        ReceiveFundsIntro("TESTKUDOS", {}) {}
+        ReceiveFundsIntro("TESTKUDOS", null, {}) {}
     }
 }
