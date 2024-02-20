@@ -53,6 +53,7 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
+import net.taler.wallet.compose.DEFAULT_INPUT_DECIMALS
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.exchanges.ExchangeItem
 
@@ -149,6 +150,7 @@ private fun ReceiveFundsIntro(
                     if (isError) Text(stringResource(R.string.receive_amount_invalid))
                 },
                 isError = isError,
+                numberOfDecimals = spec?.numFractionalInputDigits ?: DEFAULT_INPUT_DECIMALS,
             )
             Text(
                 modifier = Modifier,

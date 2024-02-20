@@ -40,6 +40,8 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
+const val DEFAULT_INPUT_DECIMALS = 2
+
 @Composable
 fun AmountInputField(
     value: String,
@@ -50,7 +52,7 @@ fun AmountInputField(
     isError: Boolean = false,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     decimalFormatSymbols: DecimalFormatSymbols = DecimalFormat().decimalFormatSymbols,
-    numberOfDecimals: Int = 2,
+    numberOfDecimals: Int = DEFAULT_INPUT_DECIMALS,
 ) {
     var amountInput by remember { mutableStateOf(value) }
 
