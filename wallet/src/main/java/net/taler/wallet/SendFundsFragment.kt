@@ -50,6 +50,7 @@ import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
 import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
+import net.taler.wallet.compose.DEFAULT_INPUT_DECIMALS
 import net.taler.wallet.compose.TalerSurface
 
 class SendFundsFragment : Fragment() {
@@ -133,6 +134,7 @@ private fun SendFundsIntro(
                     }
                 },
                 isError = isError || insufficientBalance,
+                numberOfDecimals = spec?.numFractionalInputDigits ?: DEFAULT_INPUT_DECIMALS,
             )
             Text(
                 modifier = Modifier,
