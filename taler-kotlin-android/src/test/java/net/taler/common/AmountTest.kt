@@ -16,10 +16,12 @@
 
 package net.taler.common
 
+import android.os.Build
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.text.DecimalFormatSymbols
 import kotlin.random.Random
 
 class AmountTest {
@@ -41,7 +43,6 @@ class AmountTest {
         assertEquals("TESTKUDOS", amount.currency)
         assertEquals(23, amount.value)
         assertEquals((0.42 * 1e8).toInt(), amount.fraction)
-        assertEquals("23.42 TESTKUDOS", amount.toString())
 
         str = "EUR:500000000.00000001"
         amount = Amount.fromJSONString(str)
@@ -49,7 +50,6 @@ class AmountTest {
         assertEquals("EUR", amount.currency)
         assertEquals(500000000, amount.value)
         assertEquals(1, amount.fraction)
-        assertEquals("500000000.00000001 EUR", amount.toString())
 
         str = "EUR:1500000000.00000003"
         amount = Amount.fromJSONString(str)
@@ -57,14 +57,51 @@ class AmountTest {
         assertEquals("EUR", amount.currency)
         assertEquals(1500000000, amount.value)
         assertEquals(3, amount.fraction)
-        assertEquals("1500000000.00000003 EUR", amount.toString())
     }
 
     @Test
     fun testToString() {
+        val symbols = DecimalFormatSymbols.getInstance()
+        symbols.decimalSeparator = '.'
+        symbols.groupingSeparator = ','
+        symbols.monetaryDecimalSeparator = '.'
+        if (Build.VERSION.SDK_INT >= 34) {
+            symbols.monetaryGroupingSeparator = ','
+        }
+
+        val spec = CurrencySpecification(
+            name = "Bitcoin",
+            numFractionalInputDigits = 8,
+            numFractionalNormalDigits = 8,
+            numFractionalTrailingZeroDigits = 0,
+            altUnitNames = mapOf(
+                0 to "₿",
+                // TODO: uncomment when units get implemented
+                //  and then write tests for units, please
+//                -1 to "d₿",
+//                -2 to "c₿",
+//                -3 to "m₿",
+//                -6 to "µ₿",
+//                -8 to "sat",
+            ),
+        )
+
         Amount.fromString("BITCOINBTC", "0.00000001").let { amount ->
-            assertEquals("0.00000001 BITCOINBTC", amount.toString())
+            // Only the raw amount
             assertEquals("0.00000001", amount.amountStr)
+
+            // The amount without currency spec
+            assertEquals("0.00000001 BITCOINBTC", amount.toString(symbols = symbols))
+            assertEquals("0.00000001", amount.toString(symbols = symbols, showSymbol = false))
+            assertEquals("-0.00000001 BITCOINBTC", amount.toString(symbols = symbols, negative = true))
+            assertEquals("-0.00000001", amount.toString(symbols = symbols, showSymbol = false, negative = true))
+
+            // The amount with currency spec
+            val withSpec = amount.withSpec(spec)
+            assertEquals("₿0.00000001", withSpec.toString(symbols = symbols))
+            assertEquals("0.00000001", withSpec.toString(symbols = symbols, showSymbol = false))
+            assertEquals("-₿0.00000001", withSpec.toString(symbols = symbols, negative = true))
+            assertEquals("-0.00000001", withSpec.toString(symbols = symbols, showSymbol = false, negative = true))
         }
     }
 
@@ -76,7 +113,6 @@ class AmountTest {
         assertEquals(str, amount.toJSONString())
         assertEquals("TESTKUDOS123", amount.currency)
         assertEquals(maxValue, amount.value)
-        assertEquals("$maxValue.99999999 TESTKUDOS123", amount.toString())
 
         // longer currency not accepted
         assertThrows<AmountParserException>("longer currency was accepted") {
