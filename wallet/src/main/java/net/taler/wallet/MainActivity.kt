@@ -346,8 +346,9 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
                     val transactionId = status.response.transactionId
                     val transaction = model.transactionManager.getTransactionById(transactionId)
                     if (transaction != null) {
-                        val currency = transaction.amountRaw.currency
-                        model.showTransactions(currency)
+                        // TODO: currency what? scopes are the cool thing now
+                        // val currency = transaction.amountRaw.currency
+                        // model.showTransactions(currency)
                         Snackbar.make(ui.navView, getString(R.string.refund_success), LENGTH_LONG).show()
                     }
                 }

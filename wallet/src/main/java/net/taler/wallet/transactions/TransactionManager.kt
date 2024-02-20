@@ -23,11 +23,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.wallet.TAG
 import net.taler.wallet.backend.TalerErrorInfo
 import net.taler.wallet.backend.WalletBackendApi
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.transactions.TransactionAction.Delete
 import net.taler.wallet.transactions.TransactionMajorState.Pending
+import org.json.JSONObject
 import java.util.LinkedList
 
 sealed class TransactionsResult {
@@ -45,34 +49,34 @@ class TransactionManager(
 
     // FIXME if the app gets killed, this will not be restored and thus be unexpected null
     //  we should keep this in a savable, maybe using Hilt and SavedStateViewModel
-    var selectedCurrency: String? = null
+    var selectedScope: ScopeInfo? = null
 
     val searchQuery = MutableLiveData<String>(null)
     private val mSelectedTransaction = MutableLiveData<Transaction?>(null)
     val selectedTransaction: LiveData<Transaction?> = mSelectedTransaction
-    private val allTransactions = HashMap<String, List<Transaction>>()
-    private val mTransactions = HashMap<String, MutableLiveData<TransactionsResult>>()
+    private val allTransactions = HashMap<ScopeInfo, List<Transaction>>()
+    private val mTransactions = HashMap<ScopeInfo, MutableLiveData<TransactionsResult>>()
     val transactions: LiveData<TransactionsResult>
         @UiThread
         get() = searchQuery.switchMap { query ->
-            val currency = selectedCurrency
-            check(currency != null) { "Did not select currency before getting transactions" }
+            val scopeInfo = selectedScope
+            check(scopeInfo != null) { "Did not select scope before getting transactions" }
             loadTransactions(query)
-            mTransactions[currency]!! // non-null because filled in [loadTransactions]
+            mTransactions[scopeInfo]!! // non-null because filled in [loadTransactions]
         }
 
     @UiThread
     fun loadTransactions(searchQuery: String? = null) = scope.launch {
-        val currency = selectedCurrency ?: return@launch
-        val liveData = mTransactions.getOrPut(currency) { MutableLiveData() }
-        if (searchQuery == null && allTransactions.containsKey(currency)) {
-            liveData.value = TransactionsResult.Success(allTransactions[currency]!!)
+        val scopeInfo = selectedScope ?: return@launch
+        val liveData = mTransactions.getOrPut(scopeInfo) { MutableLiveData() }
+        if (searchQuery == null && allTransactions.containsKey(scopeInfo)) {
+            liveData.value = TransactionsResult.Success(allTransactions[scopeInfo]!!)
         }
         if (liveData.value == null) mProgress.value = true
 
         api.request("getTransactions", Transactions.serializer()) {
             if (searchQuery != null) put("search", searchQuery)
-            put("currency", currency)
+            put("scopeInfo", JSONObject(Json.encodeToString(scopeInfo)))
         }.onError {
             liveData.postValue(TransactionsResult.Error(it))
             mProgress.postValue(false)
@@ -91,8 +95,8 @@ class TransactionManager(
                 mSelectedTransaction.value = it
             }
 
-            // update all transactions on UiThread if there was a currency
-            if (searchQuery == null) allTransactions[currency] = transactions
+            // update all transactions on UiThread if there was a scope info
+            if (searchQuery == null) allTransactions[scopeInfo] = transactions
         }
     }
 
@@ -201,7 +205,7 @@ class TransactionManager(
         }
 
     fun deleteTransactions(transactionIds: List<String>, onError: (it: TalerErrorInfo) -> Unit) {
-        allTransactions[selectedCurrency]?.filter { transaction ->
+        allTransactions[selectedScope]?.filter { transaction ->
             transaction.transactionId in transactionIds
         }?.forEach { toBeDeletedTx ->
             if (Delete in toBeDeletedTx.txActions) {

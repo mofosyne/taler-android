@@ -48,11 +48,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import net.taler.common.Amount
+import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.TalerSurface
 
 class SendFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
+    private val balanceManager get() = model.balanceManager
     private val peerManager get() = model.peerManager
 
     override fun onCreateView(
@@ -62,9 +64,10 @@ class SendFundsFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
+                val scopeInfo = model.transactionManager.selectedScope ?: error("No scope selected")
                 SendFundsIntro(
-                    currency = model.transactionManager.selectedCurrency
-                        ?: error("No currency selected"),
+                    currency = scopeInfo.currency,
+                    spec = balanceManager.getSpecForScopeInfo(scopeInfo),
                     hasSufficientBalance = model::hasSufficientBalance,
                     onDeposit = this@SendFundsFragment::onDeposit,
                     onPeerPush = this@SendFundsFragment::onPeerPush,
@@ -93,6 +96,7 @@ class SendFundsFragment : Fragment() {
 @Composable
 private fun SendFundsIntro(
     currency: String,
+    spec: CurrencySpecification?,
     hasSufficientBalance: (Amount) -> Boolean,
     onDeposit: (Amount) -> Unit,
     onPeerPush: (Amount) -> Unit,
@@ -132,7 +136,7 @@ private fun SendFundsIntro(
             )
             Text(
                 modifier = Modifier,
-                text = currency,
+                text = spec?.symbol(Amount.zero(currency)) ?: currency,
                 softWrap = false,
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -185,6 +189,6 @@ private fun SendFundsIntro(
 @Composable
 fun PreviewSendFundsIntro() {
     Surface {
-        SendFundsIntro("TESTKUDOS", { true }, {}) {}
+        SendFundsIntro("TESTKUDOS", null, { true }, {}) {}
     }
 }

@@ -65,7 +65,7 @@ class BalanceAdapter(private val listener: BalanceClickListener) : Adapter<Balan
         private val pendingView: TextView = v.findViewById(R.id.pendingView)
 
         fun bind(item: BalanceItem) {
-            v.setOnClickListener { listener.onBalanceClick(item.available.currency) }
+            v.setOnClickListener { listener.onBalanceClick(item.scopeInfo) }
             amountView.text = item.available.toString()
 
             val amountIncoming = item.pendingIncoming

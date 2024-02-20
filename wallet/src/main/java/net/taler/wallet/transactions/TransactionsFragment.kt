@@ -59,7 +59,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     private lateinit var ui: FragmentTransactionsBinding
     private val transactionAdapter by lazy { TransactionAdapter(this) }
-    private val currency by lazy { transactionManager.selectedCurrency!! }
+    private val scopeInfo by lazy { transactionManager.selectedScope!! }
     private var tracker: SelectionTracker<String>? = null
     private var actionMode: ActionMode? = null
 
@@ -114,8 +114,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
             // hide extra fab when in single currency mode (uses MainFragment's FAB)
             if (balances.size == 1) ui.mainFab.visibility = INVISIBLE
 
-            // TODO: find via scopeInfo instead of currency
-            balances.find { it.currency == currency }?.let { balance ->
+            balances.find { it.scopeInfo == scopeInfo }?.let { balance ->
                 ui.amount.text = balance.available.toString(showSymbol = false)
                 transactionAdapter.setCurrencySpec(balance.available.spec)
             }
@@ -154,7 +153,7 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
 
     override fun onStart() {
         super.onStart()
-        requireActivity().title = getString(R.string.transactions_detail_title_currency, currency)
+        requireActivity().title = getString(R.string.transactions_detail_title_currency, scopeInfo.currency)
     }
 
     private fun setupSearch(item: MenuItem) {
