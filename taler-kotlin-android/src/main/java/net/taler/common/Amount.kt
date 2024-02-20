@@ -23,6 +23,7 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import kotlin.math.floor
 import kotlin.math.pow
@@ -214,32 +215,39 @@ public data class Amount(
     fun toString(
         showSymbol: Boolean = true,
         negative: Boolean = false,
+        symbols: DecimalFormatSymbols = DecimalFormat().decimalFormatSymbols,
     ): String {
-        val symbols = DecimalFormat().decimalFormatSymbols
+        // We clone the object to safely/cleanly modify it
+        val s = symbols.clone() as DecimalFormatSymbols
+        val amount = (if (negative) "-$amountStr" else amountStr).toBigDecimal()
 
-        val format = if (showSymbol) {
-            NumberFormat.getCurrencyInstance()
-        } else {
-            // Make sure monetary separators are the ones used!
-            symbols.decimalSeparator = symbols.monetaryDecimalSeparator
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                symbols.groupingSeparator = symbols.monetaryGroupingSeparator
+        // No currency spec, so we render normally
+        if (spec == null) {
+            val format = NumberFormat.getInstance()
+            format.maximumFractionDigits = MAX_FRACTION_LENGTH
+            format.minimumFractionDigits = 0
+            if (Build.VERSION.SDK_INT >= 34) {
+                s.groupingSeparator = s.monetaryGroupingSeparator
             }
+            s.decimalSeparator = s.monetaryDecimalSeparator
+            (format as DecimalFormat).decimalFormatSymbols = s
 
-            NumberFormat.getInstance()
+            val fmt = format.format(amount)
+            return if (showSymbol) "$fmt $currency" else fmt
         }
 
-        if (spec != null) {
-            symbols.currencySymbol = spec.symbol(this)
-            format.maximumFractionDigits = spec.numFractionalNormalDigits
-            format.minimumFractionDigits = spec.numFractionalTrailingZeroDigits
-        } else {
-            symbols.currencySymbol = currency
+        // There is currency spec, so we can do things right
+        val format = NumberFormat.getCurrencyInstance()
+        format.maximumFractionDigits = spec.numFractionalNormalDigits
+        format.minimumFractionDigits = spec.numFractionalTrailingZeroDigits
+        s.currencySymbol = spec.symbol(this)
+        (format as DecimalFormat).decimalFormatSymbols = s
+
+        val fmt = format.format(amount)
+        return if (showSymbol) fmt else {
+            // We should do better than manually removing the symbol here
+            fmt.replace(s.currencySymbol, "").trim()
         }
-
-        (format as DecimalFormat).decimalFormatSymbols = symbols
-
-        return format.format((if (negative) "-$amountStr" else amountStr).toBigDecimal())
     }
 
     override fun compareTo(other: Amount): Int {

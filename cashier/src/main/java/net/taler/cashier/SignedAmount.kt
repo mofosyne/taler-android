@@ -23,8 +23,10 @@ data class SignedAmount(
     val amount: Amount
 ) {
 
-    override fun toString(): String {
-        return if (positive) "$amount" else "-$amount"
-    }
+    override fun toString() = toString(showSymbol = true)
 
+    fun toString(showSymbol: Boolean) = amount.toString(
+            showSymbol = showSymbol,
+            negative = !positive,
+    )
 }
