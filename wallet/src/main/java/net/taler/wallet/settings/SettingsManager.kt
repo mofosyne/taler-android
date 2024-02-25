@@ -144,12 +144,28 @@ class SettingsManager(
         }
     }
 
+    fun clearDb(onSuccess: () -> Unit) {
+        scope.launch {
+            when (val response = api.rawRequest("clearDb")) {
+                is Success -> onSuccess()
+                is Error -> {
+                    Log.e(SettingsManager::class.simpleName, "Error cleaning db: ${response.error}")
+                    onDbClearError()
+                }
+            }
+        }
+    }
+
     private fun onDbExportError() {
         Toast.makeText(context, R.string.settings_db_export_error, LENGTH_LONG).show()
     }
 
     private fun onDbImportError() {
         Toast.makeText(context, R.string.settings_db_import_error, LENGTH_LONG).show()
+    }
+
+    private fun onDbClearError() {
+        Toast.makeText(context, R.string.settings_db_clear_error, LENGTH_LONG).show()
     }
 
 }

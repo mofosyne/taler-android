@@ -167,7 +167,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         MaterialAlertDialogBuilder(requireContext(), R.style.MaterialAlertDialog_Material3)
             .setMessage(R.string.settings_dialog_reset_message)
             .setNegativeButton(R.string.reset) { _, _ ->
-                model.dangerouslyReset()
+                settingsManager.clearDb {
+                    model.dangerouslyReset()
+                }
                 Snackbar.make(requireView(), getString(R.string.settings_alert_reset_done), LENGTH_SHORT).show()
             }
             .setPositiveButton(R.string.cancel) { _, _ ->

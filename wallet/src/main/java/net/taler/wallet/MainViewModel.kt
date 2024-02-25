@@ -155,9 +155,6 @@ class MainViewModel(
 
     @UiThread
     fun dangerouslyReset() {
-        viewModelScope.launch {
-            api.sendRequest("clearDb")
-        }
         withdrawManager.testWithdrawalStatus.value = null
         balanceManager.resetBalances()
     }
