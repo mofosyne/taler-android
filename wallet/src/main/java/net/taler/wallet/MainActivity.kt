@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         setSupportActionBar(ui.content.toolbar)
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_main, R.id.nav_settings, R.id.nav_pending_operations),
+            setOf(R.id.nav_main, R.id.nav_settings),
             ui.drawerLayout
         )
         ui.content.toolbar.setupWithNavController(nav, appBarConfiguration)
@@ -112,7 +112,8 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
 
         val versionView: TextView = ui.navView.getHeaderView(0).findViewById(R.id.versionView)
         model.devMode.observe(this) { enabled ->
-            ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
+            // Uncomment if any dev options are added in the future
+            // ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
             if (enabled) {
                 @SuppressLint("SetTextI18n")
                 versionView.text = "$VERSION_NAME ($VERSION_CODE)"
@@ -164,7 +165,6 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         when (item.itemId) {
             R.id.nav_home -> nav.navigate(R.id.nav_main)
             R.id.nav_settings -> nav.navigate(R.id.nav_settings)
-            R.id.nav_pending_operations -> nav.navigate(R.id.nav_pending_operations)
         }
         ui.drawerLayout.closeDrawer(START)
         return true

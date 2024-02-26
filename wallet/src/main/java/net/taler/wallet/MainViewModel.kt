@@ -40,7 +40,6 @@ import net.taler.wallet.deposit.DepositManager
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.peer.PeerManager
-import net.taler.wallet.pending.PendingOperationsManager
 import net.taler.wallet.refund.RefundManager
 import net.taler.wallet.settings.SettingsManager
 import net.taler.wallet.transactions.TransactionManager
@@ -73,8 +72,6 @@ class MainViewModel(
     val networkManager = NetworkManager(app.applicationContext)
     val withdrawManager = WithdrawManager(api, viewModelScope)
     val paymentManager = PaymentManager(api, viewModelScope)
-    val pendingOperationsManager: PendingOperationsManager =
-        PendingOperationsManager(api, viewModelScope)
     val transactionManager: TransactionManager = TransactionManager(api, viewModelScope)
     val refundManager = RefundManager(api, viewModelScope)
     val balanceManager = BalanceManager(api, viewModelScope)
@@ -110,10 +107,6 @@ class MainViewModel(
             // TODO notification API should give us a currency to update
             // update currently selected transaction list
             transactionManager.loadTransactions()
-        }
-        // refresh pending ops and history with each notification
-        if (devMode.value == true) {
-            pendingOperationsManager.getPending()
         }
     }
 

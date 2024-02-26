@@ -39,10 +39,7 @@
             <group
                 android:id="@+id/nav_group_dev"
                 android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_pending_operations"
-                    android:icon="@drawable/ic_sync"
-                    android:title="@string/pending_operations_title" />
+                <!-- Future dev options go here -->
             </group>
         </menu>
     </item>

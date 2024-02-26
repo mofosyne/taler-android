@@ -310,11 +310,6 @@
             app:destination="@id/promptWithdraw"
             app:popUpTo="@id/nav_main" />
     </fragment>
-    <fragment
-        android:id="@+id/nav_pending_operations"
-        android:name="net.taler.wallet.pending.PendingOperationsFragment"
-        android:label="@string/pending_operations_title"
-        tools:layout="@layout/fragment_pending_operations" />
 
     <fragment
         android:id="@+id/nav_uri_input"
@@ -359,10 +354,6 @@
     <action
         android:id="@+id/action_global_prompt_pay_template"
         app:destination="@id/promptPayTemplate" />
-
-    <action
-        android:id="@+id/action_global_pending_operations"
-        app:destination="@id/nav_pending_operations" />
 
     <action
         android:id="@+id/action_nav_transactions_detail_withdrawal"
