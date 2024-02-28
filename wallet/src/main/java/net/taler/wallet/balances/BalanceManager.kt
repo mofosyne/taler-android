@@ -17,7 +17,6 @@
 package net.taler.wallet.balances
 
 import android.util.Log
-import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
@@ -55,17 +54,16 @@ class BalanceManager(
 
     val balancesOrNull get() = (state.value as? BalanceState.Success)?.balances
 
-    @UiThread
     fun loadBalances() {
-        mState.value = BalanceState.Loading
+        mState.postValue(BalanceState.Loading)
         scope.launch {
             val response = api.request("getBalances", BalanceResponse.serializer())
             response.onError {
                 Log.e(TAG, "Error retrieving balances: $it")
-                mState.value = BalanceState.Error(it)
+                mState.postValue(BalanceState.Error(it))
             }
             response.onSuccess {
-                mState.value = BalanceState.Success(it.balances)
+                mState.postValue(BalanceState.Success(it.balances))
             }
         }
     }
