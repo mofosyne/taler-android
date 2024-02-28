@@ -67,6 +67,9 @@ fun TransferIBAN(
                 .padding(all = 16.dp)
         )
 
+        transfer.receiverName?.let {
+            DetailRow(stringResource(R.string.withdraw_manual_ready_receiver), it)
+        }
         DetailRow(stringResource(R.string.withdraw_manual_ready_iban), transfer.iban)
         DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
 

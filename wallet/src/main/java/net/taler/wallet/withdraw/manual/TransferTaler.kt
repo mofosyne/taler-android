@@ -72,11 +72,6 @@ fun TransferTaler(
         }
         DetailRow(stringResource(R.string.withdraw_manual_ready_account), transfer.account)
         DetailRow(stringResource(R.string.withdraw_manual_ready_subject), transfer.subject)
-        
-        TransactionInfoComposable(
-            label = stringResource(R.string.withdraw_bank),
-            info = cleanExchange(transfer.bankUrl),
-        )
 
         TransactionInfoComposable(
             label = stringResource(R.string.withdraw_exchange),

@@ -97,7 +97,6 @@ sealed class TransferData {
         override val amountEffective: Amount,
         override val withdrawalAccount: WithdrawalExchangeAccountDetails,
         val receiverName: String? = null,
-        val bankUrl: String,
         val account: String,
     ): TransferData()
 
@@ -382,7 +381,6 @@ fun createManualTransferRequired(
         } else if (uri.authority.equals("x-taler-bank", true)) {
             TransferData.Taler(
                 account = uri.lastPathSegment!!,
-                bankUrl = uri.pathSegments.first(),
                 receiverName = uri.getQueryParameter("receiver_name"),
                 subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
                 amountRaw = amountRaw,
@@ -392,6 +390,7 @@ fun createManualTransferRequired(
         } else if (uri.authority.equals("iban", true)) {
             TransferData.IBAN(
                 iban = uri.lastPathSegment!!,
+                receiverName = uri.getQueryParameter("receiver_name"),
                 subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
                 amountRaw = amountRaw,
                 amountEffective = amountEffective,
