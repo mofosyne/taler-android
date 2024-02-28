@@ -91,11 +91,22 @@ sealed class TransferData {
 
     val currency get() = withdrawalAccount.transferAmount?.currency
 
+    data class Taler(
+        override val subject: String,
+        override val amountRaw: Amount,
+        override val amountEffective: Amount,
+        override val withdrawalAccount: WithdrawalExchangeAccountDetails,
+        val receiverName: String? = null,
+        val bankUrl: String,
+        val account: String,
+    ): TransferData()
+
     data class IBAN(
         override val subject: String,
         override val amountRaw: Amount,
         override val amountEffective: Amount,
         override val withdrawalAccount: WithdrawalExchangeAccountDetails,
+        val receiverName: String? = null,
         val iban: String,
     ): TransferData()
 
@@ -353,7 +364,7 @@ fun createManualTransferRequired(
     transactionAmountRaw = amountRaw,
     transactionAmountEffective = amountEffective,
     exchangeBaseUrl = exchangeBaseUrl,
-    withdrawalTransfers = withdrawalAccountList.map {
+    withdrawalTransfers = withdrawalAccountList.mapNotNull {
         val uri = Uri.parse(it.paytoUri.replace("receiver-name=", "receiver_name="))
         if ("bitcoin".equals(uri.authority, true)) {
             val msg = uri.getQueryParameter("message").orEmpty()
@@ -368,13 +379,25 @@ fun createManualTransferRequired(
                 amountEffective = amountEffective,
                 withdrawalAccount = it.copy(paytoUri = uri.toString())
             )
-        } else TransferData.IBAN(
-            iban = uri.lastPathSegment!!,
-            subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
-            amountRaw = amountRaw,
-            amountEffective = amountEffective,
-            withdrawalAccount = it.copy(paytoUri = uri.toString())
-        )
+        } else if (uri.authority.equals("x-taler-bank", true)) {
+            TransferData.Taler(
+                account = uri.lastPathSegment!!,
+                bankUrl = uri.pathSegments.first(),
+                receiverName = uri.getQueryParameter("receiver_name"),
+                subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
+                amountRaw = amountRaw,
+                amountEffective = amountEffective,
+                withdrawalAccount = it.copy(paytoUri = uri.toString()),
+            )
+        } else if (uri.authority.equals("iban", true)) {
+            TransferData.IBAN(
+                iban = uri.lastPathSegment!!,
+                subject = uri.getQueryParameter("message") ?: "Error: No message in URI",
+                amountRaw = amountRaw,
+                amountEffective = amountEffective,
+                withdrawalAccount = it.copy(paytoUri = uri.toString()),
+            )
+        } else null
     },
 )
 

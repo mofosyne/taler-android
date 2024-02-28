@@ -86,6 +86,13 @@ fun ScreenTransfer(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (val transfer = selectedTransfer) {
+                is TransferData.Taler -> TransferTaler(
+                    transfer = transfer,
+                    exchangeBaseUrl = status.exchangeBaseUrl,
+                    transactionAmountRaw = status.transactionAmountRaw,
+                    transactionAmountEffective = status.transactionAmountEffective,
+                )
+
                 is TransferData.IBAN -> TransferIBAN(
                     transfer = transfer,
                     exchangeBaseUrl = status.exchangeBaseUrl,

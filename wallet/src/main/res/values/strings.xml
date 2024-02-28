@@ -195,6 +195,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_restrict_age">Restrict Usage to Age</string>
     <string name="withdraw_restrict_age_unrestricted">Unrestricted</string>
     <string name="withdraw_exchange">Exchange</string>
+    <string name="withdraw_bank">Bank</string>
     <string name="withdraw_button_confirm">Confirm Withdraw</string>
     <string name="withdraw_button_confirm_bank">Confirm with bank</string>
     <string name="withdraw_button_tos">Review Terms</string>
@@ -210,6 +211,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="withdraw_manual_bitcoin_title">Bitcoin exchange ready for withdrawal</string>
     <string name="withdraw_manual_bitcoin_intro">Now make a split transaction with the following three outputs.</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
+    <string name="withdraw_manual_ready_account">Account</string>
+    <string name="withdraw_manual_ready_receiver">Receiver name</string>
     <string name="withdraw_manual_ready_subject">Subject</string>
     <string name="withdraw_manual_ready_bank_button">Open in banking app</string>
     <string name="withdraw_manual_ready_cancel">Cancel withdrawal</string>
