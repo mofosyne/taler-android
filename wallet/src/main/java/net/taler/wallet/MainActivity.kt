@@ -111,15 +111,13 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         }
 
         val versionView: TextView = ui.navView.getHeaderView(0).findViewById(R.id.versionView)
-        model.devMode.observe(this) { enabled ->
-            // Uncomment if any dev options are added in the future
-            // ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
-            if (enabled) {
-                @SuppressLint("SetTextI18n")
-                versionView.text = "$VERSION_NAME ($VERSION_CODE)"
-                versionView.visibility = VISIBLE
-            } else versionView.visibility = GONE
-        }
+        @SuppressLint("SetTextI18n")
+        versionView.text = "$VERSION_NAME ($VERSION_CODE)"
+
+        // Uncomment if any dev options are added in the future
+        // model.devMode.observe(this) { enabled ->
+        //     ui.navView.menu.findItem(R.id.nav_dev).isVisible = enabled
+        // }
 
         if (intent.action == ACTION_VIEW) intent.dataString?.let { uri ->
             handleTalerUri(uri, "intent")

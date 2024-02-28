@@ -60,8 +60,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             prefLogcat,
             prefExportDb,
             prefImportDb,
-            prefVersionApp,
-            prefVersionCore,
             prefVersionExchange,
             prefVersionMerchant,
             prefTest,
@@ -99,14 +97,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
+        prefVersionCore.summary = "${model.walletVersion} (${model.walletVersionHash?.take(7)})"
+        model.exchangeVersion?.let { prefVersionExchange.summary = it }
+        model.merchantVersion?.let { prefVersionMerchant.summary = it }
+
         model.devMode.observe(viewLifecycleOwner) { enabled ->
             prefDevMode.isChecked = enabled
-            if (enabled) {
-                prefVersionApp.summary = "$VERSION_NAME ($FLAVOR $VERSION_CODE)"
-                prefVersionCore.summary = "${model.walletVersion} (${model.walletVersionHash?.take(7)})"
-                model.exchangeVersion?.let { prefVersionExchange.summary = it }
-                model.merchantVersion?.let { prefVersionMerchant.summary = it }
-            }
             devPrefs.forEach { it.isVisible = enabled }
         }
         prefDevMode.setOnPreferenceChangeListener { _, newValue ->

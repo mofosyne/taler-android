@@ -65,7 +65,7 @@
 
     <Preference
         app:icon="@drawable/ic_account_balance_wallet"
-        app:isPreferenceVisible="false"
+        app:isPreferenceVisible="true"
         app:key="pref_version_app"
         app:selectable="false"
         app:summary="@string/settings_version_unknown"
@@ -74,7 +74,7 @@
 
     <Preference
         app:icon="@drawable/ic_adjust"
-        app:isPreferenceVisible="false"
+        app:isPreferenceVisible="true"
         app:key="pref_version_core"
         app:selectable="false"
         app:summary="@string/settings_version_unknown"
