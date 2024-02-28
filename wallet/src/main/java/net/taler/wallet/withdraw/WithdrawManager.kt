@@ -326,10 +326,9 @@ class WithdrawManager(
         }
     }
 
-    @UiThread
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "Error $operation $error")
-        withdrawStatus.value = WithdrawStatus.Error(error.userFacingMsg)
+        withdrawStatus.postValue(WithdrawStatus.Error(error.userFacingMsg))
     }
 
     /**
