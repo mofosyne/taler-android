@@ -123,12 +123,8 @@ fun MakeDepositComposable(
             }
         )
         TransactionAmountComposable(
-            label = if (state.effectiveDepositAmount == null) {
-                stringResource(R.string.amount_chosen)
-            } else {
-                stringResource(R.string.send_deposit_amount_effective)
-            },
-            amount = state.effectiveDepositAmount ?: amount,
+            label = stringResource(R.string.amount_chosen),
+            amount = amount,
             amountType = Positive,
         )
         AnimatedVisibility(visible = state.showFees) {
@@ -148,7 +144,7 @@ fun MakeDepositComposable(
 
                 TransactionAmountComposable(
                     label = stringResource(R.string.send_amount),
-                    amount = totalAmount,
+                    amount = effectiveAmount,
                     amountType = Positive,
                 )
             }

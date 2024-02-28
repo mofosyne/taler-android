@@ -59,12 +59,6 @@ fun ColumnScope.TransactionPeerPushDebitComposable(t: TransactionPeerPushDebit) 
     )
 
     TransactionAmountComposable(
-        label = stringResource(id = R.string.transaction_paid),
-        amount = t.amountEffective,
-        amountType = AmountType.Negative,
-    )
-
-    TransactionAmountComposable(
         label = stringResource(id = R.string.transaction_order_total),
         amount = t.amountRaw,
         amountType = AmountType.Neutral,
@@ -78,6 +72,12 @@ fun ColumnScope.TransactionPeerPushDebitComposable(t: TransactionPeerPushDebit) 
             amountType = AmountType.Negative,
         )
     }
+
+    TransactionAmountComposable(
+        label = stringResource(id = R.string.transaction_paid),
+        amount = t.amountEffective,
+        amountType = AmountType.Negative,
+    )
 
     TransactionInfoComposable(
         label = stringResource(id = R.string.send_peer_purpose),

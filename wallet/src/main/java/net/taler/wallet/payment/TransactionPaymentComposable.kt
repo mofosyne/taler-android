@@ -73,16 +73,13 @@ fun TransactionPaymentComposable(
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
             style = MaterialTheme.typography.bodyLarge,
         )
-        TransactionAmountComposable(
-            label = stringResource(id = R.string.transaction_paid),
-            amount = t.amountEffective,
-            amountType = AmountType.Negative,
-        )
+
         TransactionAmountComposable(
             label = stringResource(id = R.string.transaction_order_total),
             amount = t.amountRaw,
             amountType = AmountType.Neutral,
         )
+
         val fee = t.amountEffective - t.amountRaw
         if (!fee.isZero()) {
             TransactionAmountComposable(
@@ -91,15 +88,24 @@ fun TransactionPaymentComposable(
                 amountType = AmountType.Negative,
             )
         }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.transaction_paid),
+            amount = t.amountEffective,
+            amountType = AmountType.Negative,
+        )
+
         if (t.posConfirmation != null) {
             TransactionInfoComposable(
                 label = stringResource(id = R.string.payment_confirmation_code),
                 info = t.posConfirmation,
             )
         }
+
         PurchaseDetails(info = t.info) {
             onFulfill(t.info.fulfillmentUrl ?: "")
         }
+
         TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)

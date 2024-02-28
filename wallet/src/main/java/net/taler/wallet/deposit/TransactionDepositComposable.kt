@@ -68,16 +68,13 @@ fun TransactionDepositComposable(
             text = t.timestamp.ms.toAbsoluteTime(context).toString(),
             style = MaterialTheme.typography.bodyLarge,
         )
+
         TransactionAmountComposable(
-            label = stringResource(id = R.string.transaction_paid),
-            amount = t.amountEffective,
-            amountType = AmountType.Negative,
-        )
-        TransactionAmountComposable(
-            label = stringResource(id = R.string.transaction_order_total),
+            label = stringResource(id = R.string.amount_chosen),
             amount = t.amountRaw,
             amountType = AmountType.Neutral,
         )
+
         val fee = t.amountEffective - t.amountRaw
         if (!fee.isZero()) {
             TransactionAmountComposable(
@@ -86,6 +83,13 @@ fun TransactionDepositComposable(
                 amountType = AmountType.Negative,
             )
         }
+
+        TransactionAmountComposable(
+            label = stringResource(id = R.string.send_peer_payment_amount_sent),
+            amount = t.amountEffective,
+            amountType = AmountType.Negative,
+        )
+
         TransitionsComposable(t, devMode, onTransition)
         if (devMode && t.error != null) {
             ErrorTransactionButton(error = t.error)

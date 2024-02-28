@@ -46,13 +46,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
         state = t.txState,
         talerUri = t.talerUri,
     )
-
-    TransactionAmountComposable(
-        label = stringResource(id = R.string.receive_amount),
-        amount = t.amountEffective,
-        amountType = AmountType.Positive,
-    )
-
+    
     TransactionAmountComposable(
         label = stringResource(id = R.string.amount_chosen),
         amount = t.amountRaw,
@@ -67,6 +61,12 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
             amountType = AmountType.Negative,
         )
     }
+
+    TransactionAmountComposable(
+        label = stringResource(id = R.string.receive_amount),
+        amount = t.amountEffective,
+        amountType = AmountType.Positive,
+    )
 
     TransactionInfoComposable(
         label = stringResource(id = R.string.send_peer_purpose),

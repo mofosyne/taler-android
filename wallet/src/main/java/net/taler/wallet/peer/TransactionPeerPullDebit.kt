@@ -40,15 +40,11 @@ import net.taler.wallet.transactions.TransactionState
 @Composable
 fun TransactionPeerPullDebitComposable(t: TransactionPeerPullDebit) {
     TransactionAmountComposable(
-        label = stringResource(id = R.string.transaction_paid),
-        amount = t.amountEffective,
-        amountType = AmountType.Negative,
-    )
-    TransactionAmountComposable(
         label = stringResource(id = R.string.transaction_order_total),
         amount = t.amountRaw,
         amountType = AmountType.Neutral,
     )
+    
     val fee = t.amountEffective - t.amountRaw
     if (!fee.isZero()) {
         TransactionAmountComposable(
@@ -57,6 +53,13 @@ fun TransactionPeerPullDebitComposable(t: TransactionPeerPullDebit) {
             amountType = AmountType.Negative,
         )
     }
+
+    TransactionAmountComposable(
+        label = stringResource(id = R.string.transaction_paid),
+        amount = t.amountEffective,
+        amountType = AmountType.Negative,
+    )
+
     TransactionInfoComposable(
         label = stringResource(id = R.string.send_peer_purpose),
         info = t.info.summary ?: "",
