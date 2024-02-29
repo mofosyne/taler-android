@@ -52,11 +52,11 @@
     <string name="transaction_tip_from">Ricompensa da %s</string>
     <string name="transaction_refund">Rimborso</string>
     <string name="transaction_refund_from">Rimborso di %s</string>
-    <string name="transaction_pending">In sospeso</string>
+    <string name="transaction_pending">IN ATTESA</string>
     <string name="payment_title">Pagamento</string>
     <string name="transactions_empty_search">Nessun transazione trovata. Prova una ricerca diversa.</string>
     <string name="transaction_order_id">Ricevuta #%1$s</string>
-    <string name="transaction_refresh">Commissione per cambio scadenza moneta</string>
+    <string name="transaction_refresh">Commissione per cambio della moneta a scadenza</string>
     <string name="payment_fee">+%s tassa di commissione</string>
     <string name="payment_button_confirm">Confermare pagamento</string>
     <string name="payment_already_paid">Hai già pagato questo ordine.</string>
@@ -167,8 +167,8 @@
     <string name="transaction_action_kyc">Completa KYC</string>
     <string name="pay_peer_intro">Vuoi pagare questa fattura\?</string>
     <string name="transactions_delete_dialog_title">Rimuovi Transazione</string>
-    <string name="transactions_delete_dialog_message">Sei sicuro di voler rimuovere la transazione dal tuo portafogli\?</string>
-    <string name="transaction_deposit">Deposito</string>
+    <string name="transactions_delete_dialog_message">Sei sicuro di voler rimuovere questa transazione dal tuo portafogli?</string>
+    <string name="transaction_deposit">Deposita</string>
     <string name="receive_peer_payment_title">Ricevi pagamento</string>
     <string name="receive_peer_payment_intro">Vuoi ricevere questo pagamento\?</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
@@ -215,8 +215,8 @@
     <string name="tip_button_confirm">Accetta ricompensa</string>
     <string name="send_deposit_bitcoin">Ad un portafoglio Bitcoin</string>
     <string name="send_peer_bitcoin">Ad un altro portafogli Taler</string>
-    <string name="transactions_delete_selected_dialog_message">Sei sicuro di voler rimuovere le transazioni selzionate dal tuo portafogli\?</string>
-    <string name="transactions_cancel_dialog_message">Sei sicuro di voler cancellare questo prelievo\? I fondi in transito potrebbero essere persi.</string>
+    <string name="transactions_delete_selected_dialog_message">Sei sicuro di voler rimuovere le transazioni selezionate dal tuo portafogli?</string>
+    <string name="transactions_cancel_dialog_message">Sei sicuro di voler cancellare questo prelievo? I fondi in transito potrebbero andare persi.</string>
     <string name="send_deposit_bitcoin_address">Indirizzo Bitcoin</string>
     <string name="send_deposit_check_fees_button">Controlla commissioni</string>
     <string name="send_deposit_amount_effective">Importo Effetivo</string>
@@ -224,4 +224,19 @@
     <string name="send_deposit_bitcoin_create_button">Trasferisci Bitcoin</string>
     <string name="send_peer">Ad un altro portafoglio</string>
     <string name="settings_db_export_error">Errore nell\'esportazione della banca dati</string>
+    <string name="transactions_abort">Annulla</string>
+    <string name="transactions_fail">Arresta</string>
+    <string name="transactions_abort_dialog_title">Annulla la Transazione</string>
+    <string name="transactions_fail_dialog_title">Annulla la Transazione</string>
+    <string name="transactions_fail_dialog_message">Sei sicuro di voler annullare questa transazione? I fondi ancora in transito ANDRANNO PERSI.</string>
+    <string name="transactions_abort_dialog_message">Sei sicuro di voler annullare questa transazione? I fondi ancora in transito potrebbero andare persi.</string>
+    <string name="copy_uri">Copia URI Taler</string>
+    <string name="transactions_balance">Saldo</string>
+    <string name="offline_banner">Nessun accesso ad internet</string>
+    <string name="transaction_peer_push_debit">Pagamento Push</string>
+    <string name="transactions_detail_title_currency">%sTransazioni</string>
+    <string name="char_count">%1$d/%2$d</string>
+    <string name="error_broken_uri">Errore: Questo URI Taler è ( al momento ) non funzionante.</string>
+    <string name="import_db">Importa</string>
+    <string name="reset">Resetta</string>
 </resources>
