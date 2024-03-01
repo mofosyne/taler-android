@@ -40,6 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.taler.common.Amount
 import net.taler.common.fadeIn
 import net.taler.common.fadeOut
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
@@ -240,7 +241,11 @@ class TransactionsFragment : Fragment(), OnTransactionClickListener, ActionMode.
                         .setNegativeButton(R.string.transactions_delete) { dialog, _ ->
                             transactionManager.deleteTransactions(transactionIds) {
                                 Log.e(TAG, "Error deleteTransaction $it")
-                                showError(it)
+                                if (model.devMode.value == true) {
+                                    showError(it)
+                                } else {
+                                    showError(it.userFacingMsg)
+                                }
                             }
                             dialog.dismiss()
                         }

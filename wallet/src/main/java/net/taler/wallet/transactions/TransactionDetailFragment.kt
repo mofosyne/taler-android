@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.TAG
@@ -98,7 +99,11 @@ abstract class TransactionDetailFragment : Fragment() {
     private fun deleteTransaction(t: Transaction) {
         transactionManager.deleteTransaction(t.transactionId) {
             Log.e(TAG, "Error deleteTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
         findNavController().popBackStack()
     }
@@ -106,35 +111,55 @@ abstract class TransactionDetailFragment : Fragment() {
     private fun retryTransaction(t: Transaction) {
         transactionManager.retryTransaction(t.transactionId) {
             Log.e(TAG, "Error retryTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
     }
 
     private fun abortTransaction(t: Transaction) {
         transactionManager.abortTransaction(t.transactionId) {
             Log.e(TAG, "Error abortTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
     }
 
     private fun failTransaction(t: Transaction) {
         transactionManager.failTransaction(t.transactionId) {
             Log.e(TAG, "Error failTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
     }
 
     private fun suspendTransaction(t: Transaction) {
         transactionManager.suspendTransaction(t.transactionId) {
             Log.e(TAG, "Error suspendTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
     }
 
     private fun resumeTransaction(t: Transaction) {
         transactionManager.resumeTransaction(t.transactionId) {
             Log.e(TAG, "Error resumeTransaction $it")
-            showError(it)
+            if (model.devMode.value == true) {
+                showError(it)
+            } else {
+                showError(it.userFacingMsg)
+            }
         }
     }
 }

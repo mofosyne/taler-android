@@ -29,6 +29,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import net.taler.common.fadeIn
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.balances.BalanceState.Error
 import net.taler.wallet.balances.BalanceState.Loading
@@ -87,7 +88,11 @@ class BalancesFragment : Fragment(),
                     ui.mainList.fadeIn()
                 }
             }
-            is Error -> showError(state.error)
+            is Error -> if (model.devMode.value == true) {
+                showError(state.error)
+            } else {
+                showError(state.error.userFacingMsg)
+            }
         }
     }
 

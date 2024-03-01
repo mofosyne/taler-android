@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import net.taler.common.showError
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
@@ -45,7 +46,11 @@ class IncomingPullPaymentFragment : Fragment() {
                 if (it is IncomingAccepted) {
                     findNavController().navigate(R.id.action_promptPullPayment_to_nav_main)
                 } else if (it is IncomingError) {
-                    showError(it.info)
+                    if (model.devMode.value == true) {
+                        showError(it.info)
+                    } else {
+                        showError(it.info.userFacingMsg)
+                    }
                 }
             }
         }
