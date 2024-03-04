@@ -67,17 +67,18 @@ internal class ProductAdapter(private val listener: ProductImageClickListener) :
 
         fun bind(product: ContractProduct) {
             quantity.text = product.quantity.toString()
-            if (product.image == null) {
+            val productImage = product.image
+            if (productImage == null) {
                 image.visibility = GONE
-            } else {
-                image.visibility = VISIBLE
-                // product.image was validated before, so non-null below
-                val match = REGEX_PRODUCT_IMAGE.matchEntire(product.image!!)!!
-                val decodedString = Base64.decode(match.groups[2]!!.value, Base64.DEFAULT)
-                val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
-                image.setImageBitmap(bitmap)
-                image.setOnClickListener {
-                    listener.onImageClick(bitmap)
+            } else REGEX_PRODUCT_IMAGE.matchEntire(productImage)?.let { match ->
+                match.groups[2]?.value?.let { group ->
+                    image.visibility = VISIBLE
+                    val decodedString = Base64.decode(group, Base64.DEFAULT)
+                    val bitmap = decodeByteArray(decodedString, 0, decodedString.size)
+                    image.setImageBitmap(bitmap)
+                    image.setOnClickListener {
+                        listener.onImageClick(bitmap)
+                    }
                 }
             }
             name.text = product.description
