@@ -133,11 +133,13 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
             }
             is PayStatus.Error -> {
                 showLoading(false)
-                if (model.devMode.value == true) {
-                    showError(payStatus.error)
+                if (payStatus.error != null) {
+                    if (model.devMode.value == true) {
+                        showError(payStatus.error)
+                    }
+                    ui.details.errorView.text = getString(R.string.payment_error, payStatus.error.userFacingMsg)
+                    ui.details.errorView.fadeIn()
                 }
-                ui.details.errorView.text = getString(R.string.payment_error, payStatus.error.userFacingMsg)
-                ui.details.errorView.fadeIn()
             }
             is PayStatus.None -> {
                 // No payment active.

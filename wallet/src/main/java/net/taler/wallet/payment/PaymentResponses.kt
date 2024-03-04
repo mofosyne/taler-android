@@ -79,6 +79,6 @@ sealed class ConfirmPayResult {
     @SerialName("pending")
     data class Pending(
         val transactionId: String,
-        val lastError: TalerErrorInfo,
+        val lastError: TalerErrorInfo? = null,
     ) : ConfirmPayResult()
 }

@@ -57,7 +57,7 @@ sealed class PayStatus {
 
     data class Error(
         val transactionId: String? = null,
-        val error: TalerErrorInfo,
+        val error: TalerErrorInfo? = null,
     ) : PayStatus()
     data class Success(
         val transactionId: String,
@@ -105,6 +105,7 @@ class PaymentManager(
                     transactionId = response.transactionId,
                     currency = currency,
                 )
+                // TODO: is pending == error always?
                 is ConfirmPayResult.Pending -> PayStatus.Error(
                     transactionId = response.transactionId,
                     error = response.lastError,
