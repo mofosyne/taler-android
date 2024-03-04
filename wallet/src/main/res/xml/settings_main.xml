@@ -74,7 +74,7 @@
 
     <Preference
         app:icon="@drawable/ic_adjust"
-        app:isPreferenceVisible="true"
+        app:isPreferenceVisible="false"
         app:key="pref_version_core"
         app:selectable="false"
         app:summary="@string/settings_version_unknown"

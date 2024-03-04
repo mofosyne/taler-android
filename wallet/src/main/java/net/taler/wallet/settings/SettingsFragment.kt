@@ -56,6 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefReset: Preference
     private val devPrefs by lazy {
         listOf(
+            prefVersionCore,
             prefWithdrawTest,
             prefLogcat,
             prefExportDb,
