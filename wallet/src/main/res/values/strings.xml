@@ -150,6 +150,7 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="receive_peer_create_button">Create invoice</string>
     <string name="receive_peer_invoice_instruction">Let the payer scan this QR code to pay:</string>
     <string name="receive_peer_invoice_uri">Alternatively, copy and send this URI:</string>
+    <string name="receive_peer_amount_invoiced">Amount invoiced</string>
 
     <string name="send_amount">Amount to send</string>
     <string name="send_intro">Choose where to send money to:</string>

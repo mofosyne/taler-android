@@ -48,7 +48,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
     )
     
     TransactionAmountComposable(
-        label = stringResource(id = R.string.amount_chosen),
+        label = stringResource(id = R.string.receive_peer_amount_invoiced),
         amount = t.amountRaw,
         amountType = AmountType.Neutral,
     )
@@ -63,7 +63,7 @@ fun ColumnScope.TransactionPeerPullCreditComposable(t: TransactionPeerPullCredit
     }
 
     TransactionAmountComposable(
-        label = stringResource(id = R.string.receive_amount),
+        label = stringResource(id = R.string.send_peer_payment_amount_received),
         amount = t.amountEffective,
         amountType = AmountType.Positive,
     )
