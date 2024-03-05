@@ -133,6 +133,9 @@ enum class TransactionMinorState {
     @SerialName("delete-purse")
     DeletePurse,
 
+    @SerialName("refresh-expired")
+    RefreshExpired,
+
     @SerialName("ready")
     Ready,
 
