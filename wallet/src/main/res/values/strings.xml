@@ -76,6 +76,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="amount_positive">+%s</string>
     <string name="amount_negative">-%s</string>
     <string name="amount_chosen">Chosen Amount</string>
+    <string name="amount_sent">Amount sent</string>
+    <string name="amount_received">Amount received</string>
     <string name="balances_inbound_label">inbound</string>
     <string name="balances_empty_state">There is no digital cash in your wallet.\n\nYou can get test money from the demo bank:\n\nhttps://bank.demo.taler.net</string>
     <string name="balance_scope_exchange">Exchange: %1$s</string>
@@ -172,8 +174,6 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="send_peer_title">Send money to another wallet</string>
     <string name="send_peer_create_button">Send funds now</string>
     <string name="send_peer_payment_instruction">Let the payee scan this QR code to receive:</string>
-    <string name="send_peer_payment_amount_received">Amount received</string>
-    <string name="send_peer_payment_amount_sent">Amount sent</string>
     <string name="send_peer_expiration_period">Expires in</string>
     <string name="send_peer_expiration_1d">1 day</string>
     <string name="send_peer_expiration_7d">7 days</string>

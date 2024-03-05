@@ -40,7 +40,7 @@ import net.taler.wallet.transactions.TransactionState
 @Composable
 fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit) {
     TransactionAmountComposable(
-        label = stringResource(id = R.string.send_peer_payment_amount_sent),
+        label = stringResource(id = R.string.amount_sent),
         amount = t.amountRaw,
         amountType = AmountType.Neutral,
     )
@@ -55,7 +55,7 @@ fun TransactionPeerPushCreditComposable(t: TransactionPeerPushCredit) {
     }
 
     TransactionAmountComposable(
-        label = stringResource(id = R.string.send_peer_payment_amount_received),
+        label = stringResource(id = R.string.amount_received),
         amount = t.amountEffective,
         amountType = AmountType.Positive,
     )

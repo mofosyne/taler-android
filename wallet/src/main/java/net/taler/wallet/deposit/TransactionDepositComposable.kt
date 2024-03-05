@@ -85,7 +85,7 @@ fun TransactionDepositComposable(
         }
 
         TransactionAmountComposable(
-            label = stringResource(id = R.string.send_peer_payment_amount_sent),
+            label = stringResource(id = R.string.amount_sent),
             amount = t.amountEffective,
             amountType = AmountType.Negative,
         )
