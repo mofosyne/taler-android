@@ -55,7 +55,7 @@ sealed class PayStatus {
         val transactionId: String,
     ) : PayStatus()
 
-    data class Error(
+    data class Pending(
         val transactionId: String? = null,
         val error: TalerErrorInfo? = null,
     ) : PayStatus()
@@ -105,8 +105,7 @@ class PaymentManager(
                     transactionId = response.transactionId,
                     currency = currency,
                 )
-                // TODO: is pending == error always?
-                is ConfirmPayResult.Pending -> PayStatus.Error(
+                is ConfirmPayResult.Pending -> PayStatus.Pending(
                     transactionId = response.transactionId,
                     error = response.lastError,
                 )
@@ -146,7 +145,7 @@ class PaymentManager(
 
     private fun handleError(operation: String, error: TalerErrorInfo) {
         Log.e(TAG, "got $operation error result $error")
-        mPayStatus.value = PayStatus.Error(error = error)
+        mPayStatus.value = PayStatus.Pending(error = error)
     }
 
 }

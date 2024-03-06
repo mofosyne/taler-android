@@ -57,7 +57,7 @@ fun PayTemplateComposable(
         PayTemplateError(stringResource(R.string.receive_amount_invalid))
     } else if (currencies.isEmpty()) {
         PayTemplateError(stringResource(R.string.payment_balance_insufficient))
-    } else when (payStatus) {
+    } else when (val p = payStatus) {
         is PayStatus.None -> PayTemplateOrderComposable(
             currencies = currencies,
             defaultSummary = defaultSummary,
@@ -70,7 +70,14 @@ fun PayTemplateComposable(
         is PayStatus.Loading -> PayTemplateLoading()
         is PayStatus.AlreadyPaid -> PayTemplateError(stringResource(R.string.payment_already_paid))
         is PayStatus.InsufficientBalance -> PayTemplateError(stringResource(R.string.payment_balance_insufficient))
-        is PayStatus.Error -> {} // handled in fragment will show bottom sheet FIXME white page?
+        is PayStatus.Pending -> {
+            val error = p.error
+            PayTemplateError(if (error != null) {
+                stringResource(R.string.payment_error, error.userFacingMsg)
+            } else {
+                stringResource(R.string.payment_template_error)
+            })
+        }
         is PayStatus.Prepared -> {} // handled in fragment, will redirect
         is PayStatus.Success -> {} // handled by other UI flow, no need for content here
     }

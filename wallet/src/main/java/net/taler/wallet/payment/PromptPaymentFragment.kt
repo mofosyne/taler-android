@@ -131,14 +131,14 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
                 navigateToTransaction(payStatus.transactionId)
                 Snackbar.make(requireView(), R.string.payment_already_paid, LENGTH_LONG).show()
             }
-            is PayStatus.Error -> {
+            is PayStatus.Pending -> {
                 showLoading(false)
-                if (payStatus.error != null) {
-                    if (model.devMode.value == true) {
-                        showError(payStatus.error)
-                    }
-                    ui.details.errorView.text = getString(R.string.payment_error, payStatus.error.userFacingMsg)
-                    ui.details.errorView.fadeIn()
+                paymentManager.resetPayStatus()
+                navigateToTransaction(payStatus.transactionId)
+                if (payStatus.error != null && model.devMode.value == true) {
+                    showError(payStatus.error)
+                } else {
+                    showError(getString(R.string.payment_pending))
                 }
             }
             is PayStatus.None -> {
@@ -174,9 +174,9 @@ class PromptPaymentFragment : Fragment(), ProductImageClickListener {
         f.show(parentFragmentManager, "image")
     }
 
-    private fun navigateToTransaction(id: String) {
+    private fun navigateToTransaction(id: String?) {
         lifecycleScope.launch {
-            if (transactionManager.selectTransaction(id)) {
+            if (id != null && transactionManager.selectTransaction(id)) {
                 findNavController().navigate(R.id.action_promptPayment_to_nav_transactions_detail_payment)
             } else {
                 findNavController().navigate(R.id.action_promptPayment_to_nav_main)

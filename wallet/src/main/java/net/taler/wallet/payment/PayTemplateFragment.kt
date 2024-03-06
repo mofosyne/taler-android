@@ -84,14 +84,8 @@ class PayTemplateFragment : Fragment() {
                     findNavController().navigate(R.id.action_promptPayTemplate_to_promptPayment)
                 }
 
-                is PayStatus.Error -> if (payStatus.error != null) {
-                    if (model.devMode.value == true) {
-                        showError(payStatus.error)
-                    } else {
-                        showError(R.string.payment_error, payStatus.error.userFacingMsg)
-                    }
-                } else {
-                    showError(getString(R.string.payment_template_error))
+                is PayStatus.Pending -> if (payStatus.error != null && model.devMode.value == true) {
+                    showError(payStatus.error)
                 }
 
                 else -> {}
