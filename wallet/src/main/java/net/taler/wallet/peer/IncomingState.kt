@@ -48,7 +48,6 @@ data class PreparePeerPullDebitResponse(
     val contractTerms: PeerContractTerms,
     val amountRaw: Amount,
     val amountEffective: Amount,
-    val peerPullDebitId: String,
     val transactionId: String,
 )
 
@@ -57,6 +56,5 @@ data class PreparePeerPushCreditResponse(
     val contractTerms: PeerContractTerms,
     val amountRaw: Amount,
     val amountEffective: Amount,
-    val peerPushCreditId: String,
     val transactionId: String,
 )
