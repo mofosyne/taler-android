@@ -119,11 +119,9 @@ class MainViewModel(
     }
 
     @UiThread
-    fun getCurrencies(): List<String> {
-        return balanceManager.balancesOrNull?.map { balanceItem ->
-            balanceItem.currency
-        } ?: emptyList()
-    }
+    fun getCurrencies() = balanceManager.balances.value?.map { balanceItem ->
+        balanceItem.currency
+    } ?: emptyList()
 
     @UiThread
     fun createAmount(amountText: String, currency: String): AmountResult {
@@ -138,7 +136,7 @@ class MainViewModel(
 
     @UiThread
     fun hasSufficientBalance(amount: Amount): Boolean {
-        balanceManager.balancesOrNull?.forEach { balanceItem ->
+        balanceManager.balances.value?.forEach { balanceItem ->
             if (balanceItem.currency == amount.currency) {
                 return balanceItem.available >= amount
             }

@@ -17,6 +17,7 @@
 package net.taler.wallet.balances
 
 import android.util.Log
+import androidx.annotation.UiThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.distinctUntilChanged
@@ -49,13 +50,15 @@ class BalanceManager(
     private val api: WalletBackendApi,
     private val scope: CoroutineScope,
 ) {
+    private val mBalances = MutableLiveData<List<BalanceItem>>(emptyList())
+    val balances: LiveData<List<BalanceItem>> = mBalances
+
     private val mState = MutableLiveData<BalanceState>(BalanceState.None)
     val state: LiveData<BalanceState> = mState.distinctUntilChanged()
 
-    val balancesOrNull get() = (state.value as? BalanceState.Success)?.balances
-
+    @UiThread
     fun loadBalances() {
-        mState.postValue(BalanceState.Loading)
+        mState.value = BalanceState.Loading
         scope.launch {
             val response = api.request("getBalances", BalanceResponse.serializer())
             response.onError {
@@ -64,6 +67,7 @@ class BalanceManager(
             }
             response.onSuccess {
                 mState.postValue(BalanceState.Success(it.balances))
+                mBalances.postValue(it.balances)
             }
         }
     }

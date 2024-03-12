@@ -86,7 +86,7 @@ class PayToUriFragment : Fragment() {
                         text = stringResource(id = R.string.payment_balance_insufficient),
                         color = MaterialTheme.colorScheme.error,
                     ) else if (depositManager.isSupportedPayToUri(uri)) PayToComposable(
-                        currencies = model.getCurrencies(),
+                        currencies = currencies,
                         getAmount = model::createAmount,
                         onAmountChosen = { amount ->
                             val u = Uri.parse(uri)
