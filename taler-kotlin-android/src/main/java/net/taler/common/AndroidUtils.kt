@@ -23,6 +23,7 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Looper
 import android.text.format.DateUtils.DAY_IN_MILLIS
@@ -118,6 +119,23 @@ fun Context.startActivitySafe(intent: Intent) {
     } catch (e: ActivityNotFoundException) {
         Log.e("taler-kotlin-android", "Error starting $intent", e)
     }
+}
+
+fun Context.openUri(uri: String, title: String) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(uri)
+    }
+
+    startActivitySafe(Intent.createChooser(intent, title))
+}
+
+fun Context.shareText(text: String) {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+
+    startActivitySafe(Intent.createChooser(intent, null))
 }
 
 fun Fragment.navigate(directions: NavDirections) = findNavController().navigate(directions)

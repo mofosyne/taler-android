@@ -16,8 +16,6 @@
 
 package net.taler.wallet.withdraw.manual
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +25,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import net.taler.common.startActivitySafe
+import net.taler.common.openUri
+import net.taler.common.shareText
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
 import net.taler.wallet.compose.TalerSurface
@@ -68,17 +67,23 @@ class ManualWithdrawSuccessFragment : Fragment() {
                 ScreenTransfer(
                     status = status,
                     bankAppClick = { onBankAppClick(it) },
+                    shareClick = { onShareClick(it) },
                 )
             }
         }
     }
 
     private fun onBankAppClick(transfer: TransferData) {
-        val intent = Intent().apply { data = Uri.parse(transfer.withdrawalAccount.paytoUri) }
-        val componentName = intent.resolveActivity(requireContext().packageManager)
-        if (componentName != null) {
-            requireContext().startActivitySafe(intent)
-        }
+        requireContext().openUri(
+            uri = transfer.withdrawalAccount.paytoUri,
+            title = requireContext().getString(R.string.share_payment)
+        )
+    }
+
+    private fun onShareClick(transfer: TransferData) {
+        requireContext().shareText(
+            text = transfer.withdrawalAccount.paytoUri,
+        )
     }
 
     override fun onStart() {

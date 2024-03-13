@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.R
+import net.taler.wallet.compose.ShareButton
 import net.taler.wallet.balances.CurrencySpecification
 import net.taler.wallet.compose.copyToClipBoard
 import net.taler.wallet.transactions.AmountType
@@ -59,6 +60,7 @@ import net.taler.wallet.withdraw.WithdrawStatus
 fun ScreenTransfer(
     status: WithdrawStatus.ManualTransferRequired,
     bankAppClick: ((transfer: TransferData) -> Unit)?,
+    shareClick: ((transfer: TransferData) -> Unit)?,
 ) {
     // TODO: show some placeholder
     if (status.withdrawalTransfers.isEmpty()) return
@@ -111,10 +113,18 @@ fun ScreenTransfer(
                 Button(
                     onClick = { bankAppClick(selectedTransfer) },
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
+                        .padding(bottom = 16.dp),
                 ) {
                     Text(text = stringResource(R.string.withdraw_manual_ready_bank_button))
                 }
+            }
+
+            if (shareClick != null) {
+                ShareButton(
+                    content = selectedTransfer.withdrawalAccount.paytoUri,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp),
+                )
             }
         }
     }
@@ -296,6 +306,7 @@ fun ScreenTransferPreview() {
                 ),
             ),
             bankAppClick = {},
+            shareClick = {},
         )
     }
 }
