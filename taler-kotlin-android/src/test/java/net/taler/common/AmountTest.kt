@@ -61,6 +61,107 @@ class AmountTest {
 
     @Test
     fun testToString() {
+        amountToString(
+            amount = Amount.fromString("KUDOS", "13.71"),
+            spec = CurrencySpecification(
+                name = "Test (Taler Demostrator)",
+                numFractionalInputDigits = 2,
+                numFractionalNormalDigits = 2,
+                numFractionalTrailingZeroDigits = 2,
+                altUnitNames = mapOf(0 to "ク"),
+            ),
+            rawStr = "13.71",
+            fraction = 71000000,
+            specAmount = "13.71",
+            noSpecAmount = "13.71",
+            currency = "KUDOS",
+            symbol = "ク",
+        )
+
+        amountToString(
+            amount = Amount.fromString("TESTKUDOS", "23.42"),
+            spec = CurrencySpecification(
+                name = "Test (Taler Unstable Demostrator)",
+                numFractionalInputDigits = 0,
+                numFractionalNormalDigits = 0,
+                numFractionalTrailingZeroDigits = 0,
+                altUnitNames = mapOf(0 to "テ"),
+            ),
+            rawStr = "23.42",
+            fraction = 42000000,
+            specAmount = "23",
+            noSpecAmount = "23.42",
+            currency = "TESTKUDOS",
+            symbol = "テ",
+        )
+
+        amountToString(
+            amount = Amount.fromString("BITCOINBTC", "0.00000001"),
+            spec = CurrencySpecification(
+                name = "Bitcoin",
+                numFractionalInputDigits = 8,
+                numFractionalNormalDigits = 8,
+                numFractionalTrailingZeroDigits = 0,
+                altUnitNames = mapOf(
+                    0 to "₿",
+                    // TODO: uncomment when units get implemented
+                    //  and then write tests for units, please
+//                -1 to "d₿",
+//                -2 to "c₿",
+//                -3 to "m₿",
+//                -6 to "µ₿",
+//                -8 to "sat",
+                ),
+            ),
+            rawStr = "0.00000001",
+            fraction = 1,
+            specAmount = "0.00000001",
+            noSpecAmount = "0.00000001",
+            currency = "BITCOINBTC",
+            symbol = "₿",
+        )
+
+        val specEUR = CurrencySpecification(
+            name = "EUR",
+            numFractionalInputDigits = 2,
+            numFractionalNormalDigits = 2,
+            numFractionalTrailingZeroDigits = 2,
+            altUnitNames = mapOf(0 to "€"),
+        )
+
+        amountToString(
+            amount = Amount.fromString("EUR", "1500000000.00000003"),
+            spec = specEUR,
+            rawStr = "1500000000.00000003",
+            fraction = 3,
+            specAmount = "1,500,000,000.00",
+            noSpecAmount = "1,500,000,000.00000003",
+            currency = "EUR",
+            symbol = "€",
+        )
+
+        amountToString(
+            amount = Amount.fromString("EUR", "500000000.126"),
+            spec = specEUR,
+            rawStr = "500000000.126",
+            fraction = 12600000,
+            specAmount = "500,000,000.13",
+            noSpecAmount = "500,000,000.126",
+            currency = "EUR",
+            symbol = "€",
+        )
+    }
+
+    private fun amountToString(
+        amount: Amount,
+        spec: CurrencySpecification,
+        rawStr: String,
+        fraction: Int,
+        specAmount: String,
+        noSpecAmount: String,
+        currency: String,
+        symbol: String,
+    ) {
         val symbols = DecimalFormatSymbols.getInstance()
         symbols.decimalSeparator = '.'
         symbols.groupingSeparator = ','
@@ -69,40 +170,22 @@ class AmountTest {
             symbols.monetaryGroupingSeparator = ','
         }
 
-        val spec = CurrencySpecification(
-            name = "Bitcoin",
-            numFractionalInputDigits = 8,
-            numFractionalNormalDigits = 8,
-            numFractionalTrailingZeroDigits = 0,
-            altUnitNames = mapOf(
-                0 to "₿",
-                // TODO: uncomment when units get implemented
-                //  and then write tests for units, please
-//                -1 to "d₿",
-//                -2 to "c₿",
-//                -3 to "m₿",
-//                -6 to "µ₿",
-//                -8 to "sat",
-            ),
-        )
+        // Only the raw amount
+        assertEquals(rawStr, amount.amountStr)
+        assertEquals(fraction, amount.fraction)
 
-        Amount.fromString("BITCOINBTC", "0.00000001").let { amount ->
-            // Only the raw amount
-            assertEquals("0.00000001", amount.amountStr)
+        // The amount without currency spec
+        assertEquals("$noSpecAmount $currency", amount.toString(symbols = symbols))
+        assertEquals(noSpecAmount, amount.toString(symbols = symbols, showSymbol = false))
+        assertEquals("-$noSpecAmount $currency", amount.toString(symbols = symbols, negative = true))
+        assertEquals("-$noSpecAmount", amount.toString(symbols = symbols, showSymbol = false, negative = true))
 
-            // The amount without currency spec
-            assertEquals("0.00000001 BITCOINBTC", amount.toString(symbols = symbols))
-            assertEquals("0.00000001", amount.toString(symbols = symbols, showSymbol = false))
-            assertEquals("-0.00000001 BITCOINBTC", amount.toString(symbols = symbols, negative = true))
-            assertEquals("-0.00000001", amount.toString(symbols = symbols, showSymbol = false, negative = true))
-
-            // The amount with currency spec
-            val withSpec = amount.withSpec(spec)
-            assertEquals("₿0.00000001", withSpec.toString(symbols = symbols))
-            assertEquals("0.00000001", withSpec.toString(symbols = symbols, showSymbol = false))
-            assertEquals("-₿0.00000001", withSpec.toString(symbols = symbols, negative = true))
-            assertEquals("-0.00000001", withSpec.toString(symbols = symbols, showSymbol = false, negative = true))
-        }
+        // The amount with currency spec
+        val withSpec = amount.withSpec(spec)
+        assertEquals("${symbol}$specAmount", withSpec.toString(symbols = symbols))
+        assertEquals(specAmount, withSpec.toString(symbols = symbols, showSymbol = false))
+        assertEquals("-${symbol}$specAmount", withSpec.toString(symbols = symbols, negative = true))
+        assertEquals("-$specAmount", withSpec.toString(symbols = symbols, showSymbol = false, negative = true))
     }
 
     @Test
