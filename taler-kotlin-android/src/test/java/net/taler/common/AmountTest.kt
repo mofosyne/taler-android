@@ -150,6 +150,23 @@ class AmountTest {
             currency = "EUR",
             symbol = "€",
         )
+
+        amountToString(
+            amount = Amount.fromString("NOSYMBOL", "13.24"),
+            spec = CurrencySpecification(
+                name = "No symbol!",
+                numFractionalInputDigits = 2,
+                numFractionalNormalDigits = 2,
+                numFractionalTrailingZeroDigits = 2,
+                altUnitNames = mapOf(),
+            ),
+            rawStr = "13.24",
+            fraction = 24000000,
+            specAmount = "13.24",
+            noSpecAmount = "13.24",
+            currency = "NOSYMBOL",
+            symbol = "NOSYMBOL",
+        )
     }
 
     private fun amountToString(
@@ -182,10 +199,17 @@ class AmountTest {
 
         // The amount with currency spec
         val withSpec = amount.withSpec(spec)
-        assertEquals("${symbol}$specAmount", withSpec.toString(symbols = symbols))
         assertEquals(specAmount, withSpec.toString(symbols = symbols, showSymbol = false))
-        assertEquals("-${symbol}$specAmount", withSpec.toString(symbols = symbols, negative = true))
+        assertEquals(specAmount, withSpec.toString(symbols = symbols, showSymbol = false))
         assertEquals("-$specAmount", withSpec.toString(symbols = symbols, showSymbol = false, negative = true))
+        assertEquals("-$specAmount", withSpec.toString(symbols = symbols, showSymbol = false, negative = true))
+        if (spec.symbol != null) {
+            assertEquals("${symbol}$specAmount", withSpec.toString(symbols = symbols))
+            assertEquals("-${symbol}$specAmount", withSpec.toString(symbols = symbols, negative = true))
+        } else {
+            assertEquals("$specAmount $currency", withSpec.toString(symbols = symbols))
+            assertEquals("-$specAmount $currency", withSpec.toString(symbols = symbols, negative = true))
+        }
     }
 
     @Test

@@ -240,11 +240,14 @@ public data class Amount(
         val format = NumberFormat.getCurrencyInstance()
         format.maximumFractionDigits = spec.numFractionalNormalDigits
         format.minimumFractionDigits = spec.numFractionalTrailingZeroDigits
-        s.currencySymbol = spec.symbol(this)
+        s.currencySymbol = spec.symbol ?: ""
         (format as DecimalFormat).decimalFormatSymbols = s
 
         val fmt = format.format(amount)
-        return if (showSymbol) fmt else {
+        return if (showSymbol) {
+            // If no symbol, then we use the currency string
+            if (spec.symbol != null) fmt else "$fmt $currency"
+        } else {
             // We should do better than manually removing the symbol here
             fmt.replace(s.currencySymbol, "").trim()
         }

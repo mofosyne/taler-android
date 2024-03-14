@@ -154,7 +154,7 @@ private fun ReceiveFundsIntro(
             )
             Text(
                 modifier = Modifier,
-                text = spec?.symbol(Amount.zero(currency)) ?: currency,
+                text = spec?.symbol ?: currency,
                 softWrap = false,
                 style = MaterialTheme.typography.titleLarge,
             )
