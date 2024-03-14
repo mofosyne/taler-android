@@ -32,5 +32,5 @@ data class CurrencySpecification(
     val altUnitNames: Map<Int, String>,
 ) {
     // TODO: add support for alt units
-    fun symbol(amount: Amount): String = altUnitNames[0] ?: amount.currency
+    val symbol: String? get() = altUnitNames[0]
 }
