@@ -7,4 +7,5 @@
     <string name="config_username_error">Anna käyttäjätunnuksesi!</string>
     <string name="app_name">Taler kassa</string>
     <string name="config_button_save">Tallenna</string>
+    <string name="config_error">Virhe noudettaessa määritystä</string>
 </resources>
