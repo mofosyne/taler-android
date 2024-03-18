@@ -8,4 +8,36 @@
     <string name="app_name">Taler kassa</string>
     <string name="config_button_save">Tallenna</string>
     <string name="config_error">Virhe noudettaessa määritystä</string>
+    <string name="config_error_auth">Virheellinen käyttäjätunnus tai salasana!</string>
+    <string name="balance_current_label">Nykyinen saldo</string>
+    <string name="balance_error">ERROR: %s</string>
+    <string name="balance_offline">Offline-tilassa. Muodosta yhteys Internetiin.</string>
+    <string name="ok">OK</string>
+    <string name="action_reconfigure">Määritä uudelleen</string>
+    <string name="action_lock">Lukitse</string>
+    <string name="action_about">Noin</string>
+    <string name="withdraw_input_amount">Summa</string>
+    <string name="withdraw_into">Kuinka paljon sähköistä käteistä pitäisi nostaa?</string>
+    <string name="withdraw_error_zero">Anna positiivinen summa!</string>
+    <string name="withdraw_error_currency_mismatch">Virhe: Pankki ilmoitti toisen valuutan</string>
+    <string name="withdraw_error_fetch">Virhe kommunikoitaessa pankin kanssa: %s</string>
+    <string name="withdraw_error_timeout">Mikään lompakko ei yrittänyt nostaa. Yritä uudelleen.</string>
+    <string name="withdraw_button_confirm">Nosta</string>
+    <string name="transaction_intro">Skannaa koodi Taler-lompakkosovelluksella nostaaksesi:</string>
+    <string name="transaction_intro_nfc">Skannaa koodi tai käytä NFC:tä Taler-lompakkosovelluksen kanssa nostaaksesi:</string>
+    <string name="transaction_intro_scanned">Vahvista tapahtuma!</string>
+    <string name="transaction_confirm">Vahvista</string>
+    <string name="transaction_abort">Keskeytä</string>
+    <string name="transaction_aborted">Toiminta keskeytetty</string>
+    <string name="transaction_button_back">Takaisin</string>
+    <string name="transaction_last_success">Viimeisin tapahtuma: %s nostettu</string>
+    <string name="transaction_last_aborted">Viimeisin tapahtuma: Keskeytetty</string>
+    <string name="transaction_last_error">Viimeisin tapahtuma: epäonnistui</string>
+    <string name="about_title">GNU Taler Kassa</string>
+    <string name="about_version">Versio: %s</string>
+    <string name="about_license">Lisenssi: %s</string>
+    <string name="about_copyright">Tekijänoikeus: %s</string>
+    <string name="about_supported_bank_api">Pankin API-versio: %s</string>
+    <string name="config_demo_hint">Testausta varten voit &lt;a href=%s&gt;luoda testitilin demopankkiin&lt;/a&gt;.</string>
+    <string name="withdraw_error_insufficient_balance">Riittämätön saldo</string>
 </resources>
