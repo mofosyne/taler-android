@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="config_bank_url">Pankin API-osoite</string>
+    <string name="config_username">Käyttäjänimi</string>
+    <string name="config_password">Salasana</string>
+    <string name="config_bank_url_error">Osoite on virheellinen.</string>
+    <string name="config_username_error">Anna käyttäjätunnuksesi!</string>
+    <string name="app_name">Taler kassa</string>
+    <string name="config_button_save">Tallenna</string>
+</resources>
