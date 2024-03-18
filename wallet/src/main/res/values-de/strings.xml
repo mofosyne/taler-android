@@ -180,7 +180,7 @@
     <string name="copy" tools:override="true">Kopieren</string>
     <string name="copy_uri">Taler-URI kopieren</string>
     <string name="transaction_peer_pull_debit">Rechnung bezahlt</string>
-    <string name="transaction_peer_pull_credit">Rechung</string>
+    <string name="transaction_peer_pull_credit">Rechnung</string>
     <string name="transactions_receive_funds">Geld empfangen</string>
     <string name="send_amount">Zu sendender Betrag</string>
     <string name="pay_peer_title">Rechnung bezahlen</string>
@@ -199,7 +199,7 @@
     <string name="settings_db_export_success">Datenbank in Datei exportiert</string>
     <string name="receive_peer_create_button">Rechnung erstellen</string>
     <string name="receive_peer_invoice_uri">Alternativ kopieren und senden Sie diesen URI:</string>
-    <string name="receive_peer_invoice_instruction">Lassen Sie die Käufer/in diesen QR-Code scannen, um zu bezahlen:</string>
+    <string name="receive_peer_invoice_instruction">Lassen Sie die Käufer diesen QR-Code scannen, um den Betrag zu bezahlen:</string>
     <string name="button_scan_qr_code_label">QR-Code scannen</string>
     <string name="send_deposit_check_fees_button">Gebühren prüfen</string>
     <string name="send_deposit_name">Kontoinhaber/in</string>
@@ -226,7 +226,7 @@
     <string name="settings_dialog_import_message">Dieser Vorgang überschreibt Ihre vorhandene Datenbank. Möchten Sie fortfahren?</string>
     <string name="settings_dialog_reset_message">Möchten Sie das Wallet wirklich zurücksetzen und alle Münzen und Einkäufe verlieren?</string>
     <string name="settings_alert_reset_done">Wallet wurde zurückgesetzt</string>
-    <string name="send_deposit_bitcoin">Zu einem Bitcoin-Wallet</string>
+    <string name="send_deposit_bitcoin">An ein Bitcoin-Wallet</string>
     <string name="send_peer_purpose">Zweck</string>
     <string name="exchange_list_select">Exchange auswählen</string>
     <string name="exchange_dialog_delete_message">Sind Sie sicher, dass Sie diesen Exchange löschen möchten? Wenn Sie diesen Vorgang erzwingen, führt dies zu einem Geldverlust.</string>
@@ -246,4 +246,5 @@
     <string name="payment_pending">Zahlung nicht abgeschlossen - sie wird erneut versucht</string>
     <string name="receive_peer_amount_invoiced">Rechnungsbetrag</string>
     <string name="send_peer_payment_instruction">Lassen Sie den Geldempfänger diesen QR-Code scannen, um den Wert zu erhalten:</string>
+    <string name="transaction_deposit">Einlösen</string>
 </resources>
