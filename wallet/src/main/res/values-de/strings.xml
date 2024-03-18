@@ -245,4 +245,5 @@
     <string name="amount_received">Empfangener Betrag</string>
     <string name="payment_pending">Zahlung nicht abgeschlossen - sie wird erneut versucht</string>
     <string name="receive_peer_amount_invoiced">Rechnungsbetrag</string>
+    <string name="send_peer_payment_instruction">Lassen Sie den Geldempfänger diesen QR-Code scannen, um den Wert zu erhalten:</string>
 </resources>
