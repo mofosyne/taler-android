@@ -1,2 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">GNU Taler -myyntipiste</string>
+    <string name="app_name_short">Kauppiasterminaali</string>
+    <string name="project_name">GNU Taler</string>
+    <string name="menu_order">Tilaukset</string>
+    <string name="menu_history">Historia</string>
+    <string name="order_label_title">Tilaus #%s</string>
+    <string name="order_total">Yhteensä: #%s</string>
+    <string name="order_undo">Kumoa</string>
+    <string name="order_previous">Edellinen</string>
+    <string name="order_custom">Lisää mukautettu tuote</string>
+    <string name="order_complete">Valmis</string>
+    <string name="order_custom_product">Mukautettu tuotteen nimi</string>
+    <string name="order_custom_product_default">Tip</string>
+    <string name="config_label">Kauppiaan asetukset</string>
+    <string name="config_url">Määrityksen URL -osoite</string>
+    <string name="config_username">Käyttäjänimi</string>
+    <string name="config_password">Salasana</string>
+    <string name="config_ok">Nouda määritykset</string>
+    <string name="config_error_network">Virhe: Ei voitu muodostaa yhteyttä määrityspalvelimeen</string>
+    <string name="config_error_category">Virhe: kelvollista tuoteluokkaa ei löytynyt</string>
+    <string name="config_error_malformed">Virhe: Määrityksen JSON on virheellinen</string>
+    <string name="config_error_currency">Virhe: Tuotteen %1$s valuutta on %2$s, mutta %3$s odotetaan</string>
+    <string name="config_error_product_category_id">Virhe: Tuote %1$s viittaa tuntemattomaan luokkatunnukseen %2$d</string>
+    <string name="config_error_product_zero">Virhe: kelvollisia tuotteita ei löytynyt</string>
+    <string name="config_error_unknown">Virhe: Virheellinen määritys</string>
+    <string name="config_fetching">Haetaan määritystä…</string>
+    <string name="config_save_password">Muista salasana</string>
+    <string name="config_forget_password">Unohda</string>
+    <string name="config_changed">Vaihdettu uudeksi kauppiaaksi käyttämällä %s</string>
+    <string name="payment_intro_nfc">Anna asiakkaan skannata QR-koodi tai käyttää NFC:tä maksamiseen.</string>
+    <string name="payment_intro">Anna asiakkaan skannata QR-koodi maksaaksesi.</string>
+    <string name="payment_claimed">Odotetaan asiakkaan maksun vahvistamista…</string>
+    <string name="payment_cancel">Peruuta maksu</string>
+    <string name="payment_received">Maksu vastaanotettu</string>
+    <string name="payment_back_button">Jatka</string>
+    <string name="payment_order_id">Kuitti #%s</string>
+    <string name="payment_process_label">Maksua vaaditaan</string>
+    <string name="payment_canceled">Maksu peruutettu</string>
+    <string name="history_label">Maksu historia</string>
+    <string name="history_refund">Palautus</string>
+    <string name="history_unpaid">Maksamaton</string>
+    <string name="refund_amount">Summa</string>
+    <string name="refund_reason">Palautuksen syy</string>
+    <string name="refund_abort">Keskeytä</string>
+    <string name="refund_complete">Vastaanotettu</string>
+    <string name="refund_confirm">Hyväksy hyvitys</string>
+    <string name="refund_error_max_amount">Suurempi kuin tilausmäärä %s</string>
+    <string name="refund_error_invalid_amount">Virheellinen summa</string>
+    <string name="refund_error_zero">On oltava positiivinen määrä</string>
+    <string name="refund_error_backend">Hyvityksen käsittelyssä tapahtui virhe</string>
+    <string name="refund_error_already_refunded">Palautettu jo</string>
+    <string name="refund_intro_nfc">Anna asiakkaan skannata QR-koodi tai käyttää NFC:tä hyvityksen tarjoamiseksi</string>
+    <string name="refund_intro">Anna asiakkaan skannata QR-koodi hyvityksen tarjoamiseksi</string>
+    <string name="refund_order_ref">Ostoviite: %1$s
+\n
+\n%2$s</string>
+    <string name="error_payment">Virhe: Maksua ei vastaanotettu</string>
+    <string name="error_timeout">Maksua ei ole suoritettu maksuajan kuluessa, yritä uudelleen!</string>
+    <string name="error_cancelled">Maksu peruutettu</string>
+    <string name="error_history">Virhe noudettaessa tilaushistoriaa</string>
+    <string name="toast_back_to_exit">Napsauta «takaisin» uudelleen poistuaksesi</string>
+    <string name="menu_settings">Asetukset</string>
+    <string name="order_restart">Uudelleenkäynnistys</string>
+    <string name="order_next">Seuraava</string>
+    <string name="order_custom_add_button">Lisää</string>
+    <string name="config_auth_error">Virhe: Virheellinen käyttäjätunnus tai salasana</string>
+    <string name="config_fetching_label">Haetaan määritystä</string>
+    <string name="config_docs">Katso määritysmuodon <a href="https://docs.taler.net/taler-merchant-pos-terminal.html#apis-and-data-formats">dokumentaatiosta</a>.</string>
+    <string name="refund_error_deadline">Palautusaika on umpeutunut</string>
+</resources>
