@@ -100,7 +100,7 @@ class MainViewModel(
         Log.i(TAG, "Received notification from wallet-core: $payload")
 
         // Only update balances when we're told they changed
-        if (payload.type == "balance-change") {
+        if (payload.type == "balance-change") viewModelScope.launch(Dispatchers.Main) {
             balanceManager.loadBalances()
         }
 
