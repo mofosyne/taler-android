@@ -65,7 +65,7 @@ class BalanceManager(
     private val mState = MutableLiveData<BalanceState>(BalanceState.None)
     val state: LiveData<BalanceState> = mState.distinctUntilChanged()
 
-    private var currencySpecs: Map<ScopeInfo, CurrencySpecification?>? = null
+    private val currencySpecs: MutableMap<ScopeInfo, CurrencySpecification?> = mutableMapOf()
 
     @UiThread
     fun loadBalances() {
@@ -79,17 +79,16 @@ class BalanceManager(
             response.onSuccess {
                 mState.postValue(BalanceState.Success(it.balances))
                 scope.launch {
-                    // Get currency spec for all balances
-                    if (currencySpecs == null) {
-                        currencySpecs = it.balances.associate { balance ->
-                            val spec = getCurrencySpecification(balance.scopeInfo)
-                            balance.scopeInfo to spec
+                    // Fetch missing currency specs for all balances
+                    it.balances.forEach { balance ->
+                        if (!currencySpecs.containsKey(balance.scopeInfo)) {
+                            currencySpecs[balance.scopeInfo] = getCurrencySpecification(balance.scopeInfo)
                         }
                     }
 
                     mState.postValue(
                         BalanceState.Success(it.balances.map { balance ->
-                            val spec = currencySpecs?.get(balance.scopeInfo)
+                            val spec = currencySpecs[balance.scopeInfo]
                             balance.copy(
                                 available = balance.available.withSpec(spec),
                                 pendingIncoming = balance.pendingIncoming.withSpec(spec),
