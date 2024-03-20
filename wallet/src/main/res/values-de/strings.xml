@@ -64,7 +64,7 @@
 \n
 \nFügen Sie einen Zahlungsdienstleister manuell hinzu oder heben Sie digitales Bargeld ab!</string>
     <string name="exchange_list_currency">Währung: %s</string>
-    <string name="exchange_list_add">Ein Exchange hinzufügen</string>
+    <string name="exchange_list_add">Einen Zahlungsdienstleister hinzufügen</string>
     <string name="exchange_add_error">Zahlungsdienstleister konnte nicht hinzugefügt werden</string>
     <string name="exchange_menu_manual_withdraw">Abheben</string>
     <string name="exchange_fee_withdrawal_fee_label">Abhebungsgebühr:</string>
@@ -171,10 +171,10 @@
     <string name="withdraw_transfer">Überweisung</string>
     <string name="exchange_delete_force">Löschung erzwingen (bereinigen)</string>
     <string name="settings_db_export_summary">Interne Datenbank speichern</string>
-    <string name="settings_db_clear_error">Fehler beim Säubern der Datenbank</string>
+    <string name="settings_db_clear_error">Fehler beim Bereinigen der Datenbank</string>
     <string name="settings_alert_reset_canceled">Zurücksetzen abgebrochen</string>
     <string name="exchange_not_contacted">Zahlungsdienstleister nicht kontaktiert</string>
-    <string name="send_peer_expiration_1d">1 Tag</string>
+    <string name="send_peer_expiration_1d">1Tag</string>
     <string name="settings_test">Integrationstest durchführen</string>
     <string name="settings_test_summary">Führt Test-Transaktionen mit Demo-Setup durch</string>
     <string name="copy" tools:override="true">Kopieren</string>
@@ -194,7 +194,7 @@
     <string name="transaction_dummy_title">Unbekannte Transaktion</string>
     <string name="receive_peer_title">Zahlung anfordern</string>
     <string name="send_deposit">Auf ein Bankkonto</string>
-    <string name="send_peer_bitcoin">Zu einem anderen Taler-Wallet</string>
+    <string name="send_peer_bitcoin">An ein anderes Taler-Wallet</string>
     <string name="send_peer_expiration_custom">Benutzerdefiniert</string>
     <string name="exchange_delete">Zahlungsdienstleister löschen</string>
     <string name="settings_db_export_success">Datenbank in Datei exportiert</string>
@@ -215,7 +215,7 @@
     <string name="transactions_abort_dialog_title">Transaktion abbrechen</string>
     <string name="transactions_cancel_dialog_message">Sind Sie sicher, dass Sie diese Abhebung stornieren möchten? Gelder, die gerade noch übertragen werden, könnten verloren gehen.</string>
     <string name="send_deposit_bic">BIC / SWIFT</string>
-    <string name="send_peer">Zu einem anderen Wallet</string>
+    <string name="send_peer">An ein anderes Wallet</string>
     <string name="payment_confirmation_code">Bestätigungscode</string>
     <string name="send_deposit_iban">IBAN</string>
     <string name="send_deposit_bic_error">BIC ist ungültig</string>
@@ -230,13 +230,13 @@
     <string name="send_deposit_bitcoin">An ein Bitcoin-Wallet</string>
     <string name="send_peer_purpose">Zweck</string>
     <string name="exchange_list_select">Zahlungsdienstleister auswählen</string>
-    <string name="exchange_dialog_delete_message">Sind Sie sicher, dass Sie diesen Exchange löschen möchten? Wenn Sie diesen Vorgang erzwingen, führt dies zu einem Geldverlust.</string>
+    <string name="exchange_dialog_delete_message">Sind Sie sicher, dass Sie diesen Zahlungsdienstleister löschen möchten? Wenn Sie diesen Vorgang erzwingen, führt dies zu einem Geldverlust.</string>
     <string name="settings_db_import_success">Datenbank aus Datei importiert</string>
     <string name="error_broken_uri">Fehler: Diese Taler-URI funktioniert (im Moment) nicht.</string>
     <string name="settings_alert_import_canceled">Import abgebrochen</string>
     <string name="import_db">Importieren</string>
     <string name="transactions_detail_title_currency">%s Transaktionen</string>
-    <string name="receive_withdraw">Vom Bankkonto abbuchen</string>
+    <string name="receive_withdraw">Vom Bankkonto abheben</string>
     <string name="send_deposit_amount_effective">Effektiver Betrag</string>
     <string name="send_deposit_create_button">Einzahlung tätigen</string>
     <string name="receive_amount">Zu erhaltender Betrag</string>
@@ -248,7 +248,10 @@
     <string name="receive_peer_amount_invoiced">Rechnungsbetrag</string>
     <string name="send_peer_payment_instruction">Lassen Sie den Geldempfänger diesen QR-Code scannen, um den Wert zu erhalten:</string>
     <string name="transaction_deposit">Einlösen</string>
-    <string name="exchange_list_error">Exchange konnten nicht aufgelistet werden</string>
+    <string name="exchange_list_error">Zahlungsdienstleister konnten nicht angezeigt werden</string>
     <string name="withdraw_conversion_support">Dieser Zahlungsdienstleister unterstützt Währungsumtausch</string>
     <string name="exchange_list_add_dev">Zahlungsdienstleister im Entwicklermodus hinzufügen</string>
+    <string name="send_peer_expiration_30d">30 Tage</string>
+    <string name="send_peer_expiration_7d">7 Tage</string>
+    <string name="balance_scope_exchange">Zahlungsdienstleister: %1$s</string>
 </resources>
