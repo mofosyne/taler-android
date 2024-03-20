@@ -248,7 +248,7 @@
     <string name="receive_peer_amount_invoiced">Rechnungsbetrag</string>
     <string name="send_peer_payment_instruction">Lassen Sie den Geldempfänger diesen QR-Code scannen, um den Wert zu erhalten:</string>
     <string name="transaction_deposit">Einlösen</string>
-    <string name="exchange_list_error">Konnte keine Zahlungsdienstleister anzeigen</string>
+    <string name="exchange_list_error">Exchange konnten nicht aufgelistet werden</string>
     <string name="withdraw_conversion_support">Dieser Zahlungsdienstleister unterstützt Währungsumtausch</string>
     <string name="exchange_list_add_dev">Zahlungsdienstleister im Entwicklermodus hinzufügen</string>
 </resources>
