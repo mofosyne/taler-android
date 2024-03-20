@@ -30,9 +30,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.showError
@@ -41,6 +43,7 @@ class OutgoingPushFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val peerManager get() = model.peerManager
     private val transactionManager get() = model.transactionManager
+    private val balanceManager get() = model.balanceManager
 
     // hacky way to change back action until we have navigation for compose
     private val backPressedCallback = object : OnBackPressedCallback(false) {
@@ -57,6 +60,10 @@ class OutgoingPushFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
+        val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
+            Json.decodeFromString(it)
+        }
+        val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner, backPressedCallback
@@ -67,7 +74,7 @@ class OutgoingPushFragment : Fragment() {
                 TalerSurface {
                     val state = peerManager.pushState.collectAsStateLifecycleAware().value
                     OutgoingPushComposable(
-                        amount = amount,
+                        amount = amount.withSpec(spec),
                         state = state,
                         onSend = this@OutgoingPushFragment::onSend,
                         onClose = {

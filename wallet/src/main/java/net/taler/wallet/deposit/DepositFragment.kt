@@ -25,11 +25,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.showError
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.showError
@@ -37,6 +39,7 @@ import net.taler.wallet.showError
 class DepositFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val depositManager get() = model.depositManager
+    private val balanceManager get() = model.balanceManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +49,10 @@ class DepositFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
+        val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
+            Json.decodeFromString(it)
+        }
+        val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
         val receiverName = arguments?.getString("receiverName")
         val iban = arguments?.getString("IBAN")
         if (receiverName != null && iban != null) {
@@ -57,14 +64,14 @@ class DepositFragment : Fragment() {
                     val state = depositManager.depositState.collectAsStateLifecycleAware()
                     if (amount.currency == CURRENCY_BTC) MakeBitcoinDepositComposable(
                         state = state.value,
-                        amount = amount,
+                        amount = amount.withSpec(spec),
                         bitcoinAddress = null,
                         onMakeDeposit = { amount, bitcoinAddress ->
                             depositManager.onDepositButtonClicked(amount, bitcoinAddress)
                         },
                     ) else MakeDepositComposable(
                         state = state.value,
-                        amount = amount,
+                        amount = amount.withSpec(spec),
                         presetName = receiverName,
                         presetIban = iban,
                         onMakeDeposit = this@DepositFragment::onDepositButtonClicked,

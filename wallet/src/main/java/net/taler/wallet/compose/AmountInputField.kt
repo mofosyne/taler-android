@@ -148,7 +148,12 @@ private class AmountInputVisualTransformation(
             }
         }
 
-        val formattedNumber = intPart + decimalSeparator + fractionPart
+        // Hide trailing decimal separator if decimals are 0
+        val formattedNumber = if (numberOfDecimals > 0) {
+            intPart + decimalSeparator + fractionPart
+        } else {
+            intPart
+        }
 
         val newText = AnnotatedString(
             text = formattedNumber,

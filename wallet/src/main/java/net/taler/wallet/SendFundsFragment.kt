@@ -47,6 +47,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
@@ -57,6 +59,7 @@ class SendFundsFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val balanceManager get() = model.balanceManager
     private val peerManager get() = model.peerManager
+    private val scopeInfo get() = model.transactionManager.selectedScope ?: error("No scope selected")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +68,6 @@ class SendFundsFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
-                val scopeInfo = model.transactionManager.selectedScope ?: error("No scope selected")
                 SendFundsIntro(
                     currency = scopeInfo.currency,
                     spec = balanceManager.getSpecForScopeInfo(scopeInfo),
@@ -79,16 +81,22 @@ class SendFundsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.transactions_send_funds)
+        activity?.setTitle(getString(R.string.transactions_send_funds_title, scopeInfo.currency))
     }
 
     private fun onDeposit(amount: Amount) {
-        val bundle = bundleOf("amount" to amount.toJSONString())
+        val bundle = bundleOf(
+            "amount" to amount.toJSONString(),
+            "scopeInfo" to Json.encodeToString(scopeInfo),
+        )
         findNavController().navigate(R.id.action_sendFunds_to_nav_deposit, bundle)
     }
 
     private fun onPeerPush(amount: Amount) {
-        val bundle = bundleOf("amount" to amount.toJSONString())
+        val bundle = bundleOf(
+            "amount" to amount.toJSONString(),
+            "scopeInfo" to Json.encodeToString(scopeInfo),
+        )
         peerManager.checkPeerPushDebit(amount)
         findNavController().navigate(R.id.action_sendFunds_to_nav_peer_push, bundle)
     }
