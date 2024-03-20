@@ -139,7 +139,7 @@
     <string name="transaction_tip_from">Trinkgeld von %s</string>
     <string name="exchange_add_url">Adresse des Zahlungsdienstleisters eingeben</string>
     <string name="button_back">Zurück</string>
-    <string name="button_scan_qr_code">Taler-QR-Code Einscannen</string>
+    <string name="button_scan_qr_code">Taler-QR-Code einscannen</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
     <string name="withdraw_manual_ready_title">Der Exchange ist für den Abhebevorgang eingerichtet!</string>
     <string name="withdraw_manual_ready_intro">Um den Abhebevorgang durchführen zu lassen, müssen Sie %s auf das Bankkonto des Exchange überweisen</string>
@@ -257,4 +257,5 @@
     <string name="balance_scope_exchange">Zahlungsdienstleister: %1$s</string>
     <string name="balance_scope_auditor">Auditor: %1$s</string>
     <string name="receive_peer">Rechnung an anderes Wallet stellen</string>
+    <string name="char_count">%1$d/%2$d</string>
 </resources>
