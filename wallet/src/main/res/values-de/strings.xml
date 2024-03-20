@@ -204,7 +204,8 @@
     <string name="button_scan_qr_code_label">QR-Code scannen</string>
     <string name="send_deposit_check_fees_button">Gebühren prüfen</string>
     <string name="send_deposit_name">Kontoinhaber/in</string>
-    <string name="transactions_send_funds">Geld senden</string>
+    <string name="transactions_send_funds">Geld
+\nsenden</string>
     <string name="currency">Währung</string>
     <string name="transactions_balance">Guthaben</string>
     <string name="withdraw_restrict_age_unrestricted">Uneingeschränkt</string>
@@ -254,4 +255,6 @@
     <string name="send_peer_expiration_30d">30 Tage</string>
     <string name="send_peer_expiration_7d">7 Tage</string>
     <string name="balance_scope_exchange">Zahlungsdienstleister: %1$s</string>
+    <string name="balance_scope_auditor">Auditor: %1$s</string>
+    <string name="receive_peer">Rechnung an anderes Wallet stellen</string>
 </resources>
