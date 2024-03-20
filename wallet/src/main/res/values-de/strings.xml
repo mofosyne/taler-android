@@ -181,7 +181,8 @@
     <string name="copy_uri">Taler-URI kopieren</string>
     <string name="transaction_peer_pull_debit">Rechnung bezahlt</string>
     <string name="transaction_peer_pull_credit">Rechnung</string>
-    <string name="transactions_receive_funds">Geld empfangen</string>
+    <string name="transactions_receive_funds">Geld
+\nempfangen</string>
     <string name="send_amount">Zu sendender Betrag</string>
     <string name="pay_peer_title">Rechnung bezahlen</string>
     <string name="pay_peer_intro">Möchten Sie diese Rechnung bezahlen?</string>
