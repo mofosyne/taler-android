@@ -77,7 +77,7 @@ class BalanceManager(
                 mState.postValue(BalanceState.Error(it))
             }
             response.onSuccess {
-                mState.postValue(BalanceState.Success(it.balances))
+                mBalances.postValue(it.balances)
                 scope.launch {
                     // Fetch missing currency specs for all balances
                     it.balances.forEach { balance ->

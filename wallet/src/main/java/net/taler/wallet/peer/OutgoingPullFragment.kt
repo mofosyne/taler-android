@@ -28,9 +28,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.exchanges.ExchangeItem
@@ -40,6 +42,7 @@ class OutgoingPullFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val peerManager get() = model.peerManager
     private val transactionManager get() = model.transactionManager
+    private val balanceManager get() = model.balanceManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +52,17 @@ class OutgoingPullFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
+        val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
+            Json.decodeFromString(it)
+        }
+        val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
+
         return ComposeView(requireContext()).apply {
             setContent {
                 TalerSurface {
                     val state = peerManager.pullState.collectAsStateLifecycleAware().value
                     OutgoingPullComposable(
-                        amount = amount,
+                        amount = amount.withSpec(spec),
                         state = state,
                         onCreateInvoice = this@OutgoingPullFragment::onCreateInvoice,
                         onClose = {

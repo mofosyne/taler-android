@@ -50,6 +50,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.CurrencySpecification
 import net.taler.wallet.compose.AmountInputField
@@ -63,7 +65,7 @@ class ReceiveFundsFragment : Fragment() {
     private val withdrawManager get() = model.withdrawManager
     private val balanceManager get() = model.balanceManager
     private val peerManager get() = model.peerManager
-
+    private val scopeInfo get() = model.transactionManager.selectedScope ?: error("No scope selected")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,10 +73,9 @@ class ReceiveFundsFragment : Fragment() {
     ): View = ComposeView(requireContext()).apply {
         setContent {
             TalerSurface {
-                val scopeInfo = model.transactionManager.selectedScope ?: error("No scope selected")
                 ReceiveFundsIntro(
                     scopeInfo.currency,
-                    model.balanceManager.getSpecForScopeInfo(scopeInfo),
+                    balanceManager.getSpecForScopeInfo(scopeInfo),
                     this@ReceiveFundsFragment::onManualWithdraw,
                     this@ReceiveFundsFragment::onPeerPull,
                 )
@@ -84,7 +85,7 @@ class ReceiveFundsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        activity?.setTitle(R.string.transactions_receive_funds)
+        activity?.setTitle(getString(R.string.transactions_receive_funds_title, scopeInfo.currency))
     }
 
     private fun onManualWithdraw(amount: Amount) {
@@ -110,7 +111,10 @@ class ReceiveFundsFragment : Fragment() {
     }
 
     private fun onPeerPull(amount: Amount) {
-        val bundle = bundleOf("amount" to amount.toJSONString())
+        val bundle = bundleOf(
+            "amount" to amount.toJSONString(),
+            "scopeInfo" to Json.encodeToString(scopeInfo),
+        )
         peerManager.checkPeerPullCredit(amount)
         findNavController().navigate(R.id.action_receiveFunds_to_nav_peer_pull, bundle)
     }
