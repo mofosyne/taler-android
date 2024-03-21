@@ -108,7 +108,7 @@
     <string name="tip_title">Trinkgeld</string>
     <string name="wifi_disabled_error">Schalten Sie Wi-Fi ein, um kostenloses Wi-Fi zu erhalten</string>
     <string name="wifi_connect_error">Es konnte keine Verbindung zu kostenlosem WLAN hergestellt werden: %s</string>
-    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Diese App ist eine Geldbörse für GNU Taler (Wallet). Die Anwendung läuft zurzeit in experimentellem Stadium und dient nur zu Demonstrationszwecken. Taler bieten allen Zahlenden ein Bezahlsystem mit Datenschutz. Die Käufer bleiben anonym. Händler müssen dagegen ihr Einkommen vor Auditoren offenlegen. Dadurch werden Steuerhinterziehung und Geldwäsche vermieden. Die Hauptfunktion von GNU Taler ist die Abwicklung von Zahlungsvorgängen; es ist kein Mittel zur Geldaufbewahrung. Alle Zahlungen werden durch eine existierende Währung gedeckt. Zahlungen werden mit Hilfe eines Taler-Exchange durchgeführt, indem die Käufer Geld an den Exchange überweisen und dieser elektronische Zahlungsmittel (Coins) in die Wallets der Käufer überträgt. Um eine Zahlung durchzuführen benötigen Kunden nur ausreichende Coin-Werte im Wallet. Verkäufer können Zahlungen akzeptieren ohne Kunden zur Registrierung auf Webseiten zu zwingen. GNU Taler ist immun gegen viele Formen von Betrug wie z.B. Phishing von Kreditkartendaten oder Betrug durch Rückbuchungen. Im Fall von Verlust oder Diebstahl von Wallets verliert man höchstens den Geldbetrag, welcher sich noch im Wallet befindet.</string>
+    <string name="google_play_full_desc" tools:keep="@string/google_play_full_desc">Diese App ist eine Geldbörse für GNU Taler (Wallet). Taler ist ein Bezahlsystem mit Datenschutz für die Käufer. Die Käufer bleiben anonym, das Einkommen der Händler hingegen ist offengelegt. Dies vermindert systematisch die Möglichkeit von Steuerhinterziehung und Geldwäsche. Die Hauptfunktion von GNU Taler ist die Abwicklung von Zahlungsvorgängen; es ist kein Mittel zur Geldaufbewahrung. Alle Zahlungen werden durch eine existierende Währung gedeckt. Zahlungen werden mit Hilfe eines Taler-Zahlungsdiensts (Exchange) durchgeführt, indem die Käufer Geld an den Zahlungsdienst überweisen und dieser elektronische Zahlungsmittel (Coins, Token) in die Wallets überträgt. Um eine Zahlung durchzuführen, benötigen Kunden ausreichende Coin-Werte im Wallet. Verkäufer können Zahlungen akzeptieren, ohne Kunden zur Registrierung auf Webseiten zwingen zu müssen. GNU Taler ist immun gegen viele Formen von Betrug wie z.B. Phishing von Kreditkartendaten oder Betrug durch Rückbuchungen. Im Fall von Verlust oder Diebstahl von Wallets verliert man höchstens die Werte, welche sich noch im Wallet befinden.</string>
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Wallet</string>
     <string name="nav_prompt_withdraw">Digitales Bargeld abheben</string>
@@ -119,7 +119,7 @@
     <string name="paste">Einfügen</string>
     <string name="paste_invalid">Die Zwischenablage enthält einen ungültigen Datentyp</string>
     <string name="uri_invalid">Keine gültige Taler-URI</string>
-    <string name="ok">OK</string>
+    <string name="ok">Bestätigen</string>
     <string name="cancel">Abbrechen</string>
     <string name="search">Suche</string>
     <string name="menu">Menü</string>
@@ -249,7 +249,7 @@
     <string name="receive_peer_amount_invoiced">Rechnungsbetrag</string>
     <string name="send_peer_payment_instruction">Lassen Sie den Geldempfänger diesen QR-Code scannen, um den Wert zu erhalten:</string>
     <string name="transaction_deposit">Einlösen</string>
-    <string name="exchange_list_error">Zahlungsdienstleister konnten nicht angezeigt werden</string>
+    <string name="exchange_list_error">Es konnten keine Zahlungsdienstleister angezeigt werden</string>
     <string name="withdraw_conversion_support">Dieser Zahlungsdienstleister unterstützt Währungsumtausch</string>
     <string name="exchange_list_add_dev">Zahlungsdienstleister im Entwicklermodus hinzufügen</string>
     <string name="send_peer_expiration_30d">30 Tage</string>
