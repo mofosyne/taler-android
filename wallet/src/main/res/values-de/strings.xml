@@ -42,12 +42,12 @@
     <string name="withdraw_title">Abhebung</string>
     <string name="withdraw_total">Abheben</string>
     <string name="withdraw_fees">Gebühr</string>
-    <string name="withdraw_exchange">Taler-Exchange</string>
+    <string name="withdraw_exchange">Zahlungsdienstleister</string>
     <string name="withdraw_button_confirm">Abhebung bestätigen</string>
     <string name="withdraw_button_confirm_bank">Bestätigen mit</string>
     <string name="withdraw_button_tos">Nutzungsbedingungen überprüfen</string>
     <string name="withdraw_waiting_confirm">Warte auf Bestätigung</string>
-    <string name="withdraw_manual_title">Führen Sie eine manuelle Einzahlung an die Geldbörse durch</string>
+    <string name="withdraw_manual_title">Manuelle Überweisung an den Zahlungsdienstleister</string>
     <string name="withdraw_amount">Wie viel soll abgehoben werden\?</string>
     <string name="withdraw_amount_error">Gültigen Betrag eingeben</string>
     <string name="withdraw_manual_payment_options">Zahlungsoptionen unterstützt von %1$s:
@@ -64,14 +64,14 @@
 \n
 \nFügen Sie einen Zahlungsdienstleister manuell hinzu oder heben Sie digitales Bargeld ab!</string>
     <string name="exchange_list_currency">Währung: %s</string>
-    <string name="exchange_list_add">Einen Zahlungsdienstleister hinzufügen</string>
+    <string name="exchange_list_add">Zahlungsdienstleister hinzufügen</string>
     <string name="exchange_add_error">Zahlungsdienstleister konnte nicht hinzugefügt werden</string>
     <string name="exchange_menu_manual_withdraw">Abheben</string>
-    <string name="exchange_fee_withdrawal_fee_label">Abhebungsgebühr:</string>
+    <string name="exchange_fee_withdrawal_fee_label">Abhebegebühr:</string>
     <string name="exchange_fee_overhead_label">Rundungsverlust:</string>
-    <string name="exchange_fee_coin_expiration_label">Frühester Münzablauf:</string>
-    <string name="exchange_fee_coin_fees_label">Münzgebühren</string>
-    <string name="exchange_fee_wire_fees_label">Übermittlungsgebühren</string>
+    <string name="exchange_fee_coin_expiration_label">Frühestes Gültigkeitsende:</string>
+    <string name="exchange_fee_coin_fees_label">Münzgebühr</string>
+    <string name="exchange_fee_wire_fees_label">Überweisungsgebühr</string>
     <plurals name="exchange_fee_coin">
         <item quantity="one">Münze: %s (verwendet %d Mal)</item>
         <item quantity="other">Münze: %s (verwendet %d Male)</item>
@@ -112,9 +112,9 @@
     <string name="nav_header_title">GNU Taler</string>
     <string name="nav_header_subtitle">Wallet</string>
     <string name="nav_prompt_withdraw">Digitales Bargeld abheben</string>
-    <string name="nav_exchange_tos">Allgemeine Geschäftsbedingungen des Exchange</string>
-    <string name="nav_exchange_select">Exchange auswählen</string>
-    <string name="nav_exchange_fees">Exchange Gebühren</string>
+    <string name="nav_exchange_tos">Allgemeine Geschäftsbedingungen des Zahlungsdienstleisters</string>
+    <string name="nav_exchange_select">Zahlungsdienstleister auswählen</string>
+    <string name="nav_exchange_fees">Gebühren des Zahlungsdienstleisters</string>
     <string name="enter_uri">Geben Sie die Taler-URI ein</string>
     <string name="paste">Einfügen</string>
     <string name="paste_invalid">Die Zwischenablage enthält einen ungültigen Datentyp</string>
@@ -141,8 +141,8 @@
     <string name="button_back">Zurück</string>
     <string name="button_scan_qr_code">Taler-QR-Code einscannen</string>
     <string name="withdraw_manual_ready_iban">IBAN</string>
-    <string name="withdraw_manual_ready_title">Der Exchange ist für den Abhebevorgang eingerichtet!</string>
-    <string name="withdraw_manual_ready_intro">Um den Abhebevorgang durchführen zu lassen, müssen Sie %s auf das Bankkonto des Exchange überweisen</string>
+    <string name="withdraw_manual_ready_title">Der Zahlungsdienstleister ist für den Abhebevorgang bereit!</string>
+    <string name="withdraw_manual_ready_intro">Zum Abschluss des Abhebevorgangs müssen Sie %s auf das Bankkonto des Zahlungsdienstleisters überweisen</string>
     <string name="withdraw_manual_ready_details_intro">Details der Überweisung</string>
     <string name="withdraw_manual_ready_subject">Überweisungsvermerk</string>
     <string name="withdraw_manual_ready_bank_button">In Banking-App öffnen</string>
