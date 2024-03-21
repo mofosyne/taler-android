@@ -33,7 +33,7 @@
     <string name="config_username">Benutzername</string>
     <string name="withdraw_error_timeout">Bitte lassen Sie ein Wallet die Abhebung auslösen.</string>
     <string name="action_about">Info</string>
-    <string name="ok">OK</string>
+    <string name="ok">Bestätigen</string>
     <string name="about_title">GNU Taler Kassierer</string>
     <string name="about_license">Lizenz: %s</string>
     <string name="about_version">Version: %s</string>
