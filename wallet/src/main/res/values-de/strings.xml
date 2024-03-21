@@ -59,7 +59,7 @@
     <string name="withdraw_error_test">Fehler beim Abheben von TESTKUDOS aufgetreten</string>
     <string name="exchange_settings_summary">Verwaltung der Zahlungsdienstleister, die diesem Wallet bekannt sind</string>
     <string name="payment_fee">+%s Zahlungsgebühr</string>
-    <string name="exchange_list_title">Liste von Zahlungsdienstleister</string>
+    <string name="exchange_list_title">Liste von Zahlungsdienstleistern</string>
     <string name="exchange_list_empty">Keine Zahlungsdienstleister bekannt
 \n
 \nFügen Sie einen Zahlungsdienstleister manuell hinzu oder heben Sie digitales Bargeld ab!</string>
