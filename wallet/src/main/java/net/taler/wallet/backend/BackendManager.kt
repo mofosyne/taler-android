@@ -17,7 +17,6 @@
 package net.taler.wallet.backend
 
 import android.util.Log
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.taler.qtart.TalerWalletCore
 import net.taler.wallet.BuildConfig
@@ -52,6 +51,7 @@ class BackendManager(
         // TODO using Dagger/Hilt and @Singleton would be nice as well
         if (initialized.getAndSet(true)) error("Already initialized")
         walletCore.setMessageHandler { onMessageReceived(it) }
+        walletCore.setCurlHttpClient()
         if (BuildConfig.DEBUG) walletCore.setStdoutHandler {
             Log.d(TAG_CORE, it)
         }
