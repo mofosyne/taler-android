@@ -78,13 +78,6 @@ class TransactionManager(
             mProgress.postValue(false)
         }.onSuccess { result ->
             val transactions = LinkedList(result.transactions)
-            // TODO remove when fixed in wallet-core
-            val comparator = compareBy<Transaction>(
-                { it.txState.major == Pending },
-                { it.timestamp.ms },
-                { it.transactionId }
-            )
-            transactions.sortWith(comparator)
             transactions.reverse() // show latest first
 
             mProgress.value = false
