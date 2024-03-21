@@ -9,7 +9,7 @@
     <string name="offline">Internetzugang erforderlich. Bitte stellen Sie sicher, dass Ihre Internetverbindung funktioniert, und versuchen Sie es noch einmal.</string>
     <string name="error_unsupported_uri">Fehler: Dieser Taler-URI wird nicht unterstützt.</string>
     <string name="menu_settings">Einstellungen</string>
-    <string name="menu_retry_pending_operations">Wiederholen Sie ausstehende Vorgänge</string>
+    <string name="menu_retry_pending_operations">Ausstehende Vorgänge wiederholen</string>
     <string name="balances_title">Salden</string>
     <string name="app_name">Taler Wallet</string>
     <string name="transactions_title">Transaktionen</string>
@@ -190,7 +190,7 @@
     <string name="send_peer_expiration_hours">Stunden</string>
     <string name="share_payment">Zahlungs-Link teilen</string>
     <string name="offline_banner">Kein Internetzugang</string>
-    <string name="transactions_fail_dialog_title">Transaktion abbrechen</string>
+    <string name="transactions_fail_dialog_title">Transaktion sofort abbrechen</string>
     <string name="transaction_dummy_title">Unbekannte Transaktion</string>
     <string name="receive_peer_title">Zahlung anfordern</string>
     <string name="send_deposit">Auf ein Bankkonto</string>
@@ -258,4 +258,9 @@
     <string name="balance_scope_auditor">Auditor: %1$s</string>
     <string name="receive_peer">Rechnung an anderes Wallet stellen</string>
     <string name="char_count">%1$d/%2$d</string>
+    <string name="withdraw_manual_bitcoin_title">Bitcoin-Exchange zur Auszahlung bereit</string>
+    <string name="transactions_retry">Wiederholen</string>
+    <string name="send_peer_expiration_period">Läuft ab in</string>
+    <string name="transactions_suspend">Aussetzen</string>
+    <string name="transactions_abort_dialog_message">Sind Sie sicher, dass Sie diese Transaktion abbrechen möchten? Gelder, die gerade noch übertragen werden, könnten verloren gehen.</string>
 </resources>
