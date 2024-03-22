@@ -76,13 +76,13 @@
         <item quantity="one">Münze: %s (verwendet %d Mal)</item>
         <item quantity="other">Münze: %s (verwendet %d Male)</item>
     </plurals>
-    <string name="exchange_fee_withdraw_fee">Abhebungsgebühr: %s</string>
-    <string name="exchange_fee_deposit_fee">Einzahlungsgebühr: %s</string>
-    <string name="exchange_fee_refresh_fee">Änderungsgebühr: %s</string>
+    <string name="exchange_fee_withdraw_fee">Abhebegebühr: %s</string>
+    <string name="exchange_fee_deposit_fee">Einlösegebühr: %s</string>
+    <string name="exchange_fee_refresh_fee">Wechselgebühr: %s</string>
     <string name="exchange_fee_refund_fee">Rückerstattungsgebühr: %s</string>
-    <string name="exchange_fee_wire_fee_timespan">Zeitspanne: %1$s - %2$s</string>
-    <string name="exchange_fee_wire_fee_wire_fee">Übermittlungsgebühren: %s</string>
-    <string name="exchange_fee_wire_fee_closing_fee">Abschlussgebühr: %s</string>
+    <string name="exchange_fee_wire_fee_timespan">Zeitraum: %1$s - %2$s</string>
+    <string name="exchange_fee_wire_fee_wire_fee">Überweisungsgebühr: %s</string>
+    <string name="exchange_fee_wire_fee_closing_fee">Rücküberweisungsgebühr: %s</string>
     <string name="exchange_tos_accept">Allgemeine Geschäftsbedingungen akzeptieren</string>
     <string name="pending_operations_title">Schwebende Vorgänge</string>
     <string name="pending_operations_refuse">Vorschlag ablehnen</string>
@@ -92,7 +92,7 @@
     <string name="settings_withdraw_testkudos">TESTKUDOS abheben</string>
     <string name="settings_withdraw_testkudos_summary">Geld für Testen bereitstellen</string>
     <string name="settings_logcat">Fehlerprotokoll</string>
-    <string name="settings_logcat_summary">Internes Protokoll anzeigen / senden</string>
+    <string name="settings_logcat_summary">Internes Protokoll speichern</string>
     <string name="settings_version_core">Wallet Core-Version</string>
     <string name="settings_version_protocol_merchant">Unterstützte Händler-Versionen</string>
     <string name="google_play_short_desc" tools:keep="@string/google_play_short_desc">GNU Taler ermöglicht schnelle und einfache Online-Transaktionen mit Datenschutz.</string>
@@ -104,7 +104,7 @@
     <string name="backup_last">Letzte Sicherung: %s</string>
     <string name="refund_title">Erstattung</string>
     <string name="refund_error">Fehler bei der Verarbeitung der Rückerstattung</string>
-    <string name="refund_success">Rückerstattung erhalten: %s</string>
+    <string name="refund_success">Rückerstattung erhalten!</string>
     <string name="tip_title">Trinkgeld</string>
     <string name="wifi_disabled_error">Schalten Sie Wi-Fi ein, um kostenloses Wi-Fi zu erhalten</string>
     <string name="wifi_connect_error">Es konnte keine Verbindung zu kostenlosem WLAN hergestellt werden: %s</string>
@@ -135,7 +135,7 @@
     <string name="exchange_tos_error">Fehler beim Anzeigen der AGB: %s</string>
     <string name="settings_version_protocol_exchange">Unterstützte Exchange-Versionen</string>
     <string name="amount_negative">- %s</string>
-    <string name="amount_positive">+ %s</string>
+    <string name="amount_positive">+%s</string>
     <string name="transaction_tip_from">Trinkgeld von %s</string>
     <string name="exchange_add_url">Adresse des Zahlungsdienstleisters eingeben</string>
     <string name="button_back">Zurück</string>
