@@ -48,6 +48,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.taler.common.Amount
 import net.taler.wallet.R
+import net.taler.wallet.backend.TalerErrorCode.WALLET_PEER_PULL_PAYMENT_INSUFFICIENT_BALANCE
+import net.taler.wallet.backend.TalerErrorCode.WALLET_PEER_PUSH_PAYMENT_INSUFFICIENT_BALANCE
 import net.taler.wallet.backend.TalerErrorCode.WALLET_WITHDRAWAL_KYC_REQUIRED
 import net.taler.wallet.backend.TalerErrorInfo
 
@@ -187,11 +189,17 @@ fun ColumnScope.PeerPullTermsComposable(
 
 @Composable
 fun ColumnScope.PeerPullErrorComposable(s: IncomingError) {
+    val message = when (s.info.code) {
+        WALLET_PEER_PULL_PAYMENT_INSUFFICIENT_BALANCE -> stringResource(R.string.payment_balance_insufficient)
+        WALLET_PEER_PUSH_PAYMENT_INSUFFICIENT_BALANCE -> stringResource(R.string.payment_balance_insufficient)
+        else -> s.info.userFacingMsg
+    }
+
     Text(
         modifier = Modifier
             .align(CenterHorizontally)
             .padding(horizontal = 32.dp),
-        text = s.info.userFacingMsg,
+        text = message,
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.error,
     )
