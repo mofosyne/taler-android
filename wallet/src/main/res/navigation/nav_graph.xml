@@ -134,10 +134,6 @@
             app:argType="string"
             app:nullable="false" />
         <argument
-            android:name="scopeInfo"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
             android:name="IBAN"
             android:defaultValue="@null"
             app:argType="string"
@@ -162,11 +158,6 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
-        <argument
-            android:name="scopeInfo"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
         <action
             android:id="@+id/action_nav_peer_pull_to_nav_main"
             app:destination="@id/nav_main"
@@ -183,11 +174,6 @@
         android:label="@string/send_peer_title">
         <argument
             android:name="amount"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="scopeInfo"
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />

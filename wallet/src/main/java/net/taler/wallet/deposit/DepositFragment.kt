@@ -30,8 +30,6 @@ import net.taler.common.showError
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.backend.BackendManager
-import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.showError
@@ -40,6 +38,7 @@ class DepositFragment : Fragment() {
     private val model: MainViewModel by activityViewModels()
     private val depositManager get() = model.depositManager
     private val balanceManager get() = model.balanceManager
+    private val transactionManager get() = model.transactionManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,9 +48,7 @@ class DepositFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
-        val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
-            BackendManager.json.decodeFromString(it)
-        }
+        val scopeInfo = transactionManager.selectedScope
         val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
         val receiverName = arguments?.getString("receiverName")
         val iban = arguments?.getString("IBAN")

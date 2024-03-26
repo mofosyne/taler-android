@@ -47,10 +47,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.serialization.encodeToString
 import net.taler.common.Amount
 import net.taler.common.CurrencySpecification
-import net.taler.wallet.backend.BackendManager
 import net.taler.wallet.compose.AmountInputField
 import net.taler.wallet.compose.DEFAULT_INPUT_DECIMALS
 import net.taler.wallet.compose.TalerSurface
@@ -85,18 +83,12 @@ class SendFundsFragment : Fragment() {
     }
 
     private fun onDeposit(amount: Amount) {
-        val bundle = bundleOf(
-            "amount" to amount.toJSONString(),
-            "scopeInfo" to BackendManager.json.encodeToString(scopeInfo),
-        )
+        val bundle = bundleOf("amount" to amount.toJSONString())
         findNavController().navigate(R.id.action_sendFunds_to_nav_deposit, bundle)
     }
 
     private fun onPeerPush(amount: Amount) {
-        val bundle = bundleOf(
-            "amount" to amount.toJSONString(),
-            "scopeInfo" to BackendManager.json.encodeToString(scopeInfo),
-        )
+        val bundle = bundleOf("amount" to amount.toJSONString())
         peerManager.checkPeerPushDebit(amount)
         findNavController().navigate(R.id.action_sendFunds_to_nav_peer_push, bundle)
     }

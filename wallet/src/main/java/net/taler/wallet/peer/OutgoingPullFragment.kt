@@ -31,8 +31,6 @@ import kotlinx.coroutines.launch
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.backend.BackendManager
-import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
 import net.taler.wallet.exchanges.ExchangeItem
@@ -52,9 +50,7 @@ class OutgoingPullFragment : Fragment() {
         val amount = arguments?.getString("amount")?.let {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
-        val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
-            BackendManager.json.decodeFromString(it)
-        }
+        val scopeInfo = transactionManager.selectedScope
         val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
 
         return ComposeView(requireContext()).apply {
