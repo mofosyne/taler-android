@@ -34,6 +34,65 @@
     </fragment>
 
     <fragment
+        android:id="@+id/handleUri"
+        android:name="net.taler.wallet.HandleUriFragment"
+        android:label="@string/handle_uri_title">
+        <argument
+            android:name="uri"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="from"
+            app:argType="string"
+            app:nullable="false" />
+
+        <action
+            android:id="@+id/action_handleUri_to_receiveFunds"
+            app:destination="@id/receiveFunds"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_sendFunds"
+            app:destination="@id/sendFunds"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_promptWithdraw"
+            app:destination="@id/promptWithdraw"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_manualWithdrawal"
+            app:destination="@id/nav_exchange_manual_withdrawal"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_promptPayment"
+            app:destination="@id/promptPayment"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_promptPullPayment"
+            app:destination="@id/promptPullPayment"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_promptPushPayment"
+            app:destination="@id/promptPushPayment"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_promptPayTemplate"
+            app:destination="@id/promptPayTemplate"
+            app:popUpTo="@id/nav_main" />
+
+        <action
+            android:id="@+id/action_handleUri_to_nav_payto_uri"
+            app:destination="@id/nav_payto_uri"
+            app:popUpTo="@id/nav_main" />
+    </fragment>
+
+    <fragment
         android:id="@+id/receiveFunds"
         android:name="net.taler.wallet.ReceiveFundsFragment"
         android:label="@string/transactions_receive_funds">
@@ -317,6 +376,10 @@
         android:name="net.taler.wallet.withdraw.ErrorFragment"
         android:label="@string/nav_error"
         tools:layout="@layout/fragment_error" />
+
+    <action
+        android:id="@+id/action_global_handle_uri"
+        app:destination="@id/handleUri" />
 
     <action
         android:id="@+id/action_global_receiveFunds"

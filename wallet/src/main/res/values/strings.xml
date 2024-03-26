@@ -73,6 +73,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
 
     <string name="host_apdu_service_desc">Taler NFC Payments</string>
 
+    <string name="handle_uri_title">Loading action</string>
+
     <string name="balances_title">Balances</string>
     <string name="amount_positive">+%s</string>
     <string name="amount_negative">-%s</string>

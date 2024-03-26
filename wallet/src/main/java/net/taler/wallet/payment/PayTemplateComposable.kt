@@ -18,7 +18,6 @@ package net.taler.wallet.payment
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,7 @@ import net.taler.common.Amount
 import net.taler.common.ContractTerms
 import net.taler.wallet.AmountResult
 import net.taler.wallet.R
+import net.taler.wallet.compose.LoadingScreen
 import net.taler.wallet.compose.TalerSurface
 
 sealed class AmountFieldStatus {
@@ -99,12 +99,7 @@ fun PayTemplateError(message: String) {
 
 @Composable
 fun PayTemplateLoading() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Center,
-    ) {
-        CircularProgressIndicator()
-    }
+    LoadingScreen()
 }
 
 @Preview
