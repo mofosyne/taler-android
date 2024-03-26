@@ -25,12 +25,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.common.showError
 import net.taler.wallet.CURRENCY_BTC
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.backend.BackendManager
 import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
@@ -50,7 +50,7 @@ class DepositFragment : Fragment() {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
         val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
-            Json.decodeFromString(it)
+            BackendManager.json.decodeFromString(it)
         }
         val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
         val receiverName = arguments?.getString("receiverName")
