@@ -30,10 +30,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import net.taler.common.Amount
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
+import net.taler.wallet.backend.BackendManager
 import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.compose.TalerSurface
 import net.taler.wallet.compose.collectAsStateLifecycleAware
@@ -61,7 +61,7 @@ class OutgoingPushFragment : Fragment() {
             Amount.fromJSONString(it)
         } ?: error("no amount passed")
         val scopeInfo: ScopeInfo? = arguments?.getString("scopeInfo")?.let {
-            Json.decodeFromString(it)
+            BackendManager.json.decodeFromString(it)
         }
         val spec = scopeInfo?.let { balanceManager.getSpecForScopeInfo(it) }
 
