@@ -23,11 +23,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.taler.wallet.backend.TalerErrorCode.NONE
 import org.json.JSONObject
 import java.io.File
+import net.taler.wallet.backend.WalletRunConfig.*
 
 private const val WALLET_DB = "talerwalletdb.sqlite3"
 
@@ -54,9 +56,15 @@ class WalletBackendApi(
         } else {
             "${app.filesDir}/${WALLET_DB}"
         }
+
+        val config = WalletRunConfig(testing = Testing(
+            emitObservabilityEvents = true,
+        ))
+
         request("init", InitResponse.serializer()) {
             put("persistentStoragePath", db)
             put("logLevel", "INFO")
+            put("config", JSONObject(BackendManager.json.encodeToString(config)))
         }.onSuccess { response ->
             versionReceiver.onVersionReceived(response.versionInfo)
         }.onError { error ->

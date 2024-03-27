@@ -21,6 +21,12 @@ import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.cleanExchange
 
 @Serializable
+data class BuiltinExchange(
+    val exchangeBaseUrl: String,
+    val currencyHint: String? = null,
+)
+
+@Serializable
 data class ExchangeItem(
     val exchangeBaseUrl: String,
     // can be null before exchange info in wallet-core was fully loaded

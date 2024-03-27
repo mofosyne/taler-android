@@ -25,11 +25,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
 import net.taler.common.Amount
 import net.taler.common.AmountParserException
 import net.taler.common.Event
 import net.taler.common.toEvent
 import net.taler.wallet.accounts.AccountManager
+import net.taler.wallet.backend.BackendManager
 import net.taler.wallet.backend.NotificationPayload
 import net.taler.wallet.backend.NotificationReceiver
 import net.taler.wallet.backend.VersionReceiver
@@ -38,6 +40,7 @@ import net.taler.wallet.backend.WalletCoreVersion
 import net.taler.wallet.balances.BalanceManager
 import net.taler.wallet.balances.ScopeInfo
 import net.taler.wallet.deposit.DepositManager
+import net.taler.wallet.events.ObservabilityEvent
 import net.taler.wallet.exchanges.ExchangeManager
 import net.taler.wallet.payment.PaymentManager
 import net.taler.wallet.peer.PeerManager
@@ -85,6 +88,9 @@ class MainViewModel(
     private val mTransactionsEvent = MutableLiveData<Event<ScopeInfo>>()
     val transactionsEvent: LiveData<Event<ScopeInfo>> = mTransactionsEvent
 
+    private val mObservabilityStream = MutableLiveData<Event<ObservabilityEvent>>()
+    val observabilityStream: LiveData<Event<ObservabilityEvent>> = mObservabilityStream
+
     private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
 
@@ -97,11 +103,17 @@ class MainViewModel(
 
     override fun onNotificationReceived(payload: NotificationPayload) {
         if (payload.type == "waiting-for-retry") return // ignore ping)
-        Log.i(TAG, "Received notification from wallet-core: $payload")
+
+        val str = BackendManager.json.encodeToString(payload)
+        Log.i(TAG, "Received notification from wallet-core: $str")
 
         // Only update balances when we're told they changed
         if (payload.type == "balance-change") viewModelScope.launch(Dispatchers.Main) {
             balanceManager.loadBalances()
+        }
+
+        if (payload.type == "task-observability-event" && payload.event != null) {
+            mObservabilityStream.postValue(payload.event.toEvent())
         }
 
         if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {

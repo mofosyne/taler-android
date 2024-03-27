@@ -17,11 +17,54 @@
 package net.taler.wallet.backend
 
 import kotlinx.serialization.Serializable
+import net.taler.wallet.exchanges.BuiltinExchange
 
 @Serializable
 data class InitResponse(
     val versionInfo: WalletCoreVersion,
 )
+
+@Serializable
+data class WalletRunConfig(
+    val builtin: Builtin? = Builtin(),
+    val testing: Testing? = Testing(),
+    val features: Features? = Features(),
+) {
+    /**
+     * Initialization values useful for a complete startup.
+     *
+     * These are values may be overridden by different wallets
+     */
+    @Serializable
+    data class Builtin(
+        val exchanges: List<BuiltinExchange> = emptyList(),
+    )
+
+    /**
+     * Unsafe options which it should only be used to create
+     * testing environment.
+     */
+    @Serializable
+    data class Testing(
+        /**
+         * Allow withdrawal of denominations even though they are about to expire.
+         */
+        val denomselAllowLate: Boolean = false,
+        val devModeActive: Boolean = false,
+        val insecureTrustExchange: Boolean = false,
+        val preventThrottling: Boolean = false,
+        val skipDefaults: Boolean = false,
+        val emitObservabilityEvents: Boolean? = false,
+    )
+
+    /**
+     * Configurations values that may be safe to show to the user
+     */
+    @Serializable
+    data class Features(
+        val allowHttp: Boolean = false,
+    )
+}
 
 fun interface VersionReceiver {
     fun onVersionReceived(versionInfo: WalletCoreVersion)

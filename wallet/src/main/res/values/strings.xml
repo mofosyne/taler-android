@@ -271,6 +271,27 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="pending_operations_refuse">Refuse Proposal</string>
     <string name="pending_operations_no_action">(no action)</string>
 
+    <!-- Observability events -->
+    <string name="observability_title">Internal event log</string>
+    <string name="event_http_fetch_start">HTTP request started</string>
+    <string name="event_http_fetch_finish_success">HTTP request succeeded</string>
+    <string name="event_http_fetch_finish_error">HTTP request failed</string>
+    <string name="event_db_query_start">Database query started</string>
+    <string name="event_db_query_finish_success">Database query succeeded</string>
+    <string name="event_db_query_finish_error">Database query failed</string>
+    <string name="event_request_start">Request started</string>
+    <string name="event_request_finish_success">Request succeeded</string>
+    <string name="event_request_finish_error">Request failed</string>
+    <string name="event_task_start">Task started</string>
+    <string name="event_task_stop">Task stopped</string>
+    <string name="event_task_reset">Task reset</string>
+    <string name="event_declare_task_dependency">Task dependency declared</string>
+    <string name="event_crypto_start">Crypto operation started</string>
+    <string name="event_crypto_finished_success">Crypto operation succeeded</string>
+    <string name="event_crypto_finished_error">Crypto operation finished</string>
+    <string name="event_shepherd_task_result">Shepherd task result</string>
+    <string name="event_unknown">Unknown event</string>
+
     <string name="settings_dev_mode">Developer Mode</string>
     <string name="settings_dev_mode_summary">Shows more information intended for debugging</string>
     <string name="settings_withdraw_testkudos">Withdraw TESTKUDOS</string>

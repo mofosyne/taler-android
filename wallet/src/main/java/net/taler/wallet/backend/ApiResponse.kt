@@ -19,6 +19,7 @@ package net.taler.wallet.backend
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
+import net.taler.wallet.events.ObservabilityEvent
 
 @Serializable
 sealed class ApiMessage {
@@ -35,6 +36,7 @@ sealed class ApiMessage {
 data class NotificationPayload(
     val type: String,
     val id: String? = null,
+    val event: ObservabilityEvent? = null,
 )
 
 @Serializable
