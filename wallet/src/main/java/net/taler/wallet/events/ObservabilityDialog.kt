@@ -106,9 +106,9 @@ fun ObservabilityComposable(
 
 @Composable
 fun ObservabilityItem(event: ObservabilityEvent) {
-    val title = stringResource(event.titleRes)
-    val body = BackendManager.json.encodeToString(event)
     val context = LocalContext.current
+    val title = event.getTitle(context)
+    val body = BackendManager.json.encodeToString(event.body)
 
     ListItem(
         modifier = Modifier.fillMaxWidth(),

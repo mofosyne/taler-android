@@ -16,166 +16,73 @@
 
 package net.taler.wallet.events
 
-import androidx.annotation.StringRes
-import kotlinx.serialization.SerialName
+import android.content.Context
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
-import net.taler.common.Timestamp
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import net.taler.wallet.R
-import net.taler.wallet.backend.TalerErrorInfo
 
-@Serializable
-sealed class ObservabilityEvent {
-    @get:StringRes
-    abstract val titleRes: Int
 
-    @Serializable
-    @SerialName("http-fetch-start")
-    data class HttpFetchStart(
-        val id: String,
-        @SerialName("when")
-        val timestamp: Timestamp,
-        val url: String,
+@Serializable(with = ObservabilityEventSerializer::class)
+class ObservabilityEvent(
+    val body: JsonObject,
+    val type: String,
+) {
 
-        override val titleRes: Int = R.string.event_http_fetch_start,
-    ): ObservabilityEvent()
+    fun getTitle(c: Context) = when (type) {
+        "http-fetch-start" -> c.getString(R.string.event_http_fetch_start)
+        "http-fetch-finish-error" -> c.getString(R.string.event_http_fetch_finish_error)
+        "http-fetch-finish-success" -> c.getString(R.string.event_http_fetch_finish_success)
+        "db-query-start" -> c.getString(R.string.event_db_query_start)
+        "db-query-finish-success" -> c.getString(R.string.event_db_query_finish_success)
+        "db-query-finish-error" -> c.getString(R.string.event_db_query_finish_error)
+        "request-start" -> c.getString(R.string.event_request_start)
+        "request-finish-success" -> c.getString(R.string.event_request_finish_success)
+        "request-finish-error" -> c.getString(R.string.event_request_finish_error)
+        "task-start" -> c.getString(R.string.event_task_start)
+        "task-stop" -> c.getString(R.string.event_task_stop)
+        "task-reset" -> c.getString(R.string.event_task_reset)
+        "sheperd-task-result" -> c.getString(R.string.event_shepherd_task_result)
+        "declare-task-dependency" -> c.getString(R.string.event_declare_task_dependency)
+        "crypto-start" -> c.getString(R.string.event_crypto_start)
+        "crypto-finish-success" -> c.getString(R.string.event_crypto_finish_success)
+        "crypto-finish-error" -> c.getString(R.string.event_crypto_finish_error)
+        "unknown" -> c.getString(R.string.event_unknown)
+        else -> type
+    }
+}
 
-    @Serializable
-    @SerialName("http-fetch-finish-success")
-    data class HttpFetchFinishSuccess(
-        val id: String,
-        @SerialName("when")
-        val timestamp: Timestamp,
-        val url: String,
-        val status: Int,
+class ObservabilityEventSerializer: KSerializer<ObservabilityEvent> {
+    private val jsonElementSerializer = JsonElement.serializer()
 
-        override val titleRes: Int = R.string.event_http_fetch_finish_success,
-    ): ObservabilityEvent()
+    override val descriptor: SerialDescriptor
+        get() = jsonElementSerializer.descriptor
 
-    @Serializable
-    @SerialName("http-fetch-finish-error")
-    data class HttpFetchFinishError(
-        val id: String,
-        @SerialName("when")
-        val timestamp: Timestamp,
-        val url: String,
-        val error: TalerErrorInfo,
+    override fun deserialize(decoder: Decoder): ObservabilityEvent {
+        require(decoder is JsonDecoder)
+        val jsonObject = decoder
+            .decodeJsonElement()
+            .jsonObject
 
-        override val titleRes: Int = R.string.event_http_fetch_finish_error,
-    ): ObservabilityEvent()
+        val type = jsonObject["type"]
+            ?.jsonPrimitive
+            ?.content
+            ?: "unknown"
 
-    @Serializable
-    @SerialName("db-query-start")
-    data class DbQueryStart(
-        val name: String,
-        val location: String,
+        return ObservabilityEvent(
+            body = jsonObject,
+            type = type,
+        )
+    }
 
-        override val titleRes: Int = R.string.event_db_query_start,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("db-query-finish-success")
-    data class DbQueryFinishSuccess(
-        val name: String,
-        val location: String,
-
-        override val titleRes: Int = R.string.event_db_query_finish_success,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("db-query-finish-error")
-    data class DbQueryFinishError(
-        val name: String,
-        val location: String,
-
-        override val titleRes: Int = R.string.event_db_query_finish_error,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("request-start")
-    data class RequestStart(
-        override val titleRes: Int = R.string.event_request_start,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("request-finish-success")
-    data class RequestFinishSuccess(
-        override val titleRes: Int = R.string.event_request_finish_success,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("request-finish-error")
-    data class RequestFinishError(
-        override val titleRes: Int = R.string.event_request_finish_error,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("task-start")
-    data class TaskStart(
-        val taskId: String,
-
-        override val titleRes: Int = R.string.event_task_start,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("task-stop")
-    data class TaskStop(
-        val taskId: String,
-
-        override val titleRes: Int = R.string.event_task_stop,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("task-reset")
-    data class TaskReset(
-        val taskId: String,
-
-        override val titleRes: Int = R.string.event_task_reset,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("declare-task-dependency")
-    data class DeclareTaskDependency(
-        val taskId: String,
-
-        override val titleRes: Int = R.string.event_declare_task_dependency,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("crypto-start")
-    data class CryptoStart(
-        val operation: String,
-
-        override val titleRes: Int = R.string.event_crypto_start,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("crypto-finish-success")
-    data class CryptoFinishSuccess(
-        val operation: String,
-
-        override val titleRes: Int = R.string.event_crypto_finished_success,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("crypto-finish-error")
-    data class CryptoFinishError(
-        val operation: String,
-
-        override val titleRes: Int = R.string.event_crypto_finished_error,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("sheperd-task-result")
-    data class ShepherdTaskResult(
-        val resultType: String,
-
-        override val titleRes: Int = R.string.event_shepherd_task_result,
-    ): ObservabilityEvent()
-
-    @Serializable
-    @SerialName("unknown")
-    data class Unknown(
-        override val titleRes: Int = R.string.event_unknown,
-    ): ObservabilityEvent()
+    override fun serialize(encoder: Encoder, value: ObservabilityEvent) {
+        encoder.encodeSerializableValue(JsonObject.serializer(), value.body)
+    }
 }

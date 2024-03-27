@@ -287,8 +287,8 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="event_task_reset">Task reset</string>
     <string name="event_declare_task_dependency">Task dependency declared</string>
     <string name="event_crypto_start">Crypto operation started</string>
-    <string name="event_crypto_finished_success">Crypto operation succeeded</string>
-    <string name="event_crypto_finished_error">Crypto operation finished</string>
+    <string name="event_crypto_finish_success">Crypto operation succeeded</string>
+    <string name="event_crypto_finish_error">Crypto operation finished</string>
     <string name="event_shepherd_task_result">Shepherd task result</string>
     <string name="event_unknown">Unknown event</string>
 
