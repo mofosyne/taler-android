@@ -271,8 +271,11 @@ GNU Taler is immune against many types of fraud, such as phishing of credit card
     <string name="pending_operations_refuse">Refuse Proposal</string>
     <string name="pending_operations_no_action">(no action)</string>
 
-    <!-- Observability events -->
+    <!-- Observability -->
+    <string name="show_logs">Show logs</string>
     <string name="observability_title">Internal event log</string>
+    <string name="observability_show_json">Show JSON</string>
+    <string name="observability_hide_json">Hide JSON</string>
     <string name="event_http_fetch_start">HTTP request started</string>
     <string name="event_http_fetch_finish_success">HTTP request succeeded</string>
     <string name="event_http_fetch_finish_error">HTTP request failed</string>

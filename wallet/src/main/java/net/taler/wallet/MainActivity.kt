@@ -25,6 +25,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.INVISIBLE
@@ -66,6 +67,7 @@ import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_CONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.MERCHANT_NFC_DISCONNECTED
 import net.taler.wallet.HostCardEmulatorService.Companion.TRIGGER_PAYMENT_ACTION
 import net.taler.wallet.databinding.ActivityMainBinding
+import net.taler.wallet.events.ObservabilityDialog
 import net.taler.wallet.refund.RefundStatus
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -144,6 +146,10 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         model.networkManager.networkStatus.observe(this) { online ->
             ui.content.offlineBanner.visibility = if (online) GONE else VISIBLE
         }
+
+        model.devMode.observe(this) {
+            invalidateMenu()
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -159,6 +165,14 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (model.devMode.value == true) {
+            menuInflater.inflate(R.menu.global_dev, menu)
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> nav.navigate(R.id.nav_main)
@@ -166,6 +180,15 @@ class MainActivity : AppCompatActivity(), OnNavigationItemSelectedListener,
         }
         ui.drawerLayout.closeDrawer(START)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_show_logs -> {
+                ObservabilityDialog().show(supportFragmentManager, "OBSERVABILITY")
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {

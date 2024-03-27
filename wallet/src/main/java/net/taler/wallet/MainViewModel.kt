@@ -51,6 +51,7 @@ import net.taler.wallet.withdraw.WithdrawManager
 import org.json.JSONObject
 
 const val TAG = "taler-wallet"
+const val OBSERVABILITY_LIMIT = 100
 
 private val transactionNotifications = listOf(
     "transaction-state-transition",
@@ -88,8 +89,8 @@ class MainViewModel(
     private val mTransactionsEvent = MutableLiveData<Event<ScopeInfo>>()
     val transactionsEvent: LiveData<Event<ScopeInfo>> = mTransactionsEvent
 
-    private val mObservabilityStream = MutableLiveData<Event<ObservabilityEvent>>()
-    val observabilityStream: LiveData<Event<ObservabilityEvent>> = mObservabilityStream
+    private val mObservabilityLog = MutableLiveData<List<ObservabilityEvent>>(emptyList())
+    val observabilityLog: LiveData<List<ObservabilityEvent>> = mObservabilityLog
 
     private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
@@ -112,8 +113,14 @@ class MainViewModel(
             balanceManager.loadBalances()
         }
 
-        if (payload.type == "task-observability-event" && payload.event != null) {
-            mObservabilityStream.postValue(payload.event.toEvent())
+        if (payload.type == "task-observability-event"
+            && payload.event != null
+            && devMode.value == true) {
+            val logs = mObservabilityLog.value
+                ?.takeLast(OBSERVABILITY_LIMIT)
+                ?.toMutableList() ?: mutableListOf()
+            logs.add(payload.event)
+            mObservabilityLog.postValue(logs)
         }
 
         if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {

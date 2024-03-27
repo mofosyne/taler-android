@@ -27,14 +27,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -42,18 +47,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import net.taler.common.EventObserver
+import kotlinx.serialization.json.Json
 import net.taler.wallet.MainViewModel
 import net.taler.wallet.R
-import net.taler.wallet.backend.BackendManager
 import net.taler.wallet.compose.copyToClipBoard
+import net.taler.wallet.events.ObservabilityDialog.Companion.json
 
 class ObservabilityDialog: DialogFragment() {
     private val model: MainViewModel by activityViewModels()
-    private val eventsFlow: MutableStateFlow<List<ObservabilityEvent>> = MutableStateFlow(emptyList())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,22 +64,19 @@ class ObservabilityDialog: DialogFragment() {
         savedInstanceState: Bundle?
     ): View = ComposeView(requireContext()).apply {
         setContent {
-            val events by eventsFlow.collectAsState()
-            ObservabilityComposable(events = events) {
+            val events by model.observabilityLog.observeAsState()
+            ObservabilityComposable(events?.reversed() ?: emptyList()) {
                 dismiss()
             }
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        model.observabilityStream.observe(viewLifecycleOwner, EventObserver { event ->
-            eventsFlow.getAndUpdate {
-                it.toMutableList().apply {
-                    add(0, event)
-                }.toList()
-            }
-        })
+    companion object {
+        @OptIn(ExperimentalSerializationApi::class)
+        val json = Json {
+            prettyPrint = true
+            prettyPrintIndent = "  "
+        }
     }
 }
 
@@ -85,45 +85,63 @@ fun ObservabilityComposable(
     events: List<ObservabilityEvent>,
     onDismiss: () -> Unit,
 ) {
+    var showJson by remember { mutableStateOf(false) }
+
     AlertDialog(
         title = { Text(stringResource(R.string.observability_title)) },
         text = {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(events) { event ->
-                    ObservabilityItem(event)
+                    ObservabilityItem(event, showJson)
                 }
             }
         },
         onDismissRequest = onDismiss,
-        confirmButton = {},
         dismissButton = {
+            Button(onClick = { showJson = !showJson }) {
+                Text(if (showJson) {
+                    stringResource(R.string.observability_hide_json)
+                } else {
+                    stringResource(R.string.observability_show_json)
+                })
+            }
+        },
+        confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.close))
             }
-        }
+        },
     )
 }
 
 @Composable
-fun ObservabilityItem(event: ObservabilityEvent) {
+fun ObservabilityItem(
+    event: ObservabilityEvent,
+    showJson: Boolean,
+) {
     val context = LocalContext.current
     val title = event.getTitle(context)
-    val body = BackendManager.json.encodeToString(event.body)
+    val body = json.encodeToString(event.body)
 
     ListItem(
         modifier = Modifier.fillMaxWidth(),
         headlineContent = { Text(title) },
-        supportingContent = { Text(body, fontFamily = FontFamily.Monospace) },
-        trailingContent = {
-            IconButton(
-                content = { Icon(
+        supportingContent = if (!showJson) null else { ->
+            Text(
+                text = body,
+                fontFamily = FontFamily.Monospace,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        },
+        trailingContent = if(!showJson) null else { ->
+            IconButton(onClick = {
+                copyToClipBoard(context, "Event", body)
+            }) {
+                Icon(
                     Icons.Default.ContentCopy,
                     contentDescription = stringResource(R.string.copy),
-                ) },
-                onClick = {
-                    copyToClipBoard(context, "Event", body)
-                }
-            )
-        }
+                )
+            }
+        },
     )
 }
