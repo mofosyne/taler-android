@@ -390,28 +390,8 @@
         app:destination="@id/sendFunds" />
 
     <action
-        android:id="@+id/action_global_promptWithdraw"
-        app:destination="@id/promptWithdraw" />
-
-    <action
-        android:id="@+id/action_global_manual_withdrawal"
-        app:destination="@id/nav_exchange_manual_withdrawal" />
-
-    <action
         android:id="@+id/action_global_promptPayment"
         app:destination="@id/promptPayment" />
-
-    <action
-        android:id="@+id/action_global_prompt_pull_payment"
-        app:destination="@id/promptPullPayment" />
-
-    <action
-        android:id="@+id/action_global_prompt_push_payment"
-        app:destination="@id/promptPushPayment" />
-
-    <action
-        android:id="@+id/action_global_prompt_pay_template"
-        app:destination="@id/promptPayTemplate" />
 
     <action
         android:id="@+id/action_nav_transactions_detail_withdrawal"

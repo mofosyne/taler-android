@@ -22,6 +22,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast.LENGTH_LONG
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -31,7 +32,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,16 +49,16 @@ import java.util.Locale
 class HandleUriFragment: Fragment() {
     private val model: MainViewModel by activityViewModels()
 
-    var uri: String? = null
-    var from: String? = null
+    lateinit var uri: String
+    lateinit var from: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        uri = arguments?.getString("uri")
-        from = arguments?.getString("from")
+        uri = arguments?.getString("uri") ?: error("no uri passed")
+        from = arguments?.getString("from") ?: error("no from passed")
 
         return ComposeView(requireContext()).apply {
             setContent {
@@ -215,6 +215,7 @@ class HandleUriFragment: Fragment() {
                 if (exchange == null) withContext(Dispatchers.Main) {
                     model.showProgressBar.value = false
                     showError(R.string.exchange_add_error)
+                    findNavController().navigateUp()
                 } else {
                     model.exchangeManager.withdrawalExchange = exchange
                     withContext(Dispatchers.Main) {
@@ -224,7 +225,7 @@ class HandleUriFragment: Fragment() {
                                 putString("amount", response.amount.toJSONString())
                             }
                         }
-                        // there's more than one entry point, so use global action
+
                         findNavController().navigate(R.id.action_handleUri_to_manualWithdrawal, args)
                     }
                 }
@@ -249,14 +250,16 @@ class HandleUriFragment: Fragment() {
                     val transactionId = status.response.transactionId
                     val transaction = model.transactionManager.getTransactionById(transactionId)
                     if (transaction != null) {
-                        val currency = transaction.amountRaw.currency
-                        model.showTransactions(currency)
-                        Snackbar.make(requireView(), getString(R.string.refund_success),
-                            BaseTransientBottomBar.LENGTH_LONG
-                        ).show()
+                        // TODO: currency what? scopes are the cool thing now
+                        // val currency = transaction.amountRaw.currency
+                        // model.showTransactions(currency)
+                        Snackbar.make(requireView(), getString(R.string.refund_success), LENGTH_LONG).show()
                     }
+
+                    findNavController().navigateUp()
                 }
             }
+
         }
     }
 }
