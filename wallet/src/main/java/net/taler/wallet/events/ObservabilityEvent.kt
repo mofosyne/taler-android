@@ -28,11 +28,13 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import net.taler.wallet.R
+import java.time.LocalDateTime
 
 
 @Serializable(with = ObservabilityEventSerializer::class)
 class ObservabilityEvent(
     val body: JsonObject,
+    val timestamp: LocalDateTime,
     val type: String,
 ) {
 
@@ -78,6 +80,7 @@ class ObservabilityEventSerializer: KSerializer<ObservabilityEvent> {
 
         return ObservabilityEvent(
             body = jsonObject,
+            timestamp = LocalDateTime.now(),
             type = type,
         )
     }

@@ -24,6 +24,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import net.taler.common.Amount
@@ -55,6 +58,11 @@ const val OBSERVABILITY_LIMIT = 100
 
 private val transactionNotifications = listOf(
     "transaction-state-transition",
+)
+
+private val observabilityNotifications = listOf(
+    "task-observability-event",
+    "request-observability-event",
 )
 
 class MainViewModel(
@@ -89,8 +97,8 @@ class MainViewModel(
     private val mTransactionsEvent = MutableLiveData<Event<ScopeInfo>>()
     val transactionsEvent: LiveData<Event<ScopeInfo>> = mTransactionsEvent
 
-    private val mObservabilityLog = MutableLiveData<List<ObservabilityEvent>>(emptyList())
-    val observabilityLog: LiveData<List<ObservabilityEvent>> = mObservabilityLog
+    private val mObservabilityLog = MutableStateFlow<List<ObservabilityEvent>>(emptyList())
+    val observabilityLog: StateFlow<List<ObservabilityEvent>> = mObservabilityLog
 
     private val mScanCodeEvent = MutableLiveData<Event<Boolean>>()
     val scanCodeEvent: LiveData<Event<Boolean>> = mScanCodeEvent
@@ -113,14 +121,16 @@ class MainViewModel(
             balanceManager.loadBalances()
         }
 
-        if (payload.type == "task-observability-event"
+        if (payload.type in observabilityNotifications
             && payload.event != null
             && devMode.value == true) {
-            val logs = mObservabilityLog.value
-                ?.takeLast(OBSERVABILITY_LIMIT)
-                ?.toMutableList() ?: mutableListOf()
-            logs.add(payload.event)
-            mObservabilityLog.postValue(logs)
+            mObservabilityLog.getAndUpdate { logs ->
+                logs.takeLast(OBSERVABILITY_LIMIT)
+                    .toMutableList().apply {
+                        add(payload.event)
+                    }
+
+            }
         }
 
         if (payload.type in transactionNotifications) viewModelScope.launch(Dispatchers.Main) {
