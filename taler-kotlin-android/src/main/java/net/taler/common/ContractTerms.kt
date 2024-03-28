@@ -64,7 +64,7 @@ data class ContractProduct(
     @SerialName("delivery_location")
     override val location: String? = null,
     override val image: String? = null,
-    val quantity: Int
+    val quantity: Int = 1,
 ) : Product() {
     val totalPrice: Amount? by lazy {
         price?.let { price * quantity }
