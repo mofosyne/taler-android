@@ -77,6 +77,7 @@ class HandleUriFragment: Fragment() {
             connectToWifi(requireContext(), uri.fragment!!)
         }
 
+        // TODO: fix this bad async programming, make it only async when needed.
         getTalerAction(uri, 3, MutableLiveData<String>()).observe(viewLifecycleOwner) { u ->
             Log.v(TAG, "found action $u")
 
