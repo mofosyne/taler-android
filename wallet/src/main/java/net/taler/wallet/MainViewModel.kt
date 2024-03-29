@@ -121,15 +121,12 @@ class MainViewModel(
             balanceManager.loadBalances()
         }
 
-        if (payload.type in observabilityNotifications
-            && payload.event != null
-            && devMode.value == true) {
+        if (payload.type in observabilityNotifications && payload.event != null) {
             mObservabilityLog.getAndUpdate { logs ->
                 logs.takeLast(OBSERVABILITY_LIMIT)
                     .toMutableList().apply {
                         add(payload.event)
                     }
-
             }
         }
 

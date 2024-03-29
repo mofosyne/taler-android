@@ -16,7 +16,6 @@
 
 package net.taler.wallet.events
 
-import android.content.Context
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -27,7 +26,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import net.taler.wallet.R
 import java.time.LocalDateTime
 
 
@@ -36,30 +34,7 @@ class ObservabilityEvent(
     val body: JsonObject,
     val timestamp: LocalDateTime,
     val type: String,
-) {
-
-    fun getTitle(c: Context) = when (type) {
-        "http-fetch-start" -> c.getString(R.string.event_http_fetch_start)
-        "http-fetch-finish-error" -> c.getString(R.string.event_http_fetch_finish_error)
-        "http-fetch-finish-success" -> c.getString(R.string.event_http_fetch_finish_success)
-        "db-query-start" -> c.getString(R.string.event_db_query_start)
-        "db-query-finish-success" -> c.getString(R.string.event_db_query_finish_success)
-        "db-query-finish-error" -> c.getString(R.string.event_db_query_finish_error)
-        "request-start" -> c.getString(R.string.event_request_start)
-        "request-finish-success" -> c.getString(R.string.event_request_finish_success)
-        "request-finish-error" -> c.getString(R.string.event_request_finish_error)
-        "task-start" -> c.getString(R.string.event_task_start)
-        "task-stop" -> c.getString(R.string.event_task_stop)
-        "task-reset" -> c.getString(R.string.event_task_reset)
-        "sheperd-task-result" -> c.getString(R.string.event_shepherd_task_result)
-        "declare-task-dependency" -> c.getString(R.string.event_declare_task_dependency)
-        "crypto-start" -> c.getString(R.string.event_crypto_start)
-        "crypto-finish-success" -> c.getString(R.string.event_crypto_finish_success)
-        "crypto-finish-error" -> c.getString(R.string.event_crypto_finish_error)
-        "unknown" -> c.getString(R.string.event_unknown)
-        else -> type
-    }
-}
+)
 
 class ObservabilityEventSerializer: KSerializer<ObservabilityEvent> {
     private val jsonElementSerializer = JsonElement.serializer()

@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -124,8 +123,6 @@ fun ObservabilityItem(
     event: ObservabilityEvent,
     showJson: Boolean,
 ) {
-    val context = LocalContext.current
-    val title = event.getTitle(context)
     val body = json.encodeToString(event.body)
     val timestamp = DateTimeFormatter
         .ofLocalizedDateTime(FormatStyle.MEDIUM)
@@ -133,7 +130,7 @@ fun ObservabilityItem(
 
     ListItem(
         modifier = Modifier.fillMaxWidth(),
-        headlineContent = { Text(title) },
+        headlineContent = { Text(event.type) },
         overlineContent = { Text(timestamp) },
         supportingContent = if (!showJson) null else { ->
             Column(
